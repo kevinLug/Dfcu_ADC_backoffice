@@ -1,26 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {Fragment} from 'react';
+import {HashRouter as Router} from 'react-router-dom';
+import {ToastContainer} from "react-toastify";
+import ContentSwitch from "./modules/ContentSwitch";
+import Login from "./modules/login/Login";
+import Splash from "./modules/login/Splash";
+import {useSelector} from 'react-redux'
 
 const App: React.FC = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const {splash, user} = useSelector((state: any) => state.core)
+
+    if (splash) {
+        return <Splash/>
+    } else
+        if (user) {
+        return (
+            <Router>
+                <Fragment>
+                    <ToastContainer/>
+                    <ContentSwitch/>
+                </Fragment>
+            </Router>
+        );
+    } else {
+        return <Fragment>
+            <ToastContainer/>
+            <Login/>
+        </Fragment>
+    }
 }
 
 export default App;
