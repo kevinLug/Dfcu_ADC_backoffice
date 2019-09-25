@@ -2,7 +2,7 @@ import {format, isValid} from "date-fns";
 
 export const printDateTime = (value: any): string => {
     if (isValid(value))
-        return format(value, 'MM/dd/yyyy p')
+        return format(value, 'yyyy.MM.dd HH.mm')
     else
         return ''
 }
@@ -45,7 +45,7 @@ export const printDayOfMonth = (value: any): string => {
 
 export const printDate = (value: any): string => {
     if (isValid(value))
-        return format(value, 'MM/dd/yyyy')
+        return format(value, 'yyyy.MM.dd')
     else
         return ''
 }

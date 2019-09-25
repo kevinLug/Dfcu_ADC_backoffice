@@ -1,7 +1,8 @@
 import React from 'react';
 import Grid from "@material-ui/core/Grid";
-import GridWrapper from "./GridWrapper";
 import {Typography} from "@material-ui/core";
+import GridWrapper from "../../../../components/GridWrapper";
+import {errorColor} from "../../../../theme/custom-colors";
 
 interface IProps {
     text: any
@@ -10,9 +11,9 @@ interface IProps {
 const Error = (props: IProps) => {
     return (
         <GridWrapper>
-            <Grid container spacing={10} justify='center' alignItems="center">
+            <Grid container spacing={10} justify='flex-start' alignItems="flex-start">
                 <Grid item>
-                    <Typography color='error' variant='h5'>{props.text}</Typography>
+                    <Typography style={{color: errorColor}} variant='body1'>{props.text}</Typography>
                 </Grid>
             </Grid>
         </GridWrapper>

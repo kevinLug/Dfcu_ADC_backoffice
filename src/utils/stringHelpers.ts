@@ -6,6 +6,15 @@ export const getInitials = (fullName = '') => {
     }
 }
 
+export function getRandomStr(max=16) {
+    const letters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let str = '';
+    for (let i = 0; i < max; i++) {
+        str += letters[Math.floor(Math.random() * max)];
+    }
+    return str;
+}
+
 
 export function enumToArray(typeData: any) {
     return Object.keys(typeData)

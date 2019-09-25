@@ -1,29 +1,27 @@
 import React from "react";
 import {createStyles, makeStyles, Theme, Typography} from "@material-ui/core";
-import red from "@material-ui/core/colors/red";
-import green from "@material-ui/core/colors/green";
-import amber from "@material-ui/core/colors/amber";
-import MailIcon from "@material-ui/core/SvgIcon/SvgIcon";
+import {errorColor, successColor, warningColor} from "../theme/custom-colors";
+
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         error: {
             color: 'white',
-            backgroundColor: red[400],
+            backgroundColor: errorColor,
             padding: 3,
-            borderRadius: 4,
+            borderRadius: 3,
         },
         warning: {
             color: 'white',
-            backgroundColor: amber[800],
+            backgroundColor: warningColor,
             padding: 3,
-            borderRadius: 4
+            borderRadius: 3
         },
         success: {
             color: 'white',
-            backgroundColor: green[500],
+            backgroundColor: successColor,
             padding: 3,
-            borderRadius: 4
+            borderRadius: 3
         }
     }),
 );

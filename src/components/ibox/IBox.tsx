@@ -3,14 +3,14 @@ import Typography from "@material-ui/core/Typography";
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
-import IconButton from '@material-ui/core/IconButton';
-import AddIcon from '@material-ui/icons/Add';
 import {createStyles, Divider, makeStyles, Theme} from "@material-ui/core";
 
 interface IProps {
     title: any
     children?: any
     action?: any
+    contentClassName?: string
+    cardProps?: any
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const IBox = (props: IProps) => {
     const classes = useStyles()
     return (
-        <Card className={classes.root}>
+        <Card className={classes.root} {...props.cardProps}>
             <CardHeader
                 className={classes.header}
                 title={
@@ -39,7 +39,7 @@ const IBox = (props: IProps) => {
                 action={props.action}
             />
             <Divider/>
-            <CardContent>
+            <CardContent className={props.contentClassName}>
                 {props.children}
             </CardContent>
         </Card>

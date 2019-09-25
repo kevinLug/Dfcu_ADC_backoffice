@@ -1,4 +1,5 @@
 import * as faker from 'faker';
+import {getRandomStr} from "../../utils/stringHelpers";
 
 const uuid = require('uuid/v4');
 
@@ -19,6 +20,42 @@ export interface IEmail {
     value: string
     category: string
     isPrimary: boolean
+}
+
+export enum IdentificationCategory
+{
+    Nin = 'Nin',
+    Passport = 'Passport',
+    DrivingPermit = 'DrivingPermit',
+    VillageCard = 'VillageCard',
+    Nssf = 'Nssf',
+    Other = 'Other'
+}
+
+export enum CivilStatus
+{
+    Other = 'Other',
+    Single = 'Single',
+    Married = 'Married',
+    Divorced = 'Divorced'
+}
+
+export enum Gender {
+    Male = 'Male',
+    Female = 'Female',
+}
+
+export enum PhoneCategory {
+    Mobile = "Mobile",
+    Office = "Office",
+    Home = "Home",
+    Fax = "Fax",
+    Other = "Other"
+}
+export enum EmailCategory {
+    Work = 'Work',
+    Personal = 'Personal',
+    Other = 'Other',
 }
 
 export interface IPhone {
@@ -93,6 +130,25 @@ export interface IContactQuery {
 }
 
 
+export interface IConsumerLoan {
+    id?: string
+    lender: string
+    amount: number
+    interestRate: number
+    durationInMonths: number
+}
+
+export const fakeLoan = (): IConsumerLoan => {
+
+    return {
+        id: uuid(),
+        lender: faker.company.companyName(),
+        amount: faker.random.number({max: 100, min: 3}) * 1000,
+        durationInMonths: faker.random.number(36),
+        interestRate: faker.random.number({max: 2000, min: 1100}) / 100,
+    }
+}
+
 export const fakeContact = (): IContact => {
     const firstName = faker.name.firstName();
     const lastName = faker.name.lastName();
@@ -162,14 +218,6 @@ export const fakeContact = (): IContact => {
     };
 };
 
-function getRandomStr() {
-    const letters = '0123456789ABCDEFGHIJKLMNOPQRST';
-    let str = '';
-    for (let i = 0; i < 16; i++) {
-        str += letters[Math.floor(Math.random() * 16)];
-    }
-    return str;
-}
 
 export const renderName = (person: IPerson, salutation?: boolean): string => {
     const name: string =
@@ -180,7 +228,7 @@ export const renderName = (person: IPerson, salutation?: boolean): string => {
     return name.trim().replace(/\s+/g, ' ');
 };
 
-export const printAddress= (data: IAddress): string => {
+export const printAddress = (data: IAddress): string => {
     const address: string =
         `${data.street || ''} ${data.parish || ''} ${data.district || ''} ${data.country || ''}`
     return address.trim().replace(/\s+/g, ' ');

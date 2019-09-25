@@ -1,9 +1,8 @@
-import React from "react";
 import {BaseModel} from "../../data/types";
-import {enumToArray} from "../../utils/stringHelpers";
 
 export interface IAction extends BaseModel {
     name: string,
+    template?: string,
     title: string
     description: string
     roles: string[]

@@ -28,17 +28,18 @@ export const localRoutes = {
 }
 
 const debug = process.env.NODE_ENV !== 'production'
-export const url = debug ? 'https://localhost:44307' :
-    'https://pro-demo.azurewebsites.net'
+export const url = debug ? 'http://localhost:6001' :
+    'https://emata-poc-workeng-test.laboremus.no'
 
 
 export const remoteRoutes = {
-    login: url + '/api/auth/login',
-    profile: url + '/api/auth/profile',
+    login: url + '/api/test/login',
+    profile: url + '/api/test/profile',
     register: url + '/api/auth/register',
     resetPass: url + '/reset',
 
     contacts: url + '/api/crm/contact',
+    workflows: url + '/api/workflows',
 }
 
 

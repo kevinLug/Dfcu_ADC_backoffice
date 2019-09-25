@@ -17,7 +17,7 @@ interface XTableProps {
     initialOrder?: Order
     initialRowsPerPage?: number
     headCells: XHeadCell[]
-    title: string
+    title?: string
     data: any[]
     useCheckbox?: boolean
     handleSelection?: (id: any) => any
@@ -93,7 +93,11 @@ export default function XTable(props: XTableProps) {
     return (
         <div className={classes.root}>
             <Paper className={classes.paper}>
-                <XToolbar numSelected={selected.length} title={title} onFilterToggle={props.onFilterToggle}/>
+                {
+                    title &&
+                    <XToolbar numSelected={selected.length} title={title} onFilterToggle={props.onFilterToggle}/>
+                }
+
                 <div className={classes.tableWrapper}>
                     <Table
                         className={classes.table}

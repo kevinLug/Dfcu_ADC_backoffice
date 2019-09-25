@@ -1,7 +1,10 @@
 import React from "react";
-import {WorkflowStatus, WorkflowSubStatus} from "./types";
+import {ITask, TaskStatus, WorkflowStatus, WorkflowSubStatus} from "./types";
 import {ErrorLabel, SuccessLabel, WarnLabel} from "../../components/widgets";
 import {camelPad} from "../../utils/stringHelpers";
+import CheckCircleIcon from "@material-ui/core/SvgIcon/SvgIcon";
+import {successColor} from "../../theme/custom-colors";
+import {ErrorIcon, SuccessIcon, WarningIcon} from "../../components/xicons";
 
 export const printWorkflowStatus = (status: WorkflowStatus) => {
     switch (status) {
@@ -27,6 +30,18 @@ export const printWorkflowSubStatus = (status: WorkflowSubStatus, row?: any) => 
             return <WarnLabel>{camelPad(status)}</WarnLabel>
         default:
             return <ErrorLabel>{camelPad(status)}</ErrorLabel>
+    }
+}
+
+
+export function printTaskIcon(task: ITask): any {
+    switch (task.status) {
+        case TaskStatus.Done:
+            return SuccessIcon
+        case TaskStatus.Error:
+            return ErrorIcon
+        case TaskStatus.Pending:
+            return WarningIcon
     }
 }
 

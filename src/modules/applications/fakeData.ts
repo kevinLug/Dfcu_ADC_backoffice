@@ -1,6 +1,7 @@
 import * as faker from "faker";
-import {IWorkflow, WorkflowStatus, WorkflowSubStatus} from "./types";
+import {ActionStatus, IAction, ITask, IWorkflow, TaskStatus, WorkflowStatus, WorkflowSubStatus} from "./types";
 import {enumToArray} from "../../utils/stringHelpers";
+import {createArray} from "../../utils/arrayHelpers";
 
 const uuid = require('uuid/v4');
 
@@ -31,3 +32,45 @@ export const fakeCase = (): IWorkflow => {
         assigneeId: uuid()
     };
 };
+
+export const fakeTask = (): ITask => {
+    const actionsCount = faker.random.number({max: 4, min: 1})
+    const actions = createArray(actionsCount, fakeAction)
+    return {
+        id: uuid(),
+        name: faker.company.catchPhrase(),
+        title: faker.company.catchPhrase(),
+        description: faker.lorem.sentence(),
+        createdAt: faker.date.past(),
+        isDeleted: false,
+        runDate: faker.date.past(),
+        status: faker.random.arrayElement(enumToArray(TaskStatus)) as TaskStatus,
+        statusMessage: faker.lorem.sentence(),
+        actions: [...actions]
+    }
+}
+
+export const fakeAction = (): IAction => {
+    return {
+        id: uuid(),
+        name: faker.company.catchPhrase(),
+        title: faker.company.catchPhrase(),
+        description: faker.lorem.sentence(),
+        createdAt: faker.date.past(),
+        isDeleted: false,
+        runDate: faker.date.past(),
+        status: faker.random.arrayElement(enumToArray(ActionStatus)) as ActionStatus,
+        statusMessage: faker.lorem.sentence(),
+        notifications: [],
+        roles: [],
+        ignored: false,
+        optional: false,
+        skipped: false,
+
+        nextStatusError: '',
+        nextStatusSuccess: '',
+
+        inputData: '',
+        outputData: ''
+    }
+}

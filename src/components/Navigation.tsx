@@ -22,8 +22,8 @@ import grey from '@material-ui/core/colors/grey';
 import {BarView} from "./Profile";
 import logo from "../assets/download.png";
 import {Typography} from "@material-ui/core";
-import {themeBackGround} from "../theme/custom-colors";
-
+import {themeBackground} from "../theme/custom-colors";
+import Paper from "@material-ui/core/Paper";
 
 const drawerWidth = 240;
 
@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) =>
             width: "100%"
         },
         drawer: {
-            backgroundColor: themeBackGround,
+            backgroundColor: themeBackground,
             [theme.breakpoints.up('sm')]: {
                 width: drawerWidth,
                 flexShrink: 0,
@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         appBar: {
             marginLeft: drawerWidth,
-            backgroundColor: themeBackGround,
+            backgroundColor: themeBackground,
             zIndex: theme.zIndex.drawer + 1,
         },
         title: {
@@ -60,18 +60,22 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         drawerPaper: {
             width: drawerWidth,
-            backgroundColor: themeBackGround,
+            backgroundColor: themeBackground,
         },
         content: {
             flexGrow: 1,
             height: "100%",
         },
         body: {
-            padding: theme.spacing(3),
+            padding: theme.spacing(2),
+            [theme.breakpoints.only('xs')]: {
+                padding: 0,
+            },
             height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
             [theme.breakpoints.up('sm')]: {
                 height: `calc(100% - 64px)`
             },
+            overflow: 'auto'
         },
         logoHolder: {
             flexGrow: 1,
@@ -89,7 +93,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         menuSelected: {
             color: grey[50]
-        }        ,
+        },
         drawerOpen: {
             width: drawerWidth,
             transition: theme.transitions.create('width', {
@@ -128,19 +132,22 @@ function Navigation(props: any) {
             onClose()
     }
 
+    const pathMatches = (path: string, str: string) => path.indexOf(str) > -1
+
     const getCls = (pathStr: string): string => {
         const {match: {path}} = props
-        return pathStr === path ? classes.menuSelected : classes.menu
+
+        return pathMatches(path, pathStr) ? classes.menuSelected : classes.menu
     }
 
     const isSelected = (pathStr: string): boolean => {
         const {match: {path}} = props
-        return pathStr === path
+        return pathMatches(path, pathStr)
     }
 
 
     const drawer = (
-        <div style={{backgroundColor: themeBackGround, color: 'white'}}>
+        <div style={{backgroundColor: themeBackground, color: 'white'}}>
             <div className={classes.toolbar}/>
             <Divider/>
             <List>
@@ -202,7 +209,7 @@ function Navigation(props: any) {
                         onClick={handleDrawerToggle}
                         className={classes.menuButton}
                     >
-                        <MenuIcon />
+                        <MenuIcon/>
                     </IconButton>
                     <div className={classes.logoHolder}>
                         <img src={logo} alt="logo" className={classes.logo}/>
@@ -242,9 +249,9 @@ function Navigation(props: any) {
             </nav>
             <main className={classes.content}>
                 <div className={classes.toolbar}/>
-                <div className={classes.body}>
+                <Paper className={classes.body} >
                     {props.children}
-                </div>
+                </Paper>
             </main>
         </div>
     );
