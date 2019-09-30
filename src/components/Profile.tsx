@@ -10,19 +10,18 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Dialog from '@material-ui/core/Dialog';
 import PersonIcon from '@material-ui/icons/Person';
 import Avatar from '@material-ui/core/Avatar';
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import {IState} from "../data/types";
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import MailIcon from '@material-ui/icons/Mail';
-import {handleLogout} from "../data/coreActions";
 import HiddenJs from "@material-ui/core/Hidden/HiddenJs";
 import {getInitials} from "../utils/stringHelpers";
+import userManager from "../data/auth/userManager";
 
-
-export const BarView = (props:any) => {
-    const dispatch = useDispatch()
-    const user = useSelector((state: IState) => state.core.user)
+export const BarView = (props: any) => {
+    const userPro = useSelector((state: IState) => state.oidc.user)
+    const {profile = {}} = userPro || {}
     const [dialogOpen, setDialogOpen] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const menuOpen = Boolean(anchorEl);
@@ -32,7 +31,8 @@ export const BarView = (props:any) => {
     }
 
     function doLogout() {
-        dispatch(handleLogout())
+        userManager.removeUser();
+        userManager.signoutPopup();
     }
 
     function closeDialog() {
@@ -58,10 +58,10 @@ export const BarView = (props:any) => {
             <AccountCircle className={props.textClass}/>
             &nbsp;
             <HiddenJs xsDown>
-                <Typography className={props.textClass}>{user.fullName}</Typography>
+                <Typography className={props.textClass}>{profile.name}</Typography>
             </HiddenJs>
             <HiddenJs smUp>
-                <Typography className={props.textClass}>{getInitials(user.fullName)}</Typography>
+                <Typography className={props.textClass}>{getInitials(profile.name)}</Typography>
             </HiddenJs>
 
         </IconButton>
@@ -91,13 +91,13 @@ export const BarView = (props:any) => {
                             <PersonIcon/>
                         </Avatar>
                     </ListItemAvatar>
-                    <ListItemText primary={user.fullName}/>
+                    <ListItemText primary={profile.fullName}/>
                 </ListItem>
                 <ListItem button>
                     <ListItemIcon>
                         <MailIcon/>
                     </ListItemIcon>
-                    <ListItemText primary={user.email}/>
+                    <ListItemText primary={profile.email}/>
                 </ListItem>
             </List>
         </Dialog>

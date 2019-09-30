@@ -9,10 +9,10 @@ interface IProps {
     data: IContact
 }
 
-const IdInfo = ({data}: IProps) => {
+export const idFields = (data: IContact): IRec[] => {
     const {person} = data
     const idData = getNinObj(data)
-    const displayData: IRec[] = [
+    return [
         {
             label: 'Name',
             value: renderName(person)
@@ -50,11 +50,14 @@ const IdInfo = ({data}: IProps) => {
             value: printDate(idData.expiryDate)
         }
     ]
+}
+
+const IdInfo = ({data}: IProps) => {
+    const displayData = idFields(data);
     const title = <div style={{display: 'flex', flexDirection: 'row'}}>
         <PersonIcon fontSize='small'/><span>&nbsp;Identification</span>
     </div>
     return (
-
         <IBox title={title}>
             <DetailView data={displayData}/>
         </IBox>

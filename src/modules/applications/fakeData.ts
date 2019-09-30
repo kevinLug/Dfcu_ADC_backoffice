@@ -58,6 +58,7 @@ export const fakeAction = (): IAction => {
         description: faker.lorem.sentence(),
         createdAt: faker.date.past(),
         isDeleted: false,
+        shouldRender: true,
         runDate: faker.date.past(),
         status: faker.random.arrayElement(enumToArray(ActionStatus)) as ActionStatus,
         statusMessage: faker.lorem.sentence(),

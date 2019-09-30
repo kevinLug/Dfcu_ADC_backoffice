@@ -19,6 +19,8 @@ export const redux = {
 };
 
 export const localRoutes = {
+    callback: '/callback',
+    pending: '/pending',
     applications: '/applications',
     applicationsDetails: '/applications/:caseId',
     dashboard: '/dashboard',
@@ -33,6 +35,7 @@ export const url = debug ? 'http://localhost:6001' :
 
 
 export const remoteRoutes = {
+    authServer: 'https://authservice-test.laboremus.no',
     login: url + '/api/test/login',
     profile: url + '/api/test/profile',
     register: url + '/api/auth/register',

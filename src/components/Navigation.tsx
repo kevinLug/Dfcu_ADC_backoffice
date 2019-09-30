@@ -161,6 +161,17 @@ function Navigation(props: any) {
                         </Typography>
                     }/>
                 </ListItem>
+                <ListItem button onClick={onClick(localRoutes.pending)}
+                          selected={isSelected(localRoutes.pending)}>
+                    <ListItemIcon>
+                        <AssignmentIcon className={getCls(localRoutes.pending)}/>
+                    </ListItemIcon>
+                    <ListItemText primary={
+                        <Typography className={getCls(localRoutes.pending)}>
+                            New Requests
+                        </Typography>
+                    }/>
+                </ListItem>
                 <ListItem button onClick={onClick(localRoutes.applications)}
                           selected={isSelected(localRoutes.applications)}>
                     <ListItemIcon>

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Suspense} from 'react';
 import Typography from "@material-ui/core/Typography";
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -8,6 +8,8 @@ import {IAction} from "../types";
 import Grid from "@material-ui/core/Grid";
 import ActionStatusView from "./ActionStatusView";
 import BaseTemplate from "./templates/base-template";
+import loader from "./templates/loader";
+import Loading from "../../../components/Loading";
 
 interface IProps {
     action: IAction,
@@ -30,10 +32,8 @@ const ActionView = ({action}: IProps) => {
     const classes = useStyles()
     let ViewComponent: any = BaseTemplate
     if (action.template) {
-        const template: string = action.template
-        ViewComponent = React.lazy(() => import(template));
+        ViewComponent = loader[action.template];
     }
-
     return (
         <Card className={classes.root}>
             <CardHeader
@@ -55,7 +55,9 @@ const ActionView = ({action}: IProps) => {
             />
             <Divider/>
             <CardContent>
-                <ViewComponent action={action}/>
+                <Suspense fallback={<Loading/>}>
+                    <ViewComponent action={action}/>
+                </Suspense>
             </CardContent>
         </Card>
     );

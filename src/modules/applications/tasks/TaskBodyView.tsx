@@ -21,10 +21,11 @@ interface IProps {
 
 const TaskBodyView = (props: IProps) => {
     const {task: {actions}} = props
+    const fineActions = actions.filter(it => it.shouldRender)
     const classes = useStyles();
     return <Grid container className={classes.root} spacing={0}>
         {
-            actions.map(it => {
+            fineActions.map(it => {
                 return <Grid key={it.id} item xs={12} className={classes.actionGrid}>
                     <ActionView
                         action={it}

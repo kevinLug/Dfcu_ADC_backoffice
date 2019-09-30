@@ -8,14 +8,13 @@ export const fakeOnBoardRequest = (): any => {
     const withMn = faker.random.number(20) % 2 === 0
     return {
         "type": "emata-on-boarding",
-        "referenceNumber": uuid(),
-        "externalReference": "4505945",
+        "referenceNumber": "4505945",
+        "externalReference": uuid(),
         "applicationDate": faker.date.past(),
         "caseData": {
             "person": {
                 "memberId": uuid(),
                 "phone": faker.phone.phoneNumber('+25677#######'),
-
                 "firstName": faker.name.firstName(),
                 "lastName": faker.name.lastName(),
                 "middleName": withMn ? faker.name.lastName() : "",
@@ -51,8 +50,8 @@ export const fakeOnBoardRequest = (): any => {
                 "imsi": ""
             },
             "user": {
-                "id": uuid(),
-                "name": "Timothy Kasasa"
+                "id": '1f824a84-46b6-4e7f-b601-5d041118439d',
+                "name": "Timothy Emmanuel Kasasa"
             }
         }
     }

@@ -1,12 +1,35 @@
 import {BaseModel} from "../../data/types";
 
+export interface IWorkflowInclude {
+    caseData?: boolean
+    tasks?: boolean
+    documents?: boolean
+}
+
+export interface IWorkflowFilter {
+    id?: string
+    referenceNumber?: string
+    externalReference?: string
+    userId?: boolean
+    applicant?: boolean
+    assignee?: boolean
+    showNew?: boolean
+    showAssigned?: boolean
+    statuses?: string[]
+    from?: Date
+    to?: Date
+    subStatuses?: string[]
+    workflowTypes?: string[]
+    include?: IWorkflowInclude
+}
+
 export interface IAction extends BaseModel {
     name: string,
     template?: string,
     title: string
     description: string
     roles: string[]
-
+    shouldRender:boolean,
     nextStatusError: string
     nextStatusSuccess: string
 

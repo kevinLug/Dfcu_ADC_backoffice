@@ -6,21 +6,27 @@ import {Form, Formik, FormikActions} from 'formik';
 import XSelectInput from "../../components/inputs/XSelectInput";
 import {toOptions} from "../../components/inputs/inputHelpers";
 import {enumToArray} from "../../utils/stringHelpers";
-import {WorkflowStatus, WorkflowSubStatus} from "./types";
+import {IWorkflowFilter, WorkflowStatus, WorkflowSubStatus} from "./types";
 import XDateInput from "../../components/inputs/XTimeInput";
 
-const Filter = () => {
+
+interface IProps {
+    onFilter: (data: IWorkflowFilter, callBack: () => any) => any
+}
+
+const Filter = (props: IProps) => {
     function handleSubmission(values: any, actions: FormikActions<any>) {
-        setTimeout(() => {
-            alert(JSON.stringify(values, null, 2));
-            actions.setSubmitting(false);
-        }, 1000);
+        props.onFilter(
+            values,
+            () => {
+                actions.setSubmitting(false);
+            }
+        );
     }
 
     return <Formik
         initialValues={{name: '', contactType: '', email: '', phone: '', nin: ''}}
         onSubmit={handleSubmission}
-        validateOnBlur
         render={({submitForm, isSubmitting}) => (
             <Form>
                 <Grid spacing={2} container>

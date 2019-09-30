@@ -228,6 +228,11 @@ export const renderName = (person: IPerson, salutation?: boolean): string => {
     return name.trim().replace(/\s+/g, ' ');
 };
 
+export const renderName1 = (person: IPerson): string => {
+    const name= `${person.firstName || ''} ${person.middleName || ''} ${person.lastName || ''}`;
+    return name.trim().replace(/\s+/g, ' ');
+};
+
 export const printAddress = (data: IAddress): string => {
     const address: string =
         `${data.street || ''} ${data.parish || ''} ${data.district || ''} ${data.country || ''}`

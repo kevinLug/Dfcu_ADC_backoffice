@@ -1,6 +1,7 @@
 import React from 'react';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import {Typography} from "@material-ui/core";
+import {chunkArray} from "../utils/arrayHelpers";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -22,9 +23,10 @@ export interface IRec {
 
 interface IProps {
     data: IRec[]
+    columns?: number
 }
 
-const DetailView = ({data}: IProps) => {
+const TableView = ({data}: IProps) => {
     const classes = useStyles();
     return (
         <table className={classes.root}>
@@ -46,6 +48,30 @@ const DetailView = ({data}: IProps) => {
             </tbody>
         </table>
     );
+}
+
+const DetailView = ({data, columns}: IProps) => {
+    const classes = useStyles();
+    if (columns) {
+        const parts = chunkArray(data, columns)
+        return (
+            <table className={classes.root}>
+                <tbody>
+                <tr>
+                    {
+                        parts.map((part, index) => (
+                            <td key={index}>
+                                <TableView data={part}/>
+                            </td>
+                        ))
+                    }
+                </tr>
+                </tbody>
+            </table>
+        );
+    } else {
+        return <TableView data={data}/>
+    }
 }
 
 

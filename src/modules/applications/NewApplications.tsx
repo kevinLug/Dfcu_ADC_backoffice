@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import Navigation from "../../components/Navigation";
 import Paper from '@material-ui/core/Paper';
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
@@ -16,7 +16,7 @@ import {printWorkflowStatus, printWorkflowSubStatus} from "./widgets";
 import IBox from "../../components/ibox/IBox";
 import Filter from "./Filter";
 import Typography from "@material-ui/core/Typography";
-import {get, search} from "../../utils/ajax";
+import {search} from "../../utils/ajax";
 import {remoteRoutes} from "../../data/constants";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -65,15 +65,21 @@ const headCells: XHeadCell[] = [
     },
 ];
 
+const newHeadCells = headCells.filter(it => it.name !== 'assigneeId')
 
-const Applications = () => {
+const fakeData: IWorkflow[] = [];
+for (let i = 0; i < 20; i++) {
+    fakeData.push(fakeCase())
+}
+const NewApplications = () => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
     const [data, setData] = useState([]);
     const [filter, setFilter] = useState<IWorkflowFilter>({
-        showNew: false,
-        showAssigned: true
+        showNew: true,
+        showAssigned: false
     });
+
     useEffect(() => {
         search(remoteRoutes.workflows, filter, resp => {
             setData(resp)
@@ -99,7 +105,7 @@ const Applications = () => {
                         <Grid item xs={open ? 9 : 12} className={clsx(classes.content, {[classes.contentShift]: open})}>
                             <XTable
                                 title="All Applications"
-                                headCells={headCells}
+                                headCells={newHeadCells}
                                 data={data}
                                 onFilterToggle={handleFilterToggle}
                             />
@@ -119,4 +125,4 @@ const Applications = () => {
     );
 }
 
-export default Applications
+export default NewApplications

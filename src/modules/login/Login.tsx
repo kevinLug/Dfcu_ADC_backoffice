@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, makeStyles, Theme} from "@material-ui/core";
+import {Button} from "@material-ui/core";
 import Avatar from '@material-ui/core/Avatar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import LockIcon from '@material-ui/icons/LockOutlined';
@@ -10,48 +10,15 @@ import {useDispatch} from 'react-redux'
 import {handleLogin} from "../../data/coreActions";
 
 import * as yup from "yup";
-import createStyles from "@material-ui/core/styles/createStyles";
 import {post} from "../../utils/ajax";
 import {remoteRoutes} from "../../data/constants";
 import Toast from "../../utils/Toast";
 import XTextInput from "../../components/inputs/XTextInput";
+import {useLoginStyles} from "./loginStyles";
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        main: {
-            width: 'auto',
-            display: 'block', // Fix IE 11 issue.
-            marginLeft: theme.spacing(3),
-            marginRight: theme.spacing(3),
-            [theme.breakpoints.up(400 + theme.spacing(3 * 2),)]: {
-                width: 400,
-                marginLeft: 'auto',
-                marginRight: 'auto',
-            },
-        },
-        paper: {
-            marginTop: theme.spacing(8),
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            padding: `${theme.spacing(2)}px ${theme.spacing(3)}px ${theme.spacing(3)}px`,
-        },
-        avatar: {
-            margin: theme.spacing(1),
-            backgroundColor: theme.palette.secondary.main,
-        },
-        form: {
-            width: '100%', // Fix IE 11 issue.
-            marginTop: theme.spacing(1),
-        },
-        submit: {
-            marginTop: theme.spacing(3),
-        },
-    }),
-);
 
 function Login() {
-    const classes = useStyles();
+    const classes = useLoginStyles();
     const dispatch = useDispatch();
     const onSubmit = (data: any, actions: FormikActions<any>) => {
         post(remoteRoutes.login, data, resp => {

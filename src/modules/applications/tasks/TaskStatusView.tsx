@@ -7,8 +7,11 @@ import {ErrorIcon, SuccessIcon, WarningIcon} from "../../../components/xicons";
 interface IProps {
     data: ITask
 }
+
 export default function TaskStatusView({data}: IProps) {
-    const {status} = data
+    const {status, actions} = data
+    let actionNames = actions.map(it => it.name).join("\n")
+
     if (status === TaskStatus.Done) {
         return <Fragment>
             <Typography
@@ -19,11 +22,8 @@ export default function TaskStatusView({data}: IProps) {
                     fontSize='inherit'
                 />
             </Typography>
-            <Typography variant='body1'>
-                &nbsp;Completed on&nbsp;
-            </Typography>
-            <Typography variant='body1'>
-                {printDateTime(data.runDate)}
+            <Typography variant='body1' title={actionNames}>
+                &nbsp;Completed Task
             </Typography>
         </Fragment>
     } else if (status === TaskStatus.Error) {

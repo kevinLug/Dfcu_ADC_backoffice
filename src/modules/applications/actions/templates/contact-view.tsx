@@ -1,11 +1,13 @@
 import React from 'react';
 import {Grid} from "@material-ui/core";
-import IdInfo from "../../../contacts/details/IdInfo";
+import {idFields} from "../../../contacts/details/IdInfo";
 import {ActionStatus, IAction} from "../../types";
-import Phones from "../../../contacts/details/Phones";
 import Error from "./error";
 import Pending from "./pending";
 import {IContact} from "../../../contacts/types";
+import Typography from "@material-ui/core/Typography";
+import Divider from "@material-ui/core/Divider";
+import DetailView from "../../../../components/DetailView";
 
 interface IProps {
     action: IAction
@@ -22,11 +24,12 @@ const ContactView = ({action}: IProps) => {
     const data: IContact = JSON.parse(dataString);
     return (
         <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-                <IdInfo data={data}/>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-                <Phones data={data}/>
+            <Grid item xs={12} >
+                <Grid item xs={12}>
+                    <Typography>Identification</Typography>
+                    <Divider/>
+                    <DetailView data={idFields(data)} columns={2}/>
+                </Grid>
             </Grid>
         </Grid>
     );

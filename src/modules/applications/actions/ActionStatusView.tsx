@@ -20,7 +20,7 @@ export default function ActionStatusView({data}: IProps) {
                 />
             </Typography>
             <Typography variant='body2'>
-                &nbsp;Completed on&nbsp;
+                &nbsp;Last ran on&nbsp;
             </Typography>
             <Typography variant='body2'>
                 {printDateTime(data.runDate)}

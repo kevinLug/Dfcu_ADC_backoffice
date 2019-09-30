@@ -4,14 +4,12 @@ import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import StepContent from '@material-ui/core/StepContent';
-import {ITask, IWorkflow} from "../types";
-import TaskBodyView from "../widgets/TaskBodyView";
-import {fakeTask} from "../fakeData";
-import {createArray} from "../../../utils/arrayHelpers";
+import {IWorkflow} from "../types";
+import TaskBodyView from "../tasks/TaskBodyView";
 import {backgroundGrey, successColor} from "../../../theme/custom-colors";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
-import TaskStatusView from "../widgets/TaskStatusView";
+import TaskStatusView from "../tasks/TaskStatusView";
 import {Paper} from "@material-ui/core";
 import {printTaskIcon} from "../widgets";
 import {Flex} from "../../../components/widgets";
@@ -49,7 +47,7 @@ const WorkflowView = (props: IProps) => {
     const classes = useStyles();
     const [activeStep, setActiveStep] = useState(0);
 
-    const tasks = createArray<ITask>(6, fakeTask)
+    const tasks = props.data.tasks
 
 
     return (
