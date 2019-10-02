@@ -13,8 +13,10 @@ import {Flex} from "../../../components/widgets";
 import {printWorkflowStatus, printWorkflowSubStatus} from "../widgets";
 import Summary from "./Summary";
 import WorkflowView from "./WorkflowView";
-import {get} from "../../../utils/ajax";
+import {get, put} from "../../../utils/ajax";
 import {remoteRoutes} from "../../../data/constants";
+import Button from "@material-ui/core/Button";
+import LoaderDialog from "../../../components/LoaderDialog";
 
 
 interface IProps extends RouteComponentProps {
@@ -42,55 +44,85 @@ const Details = (props: IProps) => {
     const classes = useStyles()
     const [data, setData] = useState<IWorkflow | null>(null)
     const [loading, setLoading] = useState<boolean>(true)
+    const [blocker, setBlocker] = useState<boolean>(false)
     const url = `${remoteRoutes.workflows}/${caseId}`
+
     useEffect(() => {
+        get(
+            url,
+            resp => setData(resp),
+            undefined,
+            () => setLoading(false)
+        )
+    }, [caseId, url])
+
+    function loadData() {
         setLoading(true)
-        get(url,
-            resp => {
-                console.log("Data", resp)
-                setData(resp)
+        get(
+            url,
+            resp => setData(resp),
+            undefined,
+            () => setLoading(false)
+        )
+    }
+
+    function onResume() {
+        setBlocker(true)
+        put(url, {}, resp => {
+                console.log("Response", resp)
+                loadData()
             },
             undefined,
             () => {
-                setLoading(false)
+                setBlocker(false)
             })
-    }, [caseId])
+    }
+
+    if (loading)
+        return <Navigation>
+            <Loading/>
+        </Navigation>
+
     const hasError = !loading && !data
+    if (hasError)
+        return <Navigation>
+            <Error text='Failed load case data'/>
+        </Navigation>
+
+    const caseData = data as IWorkflow
     return (
         <Navigation>
-            {loading && <Loading/>}
-            {hasError && <Error text='Failed load case data'/>}
-            {
-                data &&
-                <div className={classes.root}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <Flex>
-                                <Typography variant='h3'>
-                                    Case #{trimCaseId(data.id)}
-                                </Typography>
-                                <div style={{marginTop: 4}}>&nbsp;&nbsp;{printWorkflowStatus(data.status)}</div>
-                                <div style={{marginTop: 4}}>&nbsp;&nbsp;{printWorkflowSubStatus(data.subStatus)}</div>
-                            </Flex>
+            <div className={classes.root}>
+                <LoaderDialog open={blocker} onClose={() => setBlocker(false)}/>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <Flex>
+                            <Typography variant='h3'>
+                                Case #{trimCaseId(caseData.id)}
+                            </Typography>
+                            <div style={{marginTop: 4}}>&nbsp;&nbsp;{printWorkflowStatus(caseData.status)}</div>
+                            <div style={{marginTop: 4}}>&nbsp;&nbsp;{printWorkflowSubStatus(caseData.subStatus)}</div>
+                        </Flex>
 
-                        </Grid>
-                        <Grid item xs={12} sm={9}>
-                            <IBox
-                                title='Details'
-                            >
-                                <WorkflowView data={data}/>
-                            </IBox>
-                        </Grid>
-                        <Grid item xs={12} sm={3}>
-                            <IBox
-                                title='Case Summary'
-                            >
-                                <Summary data={data}/>
-                            </IBox>
-                        </Grid>
                     </Grid>
-                </div>
-            }
+                    <Grid item xs={12} sm={9}>
+                        <IBox
+                            title='Details'
+                            action={<Button size='small' variant="contained" color='primary' onClick={onResume}>Resume
+                                Case</Button>}
+                        >
+                            <WorkflowView data={caseData}/>
+                        </IBox>
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
+                        <IBox
+                            title='Case Summary'
+                        >
+                            <Summary data={caseData}/>
+                        </IBox>
+                    </Grid>
+                </Grid>
+            </div>
         </Navigation>
     );
 }

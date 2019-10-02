@@ -3,9 +3,7 @@ import {Grid} from "@material-ui/core";
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
-import {ActionStatus, IAction} from "../../types";
-import Error from "./error";
-import Pending from "./pending";
+import {IAction} from "../../types";
 import {prettyJson} from "../../../../utils/jsonHelpers";
 import {grey} from "@material-ui/core/colors";
 
@@ -59,19 +57,13 @@ const RawData = ({action}: IProps) => {
         setOpen(!open)
     }
 
-    if (action.status === ActionStatus.Error) {
-        return <Error text={action.statusMessage}/>
-    }
-    if (action.status === ActionStatus.Pending) {
-        return <Pending text="Pending Execution"/>
-    }
     const noPadding = {
         padding: 0
     }
     return (
         <Grid container spacing={0}>
             <Grid item xs={12} className={classes.heading} style={noPadding}>
-                <a href='' className={classes.link} onClick={toggleIo}>{open ? '- Hide I/O' : '+ Show I/O'}</a>
+                <a href='/' className={classes.link} onClick={toggleIo}>{open ? '- Hide I/O' : '+ Show I/O'}</a>
             </Grid>
             <Grid item xs={12} style={noPadding} className={open ? classes.showIo : classes.hideIo}>
                 <Divider/>

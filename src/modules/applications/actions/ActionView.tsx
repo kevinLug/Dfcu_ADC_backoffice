@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const ActionView = ({action}: IProps) => {
     const classes = useStyles()
     let ViewComponent: any = BaseTemplate
-    if (action.template) {
+    if (action.template && loader.hasOwnProperty(action.template)) {
         ViewComponent = loader[action.template];
     }
     return (

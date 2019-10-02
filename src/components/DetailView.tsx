@@ -2,6 +2,8 @@ import React from 'react';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import {Typography} from "@material-ui/core";
 import {chunkArray} from "../utils/arrayHelpers";
+import DataLabel from "./DataLabel";
+import DataValue from "./DataValue";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -10,7 +12,6 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         row: {},
         col: {
-            paddingTop: theme.spacing(1),
             paddingBottom: theme.spacing(1),
         }
     }),
@@ -34,14 +35,14 @@ const TableView = ({data}: IProps) => {
             {data.map(row => (
                 <tr key={row.label}>
                     <td className={classes.col}>
-                        <Typography variant='caption'>
-                            <b>{row.label}</b>
-                        </Typography>
+                        <DataLabel>
+                            {row.label}
+                        </DataLabel>
                     </td>
                     <td className={classes.col}>
-                        <Typography>
+                        <DataValue>
                             {row.value}
-                        </Typography>
+                        </DataValue>
                     </td>
                 </tr>
             ))}
@@ -60,7 +61,7 @@ const DetailView = ({data, columns}: IProps) => {
                 <tr>
                     {
                         parts.map((part, index) => (
-                            <td key={index}>
+                            <td key={index} style={{verticalAlign:'top'}}>
                                 <TableView data={part}/>
                             </td>
                         ))

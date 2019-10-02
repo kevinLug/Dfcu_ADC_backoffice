@@ -1,5 +1,5 @@
 import React from 'react';
-import {Grid} from "@material-ui/core";
+import Grid from "@material-ui/core/Grid";
 import {idFields} from "../../../contacts/details/IdInfo";
 import {ActionStatus, IAction} from "../../types";
 import Error from "./error";
@@ -15,7 +15,7 @@ interface IProps {
 
 const ContactView = ({action}: IProps) => {
     if (action.status === ActionStatus.Error) {
-        return <Error text={action.statusMessage}/>
+        return <Error action={action}/>
     }
     if (action.status === ActionStatus.Pending) {
         return <Pending text="Pending Execution"/>

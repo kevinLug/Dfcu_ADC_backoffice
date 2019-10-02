@@ -1,11 +1,12 @@
 import React from 'react';
-import {Typography} from "@material-ui/core";
 import {ActionStatus, IAction} from "../../types";
 import RawData from "./RawData";
 import Error from "./error";
 import Pending from "./pending";
 import Grid from "@material-ui/core/Grid";
 import {printDateTime} from "../../../../utils/dateHelpers";
+import DataLabel from "../../../../components/DataLabel";
+import DataValue from "../../../../components/DataValue";
 
 interface IProps {
     action: IAction
@@ -22,14 +23,24 @@ interface IKycResponse {
     runDate?: string
 }
 
-const KycCheck = ({action}: IProps) => {
-    if (action.status === ActionStatus.Error) {
-        return <Error text={action.statusMessage}/>
+
+const hasError = (outData: string): boolean => {
+    try {
+        const data: IKycResponse = JSON.parse(outData);
+        return !data.checkStatus
+    } catch (e) {
+        return true
     }
+}
+
+const KycCheck = ({action}: IProps) => {
     if (action.status === ActionStatus.Pending) {
         return <Pending text="Pending Execution"/>
     }
     const dataString = action.outputData
+    if (action.status === ActionStatus.Error && hasError(dataString)) {
+        return <Error action={action}/>
+    }
     const data: IKycResponse = JSON.parse(dataString);
     const fields = [
         {
@@ -54,10 +65,10 @@ const KycCheck = ({action}: IProps) => {
             {
                 fields.map(it => (
                     <Grid item xs={12} sm={6} md={3} key={it.label}>
-                        <Typography variant='caption'>
-                            <b>{it.label}</b>
-                        </Typography>
-                        <Typography>{it.value}</Typography>
+                        <DataLabel>
+                            {it.label}
+                        </DataLabel>
+                        <DataValue>{it.value}</DataValue>
                     </Grid>
                 ))
             }

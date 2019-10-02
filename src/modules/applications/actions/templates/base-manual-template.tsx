@@ -13,7 +13,7 @@ interface IProps {
     action: IAction
 }
 
-const BaseTemplate = ({action}: IProps) => {
+const BaseManualTemplate = ({action}: IProps) => {
     if (action.status === ActionStatus.Error) {
         return <Error action={action}/>
     }
@@ -52,4 +52,4 @@ const BaseTemplate = ({action}: IProps) => {
         </Grid>
     );
 }
-export default BaseTemplate;
+export default BaseManualTemplate;

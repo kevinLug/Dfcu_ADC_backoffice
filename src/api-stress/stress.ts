@@ -1,14 +1,14 @@
 import {remoteRoutes} from "../data/constants";
-import {fakeOnBoardRequest} from "./fakeCase";
+import {fakeDembeRequest, fakeLoanRequest, fakeOnBoardRequest} from "./fakeCase";
 import {testLogin} from "./login";
 import * as superagent from "superagent";
 
 
-const postData = (token: string, callBack: (data: any) => any) => {
-    const onBoardCase = fakeOnBoardRequest();
+const postData = (token: string, requestData: any, callBack: (data: any) => any) => {
+
     superagent.post(remoteRoutes.workflows)
         .set('Authorization', `Bearer ${token}`)
-        .send(onBoardCase)
+        .send(requestData)
         .end(((err: any, res: any) => {
             if (err) {
                 console.error("Error", err)
@@ -18,18 +18,24 @@ const postData = (token: string, callBack: (data: any) => any) => {
         }))
 }
 
+// testLogin(({access_token}: any) => {
+//     const onBoardCase = fakeOnBoardRequest();
+//     postData(access_token, onBoardCase, (resp: any) => {
+//         console.log("Submitted data", resp)
+//     })
+// })
+
 testLogin(({access_token}: any) => {
-    console.log(access_token)
-    postData(access_token, (resp: any) => {
+    const loanReq = fakeLoanRequest()
+    postData(access_token, loanReq, (resp: any) => {
         console.log("Submitted data", resp)
     })
 })
 
-const fun2 = (data: any) => {
-    return data.a + data.b;
-}
+// testLogin(({access_token}: any) => {
+//     const loanReq = fakeDembeRequest()
+//     postData(access_token, loanReq, (resp: any) => {
+//         console.log("Submitted data", resp)
+//     })
+// })
 
-const fn = (callback: any, data: any) => {
-    const result = fun2(data);
-    callback(null, result);
-}

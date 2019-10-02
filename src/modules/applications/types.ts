@@ -117,3 +117,6 @@ export const printTaskStatus = (status: WorkflowStatus) => {
 export const trimCaseId = (data: string) => {
     return data.substr(0, 8)
 }
+
+
+

@@ -45,11 +45,7 @@ interface IProps {
 
 const WorkflowView = (props: IProps) => {
     const classes = useStyles();
-    const [activeStep, setActiveStep] = useState(0);
-
     const tasks = props.data.tasks
-
-
     return (
         <Stepper orientation="vertical" nonLinear={true} className={classes.root}>
             {tasks.map((task) => (

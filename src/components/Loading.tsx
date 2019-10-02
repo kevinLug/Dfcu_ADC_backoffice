@@ -6,7 +6,7 @@ import GridWrapper from "./GridWrapper";
 const Loading = () => {
     return (
         <GridWrapper>
-            <Grid container spacing={10} justify='center' alignItems="center">
+            <Grid container spacing={0} justify='center' alignItems="center">
                 <Grid item>
                     <CircularProgress/>
                 </Grid>
