@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from "react";
-import Navigation from "../../components/Navigation";
+import React, {useEffect, useState} from "react";
+import Navigation from "../../components/Layout";
 import Paper from '@material-ui/core/Paper';
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import clsx from 'clsx';
@@ -8,15 +8,14 @@ import {XHeadCell} from "../../components/table/XTableHead";
 import Grid from '@material-ui/core/Grid';
 import ContactLink from "../../components/ContactLink";
 import ApplicationLink from "../../components/ApplicationLink";
-import {IWorkflow, IWorkflowFilter, trimCaseId} from "./types";
+import {IWorkflowFilter, trimCaseId} from "./types";
 import {printDate} from "../../utils/dateHelpers";
-import {fakeCase} from "./fakeData";
 import {getInitials} from "../../utils/stringHelpers";
 import {printWorkflowStatus, printWorkflowSubStatus} from "./widgets";
 import IBox from "../../components/ibox/IBox";
 import Filter from "./Filter";
 import Typography from "@material-ui/core/Typography";
-import {get, search} from "../../utils/ajax";
+import {search} from "../../utils/ajax";
 import {remoteRoutes} from "../../data/constants";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -44,10 +43,9 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const headCells: XHeadCell[] = [
     {name: 'id', label: 'ID', render: (value, rec) => <ApplicationLink id={value} name={trimCaseId(value)}/>},
+    {name: 'applicationDate', label: 'Application Date', render: printDate},
     {name: 'status', label: 'Status', render: (data) => printWorkflowStatus(data)},
     {name: 'subStatus', label: 'SubStatus', render: printWorkflowSubStatus},
-    {name: 'type', label: 'Case Type', render: (data: string) => data.toLocaleUpperCase()},
-    {name: 'applicationDate', label: 'Application Date', render: printDate},
     {
         name: 'metaData',
         label: 'Applicant',
@@ -71,8 +69,7 @@ const Applications = () => {
     const [open, setOpen] = useState(true);
     const [data, setData] = useState([]);
     const [filter, setFilter] = useState<IWorkflowFilter>({
-        showNew: false,
-        showAssigned: true
+        workflowTypes:['ussd-loan']
     });
     useEffect(() => {
         search(remoteRoutes.workflows, filter, resp => {
@@ -92,7 +89,7 @@ const Applications = () => {
         <Navigation>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <Typography variant='h3'>Applications</Typography>
+                    <Typography variant='h3'>Loan Applications</Typography>
                 </Grid>
                 <Grid item xs={12}>
                     <Grid container spacing={2}>

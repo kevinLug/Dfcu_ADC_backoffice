@@ -7,7 +7,7 @@ import ContactDetails from "./contacts/details/Details";
 import ApplicationDetails from "./applications/details/Details";
 import Settings from "./settings/Settings";
 import Applications from "./applications/Applications";
-import NewApplications from "./applications/NewApplications";
+import OnBoarding from "./applications/OnBoarding";
 
 
 const ContentSwitch = () => {
@@ -19,7 +19,7 @@ const ContentSwitch = () => {
         <Route path={localRoutes.contacts} component={Contacts}/>
         <Route path={localRoutes.applicationsDetails} component={ApplicationDetails}/>
         <Route path={localRoutes.applications} component={Applications}/>
-        <Route path={localRoutes.pending} component={NewApplications}/>
+        <Route path={localRoutes.pending} component={OnBoarding}/>
         <Route path={localRoutes.settings} component={Settings}/>
         <Route component={NoMatch}/>
     </Switch>

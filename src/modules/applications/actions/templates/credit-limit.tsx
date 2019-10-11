@@ -17,7 +17,7 @@ interface IProps {
     action: IAction
 }
 
-interface ILoanInformation {
+interface ICreditInformation {
     creditLimit: number
     minimumAmount: number
     grade: string
@@ -32,7 +32,7 @@ interface IRepaymentPlan {
 }
 
 interface ICreditLimit {
-    loanInformation: ILoanInformation
+    creditInformation: ICreditInformation
     repaymentPlans: IRepaymentPlan[]
 }
 
@@ -62,19 +62,19 @@ const CreditLimit = ({action}: IProps) => {
     const fields: IRec[] = [
         {
             label: "Credit Limit",
-            value: printMoney(data.loanInformation.creditLimit)
+            value: printMoney(data.creditInformation.creditLimit)
         },
         {
             label: "Minimum",
-            value: printMoney(data.loanInformation.minimumAmount)
+            value: printMoney(data.creditInformation.minimumAmount)
         },
         {
             label: "Grade",
-            value: data.loanInformation.grade
+            value: data.creditInformation.grade
         },
         {
             label: "Remarks",
-            value: <DataValue ><i>"{data.loanInformation.remarks}"</i></DataValue>
+            value: <DataValue ><i>"{data.creditInformation.remarks}"</i></DataValue>
         }
     ]
 

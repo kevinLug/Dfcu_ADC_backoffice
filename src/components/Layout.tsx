@@ -10,6 +10,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import AssignmentIcon from '@material-ui/icons/Assignment';
+import InviteIcon from '@material-ui/icons/InsertInvitation';
 import AppsIcon from '@material-ui/icons/Apps';
 import PeopleIcon from '@material-ui/icons/People';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -20,7 +21,7 @@ import {withRouter} from 'react-router'
 import {localRoutes} from "../data/constants";
 import grey from '@material-ui/core/colors/grey';
 import {BarView} from "./Profile";
-import logo from "../assets/download.png";
+import logo from "../assets/logo.png";
 import {Typography} from "@material-ui/core";
 import {themeBackground} from "../theme/custom-colors";
 import Paper from "@material-ui/core/Paper";
@@ -82,11 +83,11 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         logo: {
             [theme.breakpoints.only('xs')]: {
-                height: 50 * 0.5,
-                width: 311 * 0.5,
+                height: 50 ,
+                width: 'auto',
             },
-            height: 50 * 0.7,
-            width: 311 * 0.7,
+            height: 58,
+            width: 'auto',
         },
         menu: {
             color: grey[500]
@@ -115,7 +116,7 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-function Navigation(props: any) {
+function Layout(props: any) {
     const classes = useStyles();
     const theme = useTheme();
 
@@ -148,7 +149,11 @@ function Navigation(props: any) {
 
     const drawer = (
         <div style={{backgroundColor: themeBackground, color: 'white'}}>
-            <div className={classes.toolbar}/>
+            <div className={classes.toolbar}>
+                <div className={classes.logoHolder}>
+                    <img src={logo} alt="logo" className={classes.logo}/>
+                </div>
+            </div>
             <Divider/>
             <List>
                 <ListItem button onClick={onClick(localRoutes.dashboard)} selected={isSelected(localRoutes.dashboard)}>
@@ -164,11 +169,11 @@ function Navigation(props: any) {
                 <ListItem button onClick={onClick(localRoutes.pending)}
                           selected={isSelected(localRoutes.pending)}>
                     <ListItemIcon>
-                        <AssignmentIcon className={getCls(localRoutes.pending)}/>
+                        <InviteIcon className={getCls(localRoutes.pending)}/>
                     </ListItemIcon>
                     <ListItemText primary={
                         <Typography className={getCls(localRoutes.pending)}>
-                            New Requests
+                            Onboarding
                         </Typography>
                     }/>
                 </ListItem>
@@ -179,7 +184,7 @@ function Navigation(props: any) {
                     </ListItemIcon>
                     <ListItemText primary={
                         <Typography className={getCls(localRoutes.applications)}>
-                            Applications
+                           Loan Applications
                         </Typography>
                     }/>
                 </ListItem>
@@ -268,4 +273,4 @@ function Navigation(props: any) {
     );
 }
 
-export default withRouter(Navigation)
+export default withRouter(Layout)

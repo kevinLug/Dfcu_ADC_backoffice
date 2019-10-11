@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {RouteComponentProps, withRouter} from "react-router";
-import Navigation from "../../../components/Navigation";
+import Navigation from "../../../components/Layout";
 import {getRouteParam} from "../../../utils/routHelpers";
 import Loading from "../../../components/Loading";
 import Error from "../../../components/Error";

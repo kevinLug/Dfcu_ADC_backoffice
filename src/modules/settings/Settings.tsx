@@ -1,5 +1,5 @@
 import * as React from "react";
-import Navigation from "../../components/Navigation";
+import Navigation from "../../components/Layout";
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import XTextInput from "../../components/inputs/XTextInput";

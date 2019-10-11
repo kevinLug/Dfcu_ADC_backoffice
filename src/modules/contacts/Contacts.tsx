@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import Navigation from "../../components/Navigation";
+import Navigation from "../../components/Layout";
 import Paper from '@material-ui/core/Paper';
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import clsx from 'clsx';

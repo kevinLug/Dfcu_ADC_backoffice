@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import Navigation from "../../components/Navigation";
+import Navigation from "../../components/Layout";
 import Paper from '@material-ui/core/Paper';
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import clsx from 'clsx';
@@ -44,10 +44,9 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const headCells: XHeadCell[] = [
     {name: 'id', label: 'ID', render: (value, rec) => <ApplicationLink id={value} name={trimCaseId(value)}/>},
+    {name: 'applicationDate', label: 'Application Date', render: printDate},
     {name: 'status', label: 'Status', render: (data) => printWorkflowStatus(data)},
     {name: 'subStatus', label: 'SubStatus', render: printWorkflowSubStatus},
-    {name: 'type', label: 'Case Type', render: (data: string) => data.toLocaleUpperCase()},
-    {name: 'applicationDate', label: 'Application Date', render: printDate},
     {
         name: 'metaData',
         label: 'Applicant',
@@ -71,13 +70,12 @@ const fakeData: IWorkflow[] = [];
 for (let i = 0; i < 20; i++) {
     fakeData.push(fakeCase())
 }
-const NewApplications = () => {
+const OnBoarding = () => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
     const [data, setData] = useState([]);
     const [filter, setFilter] = useState<IWorkflowFilter>({
-        showNew: true,
-        showAssigned: false
+        workflowTypes:['emata-on-boarding',"DEMBE-ACCOUNT"]
     });
 
     useEffect(() => {
@@ -98,7 +96,7 @@ const NewApplications = () => {
         <Navigation>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <Typography variant='h3'>Applications</Typography>
+                    <Typography variant='h3'>Customer On-boarding</Typography>
                 </Grid>
                 <Grid item xs={12}>
                     <Grid container spacing={2}>
@@ -125,4 +123,4 @@ const NewApplications = () => {
     );
 }
 
-export default NewApplications
+export default OnBoarding
