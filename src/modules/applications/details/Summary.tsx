@@ -17,23 +17,19 @@ const Summary = ({data}: IProps) => {
             value: printDateTime(data.applicationDate)
         },
         {
+            label: 'Type',
+            value: data.type
+        },
+        {
             label: 'Id',
             value: data.id
-        },
-        {
-            label: 'Title',
-            value: data.title
-        },
-        {
-            label: 'External Ref',
-            value: data.externalReference
         },
         {
             label: 'Ref Number',
             value: data.referenceNumber
         },
         {
-            label: 'User',
+            label: 'Agent',
             value: data.metaData.userName
         },
         {
@@ -67,10 +63,14 @@ const Summary = ({data}: IProps) => {
     ]
     return (
         <Grid container spacing={3}>
-            <Grid item xs={12} style={{minWidth: 300, overflow: 'auto'}}>
-                <div style={{minWidth: 300, overflow: 'auto'}}>
+            <Grid item xs={12}>
+                <div style={{minWidth: '100%', overflow: 'auto'}}>
                     <DetailView data={fields}/>
                 </div>
+            </Grid>
+            <Grid item xs={12}>
+                <Typography>Request Status</Typography>
+                {/*    TODO Add list of statuses*/}
             </Grid>
         </Grid>
     );

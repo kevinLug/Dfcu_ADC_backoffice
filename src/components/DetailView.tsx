@@ -32,7 +32,7 @@ const TableView = ({data}: IProps) => {
     return (
         <table className={classes.root}>
             <tbody>
-            {data.map(row => (
+            {data.map(row => row.label!==''?(
                 <tr key={row.label}>
                     <td className={classes.col}>
                         <DataLabel>
@@ -45,7 +45,7 @@ const TableView = ({data}: IProps) => {
                         </DataValue>
                     </td>
                 </tr>
-            ))}
+            ):<tr><td colSpan={2}/>&nbsp;</tr>)}
             </tbody>
         </table>
     );
