@@ -14,7 +14,6 @@ const ContentSwitch = () => {
     return <Switch>
         <Route exact={true} path="/" component={Dashboard}/>
         <Route path={localRoutes.dashboard} component={Dashboard}/>
-        <Route path={localRoutes.dashboard} component={Dashboard}/>
         <Route path={localRoutes.contactsDetails} component={ContactDetails}/>
         <Route path={localRoutes.contacts} component={Contacts}/>
         <Route path={localRoutes.applicationsDetails} component={ApplicationDetails}/>

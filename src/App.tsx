@@ -11,7 +11,7 @@ import CallbackPage from "./modules/login/CallbackPage";
 
 const App: React.FC = () => {
     const authState: UserState = useSelector((state: any) => state.oidc)
-    console.log("Rendering user", authState)
+
     const {isLoadingUser, user} = authState
     if (isLoadingUser) {
         return <Splash/>
