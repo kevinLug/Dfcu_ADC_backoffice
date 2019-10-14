@@ -57,6 +57,7 @@
     "api-test": "ts-node -O \"{\\\"module\\\": \\\"commonjs\\\"}\" ./src/api-stress/stress.ts",
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build-test": "set REACT_APP_ENV=test && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
