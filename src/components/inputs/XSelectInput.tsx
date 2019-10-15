@@ -17,7 +17,7 @@ interface IProps {
 const Component = (fieldProps: FieldProps & IProps) => {
     const {field, form, options, ...rest} = fieldProps
     const name = field.name;
-    const value = field.value;
+    const value = field.value || rest.multiple ? [] : '';
     const error = getIn(form.errors, name);
     const isTouched = getIn(form.touched, name);
     const wasSubmitted = form.submitCount > 0;
@@ -33,7 +33,7 @@ const Component = (fieldProps: FieldProps & IProps) => {
             {...field}
             onClose={handleTouched}
             onBlur={handleTouched}
-            value={value || ''}
+            value={value}
             fullWidth
             multiple={rest.multiple}
             inputProps={{name}}

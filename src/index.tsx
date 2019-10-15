@@ -20,4 +20,5 @@ ReactDOM.render(
             </OidcProvider>
         </ThemeProvider>
     </Provider>, document.getElementById('root'));
+
 serviceWorker.register();

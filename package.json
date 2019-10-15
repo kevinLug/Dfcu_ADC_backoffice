@@ -1,5 +1,5 @@
 {
-  "name": "eva-client",
+  "name": "hermes-client",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -60,6 +60,7 @@
     "build-test": "set REACT_APP_ENV=test && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "storybook": "start-storybook",
     "deploy": "msdeploy --verb sync --allowUntrusted true --source contentPath=%npm_package_config_sourcePath% --dest contentPath=%npm_package_config_destPath%,ComputerName=%npm_package_config_ComputerName%,UserName=%npm_package_config_UserName%,Password=%npm_package_config_Password%,includeAcls=False"
   },
   "config": {
@@ -85,6 +86,16 @@
     ]
   },
   "devDependencies": {
-    "msdeploy": "^1.2.1"
+    "@babel/core": "^7.6.4",
+    "@storybook/addon-actions": "^5.2.4",
+    "@storybook/addon-info": "^5.2.4",
+    "@storybook/addon-links": "^5.2.4",
+    "@storybook/addons": "^5.1.11",
+    "@storybook/react": "^5.2.4",
+    "@types/storybook__addon-info": "^4.1.2",
+    "@types/storybook__react": "^4.0.2",
+    "babel-loader": "^8.0.6",
+    "msdeploy": "^1.1.0",
+    "react-docgen-typescript-loader": "^3.3.0"
   }
 }

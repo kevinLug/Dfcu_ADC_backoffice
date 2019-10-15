@@ -18,6 +18,7 @@ import {
 } from "../../data/comboCategories";
 import {toOptions} from "../../components/inputs/inputHelpers";
 import XTextAreaInput from "../../components/inputs/XTextAreaInput";
+import XForm from "../../components/forms/XForm";
 
 const Settings = () => {
     function handleSubmission(values: any, actions: FormikActions<any>) {
@@ -42,13 +43,13 @@ const Settings = () => {
         }
     )
     return <Navigation>
-        <Formik
-            initialValues={{hobbies2: [], hobbies: "", accept: false, gender: ""}}
-            onSubmit={handleSubmission}
-            validationSchema={schema}
-            validateOnBlur
-            render={({ submitForm, isSubmitting, values,errors }) => (
-                <Form>
+        <Grid spacing={2} container>
+            <Grid item xs={12} sm={6}>
+                <XForm
+                    onSubmit={handleSubmission}
+                    schema={schema}
+                    debug
+                >
                     <Grid spacing={2} container>
                         <Grid item sm={4}>
                             <XTextInput
@@ -112,23 +113,10 @@ const Settings = () => {
                                 label="Birth Date"
                             />
                         </Grid>
-                        <Grid item xs={12} sm={3}>
-                            <Button onClick={submitForm}>Submit</Button>
-                        </Grid>
-                        <Grid item xs={12} sm={3}>
-                            <pre>
-                                {JSON.stringify(values, null, 2)}
-                            </pre>
-                        </Grid>
-                        <Grid item xs={12} sm={3}>
-                            <pre>
-                                {JSON.stringify(errors, null, 2)}
-                            </pre>
-                        </Grid>
                     </Grid>
-                </Form>
-            )}
-        />
+                </XForm>
+            </Grid>
+        </Grid>
 
     </Navigation>
 }

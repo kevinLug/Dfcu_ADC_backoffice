@@ -18,7 +18,7 @@ const App: React.FC = () => {
     } else {
         return <Router>
             <ToastContainer/>
-            <Fragment>
+            <>
                 {user ?
                     <ContentSwitch/> :
                     <Switch>
@@ -26,7 +26,7 @@ const App: React.FC = () => {
                         <Route exact component={Login}/>
                     </Switch>
                 }
-            </Fragment>
+            </>
         </Router>;
     }
 }
