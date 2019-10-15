@@ -59,7 +59,15 @@
     "build": "react-scripts build",
     "build-test": "set REACT_APP_ENV=test && react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "msdeploy --verb sync --allowUntrusted true --source contentPath=%npm_package_config_sourcePath% --dest contentPath=%npm_package_config_destPath%,ComputerName=%npm_package_config_ComputerName%,UserName=%npm_package_config_UserName%,Password=%npm_package_config_Password%,includeAcls=False"
+  },
+  "config": {
+    "ComputerName": "",
+    "UserName": "",
+    "Password": "",
+    "sourcePath": "",
+    "destPath": ""
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -75,5 +83,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "msdeploy": "^1.2.1"
   }
 }
