@@ -1,10 +1,10 @@
 import * as React from "react";
-import Navigation from "../../components/Layout";
+import Layout from "../../components/Layout";
 
 const Dashboard = () => (
-    <Navigation>
+    <Layout>
         <h2>Dashboard</h2>
-    </Navigation>
+    </Layout>
 )
 
 export default Dashboard

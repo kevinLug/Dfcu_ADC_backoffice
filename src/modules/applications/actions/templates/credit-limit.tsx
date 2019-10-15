@@ -10,7 +10,6 @@ import DetailView, {IRec} from "../../../../components/DetailView";
 import {printMoney} from "../../../../utils/numberHelpers";
 import {getRandomStr} from "../../../../utils/stringHelpers";
 import SimpleTable from "../../../../components/SimpleTable";
-import DataLabel from "../../../../components/DataLabel";
 import DataValue from "../../../../components/DataValue";
 
 interface IProps {

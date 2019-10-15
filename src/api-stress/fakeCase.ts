@@ -75,8 +75,59 @@ export const fakeLoanRequest = (): any => {
                     "interestRate": "12"
                 }
             },
+            "score": {
+                "creditInformation": {
+                    "creditLimit": 10000,
+                    "minimumAmount": 1000,
+                    "grade": "A",
+                    "remarks": "Good borrower."
+                },
+                "existingLoans": [
+                    {
+                        "type": "Refinancing",
+                        "amount": 30000,
+                        "period": 15,
+                        "timeUnit": "days",
+                        "interestRate": "12"
+                    },
+                    {
+                        "type": "Consumer",
+                        "amount": 28500,
+                        "period": 30,
+                        "timeUnit": "days",
+                        "interestRate": "12"
+                    },
+                    {
+                        "type": "CreditCheckOff",
+                        "amount": 34000,
+                        "period": 90,
+                        "timeUnit": "days",
+                        "interestRate": "12"
+                    }
+                ],
+                "repaymentPlans": [
+                    {
+                        "id": "23244",
+                        "period": 15,
+                        "timeUnit": "days",
+                        "interestRate": 12
+                    },
+                    {
+                        "id": "354353",
+                        "period": 30,
+                        "timeUnit": "days",
+                        "interestRate": 12
+                    },
+                    {
+                        "id": "334567",
+                        "period": 90,
+                        "timeUnit": "days",
+                        "interestRate": 12
+                    }
+                ]
+            },
             "dependencies": [
-                "f07f5b55-77d5-4d5a-9c85-c0c55a4dd54b"
+                "9ca948dd-94a0-49b6-ba6e-01fd334a6d56"
             ],
             "metaData": {},
             "user": {

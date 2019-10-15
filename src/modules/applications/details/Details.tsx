@@ -68,10 +68,8 @@ const Details = (props: IProps) => {
 
     function onResume() {
         setBlocker(true)
-        put(url, {}, resp => {
-                console.log("Response", resp)
-                loadData()
-            },
+        put(url, {},
+                resp => loadData(),
             undefined,
             () => {
                 setBlocker(false)

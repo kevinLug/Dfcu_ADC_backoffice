@@ -29,9 +29,7 @@ export const localRoutes = {
     settings: '/settings',
 }
 
-const debug = process.env.NODE_ENV !== 'production'
-export const url = debug ? 'http://localhost:6001' :
-    'https://emata-poc-workeng-test.laboremus.no'
+
 
 
 const servers: any = {

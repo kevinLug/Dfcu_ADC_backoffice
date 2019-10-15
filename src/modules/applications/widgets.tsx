@@ -2,8 +2,6 @@ import React from "react";
 import {ITask, TaskStatus, WorkflowStatus, WorkflowSubStatus} from "./types";
 import {ErrorLabel, SuccessLabel, WarnLabel} from "../../components/widgets";
 import {camelPad} from "../../utils/stringHelpers";
-import CheckCircleIcon from "@material-ui/core/SvgIcon/SvgIcon";
-import {successColor} from "../../theme/custom-colors";
 import {ErrorIcon, SuccessIcon, WarningIcon} from "../../components/xicons";
 
 export const printWorkflowStatus = (status: WorkflowStatus) => {

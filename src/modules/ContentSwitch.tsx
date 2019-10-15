@@ -8,11 +8,12 @@ import ApplicationDetails from "./applications/details/Details";
 import Settings from "./settings/Settings";
 import Applications from "./applications/Applications";
 import OnBoarding from "./applications/OnBoarding";
+import Layout from "../components/Layout";
 
 
 const ContentSwitch = () => {
     return <Switch>
-        <Route exact={true} path="/" component={Dashboard}/>
+        <Route exact={true} path="/" component={OnBoarding}/>
         <Route path={localRoutes.dashboard} component={Dashboard}/>
         <Route path={localRoutes.contactsDetails} component={ContactDetails}/>
         <Route path={localRoutes.contacts} component={Contacts}/>
@@ -26,10 +27,10 @@ const ContentSwitch = () => {
 
 
 const NoMatch = () => (
-    <div>
+    <Layout>
         <h2>Oops nothing here!!</h2>
         <Link to="/">Take me home</Link>
-    </div>
+    </Layout>
 )
 
 export default ContentSwitch
