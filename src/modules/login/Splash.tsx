@@ -2,6 +2,7 @@ import React, {useEffect} from 'react';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import GridWrapper from "../../components/GridWrapper";
+import userManager from "../../data/auth/userManager";
 
 
 export default function Splash() {
@@ -19,6 +20,7 @@ export default function Splash() {
     //     )
     // },[dispatch])
 
+ 
     return <GridWrapper>
         <Grid container spacing={10} justify='center' alignItems="center">
             <Grid item>

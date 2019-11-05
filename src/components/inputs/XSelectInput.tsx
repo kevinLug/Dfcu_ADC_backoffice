@@ -12,12 +12,20 @@ interface IProps {
     name: string
     options: IOption[]
     multiple?: boolean
+    variant?: 'standard' | 'outlined' | 'filled'
 }
 
-const Component = (fieldProps: FieldProps & IProps) => {
-    const {field, form, options, ...rest} = fieldProps
+const Component = (props: FieldProps & IProps) => {
+    const {field, form, options, ...rest} = props
     const name = field.name;
-    const value = field.value || rest.multiple ? [] : '';
+    let value = field.value;
+    if (!value && Boolean(rest.multiple)) {
+        value = []
+    }
+    if (!value && !Boolean(rest.multiple)) {
+        value = ''
+    }
+
     const error = getIn(form.errors, name);
     const isTouched = getIn(form.touched, name);
     const wasSubmitted = form.submitCount > 0;
@@ -26,17 +34,27 @@ const Component = (fieldProps: FieldProps & IProps) => {
     function handleTouched() {
         form.setFieldTouched(field.name, true, true);
     }
+    const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+        form.setFieldValue(field.name, event.target.value, true);
+    };
 
-    return <FormControl error={showError} fullWidth>
-        <InputLabel htmlFor={name}>{rest.label}</InputLabel>
+    const inputLabel = React.useRef<HTMLLabelElement>(null);
+    const [labelWidth, setLabelWidth] = React.useState(0);
+    React.useEffect(() => {
+        setLabelWidth(inputLabel.current!.offsetWidth);
+    }, []);
+
+    return <FormControl error={showError} fullWidth variant={props.variant} margin='normal'>
+        <InputLabel htmlFor={name} ref={inputLabel}>{rest.label}</InputLabel>
         <Select
-            {...field}
             onClose={handleTouched}
             onBlur={handleTouched}
+            onChange={handleChange}
             value={value}
             fullWidth
             multiple={rest.multiple}
             inputProps={{name}}
+            labelWidth={labelWidth}
         >
             {
                 options.map(

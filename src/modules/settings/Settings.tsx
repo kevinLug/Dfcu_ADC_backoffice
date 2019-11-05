@@ -1,9 +1,8 @@
 import * as React from "react";
 import Navigation from "../../components/Layout";
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
 import XTextInput from "../../components/inputs/XTextInput";
-import {Form, Formik, FormikActions} from 'formik';
+import {FormikActions} from 'formik';
 import XSelectInput from "../../components/inputs/XSelectInput";
 import XCheckBoxInput from "../../components/inputs/XCheckBoxInput";
 import XRadioInput from "../../components/inputs/XRadioInput";
@@ -56,6 +55,7 @@ const Settings = () => {
                                 name="firstName"
                                 label="First Name"
                                 type="text"
+                                variant='outlined'
                             />
                         </Grid>
                         <Grid item sm={4}>
@@ -77,6 +77,15 @@ const Settings = () => {
                                 name="hobbies"
                                 label="Hobbies"
                                 options={toOptions(hobbyCategories)}
+                                variant='outlined'
+                            />
+                        </Grid>
+                        <Grid item sm={4}>
+                            <XSelectInput
+                                name="hobbies"
+                                label="Hobbies"
+                                options={toOptions(hobbyCategories)}
+                                variant='standard'
                             />
                         </Grid>
                         <Grid item sm={4}>

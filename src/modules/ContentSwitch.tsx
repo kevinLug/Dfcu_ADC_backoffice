@@ -9,6 +9,7 @@ import Settings from "./settings/Settings";
 import Applications from "./applications/Applications";
 import OnBoarding from "./applications/OnBoarding";
 import Layout from "../components/Layout";
+import CallbackPage from "./login/CallbackPage";
 
 
 const ContentSwitch = () => {
@@ -21,6 +22,7 @@ const ContentSwitch = () => {
         <Route path={localRoutes.applications} component={Applications}/>
         <Route path={localRoutes.pending} component={OnBoarding}/>
         <Route path={localRoutes.settings} component={Settings}/>
+        <Route path={localRoutes.callback} component={CallbackPage}/>
         <Route component={NoMatch}/>
     </Switch>
 }

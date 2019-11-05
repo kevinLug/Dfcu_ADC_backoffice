@@ -70,7 +70,7 @@ const Filter = () => {
                             variant="contained"
                             color="primary"
                             fullWidth
-                            onClick={submitForm}>Apply Filter</Button>
+                            onClick={submitForm}>Apply</Button>
                     </Grid>
                 </Grid>
             </Form>

@@ -42,6 +42,7 @@ const XRadioInput = (props: IProps) => {
                 onBlur={handleBlur}
                 value={value || ''}
                 row
+
             >
                 {
                     options.map(
