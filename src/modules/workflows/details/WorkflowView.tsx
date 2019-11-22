@@ -69,7 +69,7 @@ const WorkflowView = (props: IProps) => {
                         </Paper>
                     </StepLabel>
                     <StepContent className={classes.stepContent}>
-                        <TaskBodyView task={task}/>
+                        <TaskBodyView task={task} workflowId={props.data.id}/>
                     </StepContent>
                 </Step>
             ))}

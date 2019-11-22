@@ -1,10 +1,16 @@
 import {AUTH_TOKEN_KEY, AUTH_USER_KEY} from "./constants";
 import {ILoginResponse} from "./types";
 
-const initialState: any = {
+export interface ICoreState {
+    splash: boolean,
+    user: any|null,
+    isLoading: boolean,
+}
+
+const initialState: ICoreState = {
     splash: true,
     user: null,
-    isLoading: false,
+    isLoading: true,
 }
 
 export const coreConstants = {

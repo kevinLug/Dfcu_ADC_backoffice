@@ -1,17 +1,10 @@
 import * as superagent from 'superagent'
 import Toast from './Toast'
-import {AUTH_USER_KEY} from "../data/constants";
-import * as validate from "validate.js";
-import store from "../data/store";
-import {IState} from "../data/types";
+import {AUTH_TOKEN_KEY} from "../data/constants";
 
-export const getToken = (): string | undefined => {
-    const state:IState = store.getState();
-    const user = state.oidc.user
-    if(user)
-        return user.access_token
+export const getToken = (): string | null => {
+    return localStorage.getItem(AUTH_TOKEN_KEY)
 }
-
 
 type CallbackFunction = (data?: any) => void;
 type ErrorCallback = (err: any, res: superagent.Response) => void;

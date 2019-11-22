@@ -17,10 +17,11 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface IProps {
     task: ITask
+    workflowId:string
 }
 
 const TaskBodyView = (props: IProps) => {
-    const {task: {actions}} = props
+    const {task: {actions, name}, workflowId} = props
     const fineActions = actions.filter(it => it.shouldRender)
     const classes = useStyles();
     return <Grid container className={classes.root} spacing={0}>
@@ -29,6 +30,8 @@ const TaskBodyView = (props: IProps) => {
                 return <Grid key={it.id} item xs={12} className={classes.actionGrid}>
                     <ActionView
                         action={it}
+                        taskName={name}
+                        workflowId={workflowId}
                     />
                 </Grid>
             })

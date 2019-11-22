@@ -45,7 +45,7 @@ const TableView = ({data}: IProps) => {
                         </DataValue>
                     </td>
                 </tr>
-            ):<tr><td colSpan={2}/>&nbsp;</tr>)}
+            ):<tr key={row.label}><td colSpan={2}>&nbsp;</td></tr>)}
             </tbody>
         </table>
     );

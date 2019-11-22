@@ -13,10 +13,13 @@ import {Flex} from "../../../components/widgets";
 import {printWorkflowStatus, printWorkflowSubStatus} from "../widgets";
 import Summary from "./Summary";
 import WorkflowView from "./WorkflowView";
-import {get, put} from "../../../utils/ajax";
+import {put} from "../../../utils/ajax";
 import {remoteRoutes} from "../../../data/constants";
 import Button from "@material-ui/core/Button";
 import LoaderDialog from "../../../components/LoaderDialog";
+import {Dispatch} from "redux";
+import {useDispatch, useSelector} from "react-redux";
+import {fetchWorkflowAsync, IWorkflowState, startWorkflowFetch} from "../../../data/workflows/reducer";
 
 
 interface IProps extends RouteComponentProps {
@@ -42,34 +45,26 @@ const useStyles = makeStyles((theme: Theme) =>
 const Details = (props: IProps) => {
     const caseId = getRouteParam(props, 'caseId')
     const classes = useStyles()
-    const [data, setData] = useState<IWorkflow | null>(null)
-    const [loading, setLoading] = useState<boolean>(true)
     const [blocker, setBlocker] = useState<boolean>(false)
-    const url = `${remoteRoutes.workflows}/${caseId}`
+    const {loading, workflow}: IWorkflowState = useSelector((state: any) => state.workflows)
+    const dispatch: Dispatch<any> = useDispatch();
+
 
     useEffect(() => {
-        get(
-            url,
-            resp => setData(resp),
-            undefined,
-            () => setLoading(false)
-        )
-    }, [caseId, url])
+        dispatch(startWorkflowFetch())
+        dispatch(fetchWorkflowAsync(caseId))
+    }, [caseId])
 
     function loadData() {
-        setLoading(true)
-        get(
-            url,
-            resp => setData(resp),
-            undefined,
-            () => setLoading(false)
-        )
+        dispatch(startWorkflowFetch())
+        dispatch(fetchWorkflowAsync(caseId))
     }
 
     function onResume() {
+        const url = `${remoteRoutes.workflows}/${caseId}`
         setBlocker(true)
         put(url, {},
-                resp => loadData(),
+            resp => loadData(),
             undefined,
             () => {
                 setBlocker(false)
@@ -81,13 +76,13 @@ const Details = (props: IProps) => {
             <Loading/>
         </Navigation>
 
-    const hasError = !loading && !data
+    const hasError = !loading && !workflow
     if (hasError)
         return <Navigation>
             <Error text='Failed load case data'/>
         </Navigation>
 
-    const caseData = data as IWorkflow
+    const caseData = workflow as IWorkflow
     return (
         <Navigation>
             <div className={classes.root}>

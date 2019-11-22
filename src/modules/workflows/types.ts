@@ -1,5 +1,7 @@
 import {BaseModel} from "../../data/types";
-
+import * as faker from 'faker';
+import {remoteRoutes} from "../../data/constants";
+import {getRandomStr} from "../../utils/stringHelpers";
 export interface IWorkflowInclude {
     caseData?: boolean
     tasks?: boolean
@@ -47,6 +49,7 @@ export interface IAction extends BaseModel {
 
 export interface ITask extends BaseModel {
     name: string,
+    workflowId: string,
     title: string
     description: string
     status: TaskStatus
@@ -106,6 +109,28 @@ export enum TaskStatus {
     Error = 'Error'
 }
 
+export enum DocumentType {
+    Image = 'Image',
+    Pdf = 'Pdf'
+}
+
+export interface IDocument {
+    type: DocumentType
+    id: string
+    name: string
+}
+
+export interface IManualDecision {
+    caseId: string
+    taskName: string
+    actionName: string
+
+    resumeCase: boolean
+    override: boolean
+    nextSubStatus: string
+    data: any,
+}
+
 export const printActionStatus = (status: WorkflowStatus) => {
     return status;
 }
@@ -117,6 +142,28 @@ export const printTaskStatus = (status: WorkflowStatus) => {
 export const trimCaseId = (data: string) => {
     return data.substr(0, 8)
 }
+
+export const getDocumentUrl=(doc:IDocument):string=>{
+    if(doc.type === DocumentType.Image){
+        return faker.image.people()
+    }else {
+        return remoteRoutes.samplePdf
+    }
+}
+
+export const sampleDocuments: IDocument[] = [
+    {
+        id: getRandomStr(10),
+        type: DocumentType.Image,
+        name: "Passport Photo",
+
+    },
+    {
+        id: getRandomStr(10),
+        type: DocumentType.Pdf,
+        name: "Application Form"
+    }
+]
 
 
 

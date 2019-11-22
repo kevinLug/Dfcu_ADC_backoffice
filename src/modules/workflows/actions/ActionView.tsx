@@ -12,6 +12,8 @@ import loader from "./templates/loader";
 import Loading from "../../../components/Loading";
 
 interface IProps {
+    workflowId: string,
+    taskName: string,
     action: IAction,
     children?: React.ReactNode
 }
@@ -28,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
-const ActionView = ({action}: IProps) => {
+const ActionView = ({action,taskName,workflowId}: IProps) => {
     const classes = useStyles()
     let ViewComponent: any = BaseTemplate
     if (action.template && loader.hasOwnProperty(action.template)) {
@@ -47,7 +49,7 @@ const ActionView = ({action}: IProps) => {
                         </Grid>
                         <Grid item xs={6}>
                             <Grid container spacing={0} justify='flex-end'>
-                                <ActionStatusView data={action}/>
+                                <ActionStatusView data={action} />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -56,7 +58,7 @@ const ActionView = ({action}: IProps) => {
             <Divider/>
             <CardContent>
                 <Suspense fallback={<Loading/>}>
-                    <ViewComponent action={action}/>
+                    <ViewComponent action={action} workflowId={workflowId} taskName={taskName}/>
                 </Suspense>
             </CardContent>
         </Card>

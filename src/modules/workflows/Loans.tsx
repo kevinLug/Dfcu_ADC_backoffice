@@ -64,7 +64,7 @@ const headCells: XHeadCell[] = [
 ];
 
 
-const Applications = () => {
+const Loans = () => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
     const [data, setData] = useState([]);
@@ -116,4 +116,4 @@ const Applications = () => {
     );
 }
 
-export default Applications
+export default Loans

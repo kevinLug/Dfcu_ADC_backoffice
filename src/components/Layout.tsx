@@ -21,7 +21,7 @@ import {withRouter} from 'react-router'
 import {localRoutes} from "../data/constants";
 import grey from '@material-ui/core/colors/grey';
 import {BarView} from "./Profile";
-import logo from "../assets/logo.png";
+import logo from "../assets/download.png";
 import {Typography} from "@material-ui/core";
 import {themeBackground} from "../theme/custom-colors";
 import Paper from "@material-ui/core/Paper";
@@ -83,10 +83,10 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         logo: {
             [theme.breakpoints.only('xs')]: {
-                height: 50 ,
+                height: 25 ,
                 width: 'auto',
             },
-            height: 58,
+            height: 30,
             width: 'auto',
         },
         menu: {

@@ -38,6 +38,7 @@ export const fakeTask = (): ITask => {
     const actions = createArray(actionsCount, fakeAction)
     return {
         id: uuid(),
+        workflowId: uuid(),
         name: faker.company.catchPhrase(),
         title: faker.company.catchPhrase(),
         description: faker.lorem.sentence(),

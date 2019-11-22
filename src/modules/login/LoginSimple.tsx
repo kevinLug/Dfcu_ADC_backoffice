@@ -9,11 +9,11 @@ import {FormikActions} from 'formik';
 import {useDispatch} from 'react-redux'
 import {handleLogin} from "../../data/coreActions";
 
-import * as yup from "yup";
+
 import {post} from "../../utils/ajax";
 import {remoteRoutes} from "../../data/constants";
 import Toast from "../../utils/Toast";
-import userManager from "../../data/auth/userManager";
+import authService from "../../data/oidc/AuthService";
 import {useLoginStyles} from "./loginStyles";
 
 function Login() {
@@ -43,7 +43,7 @@ function Login() {
                     <Button
                         onClick={(event)=> {
                             event.preventDefault();
-                            userManager.signinRedirect();
+                            authService.login()
                         }}
                         type="submit"
                         fullWidth
@@ -59,14 +59,4 @@ function Login() {
     );
 }
 
-
-export const schema = yup.object().shape(
-    {
-        email: yup.string().email('Invalid email').required("Email is required"),
-        password: yup.string().required("Password is required")
-    }
-);
-
 export default Login
-
-

@@ -4,10 +4,10 @@ import {localRoutes} from "../data/constants";
 import Dashboard from "./dashboard/Dashboard";
 import Contacts from "./contacts/Contacts";
 import ContactDetails from "./contacts/details/Details";
-import ApplicationDetails from "./applications/details/Details";
+import ApplicationDetails from "./workflows/details/Details";
 import Settings from "./settings/Settings";
-import Applications from "./applications/Applications";
-import OnBoarding from "./applications/OnBoarding";
+import Loans from "./workflows/Loans";
+import OnBoarding from "./workflows/OnBoarding";
 import Layout from "../components/Layout";
 
 
@@ -18,7 +18,7 @@ const ContentSwitch = () => {
         <Route path={localRoutes.contactsDetails} component={ContactDetails}/>
         <Route path={localRoutes.contacts} component={Contacts}/>
         <Route path={localRoutes.applicationsDetails} component={ApplicationDetails}/>
-        <Route path={localRoutes.applications} component={Applications}/>
+        <Route path={localRoutes.applications} component={Loans}/>
         <Route path={localRoutes.pending} component={OnBoarding}/>
         <Route path={localRoutes.settings} component={Settings}/>
         <Route component={NoMatch}/>

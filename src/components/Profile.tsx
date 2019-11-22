@@ -11,17 +11,17 @@ import Dialog from '@material-ui/core/Dialog';
 import PersonIcon from '@material-ui/icons/Person';
 import Avatar from '@material-ui/core/Avatar';
 import {useSelector} from "react-redux";
-import {IState} from "../data/types";
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import MailIcon from '@material-ui/icons/Mail';
 import HiddenJs from "@material-ui/core/Hidden/HiddenJs";
 import {getInitials} from "../utils/stringHelpers";
-import userManager from "../data/auth/userManager";
+import {ICoreState} from "../data/coreReducer";
+import authService from "../data/oidc/AuthService";
 
 export const BarView = (props: any) => {
-    const userPro = useSelector((state: IState) => state.oidc.user)
-    const {profile = {}} = userPro || {}
+    const {user={}}: ICoreState = useSelector((state: any) => state.core)
+
     const [dialogOpen, setDialogOpen] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const menuOpen = Boolean(anchorEl);
@@ -31,8 +31,7 @@ export const BarView = (props: any) => {
     }
 
     function doLogout() {
-        userManager.removeUser();
-        userManager.signoutPopup();
+        authService.logout()
     }
 
     function closeDialog() {
@@ -58,10 +57,10 @@ export const BarView = (props: any) => {
             <AccountCircle className={props.textClass}/>
             &nbsp;
             <HiddenJs xsDown>
-                <Typography className={props.textClass}>{profile.name}</Typography>
+                <Typography className={props.textClass}>{user.name}</Typography>
             </HiddenJs>
             <HiddenJs smUp>
-                <Typography className={props.textClass}>{getInitials(profile.name)}</Typography>
+                <Typography className={props.textClass}>{getInitials(user.name)}</Typography>
             </HiddenJs>
 
         </IconButton>
@@ -91,13 +90,13 @@ export const BarView = (props: any) => {
                             <PersonIcon/>
                         </Avatar>
                     </ListItemAvatar>
-                    <ListItemText primary={profile.fullName}/>
+                    <ListItemText primary={user.fullName}/>
                 </ListItem>
                 <ListItem button>
                     <ListItemIcon>
                         <MailIcon/>
                     </ListItemIcon>
-                    <ListItemText primary={profile.email}/>
+                    <ListItemText primary={user.email}/>
                 </ListItem>
             </List>
         </Dialog>

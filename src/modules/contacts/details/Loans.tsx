@@ -4,7 +4,7 @@ import XTable from "../../../components/table/XTable";
 import {XHeadCell} from "../../../components/table/XTableHead";
 import Grid from '@material-ui/core/Grid';
 import {fakeLoan, IConsumerLoan} from "../types";
-import {trimCaseId} from "../../applications/types";
+import {trimCaseId} from "../../workflows/types";
 import {printDecimal, printMoney} from "../../../utils/numberHelpers";
 
 const headCells: XHeadCell[] = [

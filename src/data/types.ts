@@ -1,4 +1,5 @@
 import {UserState} from "redux-oidc";
+import {ICoreState} from "./coreReducer";
 
 export interface BaseModel {
     id: string
@@ -27,10 +28,6 @@ export interface IState {
     oidc: UserState
 }
 
-export interface ICoreState {
-    user: IUser
-    token: string
-}
 
 export interface ISearch {
     limit: number,

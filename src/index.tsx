@@ -8,16 +8,11 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import theme from "./theme";
-import {OidcProvider} from "redux-oidc";
-import userManager from "./data/auth/userManager";
-
 
 ReactDOM.render(
     <Provider store={store}>
         <ThemeProvider theme={theme}>
-            <OidcProvider store={store} userManager={userManager}>
-                <App/>
-            </OidcProvider>
+            <App/>
         </ThemeProvider>
     </Provider>, document.getElementById('root'));
 

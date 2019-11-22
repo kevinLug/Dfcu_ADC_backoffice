@@ -15,11 +15,12 @@ import {remoteRoutes} from "../../data/constants";
 import Toast from "../../utils/Toast";
 import XTextInput from "../../components/inputs/XTextInput";
 import {useLoginStyles} from "./loginStyles";
+import {Dispatch} from "redux";
 
 
 function Login() {
     const classes = useLoginStyles();
-    const dispatch = useDispatch();
+    const dispatch: Dispatch<any> = useDispatch();
     const onSubmit = (data: any, actions: FormikActions<any>) => {
         post(remoteRoutes.login, data, resp => {
             dispatch(handleLogin(resp))

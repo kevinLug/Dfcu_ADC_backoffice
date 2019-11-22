@@ -1,14 +1,11 @@
 import React from 'react';
 import Grid from "@material-ui/core/Grid";
-import {idFields} from "../../../contacts/details/IdInfo";
 import {ActionStatus, IAction} from "../../types";
 import Error from "./error";
 import Pending from "./pending";
-import {IContact, renderName} from "../../../contacts/types";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import DetailView, {IRec} from "../../../../components/DetailView";
-import {printDate} from "../../../../utils/dateHelpers";
 import RawData from "./RawData";
 
 interface IProps {

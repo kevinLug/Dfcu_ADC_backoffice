@@ -25,17 +25,17 @@ const postData = (token: string, requestData: any, callBack: (data: any) => any)
 //     })
 // })
 
-testLogin(({access_token}: any) => {
-    const loanReq = fakeLoanRequest()
-    postData(access_token, loanReq, (resp: any) => {
-        console.log("Submitted data", resp)
-    })
-})
-
 // testLogin(({access_token}: any) => {
-//     const loanReq = fakeDembeRequest()
+//     const loanReq = fakeLoanRequest()
 //     postData(access_token, loanReq, (resp: any) => {
 //         console.log("Submitted data", resp)
 //     })
 // })
+
+testLogin(({access_token}: any) => {
+    const loanReq = fakeDembeRequest()
+    postData(access_token, loanReq, (resp: any) => {
+        console.log("Submitted data", resp)
+    })
+})
 
