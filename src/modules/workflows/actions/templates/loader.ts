@@ -8,6 +8,7 @@ const loader: any = {
     "outstanding-loans": React.lazy(() => import("./outstanding-loans")),
     "create-account": React.lazy(() => import("./create-account")),
     "verify-documents": React.lazy(() => import("./verify-documents")),
+    "verify-account": React.lazy(() => import("./verify-account")),
 }
 
 export default loader

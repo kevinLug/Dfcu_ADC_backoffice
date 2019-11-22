@@ -32,6 +32,7 @@ class AuthService {
     }
 
     public login(): Promise<void> {
+        this.userManager.clearStaleState()
         return this.userManager.signinRedirect();
     }
 
@@ -40,6 +41,7 @@ class AuthService {
     }
 
     public logout(): Promise<void> {
+        this.userManager.clearStaleState()
         return this.userManager.signoutRedirect();
     }
 }

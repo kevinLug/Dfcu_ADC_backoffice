@@ -5,10 +5,11 @@ import {localRoutes} from "../data/constants";
 interface IProps {
     id: string
     name: string
+    title?: string
 }
 
-const ContactLink = ({id, name}: IProps) => (
-    <Link style={{textDecoration:'none'}} to={`${localRoutes.contacts}/${id}`}>{name}</Link>
+const ContactLink = ({id, name,title}: IProps) => (
+    <Link title={title} style={{textDecoration:'none'}} to={`${localRoutes.contacts}/${id}`}>{name}</Link>
 );
 
 export default ContactLink

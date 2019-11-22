@@ -11,7 +11,6 @@ import Preview from "./Preview";
 import Verify from "./Verify";
 import ITemplateProps from "../ITemplateProps";
 import {docMetadata} from "./documentsRules";
-import DataLabel from "../../../../../components/DataLabel";
 import Box from "@material-ui/core/Box";
 
 
@@ -24,7 +23,7 @@ interface Document {
 }
 
 
-const Index = (props: ITemplateProps) => {
+const Index= (props: ITemplateProps) => {
     const {action} = props
     const docs = sampleDocuments
     const [preview, setPreview] = useState(false)

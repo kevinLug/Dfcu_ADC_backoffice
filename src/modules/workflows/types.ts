@@ -2,6 +2,7 @@ import {BaseModel} from "../../data/types";
 import * as faker from 'faker';
 import {remoteRoutes} from "../../data/constants";
 import {getRandomStr} from "../../utils/stringHelpers";
+
 export interface IWorkflowInclude {
     caseData?: boolean
     tasks?: boolean
@@ -31,7 +32,7 @@ export interface IAction extends BaseModel {
     title: string
     description: string
     roles: string[]
-    shouldRender:boolean,
+    shouldRender: boolean,
     nextStatusError: string
     nextStatusSuccess: string
 
@@ -131,6 +132,19 @@ export interface IManualDecision {
     data: any,
 }
 
+export const canRunAction = (actionName: string, taskName: string, workflow: IWorkflow) => {
+    const taskIndex = workflow.tasks.findIndex(it => it.name === taskName)
+    const taskReady = (taskIndex ===0 || workflow.tasks[taskIndex-1].status === TaskStatus.Done)
+    if(!taskReady){
+        // Some tasks before this action are not yet complete
+        return false;
+    }
+    const task = workflow.tasks[taskIndex]
+    const actionIndex = task.actions.findIndex(it => it.name === actionName)
+    return (actionIndex ===0 || task.actions[actionIndex-1].status=== ActionStatus.Done)
+
+}
+
 export const printActionStatus = (status: WorkflowStatus) => {
     return status;
 }
@@ -143,10 +157,10 @@ export const trimCaseId = (data: string) => {
     return data.substr(0, 8)
 }
 
-export const getDocumentUrl=(doc:IDocument):string=>{
-    if(doc.type === DocumentType.Image){
+export const getDocumentUrl = (doc: IDocument): string => {
+    if (doc.type === DocumentType.Image) {
         return faker.image.people()
-    }else {
+    } else {
         return remoteRoutes.samplePdf
     }
 }
