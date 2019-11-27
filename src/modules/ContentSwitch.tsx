@@ -6,7 +6,7 @@ import Contacts from "./contacts/Contacts";
 import ContactDetails from "./contacts/details/Details";
 import ApplicationDetails from "./workflows/details/Details";
 import Settings from "./settings/Settings";
-import Loans from "./workflows/Loans";
+import Workflows from "./workflows/Workflows";
 import OnBoarding from "./workflows/OnBoarding";
 import Layout from "../components/Layout";
 
@@ -18,7 +18,7 @@ const ContentSwitch = () => {
         <Route path={localRoutes.contactsDetails} component={ContactDetails}/>
         <Route path={localRoutes.contacts} component={Contacts}/>
         <Route path={localRoutes.applicationsDetails} component={ApplicationDetails}/>
-        <Route path={localRoutes.applications} component={Loans}/>
+        <Route path={localRoutes.applications} component={Workflows}/>
         <Route path={localRoutes.pending} component={OnBoarding}/>
         <Route path={localRoutes.settings} component={Settings}/>
         <Route component={NoMatch}/>

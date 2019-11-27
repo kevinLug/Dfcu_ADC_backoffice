@@ -166,17 +166,6 @@ function Layout(props: any) {
                         </Typography>
                     }/>
                 </ListItem>
-                <ListItem button onClick={onClick(localRoutes.pending)}
-                          selected={isSelected(localRoutes.pending)}>
-                    <ListItemIcon>
-                        <InviteIcon className={getCls(localRoutes.pending)}/>
-                    </ListItemIcon>
-                    <ListItemText primary={
-                        <Typography className={getCls(localRoutes.pending)}>
-                            Onboarding
-                        </Typography>
-                    }/>
-                </ListItem>
                 <ListItem button onClick={onClick(localRoutes.applications)}
                           selected={isSelected(localRoutes.applications)}>
                     <ListItemIcon>
@@ -184,7 +173,7 @@ function Layout(props: any) {
                     </ListItemIcon>
                     <ListItemText primary={
                         <Typography className={getCls(localRoutes.applications)}>
-                           Loan Applications
+                           Applications
                         </Typography>
                     }/>
                 </ListItem>

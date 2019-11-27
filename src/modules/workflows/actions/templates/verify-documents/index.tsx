@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import Grid from "@material-ui/core/Grid";
 import InfoIcon from "@material-ui/icons/Info";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import {ActionStatus, sampleDocuments} from "../../../types";
+import {ActionStatus, canRunAction, IWorkflow, sampleDocuments} from "../../../types";
 import DataValue from "../../../../../components/DataValue";
 import {Flex} from "../../../../../components/widgets";
 import {errorColor, successColor, warningColor} from "../../../../../theme/custom-colors";
@@ -12,20 +12,17 @@ import Verify from "./Verify";
 import ITemplateProps from "../ITemplateProps";
 import {docMetadata} from "./documentsRules";
 import Box from "@material-ui/core/Box";
+import {useSelector} from "react-redux";
+import Pending from "../pending";
 
 
-interface Document {
-    id: string
-    name: string
-    type: string
-    contentType: string
-    sizeInMbs: number
-}
 
 
-const Index= (props: ITemplateProps) => {
-    const {action} = props
+const Index = (props: ITemplateProps) => {
+    const {action, taskName} = props
     const docs = sampleDocuments
+    const workflow: IWorkflow = useSelector((state: any) => state.workflows.workflow)
+    const canRun = canRunAction(action.name, taskName, workflow)
     const [preview, setPreview] = useState(false)
     const [verify, setVerify] = useState(false)
 
@@ -45,6 +42,9 @@ const Index= (props: ITemplateProps) => {
         return setVerify(false);
     }
 
+    if (!canRun) {
+        return <Pending text="Pending Execution"/>
+    }
     const isPending = action.status === ActionStatus.Pending
     const isDone = action.status === ActionStatus.Done
     let color = warningColor
@@ -66,11 +66,11 @@ const Index= (props: ITemplateProps) => {
                 <>
                     <Grid item xs={12}>
                         <Box display='flex' mb={2}>
-                        <Flex>
-                            <DataValue style={{color: isDone?null:errorColor}}>
-                                {isDone ? 'Documents Approved' : 'Documents rejected'} : {data['remarks']}
-                            </DataValue>
-                        </Flex>
+                            <Flex>
+                                <DataValue style={{color: isDone ? null : errorColor}}>
+                                    {isDone ? 'Documents Approved' : 'Documents rejected'} : {data['remarks']}
+                                </DataValue>
+                            </Flex>
                         </Box>
                     </Grid>
                 </>

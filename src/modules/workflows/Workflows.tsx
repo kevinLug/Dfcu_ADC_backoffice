@@ -64,13 +64,27 @@ const headCells: XHeadCell[] = [
 ];
 
 
-const Loans = () => {
+const newCells = headCells.filter(it=>it.name!== 'assigneeId')
+
+
+const Workflows = () => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
+    const [newCases, setNewCases] = useState([]);
     const [data, setData] = useState([]);
     const [filter, setFilter] = useState<IWorkflowFilter>({
-        workflowTypes:['ussd-loan']
+        workflowTypes:['DEMBE-ACCOUNT']
     });
+    const newFilter:IWorkflowFilter = {
+        workflowTypes:['DEMBE-ACCOUNT'],
+        showNew:true,
+        showAssigned:false
+    }
+    useEffect(() => {
+        search(remoteRoutes.workflows, newFilter, resp => {
+            setNewCases(newCases)
+        })
+    }, [newFilter])
     useEffect(() => {
         search(remoteRoutes.workflows, filter, resp => {
             setData(resp)
@@ -90,6 +104,14 @@ const Loans = () => {
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <Typography variant='h3'>Loan Applications</Typography>
+                </Grid>
+                <Grid item xs={12}>
+                    <XTable
+                        title="New Applications"
+                        headCells={newCells}
+                        data={newCases}
+                        initialRowsPerPage={5}
+                    />
                 </Grid>
                 <Grid item xs={12}>
                     <Grid container spacing={2}>
@@ -116,4 +138,4 @@ const Loans = () => {
     );
 }
 
-export default Loans
+export default Workflows

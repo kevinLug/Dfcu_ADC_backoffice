@@ -14,6 +14,8 @@ interface IProps {
     onClose: () => any
     title: string
     children?: any
+    maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | false
+    fullWidth?: boolean
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -34,7 +36,7 @@ const EditDialog = (props: IProps) => {
     const classes = useStyles();
     const matches = useMediaQuery(theme.breakpoints.down('sm'));
     return (
-        <Dialog open={props.open} onClose={props.onClose} fullScreen={matches}>
+        <Dialog open={props.open} onClose={props.onClose} fullScreen={matches} maxWidth={props.maxWidth} fullWidth={props.fullWidth}>
 
             {
                 matches ?

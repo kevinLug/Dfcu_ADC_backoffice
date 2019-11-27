@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import Grid from "@material-ui/core/Grid";
-import {ActionStatus, canRunAction, IManualDecision, IWorkflow} from "../../../types";
+import {ActionStatus, canRunAction, DocumentType, getDocumentUrl, IManualDecision, IWorkflow} from "../../../types";
 import DataValue from "../../../../../components/DataValue";
 import {getInitials} from "../../../../../utils/stringHelpers";
 import UserLink from "../../../../../components/UserLink";
@@ -21,6 +21,8 @@ import {post} from "../../../../../utils/ajax";
 import {remoteRoutes} from "../../../../../data/constants";
 import {fetchWorkflowAsync, startWorkflowFetch} from "../../../../../data/workflows/reducer";
 import {Dispatch} from "redux";
+import Box from "@material-ui/core/Box";
+import PdfViewer from "../../../../../components/PdfViewer";
 
 
 interface IFormProps {
@@ -78,45 +80,85 @@ const VerifyForm = (props: IFormProps & ITemplateProps) => {
         dispatch(fetchWorkflowAsync(props.workflowId))
     }
 
+    const magnifier = 1;
+    const height = 842 * magnifier
+    const width = 630 * magnifier
     return (
-        <Grid container spacing={1}>
-            <Grid item xs={12}>
-                <FormGroup>
-                    <FormControlLabel
-                        label='Approved'
-                        control={
-                            <Checkbox
-                                checked={metaData['approved']}
-                                onChange={handleCbChange('approved')}
-                                value={metaData['approved']}
-                            />
-                        }
-                    />
-                </FormGroup>
+        <Grid container spacing={1} style={{height}} alignContent='center' justify='center'>
+            <Grid style={{height: '100%',width}}>
+                <Box p={2} css={{height: '100%'}}>
+                    <PdfViewer/>
+                </Box>
             </Grid>
-            <Grid item xs={12}>
-                <TextField
-                    id="remarks-field"
-                    label="Remarks"
-                    fullWidth
-                    multiline
-                    rowsMax="3"
-                    rows='3'
-                    value={metaData['remarks']}
-                    onChange={handleTextChange('remarks')}
-                    margin="none"
-                    variant="outlined"
-                />
+            <Grid style={{height: '100%', width:250}}>
+                <Box
+                    display='flex'
+                    flexDirection="column-reverse"
+
+                    css={{height: '100%'}}
+                    p={2}
+                >
+                    <Box alignSelf='flex-end' css={{width: '100%'}}>
+                        <Grid container spacing={1}>
+                            <Grid item xs={12}>
+                                <img
+                                    style={{height: 150, width: 150}}
+                                    src={getDocumentUrl({id:'',name:'',type:DocumentType.Image})}
+                                    alt='Photo'
+                                />
+                            </Grid>
+                        </Grid>
+                    </Box>
+                    <Box pb={12} css={{width: '100%'}}>
+                        <Grid container spacing={1}>
+                            <Grid item xs={12}>
+                                <FormGroup>
+                                    <FormControlLabel
+                                        label='Approved'
+                                        control={
+                                            <Checkbox
+                                                checked={metaData['approved']}
+                                                onChange={handleCbChange('approved')}
+                                                value={metaData['approved']}
+                                            />
+                                        }
+                                    />
+                                </FormGroup>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    id="remarks-field"
+                                    label="Remarks"
+                                    fullWidth
+                                    multiline
+                                    rowsMax="3"
+                                    rows='3'
+                                    value={metaData['remarks']}
+                                    onChange={handleTextChange('remarks')}
+                                    margin="none"
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Grid container spacing={2} alignContent='flex-end' justify='flex-end'>
+                                    <Grid item>
+                                        <Button
+                                            variant="outlined"
+                                            size="small"
+                                            color="primary"
+                                            onClick={handleDecision}
+                                            disabled={loading}
+                                        >
+                                            Submit
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </Box>
             </Grid>
-            <Grid item xs={12}>
-                <Grid container spacing={2} alignContent='flex-end' justify='flex-end'>
-                    <Grid item>
-                        <Button variant="outlined" size="small" color="primary" onClick={handleDecision} disabled={loading}>
-                            Submit
-                        </Button>
-                    </Grid>
-                </Grid>
-            </Grid>
+
         </Grid>
     );
 }
@@ -149,10 +191,10 @@ const Index = (props: ITemplateProps) => {
                     <Grid container spacing={2} alignContent='flex-end' justify='flex-end'>
                         <Grid item>
                             <Button variant="outlined" size="small" color="primary" onClick={handleClick}>
-                                Validate Account
+                                Upload Signature
                             </Button>
                         </Grid>
-                        <EditDialog open={open} onClose={handleClose} title='Verify Account'>
+                        <EditDialog open={open} onClose={handleClose} title='Upload Signature' maxWidth='md' fullWidth>
                             <VerifyForm onClose={handleClose} {...props}/>
                         </EditDialog>
                     </Grid>
@@ -161,10 +203,10 @@ const Index = (props: ITemplateProps) => {
                     action.status === ActionStatus.Done &&
                     <DataValue>
                         <CheckCircleIcon fontSize='inherit' style={{color: successColor}}/>&nbsp;
-                        Account Verified by&nbsp;
+                        Signature uploaded by&nbsp;
                         <UserLink
                             id={data.userId}
-                            name={getInitials(data.userName)}
+                            name={data.userName}
                             title={data.userName}
                         />
                     </DataValue>
@@ -173,7 +215,7 @@ const Index = (props: ITemplateProps) => {
                     action.status === ActionStatus.Error &&
                     <DataValue>
                         <HighlightOffIcon fontSize='inherit' style={{color: errorColor}}/>&nbsp;
-                        Account Rejected by
+                        Signature Rejected by
                         <UserLink
                             id={data.userId}
                             name={getInitials(data.userName)}
