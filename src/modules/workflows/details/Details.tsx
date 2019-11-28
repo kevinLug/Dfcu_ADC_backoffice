@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {RouteComponentProps, withRouter} from "react-router";
 import Navigation from "../../../components/Layout";
 import {getRouteParam} from "../../../utils/routHelpers";
@@ -20,18 +20,44 @@ import LoaderDialog from "../../../components/LoaderDialog";
 import {Dispatch} from "redux";
 import {useDispatch, useSelector} from "react-redux";
 import {fetchWorkflowAsync, IWorkflowState, startWorkflowFetch} from "../../../data/workflows/reducer";
+import {backgroundGrey, successColor} from "../../../theme/custom-colors";
 
 
 interface IProps extends RouteComponentProps {
 
 }
 
+const useWfStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        root: {
+            padding: 0
+        },
+        stepPaper: {
+            borderRadius: 0,
+        },
+        stepLabel: {
+            backgroundColor: backgroundGrey,
+            padding: theme.spacing(1)
+        },
+        stepContent: {
+            paddingRight: 0
+        },
+        taskIcon: {
+            marginTop: 1
+        },
+        successIcon: {
+            color: successColor
+        }
+    })
+);
+
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
             borderRadius: 0,
             padding: theme.spacing(1),
-            minHeight: '100%'
+            height: '100%',
+            overflow: 'auto'
         },
         divider: {
             marginTop: theme.spacing(2)
@@ -44,11 +70,13 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Details = (props: IProps) => {
     const caseId = getRouteParam(props, 'caseId')
+    const wfClasses = useWfStyles()
     const classes = useStyles()
     const [blocker, setBlocker] = useState<boolean>(false)
     const {loading, workflow}: IWorkflowState = useSelector((state: any) => state.workflows)
     const dispatch: Dispatch<any> = useDispatch();
-
+    const mainRef: any = useRef<any>()
+    const viewRef: any = useRef<any>()
 
     useEffect(() => {
         dispatch(startWorkflowFetch())
@@ -82,10 +110,17 @@ const Details = (props: IProps) => {
             <Error text='Failed load case data'/>
         </Navigation>
 
+    function handleTaskClick(id: string) {
+        if (mainRef && mainRef.current) {
+            const ref = mainRef.current.myRefs[id]
+            viewRef.current.scrollTo(0, ref.offsetTop-100)
+        }
+    }
+
     const caseData = workflow as IWorkflow
     return (
         <Navigation>
-            <div className={classes.root}>
+            <div className={classes.root} ref={viewRef}>
                 <LoaderDialog open={blocker} onClose={() => setBlocker(false)}/>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
@@ -104,15 +139,18 @@ const Details = (props: IProps) => {
                             action={<Button size='small' variant="contained" color='primary' onClick={onResume}>Resume
                                 Case</Button>}
                         >
-                            <WorkflowView data={caseData}/>
+                            <WorkflowView data={caseData} classes={wfClasses} ref={mainRef}/>
                         </IBox>
                     </Grid>
-                    <Grid item xs={12} sm={3}>
-                        <IBox
-                            title='Case Summary'
-                        >
-                            <Summary data={caseData}/>
-                        </IBox>
+                    <Grid item xs={12} sm={3} >
+                        <div >
+                            <IBox
+                                title='Case Summary'
+                            >
+                                <Summary data={caseData} onTaskClick={handleTaskClick}/>
+                            </IBox>
+                        </div>
+
                     </Grid>
                 </Grid>
             </div>

@@ -1,4 +1,3 @@
-import {UserState} from "redux-oidc";
 import {ICoreState} from "./coreReducer";
 
 export interface BaseModel {
@@ -25,7 +24,6 @@ export interface ILoginResponse {
 export interface IState {
     core: ICoreState
     contacts: any
-    oidc: UserState
 }
 
 

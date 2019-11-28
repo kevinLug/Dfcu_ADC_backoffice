@@ -1,15 +1,24 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import {Grid} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
-import {IWorkflow} from "../types";
+import {ITask, IWorkflow, TaskStatus} from "../types";
 import DetailView, {IRec} from "../../../components/DetailView";
 import {printDateTime} from "../../../utils/dateHelpers";
+import UserLink from "../../../components/UserLink";
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import LabelIcon from '@material-ui/icons/Label';
+import ListItemText from '@material-ui/core/ListItemText';
+import Divider from "@material-ui/core/Divider";
+import {errorColor, successColor, warningColor} from "../../../theme/custom-colors";
 
 interface IProps {
     data: IWorkflow
+    onTaskClick?: (id: string) => any
 }
 
-const Summary = ({data}: IProps) => {
+const Summary = ({data, onTaskClick}: IProps) => {
 
     const fields: IRec[] = [
         {
@@ -21,16 +30,12 @@ const Summary = ({data}: IProps) => {
             value: data.type
         },
         {
-            label: 'Id',
-            value: data.id
-        },
-        {
             label: 'Ref Number',
             value: data.referenceNumber
         },
         {
             label: 'Agent',
-            value: data.metaData.userName
+            value: <UserLink id={data.metaData.userId} name={data.metaData.userName}/>
         },
         {
             label: 'Assignee',
@@ -40,27 +45,8 @@ const Summary = ({data}: IProps) => {
             label: 'Assigned On',
             value: printDateTime(data.assignedDate)
         },
-        {
-            label: '',
-            value: ''
-        },
-        {
-            label: 'Status',
-            value: data.status
-        },
-        {
-            label: 'Sub-status',
-            value: data.subStatus
-        },
-        {
-            label: 'Status Comment',
-            value: data.subStatusComment
-        },
-        {
-            label: 'Last Run',
-            value: printDateTime(data.runDate)
-        }
     ]
+
     return (
         <Grid container spacing={3}>
             <Grid item xs={12}>
@@ -70,10 +56,38 @@ const Summary = ({data}: IProps) => {
             </Grid>
             <Grid item xs={12}>
                 <Typography>Request Status</Typography>
-                {/*    TODO Add list of statuses*/}
+                <List dense>
+                    {
+                        data.tasks.map(it => (
+                            <Fragment key={it.name}>
+                                <ListItem onClick={() => onTaskClick && onTaskClick(it.id)}>
+                                    <ListItemIcon>
+                                        <LabelIcon style={{color: getTaskColor(it)}}/>
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        primary={it.title}
+                                    />
+                                </ListItem>
+                                <Divider/>
+                            </Fragment>
+
+                        ))
+                    }
+                </List>
             </Grid>
         </Grid>
     );
+}
+
+export function getTaskColor(task: ITask): any {
+    switch (task.status) {
+        case TaskStatus.Done:
+            return successColor
+        case TaskStatus.Error:
+            return errorColor
+        case TaskStatus.Pending:
+            return warningColor
+    }
 }
 
 
