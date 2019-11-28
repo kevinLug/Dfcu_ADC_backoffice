@@ -35,7 +35,7 @@ const Summary = ({data, onTaskClick}: IProps) => {
         },
         {
             label: 'Agent',
-            value: <UserLink id={data.metaData.userId} name={data.metaData.userName}/>
+            value: data.metaData.userName
         },
         {
             label: 'Assignee',
