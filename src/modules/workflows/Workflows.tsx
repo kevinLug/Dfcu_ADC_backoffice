@@ -64,27 +64,32 @@ const headCells: XHeadCell[] = [
 ];
 
 
-const newCells = headCells.filter(it=>it.name!== 'assigneeId')
+const newCells = headCells.filter(it => it.name !== 'assigneeId')
 
 
 const Workflows = () => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
-    const [newCases, setNewCases] = useState([]);
+    const [newData, setNewData] = useState([]);
     const [data, setData] = useState([]);
+
     const [filter, setFilter] = useState<IWorkflowFilter>({
-        workflowTypes:['DEMBE-ACCOUNT']
+        workflowTypes: ['DEMBE','DEMBE-JOINT'],
+        showNew: false,
+        showAssigned: true
     });
-    const newFilter:IWorkflowFilter = {
-        workflowTypes:['DEMBE-ACCOUNT'],
-        showNew:true,
-        showAssigned:false
-    }
+    const [newFilter, setNewFilter] = useState<IWorkflowFilter>({
+        workflowTypes: ['DEMBE','DEMBE-JOINT'],
+        showNew: true,
+        showAssigned: false
+    });
+
     useEffect(() => {
         search(remoteRoutes.workflows, newFilter, resp => {
-            setNewCases(newCases)
+            setNewData(resp)
         })
     }, [newFilter])
+
     useEffect(() => {
         search(remoteRoutes.workflows, filter, resp => {
             setData(resp)
@@ -109,7 +114,7 @@ const Workflows = () => {
                     <XTable
                         title="New Applications"
                         headCells={newCells}
-                        data={newCases}
+                        data={newData}
                         initialRowsPerPage={5}
                     />
                 </Grid>

@@ -150,7 +150,6 @@ const Details = (props: IProps) => {
                                 <Summary data={caseData} onTaskClick={handleTaskClick}/>
                             </IBox>
                         </div>
-
                     </Grid>
                 </Grid>
             </div>

@@ -11,8 +11,6 @@ import {ICoreState} from "./data/coreReducer";
 const App: React.FC = () => {
     console.log("Starting App")
     const authState: ICoreState = useSelector((state: any) => state.core)
-
-    console.log("Starting App",authState)
     const {isLoading, user} = authState
     if (isLoading) {
         return <Splash/>

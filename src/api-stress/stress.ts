@@ -2,6 +2,7 @@ import {remoteRoutes} from "../data/constants";
 import {fakeDembeRequest, fakeLoanRequest, fakeOnBoardRequest} from "./fakeCase";
 import {testLogin} from "./login";
 import * as superagent from "superagent";
+import {fakeJointRequest} from "./test-joint";
 
 
 const postData = (token: string, requestData: any, callBack: (data: any) => any) => {
@@ -32,8 +33,15 @@ const postData = (token: string, requestData: any, callBack: (data: any) => any)
 //     })
 // })
 
+// testLogin(({access_token}: any) => {
+//     const loanReq = fakeDembeRequest()
+//     postData(access_token, loanReq, (resp: any) => {
+//         console.log("Submitted data", resp)
+//     })
+// })
+
 testLogin(({access_token}: any) => {
-    const loanReq = fakeDembeRequest()
+    const loanReq = fakeJointRequest()
     postData(access_token, loanReq, (resp: any) => {
         console.log("Submitted data", resp)
     })
