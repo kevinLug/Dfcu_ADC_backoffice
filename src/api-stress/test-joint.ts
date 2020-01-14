@@ -55,7 +55,7 @@ export const fakeJointRequest = (): any => {
         "caseData": {
             'applicants':[
                 makeApplicant(),
-                makeApplicant(),
+                //makeApplicant(),
             ],
             "device": {
                 "androidVersion": "26",

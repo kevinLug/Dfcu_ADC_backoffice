@@ -1,6 +1,5 @@
-export const AUTH_TOKEN_KEY = '__demo__eva__token'
-export const AUTH_USER_KEY = '__demo__eva__user'
-
+export const AUTH_TOKEN_KEY = '__demo__dfcu__token'
+export const AUTH_USER_KEY = '__demo__dfcu__user'
 
 export const systemRoles = {
     contacts: {
@@ -10,7 +9,6 @@ export const systemRoles = {
         teams: 'contacts_teams',
     }
 }
-
 
 export const redux = {
     doLogin: 'DO_LOGIN',
@@ -28,9 +26,6 @@ export const localRoutes = {
     contactsDetails: '/contacts/:contactId',
     settings: '/settings',
 }
-
-
-
 
 const servers: any = {
     dev: {

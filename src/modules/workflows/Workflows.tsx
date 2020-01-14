@@ -108,7 +108,7 @@ const Workflows = () => {
         <Navigation>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <Typography variant='h3'>Loan Applications</Typography>
+                    <Typography variant='h3'>Applications</Typography>
                 </Grid>
                 <Grid item xs={12}>
                     <XTable
