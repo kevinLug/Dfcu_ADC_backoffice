@@ -53,9 +53,16 @@ export const fakeJointRequest = (): any => {
         "externalReference": uuid(),
         "applicationDate": new Date(),
         "caseData": {
+            "metaData": {
+                "accountName": "Test Joint Account",
+                "requestAtmCard": true,
+                "requestChequeBook": true,
+                "requestQuickBanking": true
+            },
             'applicants':[
                 makeApplicant(),
-                //makeApplicant(),
+                makeApplicant(),
+                makeApplicant(),
             ],
             "device": {
                 "androidVersion": "26",
@@ -75,3 +82,4 @@ export const fakeJointRequest = (): any => {
         }
     }
 }
+

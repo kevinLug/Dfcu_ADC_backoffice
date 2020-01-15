@@ -9,7 +9,7 @@ import Grid from '@material-ui/core/Grid';
 import ContactLink from "../../components/ContactLink";
 import ApplicationLink from "../../components/ApplicationLink";
 import {IWorkflowFilter, trimCaseId} from "./types";
-import {printDate} from "../../utils/dateHelpers";
+import {printDate, printDateTime} from "../../utils/dateHelpers";
 import {getInitials} from "../../utils/stringHelpers";
 import {printWorkflowStatus, printWorkflowSubStatus} from "./widgets";
 import IBox from "../../components/ibox/IBox";
@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const headCells: XHeadCell[] = [
     {name: 'id', label: 'ID', render: (value, rec) => <ApplicationLink id={value} name={trimCaseId(value)}/>},
-    {name: 'applicationDate', label: 'Application Date', render: printDate},
+    {name: 'applicationDate', label: 'Application Date', render: printDateTime},
     {name: 'status', label: 'Status', render: (data) => printWorkflowStatus(data)},
     {name: 'subStatus', label: 'SubStatus', render: printWorkflowSubStatus},
     {
@@ -63,9 +63,7 @@ const headCells: XHeadCell[] = [
     },
 ];
 
-
 const newCells = headCells.filter(it => it.name !== 'assigneeId')
-
 
 const Workflows = () => {
     const classes = useStyles();

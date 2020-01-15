@@ -15,11 +15,6 @@ interface IProps {
 interface IAccount {
     cifId: string,
     accountNumber: string,
-    accountRequest: {
-        schemeCode: string,
-        glSubHeadCode: string,
-        accountStatement: string,
-    }
 }
 
 const CreateAccount = ({action}: IProps) => {
@@ -40,19 +35,8 @@ const CreateAccount = ({action}: IProps) => {
         {
             label: 'Account Number',
             value: data.accountNumber
-        },
-        {
-            label: 'Scheme Code',
-            value: data.accountRequest.schemeCode
-        },
-        {
-            label: 'Credit Grading',
-            value: 'Defaulted to A9'
-        },
-        {
-            label: 'ATM Requested',
-            value: request.metaData.requestAtmCard ? 'Yes' : 'No'
         }
+
     ]
     return (
         <Grid container spacing={2}>
