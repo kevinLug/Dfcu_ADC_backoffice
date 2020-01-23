@@ -29,36 +29,42 @@ export const localRoutes = {
 
 const servers: any = {
     dev: {
-        Auth: 'https://authservice-test.laboremus.no',
+        Auth: 'https://localhost:44313',
         Crm: 'https://crmservice-test.laboremus.no',
         Case: 'http://localhost:6001',
         Kyc: "https://kyc-connector-staging.onboarding.dfcugroup.com",
         Notification: "https://emata-poc-smsservice-test.laboremus.no",
         Payments: "https://emata-poc-payments-test.laboremus.no",
     },
-    test: {
-        Auth: 'https://authservice-test.laboremus.no',
-        Crm: 'https://emata-poc-crmservice-test.laboremus.no',
-        Case: 'https://emata-poc-workeng-test.laboremus.no',
+    sit:{
+        Auth: 'https://authentication-test.onboarding.dfcugroup.com',
+        Crm: 'https://crm-test.onboarding.dfcugroup.com',
+        Case: 'https://casehandling-test.onboarding.dfcugroup.com',
+        Gateway: 'https://gateway-test.onboarding.dfcugroup.com',
+        Kyc: 'https://kyc-connector-test.onboarding.dfcugroup.com',
+        Notification: 'https://notification-test.onboarding.dfcugroup.com',
+        Accounts: 'https://finacle-connector-test.onboarding.dfcugroup.com',
+        Log: 'https://logging-test.onboarding.dfcugroup.com'
+    },
+    uat:{
+        Auth: "https://authentication-staging.onboarding.dfcugroup.com",
+        Crm: "https://crm-staging.onboarding.dfcugroup.com",
+        Case: "https://casehandling-staging.onboarding.dfcugroup.com",
+        Gateway: "https://gateway-staging.onboarding.dfcugroup.com",
         Kyc: "https://kyc-connector-staging.onboarding.dfcugroup.com",
-        Notification: "https://emata-poc-smsservice-test.laboremus.no",
-        Payments: "https://emata-poc-payments-test.laboremus.no",
+        Notification: "https://notification-staging.onboarding.dfcugroup.com",
+        Accounts: "https://finacle-connector-staging.onboarding.dfcugroup.com",
+        Log: "https://logging-staging.onboarding.dfcugroup.com"
     },
-    staging: {
-        Auth: "",
-        Crm: "",
-        Case: "",
-        Kyc: "",
-        Notification: "",
-        Payments: ""
-    },
-    production: {
-        Auth: "",
-        Crm: "",
-        Case: "",
-        Kyc: "",
-        Notification: "",
-        Payments: ""
+    production:{
+        Auth: "https://authentication.onboarding.dfcugroup.com",
+        Crm: "https://crm.onboarding.dfcugroup.com",
+        Case: "https://casehandling.onboarding.dfcugroup.com",
+        Gateway: "https://gateway.onboarding.dfcugroup.com",
+        Kyc: "https://kyc-connector.onboarding.dfcugroup.com",
+        Notification: "https://notification.onboarding.dfcugroup.com",
+        Accounts: "https://finacle-connector.onboarding.dfcugroup.com",
+        Log: "https://logging.onboarding.dfcugroup.com"
     }
 }
 
