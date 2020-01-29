@@ -10,12 +10,12 @@ const authData = {
 }
 
 export const testLogin = (callBack: (data: any) => any) => {
-    superagent.post(authService)
+    superagent.post(authService+'/connect/token')
         .type('form')
         .send(authData)
         .end(((err, res) => {
             if (err) {
-                console.error(err.error)
+                console.error("Login error",err)
             } else {
                 callBack(res.body)
             }
