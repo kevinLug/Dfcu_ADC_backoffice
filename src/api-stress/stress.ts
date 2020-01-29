@@ -41,9 +41,11 @@ const postData = (token: string, requestData: any, callBack: (data: any) => any)
 // })
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = '0';
 testLogin(({access_token}: any) => {
-    const loanReq = fakeJointRequest()
-    postData(access_token, loanReq, (resp: any) => {
-        console.log("Submitted data", resp)
-    })
+    for (let i = 0; i < 25; i++) {
+        const loanReq = fakeJointRequest()
+        postData(access_token, loanReq, (resp: any) => {
+            console.log("Submitted data", resp)
+        })
+    }
 })
 
