@@ -36,10 +36,19 @@ const servers: any = {
         Notification: "https://emata-poc-smsservice-test.laboremus.no",
         Payments: "https://emata-poc-payments-test.laboremus.no",
     },
+    test:{
+        Auth: 'https://authservice-test.laboremus.no',
+        Crm: 'https://crmservice-test.laboremus.no',
+        Case: 'https://dfcu-customeronboarding-casehandling-test.laboremus.no',
+        Gateway: 'https://dfcu-customeronboarding-gateway-test.laboremus.no',
+        Kyc: 'https://dfcu-customeronboarding-kycconnector-test.laboremus.no',
+        Notification: 'https://notificationservice-test.laboremus.no',
+        Log: 'https://dfcu-customeronboarding-logging-test.laboremus.no'
+    },
     sit:{
         Auth: 'https://authentication-test.onboarding.dfcugroup.com',
         Crm: 'https://crm-test.onboarding.dfcugroup.com',
-        Case: 'https://casehandling-test.onboarding.dfcugroup.com',
+        Case: 'https://casehandling-test.onboarding.dfcugroup.com/',
         Gateway: 'https://gateway-test.onboarding.dfcugroup.com',
         Kyc: 'https://kyc-connector-test.onboarding.dfcugroup.com',
         Notification: 'https://notification-test.onboarding.dfcugroup.com',

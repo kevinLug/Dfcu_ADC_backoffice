@@ -1,6 +1,7 @@
 import * as superagent from "superagent";
+import {remoteRoutes} from "../data/constants";
 
-const authService = "https://authservice-test.laboremus.no/connect/token"
+const authService = remoteRoutes.authServer
 const authData = {
     client_id: 'casehandling',
     client_secret: 'casehandling@lug',
