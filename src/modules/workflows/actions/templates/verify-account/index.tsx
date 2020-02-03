@@ -3,7 +3,7 @@ import Grid from "@material-ui/core/Grid";
 import {ActionStatus, canRunAction, IManualDecision, IWorkflow} from "../../../types";
 import DataValue from "../../../../../components/DataValue";
 import {getInitials} from "../../../../../utils/stringHelpers";
-import UserLink from "../../../../../components/UserLink";
+import UserLink from "../../../../../components/links/UserLink";
 import {errorColor, successColor} from "../../../../../theme/custom-colors";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
@@ -19,7 +19,7 @@ import {hasValue} from "../../../../../components/inputs/inputHelpers";
 import Toast from "../../../../../utils/Toast";
 import {post} from "../../../../../utils/ajax";
 import {remoteRoutes} from "../../../../../data/constants";
-import {fetchWorkflowAsync, startWorkflowFetch} from "../../../../../data/workflows/reducer";
+import {fetchWorkflowAsync, startWorkflowFetch} from "../../../../../data/redux/workflows/reducer";
 import {Dispatch} from "redux";
 
 

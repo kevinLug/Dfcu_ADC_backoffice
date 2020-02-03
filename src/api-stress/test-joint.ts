@@ -11,7 +11,7 @@ const makeApplicant =()=>{
             "lastName": faker.name.lastName(),
             "middleName": withMn ? faker.name.lastName() : "",
             "gender": faker.random.arrayElement(enumToArray(Gender)) as Gender,
-            "dateOfBirth": faker.date.past(15),
+            "dateOfBirth": '2000-08-24T11:54:33.006Z',
             "civilStatus": faker.random.arrayElement(enumToArray(CivilStatus)) as CivilStatus,
         },
         "address": {

@@ -9,13 +9,12 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import {themeBackground} from "../theme/custom-colors";
 
+
 interface IProps {
     open: boolean
     onClose: () => any
     title: string
     children?: any
-    maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | false
-    fullWidth?: boolean
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -32,11 +31,11 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const EditDialog = (props: IProps) => {
-    const theme = useTheme();
     const classes = useStyles();
+    const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.down('sm'));
     return (
-        <Dialog open={props.open} onClose={props.onClose} fullScreen={matches} maxWidth={props.maxWidth} fullWidth={props.fullWidth}>
+        <Dialog open={props.open} onClose={props.onClose} fullScreen={matches} >
 
             {
                 matches ?
@@ -58,5 +57,6 @@ const EditDialog = (props: IProps) => {
         </Dialog>
     );
 }
+
 
 export default EditDialog;

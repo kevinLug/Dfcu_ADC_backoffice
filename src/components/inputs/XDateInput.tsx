@@ -1,16 +1,28 @@
 import React from "react";
-import {Field, FieldProps} from 'formik';
+import {Field, FieldProps, getIn} from 'formik';
 import 'date-fns';
+import { useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import DateFnsUtils from '@date-io/date-fns';
-import {KeyboardDatePicker, MuiPickersUtilsProvider,} from '@material-ui/pickers'
+import {KeyboardDatePicker, DatePicker, MuiPickersUtilsProvider,} from '@material-ui/pickers'
+import {hasValue} from "./inputHelpers";
+import {dateFormat} from "../../utils/dateHelpers";
 
 interface IProps {
     name: string
     label: string
+    value?: string
+    inputVariant?: 'outlined'|'filled'|'standard'
 }
 
 const Component = ({field, form, ...other}: FieldProps) => {
-    const currentError = form.errors[field.name];
+    const theme = useTheme();
+    const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+
+    const error = getIn(form.errors, field.name);
+    const isTouched = getIn(form.touched, field.name);
+    const wasSubmitted = form.submitCount > 0;
+    const showError = hasValue(error) && (isTouched || wasSubmitted)
 
     function handleTouch() {
         return form.setFieldTouched(field.name, true, true);
@@ -21,28 +33,52 @@ const Component = ({field, form, ...other}: FieldProps) => {
     }
 
     return <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <KeyboardDatePicker
-            margin="normal"
-            format="MM/dd/yyyy"
-            KeyboardButtonProps={{
-                'aria-label': 'change date',
-            }}
-            name={field.name}
-            value={field.value || null}
-            helperText={currentError}
-            error={Boolean(currentError)}
-            onClose={handleTouch}
-            onChange={handleChange}
-            {...other}
-        />
+        {
+            isSmall?
+                <DatePicker
+                    fullWidth
+                    margin="normal"
+                    format={dateFormat}
+                    name={field.name}
+                    value={field.value || null}
+                    helperText={showError && error}
+                    error={Boolean(showError)}
+                    onClose={handleTouch}
+                    onChange={handleChange}
+                    onTouchEnd={handleTouch}
+                    onBlur={handleTouch}
+                    autoOk
+
+                    {...other}
+                />
+                :
+                <KeyboardDatePicker
+                    fullWidth
+                    variant="inline"
+                    margin="normal"
+                    format={dateFormat}
+                    KeyboardButtonProps={{
+                        'aria-label': 'change date',
+                    }}
+                    autoOk
+                    name={field.name}
+                    value={field.value || null}
+                    helperText={showError && error}
+                    error={Boolean(showError)}
+                    onClose={handleTouch}
+                    onChange={handleChange}
+                    onTouchEnd={handleTouch}
+                    onBlur={handleTouch}
+                    {...other}
+                />
+        }
     </MuiPickersUtilsProvider>
 }
 
 const XDateInput = (props: IProps) => {
     return (
         <Field
-            name={props.name}
-            label={props.label}
+            {...props}
             component={Component}
         />
     )

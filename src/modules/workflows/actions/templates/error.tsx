@@ -1,9 +1,9 @@
 import React from 'react';
 import Grid from "@material-ui/core/Grid";
-import {Typography} from "@material-ui/core";
-import {errorColor} from "../../../../theme/custom-colors";
 import RawData from "./RawData";
 import {IAction} from "../../types";
+import Alert from '@material-ui/lab/Alert';
+import {Typography} from "@material-ui/core";
 
 interface IProps {
     action: IAction
@@ -12,8 +12,8 @@ interface IProps {
 const Error = (props: IProps) => {
     return (
         <Grid container spacing={1} justify='flex-start' alignItems="flex-start">
-            <Grid item>
-                <Typography style={{color: errorColor}} variant='body1'>{props.action.statusMessage}</Typography>
+            <Grid item xs={12}>
+                <Alert severity="error"><Typography >{props.action.statusMessage}</Typography></Alert>
             </Grid>
             <Grid item xs={12}>
                 <RawData action={props.action}/>

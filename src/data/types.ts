@@ -1,4 +1,5 @@
-import {ICoreState} from "./coreReducer";
+import {ICoreState} from "./redux/coreReducer";
+import {ICrmState} from "./redux/contacts/reducer";
 
 export interface BaseModel {
     id: string
@@ -23,6 +24,7 @@ export interface ILoginResponse {
 
 export interface IState {
     core: ICoreState
+    crm: ICrmState
     contacts: any
 }
 

@@ -4,7 +4,6 @@ import Typography from "@material-ui/core/Typography";
 import {ITask, IWorkflow, TaskStatus} from "../types";
 import DetailView, {IRec} from "../../../components/DetailView";
 import {printDateTime} from "../../../utils/dateHelpers";
-import UserLink from "../../../components/UserLink";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';

@@ -1,5 +1,5 @@
 import React from 'react';
-import Table from '@material-ui/core/Table';
+import Table, {Size} from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TablePagination from '@material-ui/core/TablePagination';
@@ -11,6 +11,7 @@ import {getSorting, Order, stableSort} from "./helpers";
 import XToolbar from "./XToolbar";
 import {useTableStyles} from "./tableStyles";
 import XTableHead, {XHeadCell} from "./XTableHead";
+import {useTheme} from "@material-ui/core";
 
 interface XTableProps {
     initialSortBy?: string
@@ -22,11 +23,15 @@ interface XTableProps {
     useCheckbox?: boolean
     handleSelection?: (id: any) => any
     onFilterToggle?: () => any
+    usePagination?: boolean
+    headerSize?: Size
+    bodySize?: Size
 }
 
 export default function XTable(props: XTableProps) {
-    const {title, headCells, data, useCheckbox, initialSortBy = 'id', initialOrder = 'asc', initialRowsPerPage = 10} = props
+    const {usePagination=true,title, headCells, data, useCheckbox, initialSortBy = 'id', initialOrder = 'asc', initialRowsPerPage = 10, headerSize='medium',bodySize='medium'} = props
     const classes = useTableStyles();
+    const theme = useTheme()
     const [order, setOrder] = React.useState<Order>(initialOrder);
     const [orderBy, setOrderBy] = React.useState<string>(initialSortBy);
     const [selected, setSelected] = React.useState<string[]>([]);
@@ -89,10 +94,13 @@ export default function XTable(props: XTableProps) {
 
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
+    const getCellStyle = ()=>{
+
+    }
     const isEven = (num: number) => num % 2 !== 0
     return (
         <div className={classes.root}>
-            <Paper className={classes.paper}>
+            <Paper className={classes.paper} elevation={0}>
                 {
                     title &&
                     <XToolbar numSelected={selected.length} title={title} onFilterToggle={props.onFilterToggle}/>
@@ -105,6 +113,7 @@ export default function XTable(props: XTableProps) {
                         size="small"
                     >
                         <XTableHead
+                            headerSize={headerSize}
                             headCells={headCells}
                             classes={classes}
                             numSelected={selected.length}
@@ -129,11 +138,11 @@ export default function XTable(props: XTableProps) {
                                             tabIndex={-1}
                                             key={row.id}
                                             selected={isItemSelected}
-                                            style={{backgroundColor: isEven(index) ? grey[50] : 'white'}}
+                                            style={{backgroundColor: isEven(index) ? 'white' : grey[50]}}
                                         >
                                             {
                                                 useCheckbox &&
-                                                <TableCell padding="checkbox">
+                                                <TableCell padding="checkbox" size={bodySize}>
                                                     <Checkbox
                                                         checked={isItemSelected}
                                                         inputProps={{'aria-labelledby': labelId}}
@@ -143,8 +152,10 @@ export default function XTable(props: XTableProps) {
                                             {
                                                 headCells.map(it => (
                                                     <TableCell
+                                                        size={bodySize}
                                                         key={it.name}
                                                         align={it.numeric ? 'right' : 'left'}
+                                                        style={{whiteSpace:'nowrap'}}
                                                         {...it.cellProps}>
                                                         {it.render ? it.render(row[it.name], row) : row[it.name]}
                                                     </TableCell>
@@ -161,21 +172,24 @@ export default function XTable(props: XTableProps) {
                         </TableBody>
                     </Table>
                 </div>
-                <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
-                    component="div"
-                    count={data.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    backIconButtonProps={{
-                        'aria-label': 'previous page',
-                    }}
-                    nextIconButtonProps={{
-                        'aria-label': 'next page',
-                    }}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                />
+                {
+                   usePagination&& <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component="div"
+                        count={data.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        backIconButtonProps={{
+                            'aria-label': 'previous page',
+                        }}
+                        nextIconButtonProps={{
+                            'aria-label': 'next page',
+                        }}
+                        onChangePage={handleChangePage}
+                        onChangeRowsPerPage={handleChangeRowsPerPage}
+                    />
+                }
+
             </Paper>
         </div>
     );

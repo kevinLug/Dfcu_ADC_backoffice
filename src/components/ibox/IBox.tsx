@@ -19,8 +19,8 @@ const useStyles = makeStyles((theme: Theme) =>
             borderRadius: 0
         },
         header: {
-            // paddingTop: theme.spacing(1),
-            // paddingBottom: theme.spacing(1),
+            paddingTop: theme.spacing(1),
+            paddingBottom: theme.spacing(1),
         }
     })
 );
@@ -28,11 +28,11 @@ const useStyles = makeStyles((theme: Theme) =>
 const IBox = (props: IProps) => {
     const classes = useStyles()
     return (
-        <Card className={classes.root} {...props.cardProps}>
+        <Card className={classes.root} {...props.cardProps} elevation={0}>
             <CardHeader
                 className={classes.header}
                 title={
-                    <Typography variant="h5">
+                    <Typography variant="h6">
                         {props.title}
                     </Typography>
                 }

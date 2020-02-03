@@ -90,13 +90,38 @@ export enum WorkflowStatus {
 }
 
 export enum WorkflowSubStatus {
-    Pending = 'Pending',
+
     UnknownError = 'UnknownError',
+    OperationSucceeded = 'OperationSucceeded',
+
+    Pending = 'Pending',
     Verified = 'Verified',
     ManualVerification = 'ManualVerification',
-    KycCheckFailed = 'KycCheckFailed',
+
+    ContactCreationFailed = 'ContactCreationFailed',
+    CaseUpdateFailed = 'CaseUpdateFailed',
+
+
+    RegulationCheckFailed = 'RegulationCheckFailed',
+    InternalWatchlistFailed = 'InternalWatchlistFailed',
     RiskProfileFailed = 'RiskProfileFailed',
+
+    CifCreationFailed = 'CifCreationFailed',
+    AccountCreationFailed = 'AccountCreationFailed',
+
+    AwaitingDocumentsApproval = 'AwaitingDocumentsApproval',
+    DocumentsValidationFailed = 'DocumentsValidationFailed',
+
+    AwaitingAccountApproval = 'AwaitingAccountApproval',
+    AccountVerificationFailed = 'AccountVerificationFailed',
+
+    AwaitingSignatureUpload = 'AwaitingSignatureUpload',
+    SignatureRejected = 'SignatureRejected',
+
+    AwaitingCaseClosure = 'AwaitingCaseClosure',
+    FailedToCloseCase = 'FailedToCloseCase',
 }
+
 
 export enum ActionStatus {
     Pending = 'Pending',

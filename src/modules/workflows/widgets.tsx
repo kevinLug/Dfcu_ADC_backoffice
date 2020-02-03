@@ -1,35 +1,78 @@
 import React from "react";
 import {ITask, TaskStatus, WorkflowStatus, WorkflowSubStatus} from "./types";
-import {ErrorLabel, SuccessLabel, WarnLabel} from "../../components/widgets";
-import {camelPad} from "../../utils/stringHelpers";
 import {ErrorIcon, SuccessIcon, WarningIcon} from "../../components/xicons";
+import {errorColor, successColor, warningColor} from "../../theme/custom-colors";
+import {Chip} from "@material-ui/core";
 
-export const printWorkflowStatus = (status: WorkflowStatus) => {
-    switch (status) {
+
+export const renderStatus = (value: WorkflowStatus) => {
+    let color = successColor
+    switch (value) {
         case WorkflowStatus.Closed:
-            return <SuccessLabel>{status}</SuccessLabel>
-        case WorkflowStatus.Open:
-            return <WarnLabel>{status}</WarnLabel>
+            color = successColor
+            break
         case WorkflowStatus.Error:
-            return <ErrorLabel>{status}</ErrorLabel>
+            color = errorColor
+            break
+        case WorkflowStatus.Open:
+            color = warningColor
+            break
     }
+
+    return <Chip
+        color='primary'
+        variant='default'
+        size='small'
+        label={value}
+        style={{padding: 0, height: 18, backgroundColor: color, marginBottom: 2}}
+    />
 }
 
-export const printWorkflowSubStatus = (status: WorkflowSubStatus, row?: any) => {
-    switch (status) {
+
+
+export const renderSubStatus = (value: WorkflowSubStatus) => {
+    let color = successColor
+    switch (value) {
         case WorkflowSubStatus.Verified:
-            return <SuccessLabel>{camelPad(status)}</SuccessLabel>
-        case WorkflowSubStatus.KycCheckFailed:
-        case WorkflowSubStatus.RiskProfileFailed:
+            color = successColor
+            break
         case WorkflowSubStatus.UnknownError:
-            return <ErrorLabel>{camelPad(status)}</ErrorLabel>
-        case WorkflowSubStatus.Pending:
+        case WorkflowSubStatus.CaseUpdateFailed:
+        case WorkflowSubStatus.ContactCreationFailed:
+
+        case WorkflowSubStatus.RiskProfileFailed:
+        case WorkflowSubStatus.InternalWatchlistFailed:
+        case WorkflowSubStatus.RegulationCheckFailed:
+
+        case WorkflowSubStatus.CifCreationFailed:
+        case WorkflowSubStatus.AccountCreationFailed:
+
+
+        case WorkflowSubStatus.DocumentsValidationFailed:
+        case WorkflowSubStatus.AccountVerificationFailed:
+        case WorkflowSubStatus.SignatureRejected:
+        case WorkflowSubStatus.FailedToCloseCase:
+            color = errorColor
+            break
         case WorkflowSubStatus.ManualVerification:
-            return <WarnLabel>{camelPad(status)}</WarnLabel>
-        default:
-            return <ErrorLabel>{camelPad(status)}</ErrorLabel>
+        case WorkflowSubStatus.Pending:
+        case WorkflowSubStatus.AwaitingAccountApproval:
+        case WorkflowSubStatus.AwaitingCaseClosure:
+        case WorkflowSubStatus.AwaitingDocumentsApproval:
+        case WorkflowSubStatus.AwaitingSignatureUpload:
+            color = warningColor
+            break
     }
+
+    return <Chip
+        color='primary'
+        variant='default'
+        size='small'
+        label={value}
+        style={{padding: 0, height: 18, backgroundColor: color, marginBottom: 2}}
+    />
 }
+
 
 
 export function printTaskIcon(task: ITask): any {

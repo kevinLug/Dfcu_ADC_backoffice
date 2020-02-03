@@ -4,19 +4,14 @@ import Paper from '@material-ui/core/Paper';
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import clsx from 'clsx';
 import XTable from "../../components/table/XTable";
-import {XHeadCell} from "../../components/table/XTableHead";
 import Grid from '@material-ui/core/Grid';
-import ContactLink from "../../components/ContactLink";
-import ApplicationLink from "../../components/ApplicationLink";
-import {IWorkflowFilter, trimCaseId} from "./types";
-import {printDate, printDateTime} from "../../utils/dateHelpers";
-import {getInitials} from "../../utils/stringHelpers";
-import {printWorkflowStatus, printWorkflowSubStatus} from "./widgets";
-import IBox from "../../components/ibox/IBox";
+import {IWorkflowFilter} from "./types";
 import Filter from "./Filter";
 import Typography from "@material-ui/core/Typography";
 import {search} from "../../utils/ajax";
 import {remoteRoutes} from "../../data/constants";
+import {workflowHeadCells} from "./config";
+import Box from "@material-ui/core/Box";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -41,43 +36,23 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const headCells: XHeadCell[] = [
-    {name: 'id', label: 'ID', render: (value, rec) => <ApplicationLink id={value} name={trimCaseId(value)}/>},
-    {name: 'applicationDate', label: 'Application Date', render: printDateTime},
-    {name: 'status', label: 'Status', render: (data) => printWorkflowStatus(data)},
-    {name: 'subStatus', label: 'SubStatus', render: printWorkflowSubStatus},
-    {
-        name: 'metaData',
-        label: 'Applicant',
-        render: (data) => <ContactLink id={data.applicantId} name={data.applicantName}/>
-    },
-    {
-        name: 'userId',
-        label: 'User',
-        render: (data, {metaData}) => <ContactLink id={data} name={getInitials(metaData.userName)}/>
-    },
-    {
-        name: 'assigneeId',
-        label: 'Assignee',
-        render: (data, {metaData}) => data ? <ContactLink id={data} name={getInitials(metaData.assigneeName)}/> : ''
-    },
-];
 
-const newCells = headCells.filter(it => it.name !== 'assigneeId')
+const newCells = workflowHeadCells.filter(it => it.name !== 'assigneeId')
 
 const Workflows = () => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [newData, setNewData] = useState([]);
     const [data, setData] = useState([]);
 
     const [filter, setFilter] = useState<IWorkflowFilter>({
-        workflowTypes: ['DEMBE','DEMBE-JOINT'],
+        workflowTypes: ['DEMBE', 'DEMBE-JOINT'],
         showNew: false,
         showAssigned: true
     });
     const [newFilter, setNewFilter] = useState<IWorkflowFilter>({
-        workflowTypes: ['DEMBE','DEMBE-JOINT'],
+        workflowTypes: ['DEMBE', 'DEMBE-JOINT'],
         showNew: true,
         showAssigned: false
     });
@@ -89,9 +64,10 @@ const Workflows = () => {
     }, [newFilter])
 
     useEffect(() => {
+        setLoading(true)
         search(remoteRoutes.workflows, filter, resp => {
             setData(resp)
-        })
+        }, undefined, () => setLoading(false))
     }, [filter])
 
     function handleFilterToggle() {
@@ -104,39 +80,48 @@ const Workflows = () => {
 
     return (
         <Navigation>
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <Typography variant='h3'>Applications</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                    <XTable
-                        title="New Applications"
-                        headCells={newCells}
-                        data={newData}
-                        initialRowsPerPage={5}
-                    />
-                </Grid>
-                <Grid item xs={12}>
+            <Grid container spacing={3}>
+                <Grid item xs={open ? 9 : 12} className={clsx(classes.content, {[classes.contentShift]: open})}>
                     <Grid container spacing={2}>
-                        <Grid item xs={open ? 9 : 12} className={clsx(classes.content, {[classes.contentShift]: open})}>
+                        <Grid item sm={12} >
+                            <Typography variant='h4'>New Applications</Typography>
+                        </Grid>
+                        <Grid item xs={12}>
                             <XTable
-                                title="All Applications"
-                                headCells={headCells}
+                                headCells={newCells}
+                                data={newData}
+                                initialRowsPerPage={3}
+                                usePagination={true}
+                            />
+                        </Grid>
+                        <Grid item sm={12}>
+                            <Typography variant='h4'>All Applications</Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <XTable
+                                headCells={workflowHeadCells}
                                 data={data}
                                 onFilterToggle={handleFilterToggle}
                             />
                         </Grid>
-                        <Grid item xs={3} style={{display: open ? "block" : "none"}}>
-                            <Paper className={classes.drawer}>
-                                <IBox title='Filter'>
-                                    <Filter onFilter={handleFilter}/>
-                                </IBox>
+                    </Grid>
+                </Grid>
+                <Grid item xs={3} style={{display: open ? "block" : "none"}}>
+                    <Grid container spacing={2}>
+                        <Grid item sm={12}>
+                            <Typography variant='h4'>&nbsp;</Typography>
+                        </Grid>
+                        <Grid item sm={12}>
+                            <Paper elevation={0} style={{borderRadius: 0}}>
+                                <Box p={2}>
+                                    <Filter onFilter={handleFilter} loading={loading}/>
+                                </Box>
                             </Paper>
                         </Grid>
                     </Grid>
+
                 </Grid>
             </Grid>
-
         </Navigation>
     );
 }

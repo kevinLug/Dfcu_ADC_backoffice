@@ -3,7 +3,7 @@ import Typography from "@material-ui/core/Typography";
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
-import {createStyles, Divider, makeStyles, Theme} from "@material-ui/core";
+import {createStyles, Divider, makeStyles, Theme, useTheme} from "@material-ui/core";
 import {IAction} from "../types";
 import Grid from "@material-ui/core/Grid";
 import ActionStatusView from "./ActionStatusView";
@@ -30,14 +30,16 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
-const ActionView = ({action,taskName,workflowId}: IProps) => {
+const ActionView = ({action, taskName, workflowId}: IProps) => {
     const classes = useStyles()
+    const theme = useTheme()
     let ViewComponent: any = BaseTemplate
     if (action.template && loader.hasOwnProperty(action.template)) {
         ViewComponent = loader[action.template];
     }
     return (
-        <Card className={classes.root}>
+        <Card className={classes.root} elevation={0}>
+            <Divider/>
             <CardHeader
                 className={classes.header}
                 title={
@@ -49,14 +51,14 @@ const ActionView = ({action,taskName,workflowId}: IProps) => {
                         </Grid>
                         <Grid item xs={6}>
                             <Grid container spacing={0} justify='flex-end'>
-                                <ActionStatusView data={action} />
+                                <ActionStatusView data={action}/>
                             </Grid>
                         </Grid>
                     </Grid>
                 }
             />
             <Divider/>
-            <CardContent>
+            <CardContent style={{paddingBottom: theme.spacing(1)}}>
                 <Suspense fallback={<Loading/>}>
                     <ViewComponent action={action} workflowId={workflowId} taskName={taskName}/>
                 </Suspense>

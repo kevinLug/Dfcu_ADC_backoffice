@@ -7,6 +7,8 @@ import Grid from "@material-ui/core/Grid";
 import {printDateTime} from "../../../../utils/dateHelpers";
 import DataLabel from "../../../../components/DataLabel";
 import DataValue from "../../../../components/DataValue";
+import {ContactCategory, renderName} from "../../../contacts/types";
+import ContactLink from "../../../../components/links/ContactLink";
 
 interface IProps {
     action: IAction
@@ -41,19 +43,22 @@ const KycCheck = ({action}: IProps) => {
     if (action.status === ActionStatus.Error && hasError(dataString)) {
         return <Error action={action}/>
     }
+
     const data: IKycResponse = JSON.parse(dataString);
+    const contact: any = JSON.parse(action.inputData);
+    contact.category = ContactCategory.Person
     const fields = [
+        {
+            label: 'Name',
+            value: <ContactLink id={contact.id} name={renderName(contact)}/>
+        },
         {
             label: 'Check Type',
             value: data.checkType
         },
         {
             label: 'Check Status',
-            value: data.checkStatus
-        },
-        {
-            label: 'Value',
-            value: data.value
+            value: `${data.checkStatus}/${data.value}`
         },
         {
             label: 'Date',

@@ -41,7 +41,7 @@ class WorkflowView extends Component<IProps, any> {
                 {tasks.map((task) => (
                     <Step key={task.id} active={true} ref={ref => this.myRefs[task.id] = ref}>
                         <StepLabel StepIconComponent={printTaskIcon(task)}>
-                            <Paper className={classes.stepPaper}>
+                            <Paper className={classes.stepPaper} elevation={0}>
                                 <Grid container spacing={0} className={classes.stepLabel}>
                                     <Grid item xs={6}>
                                         <Flex>

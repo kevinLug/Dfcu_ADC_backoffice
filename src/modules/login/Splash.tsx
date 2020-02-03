@@ -3,7 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import GridWrapper from "../../components/GridWrapper";
 import {useDispatch} from "react-redux";
-import {handleLogin, handleLogout} from "../../data/coreActions";
+import {handleLogin, handleLogout} from "../../data/redux/coreActions";
 import authService from "../../data/oidc/AuthService";
 import {User} from "oidc-client";
 

@@ -5,7 +5,7 @@ import ContentSwitch from "./modules/ContentSwitch";
 import Login from "./modules/login/LoginSimple";
 import Splash from "./modules/login/Splash";
 import {useSelector} from 'react-redux'
-import {ICoreState} from "./data/coreReducer";
+import {ICoreState} from "./data/redux/coreReducer";
 
 
 const App: React.FC = () => {

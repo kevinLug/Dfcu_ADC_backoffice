@@ -29,7 +29,7 @@ export const localRoutes = {
 
 const servers: any = {
     dev: {
-        Auth: 'https://localhost:44313',
+        Auth: 'https://authservice-test.laboremus.no',
         Crm: 'https://crmservice-test.laboremus.no',
         Case: 'http://localhost:6001',
         Kyc: "https://kyc-connector-staging.onboarding.dfcugroup.com",
@@ -96,7 +96,19 @@ export const remoteRoutes = {
     register: authURL + '/api/auth/register',
     resetPass: authURL + '/reset',
 
-    contacts: crmURL + '/api/crm/contact',
+
+    contacts: crmURL + '/api/contact',
+    contactSearch: crmURL + '/api/contact/search',
+    contactById: crmURL + '/api/contact/id',
+    contactsPerson: crmURL + '/api/person',
+    contactsChc: crmURL + '/api/person/chc',
+    contactsEmail: crmURL + '/api/email',
+    contactsTag: crmURL + '/api/tag',
+    contactsUrl: crmURL + '/api/url',
+    contactsPhone: crmURL + '/api/phone',
+    contactsAddress: crmURL + '/api/address',
+    contactsIdentification: crmURL + '/api/identification',
+
     workflows: caseHandlingURL + '/api/workflows',
     workflowsManual: caseHandlingURL + '/api/manual',
     samplePdf: caseHandlingURL + '/sample.pdf',

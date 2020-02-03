@@ -10,18 +10,18 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Dialog from '@material-ui/core/Dialog';
 import PersonIcon from '@material-ui/icons/Person';
 import Avatar from '@material-ui/core/Avatar';
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {IState} from "../data/types";
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import MailIcon from '@material-ui/icons/Mail';
 import HiddenJs from "@material-ui/core/Hidden/HiddenJs";
 import {getInitials} from "../utils/stringHelpers";
-import {ICoreState} from "../data/coreReducer";
-import authService from "../data/oidc/AuthService";
+import {handleLogout} from "../data/redux/coreActions";
 
 export const BarView = (props: any) => {
-    const {user={}}: ICoreState = useSelector((state: any) => state.core)
-
+    const profile = useSelector((state: IState) => state.core.user)
+    const dispatch = useDispatch();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const menuOpen = Boolean(anchorEl);
@@ -31,7 +31,7 @@ export const BarView = (props: any) => {
     }
 
     function doLogout() {
-        authService.logout()
+        dispatch(handleLogout())
     }
 
     function closeDialog() {
@@ -57,12 +57,11 @@ export const BarView = (props: any) => {
             <AccountCircle className={props.textClass}/>
             &nbsp;
             <HiddenJs xsDown>
-                <Typography className={props.textClass}>{user.name}</Typography>
+                <Typography className={props.textClass}>{profile.fullName}</Typography>
             </HiddenJs>
             <HiddenJs smUp>
-                <Typography className={props.textClass}>{getInitials(user.name)}</Typography>
+                <Typography className={props.textClass}>{getInitials(profile.fullName)}</Typography>
             </HiddenJs>
-
         </IconButton>
         <Menu
             id="menu-appbar"
@@ -90,17 +89,15 @@ export const BarView = (props: any) => {
                             <PersonIcon/>
                         </Avatar>
                     </ListItemAvatar>
-                    <ListItemText primary={user.fullName}/>
+                    <ListItemText primary={profile.fullName}/>
                 </ListItem>
                 <ListItem button>
                     <ListItemIcon>
                         <MailIcon/>
                     </ListItemIcon>
-                    <ListItemText primary={user.email}/>
+                    <ListItemText primary={profile.email}/>
                 </ListItem>
             </List>
         </Dialog>
     </div>
 }
-
-

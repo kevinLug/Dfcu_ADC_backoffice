@@ -18,7 +18,7 @@ import {post} from "../../../../../utils/ajax";
 import {remoteRoutes} from "../../../../../data/constants";
 import {Dispatch} from "redux";
 import {useDispatch} from "react-redux";
-import {fetchWorkflowAsync, startWorkflowFetch} from "../../../../../data/workflows/reducer";
+import {fetchWorkflowAsync, startWorkflowFetch} from "../../../../../data/redux/workflows/reducer";
 import {docMetadata} from "./documentsRules";
 
 interface IProps {

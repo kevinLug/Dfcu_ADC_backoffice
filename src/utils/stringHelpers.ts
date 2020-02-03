@@ -1,5 +1,7 @@
 export const getInitials = (fullName = '') => {
     try {
+        if(!fullName)
+            return ''
         return fullName.split(' ').map(it => it[0].toUpperCase()).join("")
     } catch (e) {
         return ''
@@ -18,6 +20,14 @@ export function getRandomStr(max=16) {
 
 export function enumToArray(typeData: any) {
     return Object.keys(typeData)
+}
+
+export const trimString = (data: string, count = 10) => {
+    if(!data)
+        return ''
+    if (data.length > count)
+        return data.substr(0, count) + "..."
+    return data
 }
 
 // Split pascal case

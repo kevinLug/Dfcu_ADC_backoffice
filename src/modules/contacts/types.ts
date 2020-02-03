@@ -8,10 +8,8 @@ export interface IPerson {
     firstName: string
     lastName: string
     middleName: string
-    about: string
     gender: string
     civilStatus: string
-    avatar: string
     dateOfBirth: Date
 }
 
@@ -22,9 +20,9 @@ export interface IEmail {
     isPrimary: boolean
 }
 
-export enum IdentificationCategory
-{
+export enum IdentificationCategory {
     Nin = 'Nin',
+    Tin = 'Tin',
     Passport = 'Passport',
     DrivingPermit = 'DrivingPermit',
     VillageCard = 'VillageCard',
@@ -32,8 +30,7 @@ export enum IdentificationCategory
     Other = 'Other'
 }
 
-export enum CivilStatus
-{
+export enum CivilStatus {
     Other = 'Other',
     Single = 'Single',
     Married = 'Married',
@@ -52,17 +49,60 @@ export enum PhoneCategory {
     Fax = "Fax",
     Other = "Other"
 }
+
 export enum EmailCategory {
     Work = 'Work',
     Personal = 'Personal',
     Other = 'Other',
 }
 
+export enum ContactCategory {
+    Person = 'Person',
+    Company = 'Company'
+}
+
+export enum CompanyCategory {
+    Limited = 'Limited',
+    Ngo = 'Ngo',
+    Other = 'Other'
+}
+
+
+export enum RelationshipCategory {
+    Mother = 'Mother',
+    Father = 'Father',
+    Daughter = 'Daughter',
+    Son = 'Son',
+    Fiancee = 'Fiancee',
+    Sister = 'Sister',
+    Brother = 'Brother',
+    Other = 'Other',
+}
+
 export interface IPhone {
-    id?: string
+    id: string
     value: string
     category: string
     isPrimary: boolean
+}
+
+export interface IContactTag {
+    id: string
+    value: string
+}
+
+export interface IContactUrl {
+    id: string
+    category: string
+    value: string
+}
+
+export interface IBankAccount {
+    id: string
+    bank: string
+    branch: string
+    name: string
+    number: string
 }
 
 export interface IIdentification {
@@ -70,7 +110,7 @@ export interface IIdentification {
     value: string
     cardNumber?: string
     issuingCountry: string
-    startDate: Date
+    issueDate: Date
     expiryDate: Date
     category: string
     isPrimary: boolean
@@ -101,26 +141,32 @@ export interface IAddress {
 }
 
 export interface ICompany {
+    category: CompanyCategory
     name: string
+    dateOfPayment: Date
+    numberOfEmployees: number
 }
 
-export interface IMetaData {
-    churchLocation: string
-    cellGroup: string
+export interface IFinancialData {
+    monthlyNetSalary: number
+    monthlyGrossSalary: number
+    dateOfEmployment: Date
 }
 
 export interface IContact {
-    id?: string
-    category: string
+    id: string
+    category: ContactCategory
     person: IPerson
     emails: IEmail[]
     phones: IPhone[]
     events: IContactEvent[]
     addresses: IAddress[]
     identifications: IIdentification[]
-    company?: ICompany
-    tags?: string[]
-    metaData: IMetaData
+    company: ICompany
+    tags: IContactTag[]
+    urls: IContactUrl[]
+    bankAccounts: IBankAccount[]
+    financialData: IFinancialData
 }
 
 export interface IContactQuery {
@@ -130,31 +176,48 @@ export interface IContactQuery {
 }
 
 
-export interface IConsumerLoan {
-    id?: string
-    lender: string
-    amount: number
-    interestRate: number
-    durationInMonths: number
+enum TeamRole {
+    Leader = "Leader",
+    Member = "Member"
 }
 
-export const fakeLoan = (): IConsumerLoan => {
+export interface ITeamMember {
+    id?: string
+    name: string
+    details: string
+    role: TeamRole
+}
 
+export interface IContactsFilter {
+    query?: string
+    skip?: number
+    limit?: number
+}
+
+export const fakeTeam = (): ITeamMember => {
     return {
         id: uuid(),
-        lender: faker.company.companyName(),
-        amount: faker.random.number({max: 100, min: 3}) * 1000,
-        durationInMonths: faker.random.number(36),
-        interestRate: faker.random.number({max: 2000, min: 1100}) / 100,
+        name: faker.company.companyName(),
+        details: faker.company.catchPhrase(),
+        role: TeamRole.Member
     }
 }
 
-export const fakeContact = (): IContact => {
+export const fakeContact = (): IContact | null => {
     const firstName = faker.name.firstName();
     const lastName = faker.name.lastName();
+
     return {
+        bankAccounts: [],
+        financialData: {
+            dateOfEmployment: new Date(),
+            monthlyGrossSalary: 1200000,
+            monthlyNetSalary:565656
+        },
+        tags: [],
+        urls: [],
         id: uuid(),
-        category: 'Person',
+        category: ContactCategory.Person,
         person: {
             firstName: firstName,
             middleName: faker.name.lastName(),
@@ -162,20 +225,18 @@ export const fakeContact = (): IContact => {
             civilStatus: 'Single',
             salutation: 'Mr',
             dateOfBirth: faker.date.past(),
-            about: faker.lorem.sentence(),
-            avatar: faker.image.avatar(),
-            gender: 'Male'
+            gender: Gender.Male
         },
         phones: [
             {
                 id: uuid(),
-                category: 'Mobile',
+                category: PhoneCategory.Mobile,
                 isPrimary: false,
                 value: faker.phone.phoneNumber('077#######')
             },
             {
                 id: uuid(),
-                category: 'Office',
+                category: PhoneCategory.Mobile,
                 isPrimary: false,
                 value: faker.phone.phoneNumber('031#######')
             }
@@ -184,7 +245,7 @@ export const fakeContact = (): IContact => {
         emails: [
             {
                 id: uuid(),
-                category: 'Personal',
+                category: EmailCategory.Work,
                 isPrimary: false,
                 value: faker.internet.email(firstName, lastName)
             }
@@ -196,42 +257,49 @@ export const fakeContact = (): IContact => {
                 isPrimary: false,
                 country: faker.address.country(),
                 district: faker.address.city(),
-                county: faker.address.city()
+                county: faker.address.city(),
+                freeForm: faker.address.streetName()
             }
         ],
         identifications: [
             {
                 id: uuid(),
-                category: 'Nin',
+                category: IdentificationCategory.Nin,
                 value: getRandomStr(),
-                startDate: faker.date.past(),
+                cardNumber: getRandomStr(5),
+                issueDate: faker.date.past(),
                 expiryDate: faker.date.future(),
                 issuingCountry: 'Uganda',
                 isPrimary: true,
             }
         ],
         events: [],
-        metaData: {
-            cellGroup: '',
-            churchLocation: '',
+        company:{
+            name:'',
+            category:CompanyCategory.Limited,
+            numberOfEmployees:45,
+            dateOfPayment: new Date()
         }
     };
 };
 
 
-export const renderName = (person: IPerson, salutation?: boolean): string => {
-    const name: string =
-        salutation ?
-            `${person.salutation || ''} ${person.firstName || ''} ${person.middleName || ''} ${person.lastName || ''}`
-            : `${person.firstName || ''} ${person.middleName || ''} ${person.lastName || ''}`;
+export const renderName = (contact: IContact, salutation?: boolean): string => {
+    if (contact.category === ContactCategory.Person) {
+        const person = contact.person
+        const name: string =
+            salutation ?
+                `${person.salutation || ''} ${person.firstName || ''} ${person.middleName || ''} ${person.lastName || ''}`
+                : `${person.firstName || ''} ${person.middleName || ''} ${person.lastName || ''}`;
 
-    return name.trim().replace(/\s+/g, ' ');
+        return name.trim().replace(/\s+/g, ' ');
+    } else {
+        console.log(contact)
+        return contact.company.name
+    }
+
 };
 
-export const renderName1 = (person: IPerson): string => {
-    const name= `${person.firstName || ''} ${person.middleName || ''} ${person.lastName || ''}`;
-    return name.trim().replace(/\s+/g, ' ');
-};
 
 export const printAddress = (data: IAddress): string => {
     const address: string =

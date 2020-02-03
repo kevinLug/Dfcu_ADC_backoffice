@@ -7,7 +7,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import {Form, Formik, FormikActions} from 'formik';
 import {useDispatch} from 'react-redux'
-import {handleLogin} from "../../data/coreActions";
+import {handleLogin} from "../../data/redux/coreActions";
 
 import * as yup from "yup";
 import {post} from "../../utils/ajax";

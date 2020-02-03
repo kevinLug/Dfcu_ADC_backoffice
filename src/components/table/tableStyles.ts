@@ -11,13 +11,10 @@ export const useTableStyles = makeStyles((theme: Theme) =>
             borderRadius: 0
         },
         table: {
-            minWidth: 750,
+            minWidth: "100%",
         },
         tableWrapper: {
-            overflowX: 'auto',
-            paddingTop: 0,
-            paddingBottom: 0,
-            padding: theme.spacing(2),
+            overflowX: 'auto'
         },
         visuallyHidden: {
             border: 0,
@@ -31,7 +28,7 @@ export const useTableStyles = makeStyles((theme: Theme) =>
             width: 1,
         },
         tableHead: {
-            backgroundColor: grey[100]
+            backgroundColor: 'white'
         }
     }),
 );

@@ -3,7 +3,7 @@ import Grid from "@material-ui/core/Grid";
 import {ActionStatus, canRunAction, DocumentType, getDocumentUrl, IManualDecision, IWorkflow} from "../../../types";
 import DataValue from "../../../../../components/DataValue";
 import {getInitials} from "../../../../../utils/stringHelpers";
-import UserLink from "../../../../../components/UserLink";
+import UserLink from "../../../../../components/links/UserLink";
 import {errorColor, successColor} from "../../../../../theme/custom-colors";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
@@ -19,7 +19,7 @@ import {hasValue} from "../../../../../components/inputs/inputHelpers";
 import Toast from "../../../../../utils/Toast";
 import {post} from "../../../../../utils/ajax";
 import {remoteRoutes} from "../../../../../data/constants";
-import {fetchWorkflowAsync, startWorkflowFetch} from "../../../../../data/workflows/reducer";
+import {fetchWorkflowAsync, startWorkflowFetch} from "../../../../../data/redux/workflows/reducer";
 import {Dispatch} from "redux";
 import Box from "@material-ui/core/Box";
 import PdfViewer from "../../../../../components/PdfViewer";
@@ -194,7 +194,7 @@ const Index = (props: ITemplateProps) => {
                                 Upload Signature
                             </Button>
                         </Grid>
-                        <EditDialog open={open} onClose={handleClose} title='Upload Signature' maxWidth='md' fullWidth>
+                        <EditDialog open={open} onClose={handleClose} title='Upload Signature' >
                             <VerifyForm onClose={handleClose} {...props}/>
                         </EditDialog>
                     </Grid>

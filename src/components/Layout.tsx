@@ -68,6 +68,7 @@ const useStyles = makeStyles((theme: Theme) =>
             height: "100%",
         },
         body: {
+            backgroundColor: grey[50],
             padding: theme.spacing(2),
             [theme.breakpoints.only('xs')]: {
                 padding: 0,

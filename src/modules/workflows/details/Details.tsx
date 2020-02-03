@@ -8,9 +8,7 @@ import {createStyles, Grid, makeStyles, Theme} from "@material-ui/core";
 
 import {IWorkflow, trimCaseId} from "../types";
 import Typography from "@material-ui/core/Typography";
-import IBox from "../../../components/ibox/IBox";
 import {Flex} from "../../../components/widgets";
-import {printWorkflowStatus, printWorkflowSubStatus} from "../widgets";
 import Summary from "./Summary";
 import WorkflowView from "./WorkflowView";
 import {put} from "../../../utils/ajax";
@@ -19,8 +17,11 @@ import Button from "@material-ui/core/Button";
 import LoaderDialog from "../../../components/LoaderDialog";
 import {Dispatch} from "redux";
 import {useDispatch, useSelector} from "react-redux";
-import {fetchWorkflowAsync, IWorkflowState, startWorkflowFetch} from "../../../data/workflows/reducer";
-import {backgroundGrey, successColor} from "../../../theme/custom-colors";
+import {fetchWorkflowAsync, IWorkflowState, startWorkflowFetch} from "../../../data/redux/workflows/reducer";
+import {successColor} from "../../../theme/custom-colors";
+import {renderStatus, renderSubStatus} from "../widgets";
+import Box from "@material-ui/core/Box";
+import Divider from "@material-ui/core/Divider";
 
 
 interface IProps extends RouteComponentProps {
@@ -30,17 +31,19 @@ interface IProps extends RouteComponentProps {
 const useWfStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
-            padding: 0
+            padding: 0,
+            backgroundColor: 'transparent'
         },
         stepPaper: {
             borderRadius: 0,
         },
         stepLabel: {
-            backgroundColor: backgroundGrey,
             padding: theme.spacing(1)
         },
         stepContent: {
-            paddingRight: 0
+            paddingRight: 0,
+            paddingBottom: theme.spacing(1)
+
         },
         taskIcon: {
             marginTop: 1
@@ -113,7 +116,7 @@ const Details = (props: IProps) => {
     function handleTaskClick(id: string) {
         if (mainRef && mainRef.current) {
             const ref = mainRef.current.myRefs[id]
-            viewRef.current.scrollTo(0, ref.offsetTop-100)
+            viewRef.current.scrollTo(0, ref.offsetTop - 100)
         }
     }
 
@@ -128,28 +131,41 @@ const Details = (props: IProps) => {
                             <Typography variant='h3'>
                                 Case #{trimCaseId(caseData.id)}
                             </Typography>
-                            <div style={{marginTop: 4}}>&nbsp;&nbsp;{printWorkflowStatus(caseData.status)}</div>
-                            <div style={{marginTop: 4}}>&nbsp;&nbsp;{printWorkflowSubStatus(caseData.subStatus)}</div>
+                            <div style={{marginTop: 4}}>&nbsp;&nbsp;{renderStatus(caseData.status)}</div>
+                            <div style={{marginTop: 4}}>&nbsp;&nbsp;{renderSubStatus(caseData.subStatus)}</div>
                         </Flex>
 
                     </Grid>
                     <Grid item xs={12} sm={9}>
-                        <IBox
-                            title='Details'
-                            action={<Button size='small' variant="contained" color='primary' onClick={onResume}>Resume
-                                Case</Button>}
-                        >
+                        <Box display='flex' py={1}>
+                            <Box flexGrow={1} pt={1}>
+                                <Typography variant='h5'>Details</Typography>
+                            </Box>
+                            <Box>
+                                <Button size='small' variant="outlined" color='primary' onClick={onResume}>
+                                    Preview Docs
+                                </Button>
+                                &nbsp;
+                                <Button size='small' variant="outlined" color='primary' onClick={onResume}>
+                                    Resume Case
+                                </Button>
+                            </Box>
+                        </Box>
+                        <Divider/>
+                        <Box pt={1}>
                             <WorkflowView data={caseData} classes={wfClasses} ref={mainRef}/>
-                        </IBox>
+                        </Box>
                     </Grid>
-                    <Grid item xs={12} sm={3} >
-                        <div >
-                            <IBox
-                                title='Case Summary'
-                            >
-                                <Summary data={caseData} onTaskClick={handleTaskClick}/>
-                            </IBox>
-                        </div>
+                    <Grid item xs={12} sm={3}>
+                        <Box display='flex' py={1}>
+                            <Box flexGrow={1} pt={1}>
+                                <Typography variant='h5'>Summary</Typography>
+                            </Box>
+                        </Box>
+                        <Divider/>
+                        <Box pt={1}>
+                            <Summary data={caseData} onTaskClick={handleTaskClick}/>
+                        </Box>
                     </Grid>
                 </Grid>
             </div>
