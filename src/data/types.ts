@@ -4,7 +4,7 @@ import {ICrmState} from "./redux/contacts/reducer";
 export interface BaseModel {
     id: string
     createdAt: Date
-    lastUpdated?: Date
+    lastUpdated?: Date | null
     isDeleted: boolean
 }
 

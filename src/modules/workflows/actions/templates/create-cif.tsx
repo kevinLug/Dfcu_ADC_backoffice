@@ -9,6 +9,7 @@ import {ContactCategory, renderName, toTitleCase} from "../../../contacts/types"
 import ContactLink from "../../../../components/links/ContactLink";
 import {DateIcon, ErrorIcon, SuccessIcon} from "../../../../components/xicons";
 import IconLabel from "../../../../components/IconLabel";
+import {hasValue} from "../../../../components/inputs/inputHelpers";
 
 interface IProps {
     action: IAction
@@ -19,28 +20,25 @@ export enum IKycStatus {
     NotRun = 'NotRun', InProgress = 'InProgress', Passed = 'Passed', NotPassed = 'NotPassed', Error = '', Override = 'Error'
 }
 
-interface IKycResponse {
+interface ICifResponse {
     id: string
-    referenceId: string
-    checkType: string
-    checkStatus: IKycStatus
-    value?: string
-    comment?: string
-    data: any
-    runDate?: string
+    type: string
+    cifId: string
+    dupResponse: any
+    message?: string
 }
 
 
 const hasError = (outData: string): boolean => {
     try {
-        const data: IKycResponse = JSON.parse(outData);
-        return !data.checkStatus
+        const data: ICifResponse = JSON.parse(outData);
+        return !hasValue(data.cifId)
     } catch (e) {
         return true
     }
 }
 
-const KycCheck = ({action}: IProps) => {
+const CreateCif = ({action}: IProps) => {
     if (action.status === ActionStatus.Pending) {
         return <Pending text="Pending Execution"/>
     }
@@ -48,8 +46,8 @@ const KycCheck = ({action}: IProps) => {
     if (action.status === ActionStatus.Error && hasError(dataString)) {
         return <Error action={action}/>
     }
-    const data: IKycResponse = JSON.parse(dataString);
-    const contact: any = JSON.parse(action.inputData);
+    const data: ICifResponse = JSON.parse(dataString);
+    const {contact}: any = JSON.parse(action.inputData);
     contact.category = ContactCategory.Person
     return (
         <Grid container>
@@ -58,17 +56,15 @@ const KycCheck = ({action}: IProps) => {
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
                 <IconLabel icon={
-                    data.checkStatus === IKycStatus.Passed ?
-                        <SuccessIcon fontSize='inherit'/> :
-                        <ErrorIcon fontSize='inherit'/>
-                } label={`${data.checkStatus}/${data.value}`}/>
+                    <SuccessIcon fontSize='inherit'/>
+                } label={`${data.type}: ${data.cifId}`}/>
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
-                <IconLabel icon={<DateIcon fontSize='inherit'/>} label={printDateTime(data.runDate)}/>
+                <IconLabel icon={<DateIcon fontSize='inherit'/>} label={printDateTime(action.runDate)}/>
             </Grid>
         </Grid>
     );
 }
 
 
-export default KycCheck;
+export default CreateCif;

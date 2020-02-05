@@ -28,7 +28,12 @@ export interface IWorkflowFilter {
 
 export interface IAction extends BaseModel {
     name: string,
+    type: string,
+    parameterType: string,
+    service: string,
+    endPoint: string,
     template?: string,
+    errorTemplate?: string|null,
     title: string
     description: string
     roles: string[]

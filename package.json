@@ -52,7 +52,7 @@
   },
   "scripts": {
     "api-test": "set REACT_APP_ENV=sit && ts-node -O \"{\\\"module\\\": \\\"commonjs\\\"}\" ./src/api-stress/stress.ts",
-    "start": "set REACT_APP_ENV=dev && react-scripts start",
+    "start": "set REACT_APP_ENV=sit && react-scripts start",
     "build": "react-scripts build",
     "build-test": "set REACT_APP_ENV=test && react-scripts build",
     "build-sit": "set REACT_APP_ENV=sit && react-scripts build",
@@ -60,8 +60,9 @@
     "build-production": "set REACT_APP_ENV=production && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "storybook": "start-storybook",
-    "deploy": "msdeploy --verb sync --allowUntrusted true --source contentPath=%npm_package_config_sourcePath% --dest contentPath=%npm_package_config_destPath%,ComputerName=%npm_package_config_ComputerName%,UserName=%npm_package_config_UserName%,Password=%npm_package_config_Password%,includeAcls=False"
+    "deploy": "msdeploy --verb sync --allowUntrusted true --source contentPath=%npm_package_config_sourcePath% --dest contentPath=%npm_package_config_destPath%,ComputerName=%npm_package_config_ComputerName%,UserName=%npm_package_config_UserName%,Password=%npm_package_config_Password%,includeAcls=False",
+    "storybook": "start-storybook -p 9009 -s public",
+    "build-storybook": "build-storybook -s public"
   },
   "config": {
     "ComputerName": "",
@@ -86,16 +87,11 @@
     ]
   },
   "devDependencies": {
-    "@babel/core": "^7.8.4",
-    "@storybook/addon-actions": "^5.3.10",
-    "@storybook/addon-info": "^5.3.10",
-    "@storybook/addon-links": "^5.3.10",
-    "@storybook/addons": "^5.3.10",
-    "@storybook/react": "^5.3.10",
-    "@types/storybook__addon-info": "^4.1.2",
-    "@types/storybook__react": "^4.0.2",
-    "babel-loader": "^8.0.6",
-    "msdeploy": "1.1.0",
-    "react-docgen-typescript-loader": "^3.6.0"
+    "@storybook/addon-actions": "^6.0.0-alpha.6",
+    "@storybook/addon-links": "^6.0.0-alpha.6",
+    "@storybook/addons": "^6.0.0-alpha.6",
+    "@storybook/preset-create-react-app": "^1.5.2",
+    "@storybook/react": "^6.0.0-alpha.6",
+    "msdeploy": "1.1.0"
   }
 }

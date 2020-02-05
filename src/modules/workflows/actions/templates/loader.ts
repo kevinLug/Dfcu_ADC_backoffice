@@ -11,6 +11,7 @@ const loader: any = {
     "verify-account": React.lazy(() => import("./verify-account")),
     "signature-proof": React.lazy(() => import("./signature-proof")),
     "close-workflow": React.lazy(() => import("./close-workflow")),
+    "create-cif": React.lazy(() => import("./create-cif")),
 }
 
 export default loader

@@ -53,6 +53,7 @@ export const fakeTask = (): ITask => {
 
 export const fakeAction = (): IAction => {
     return {
+        endPoint: "", parameterType: "", service: "", type: "",
         id: uuid(),
         name: faker.company.catchPhrase(),
         title: faker.company.catchPhrase(),

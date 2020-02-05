@@ -2,9 +2,16 @@ import React from "react";
 import WatchLaterIcon from "@material-ui/icons/WatchLater";
 import MUIErrorIcon from "@material-ui/icons/Error";
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CalendarIcon from '@material-ui/icons/CalendarToday';
 import {errorColor, successColor, warningColor} from "../theme/custom-colors";
 import SvgIcon, {SvgIconProps} from "@material-ui/core/SvgIcon";
 
+
+export function DateIcon({completed, active,error, ...props}: any) {
+    return (
+        <CalendarIcon {...props} />
+    );
+}
 
 export function SuccessIcon({completed, active,error, ...props}: any) {
     return (

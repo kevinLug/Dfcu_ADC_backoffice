@@ -4,10 +4,10 @@ import {remoteRoutes} from "../constants";
 
 class AuthService {
     public userManager: UserManager;
-
+    private clientRoot=`${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`
     constructor() {
 
-        const clientRoot = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`
+        const clientRoot = this.clientRoot
         const settings = {
             client_id: 'dfcu:backoffice',
             redirect_uri: `${clientRoot}/signin-callback.html`,
