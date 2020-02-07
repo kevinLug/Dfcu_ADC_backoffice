@@ -1,6 +1,7 @@
 import * as faker from "faker";
 import {enumToArray, getRandomStr} from "../utils/stringHelpers";
 import {CivilStatus, Gender} from "../modules/contacts/types";
+
 const uuid = require('uuid/v4');
 
 const makeApplicant =()=>{

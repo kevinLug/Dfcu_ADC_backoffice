@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import Grid from "@material-ui/core/Grid";
 import InfoIcon from "@material-ui/icons/Info";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import {ActionStatus, canRunAction, IWorkflow, sampleDocuments} from "../../../types";
+import {ActionStatus, canRunAction, IWorkflow} from "../../../types";
 import DataValue from "../../../../../components/DataValue";
 import {Flex} from "../../../../../components/widgets";
 import {errorColor, successColor, warningColor} from "../../../../../theme/custom-colors";
@@ -16,12 +16,11 @@ import {useSelector} from "react-redux";
 import Pending from "../pending";
 
 
-
-
 const Index = (props: ITemplateProps) => {
     const {action, taskName} = props
-    const docs = sampleDocuments
+
     const workflow: IWorkflow = useSelector((state: any) => state.workflows.workflow)
+    const docs = workflow.documents
     const canRun = canRunAction(action.name, taskName, workflow)
     const [preview, setPreview] = useState(false)
     const [verify, setVerify] = useState(false)

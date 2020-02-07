@@ -1,5 +1,6 @@
 import React from 'react';
 import {linkColor} from "../../theme/custom-colors";
+
 interface IProps {
     value:string
 }

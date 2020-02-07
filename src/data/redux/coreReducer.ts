@@ -3,21 +3,30 @@ import {ILoginResponse} from "../types";
 
 export interface ICoreState {
     splash: boolean,
-    user: any|null,
+    user: any | null,
     isLoading: boolean,
+    documents: any
 }
 
 const initialState: ICoreState = {
     splash: true,
     user: null,
     isLoading: true,
+    documents: {}
+}
+
+export interface IStoreDoc {
+    id: string
+    url: string
 }
 
 export const coreConstants = {
     coreLogin: "CORE_LOGIN",
     startLoading: "CORE_START_LOADING",
     stopLoading: "CORE_STOP_LOADING",
-    coreLogout: "CORE_LOGOUT"
+    coreLogout: "CORE_LOGOUT",
+
+    coreCreateDocument: "CORE_CREATE_DOC"
 }
 
 export default function reducer(state = initialState, action: any) {
@@ -27,6 +36,12 @@ export default function reducer(state = initialState, action: any) {
             localStorage.setItem(AUTH_TOKEN_KEY, token)
             localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user))
             return {...state, user, isLoading: false, splash: false}
+        }
+
+        case coreConstants.coreCreateDocument: {
+            const {id, url}: IStoreDoc = action.payload
+            const documents = {...state.documents, [id]: url}
+            return {...state, documents}
         }
 
         case coreConstants.coreLogout: {

@@ -1,10 +1,10 @@
 import React from "react";
 import {Field, FieldProps, getIn} from 'formik';
 import 'date-fns';
-import { useTheme } from '@material-ui/core/styles';
+import {useTheme} from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import DateFnsUtils from '@date-io/date-fns';
-import {KeyboardDatePicker, DatePicker, MuiPickersUtilsProvider,} from '@material-ui/pickers'
+import {DatePicker, KeyboardDatePicker, MuiPickersUtilsProvider,} from '@material-ui/pickers'
 import {hasValue} from "./inputHelpers";
 import {dateFormat} from "../../utils/dateHelpers";
 

@@ -1,12 +1,11 @@
 import React from 'react';
-import {Divider, Grid} from "@material-ui/core";
+import {Grid} from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import XSearchInput from "../../components/inputs/XSearchInput";
 import Hidden from "@material-ui/core/Hidden";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
-import theme from "../../theme";
 
 interface IProps {
     title?: string

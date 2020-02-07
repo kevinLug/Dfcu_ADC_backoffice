@@ -1,6 +1,6 @@
 import React from 'react';
 import * as yup from "yup";
-import { reqString} from "../../../../data/validations";
+import {reqString} from "../../../../data/validations";
 import {phoneCategories} from "../../../../data/comboCategories";
 import {FormikActions} from "formik";
 import Grid from "@material-ui/core/Grid";

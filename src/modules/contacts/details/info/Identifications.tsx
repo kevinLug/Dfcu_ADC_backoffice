@@ -1,12 +1,9 @@
 import React, {useState} from 'react';
-import {IContact, IIdentification, printAddress} from "../../types";
-import {printDate} from "../../../../utils/dateHelpers";
+import {IContact, IIdentification} from "../../types";
 import EditIconButton, {AddIconButton, DeleteIconButton} from "../../../../components/EditIconButton";
-import {Divider} from "@material-ui/core";
 import ListIcon from "@material-ui/icons/List";
 import EditDialog from "../../../../components/EditDialog";
 import IdentificationEditor from "../editors/IdentificationEditor";
-import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import SectionTitle from "./SectionTitle";

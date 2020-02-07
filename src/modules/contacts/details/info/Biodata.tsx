@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {ContactCategory, IContact} from "../../types";
-import DetailView, {DetailViewX, IRec} from "../../../../components/DetailView";
+import {DetailViewX, IRec} from "../../../../components/DetailView";
 import {printDate} from "../../../../utils/dateHelpers";
 import PersonIcon from '@material-ui/icons/PermIdentity';
 import EditIconButton from "../../../../components/EditIconButton";

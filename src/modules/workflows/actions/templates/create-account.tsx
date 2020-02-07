@@ -4,9 +4,10 @@ import {ActionStatus, IAction} from "../../types";
 import Error from "./error";
 import Pending from "./pending";
 import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
-import DetailView, {IRec} from "../../../../components/DetailView";
-import RawData from "./RawData";
+import DataValue from "../../../../components/DataValue";
+import IconLabel from "../../../../components/IconLabel";
+import {DateIcon, SuccessIcon} from "../../../../components/xicons";
+import {printDateTime} from "../../../../utils/dateHelpers";
 
 interface IProps {
     action: IAction
@@ -27,26 +28,18 @@ const CreateAccount = ({action}: IProps) => {
     const dataString = action.outputData
     const data: IAccount = JSON.parse(dataString);
     const request: any = JSON.parse(action.inputData);
-    const fields: IRec[] = [
-        {
-            label: 'CIF Number',
-            value: data.cifId
-        },
-        {
-            label: 'Account Number',
-            value: data.accountNumber
-        }
-
-    ]
     return (
-        <Grid container spacing={2}>
-            <Grid item xs={12}>
-                <Typography>Account Details</Typography>
-                <Divider/>
-                <DetailView data={fields} columns={2}/>
+        <Grid container>
+            <Grid item xs={12} sm={6} md={4}>
+                <DataValue>{request.acctName}&nbsp;<Typography variant='caption'>(Account Name)</Typography></DataValue>
             </Grid>
-            <Grid item xs={12}>
-                <RawData action={action}/>
+            <Grid item xs={12} sm={6} md={4}>
+                <IconLabel icon={
+                    <SuccessIcon fontSize='inherit'/>
+                } label={data.accountNumber}/>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+                <IconLabel icon={<DateIcon fontSize='inherit'/>} label={printDateTime(action.runDate)}/>
             </Grid>
         </Grid>
     );

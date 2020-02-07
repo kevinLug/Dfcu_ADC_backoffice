@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
 import Grid from "@material-ui/core/Grid";
-import {ActionStatus, canRunAction, DocumentType, getDocumentUrl, IManualDecision, IWorkflow} from "../../../types";
+import {ActionStatus, canRunAction, IManualDecision, IWorkflow} from "../../../types";
 import DataValue from "../../../../../components/DataValue";
 import {getInitials} from "../../../../../utils/stringHelpers";
 import UserLink from "../../../../../components/links/UserLink";
 import {errorColor, successColor} from "../../../../../theme/custom-colors";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
-import {Button, TextField} from "@material-ui/core";
+import {Button, Dialog, DialogContent, DialogTitle, TextField, Typography} from "@material-ui/core";
 import EditDialog from "../../../../../components/EditDialog";
 import Pending from "../pending";
 import {useDispatch, useSelector} from "react-redux";
@@ -23,6 +23,13 @@ import {fetchWorkflowAsync, startWorkflowFetch} from "../../../../../data/redux/
 import {Dispatch} from "redux";
 import Box from "@material-ui/core/Box";
 import PdfViewer from "../../../../../components/PdfViewer";
+import {IState} from "../../../../../data/types";
+import Error from "../error";
+import Alert from "@material-ui/lab/Alert";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
 
 
 interface IFormProps {
@@ -35,10 +42,22 @@ const VerifyForm = (props: IFormProps & ITemplateProps) => {
     const initialState: any = {remarks: '', approved: false}
     const [metaData, setMetaData] = useState<any>(initialState)
     const [loading, setLoading] = useState<boolean>(false)
+    const workflow: IWorkflow = useSelector((state: any) => state.workflows.workflow)
+    const documents = useSelector((state: IState) => state.core.documents)
+
+
+    const form = workflow.documents.filter(it => it.fileName.indexOf('ApplicationForm') > -1)[0]
+    const photo = workflow.documents.filter(it => it.fileName.indexOf('PassportPhoto') > -1)[0]
+    if (!form || !photo) {
+        return <Box p={3}>
+            <Alert severity="error"><Typography>Failed to read documents</Typography></Alert>
+        </Box>
+    }
 
     const handleTextChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
         setMetaData({...metaData, [name]: event.target.value});
     };
+
 
     const handleCbChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
         setMetaData({...metaData, [name]: event.target.checked});
@@ -85,12 +104,12 @@ const VerifyForm = (props: IFormProps & ITemplateProps) => {
     const width = 630 * magnifier
     return (
         <Grid container spacing={1} style={{height}} alignContent='center' justify='center'>
-            <Grid style={{height: '100%',width}}>
+            <Grid style={{height: '100%', width}}>
                 <Box p={2} css={{height: '100%'}}>
-                    <PdfViewer/>
+                    <PdfViewer data={documents[form.id]}/>
                 </Box>
             </Grid>
-            <Grid style={{height: '100%', width:250}}>
+            <Grid style={{height: '100%', width: 250}}>
                 <Box
                     display='flex'
                     flexDirection="column-reverse"
@@ -103,8 +122,8 @@ const VerifyForm = (props: IFormProps & ITemplateProps) => {
                             <Grid item xs={12}>
                                 <img
                                     style={{height: 150, width: 150}}
-                                    src={getDocumentUrl({id:'',name:'',type:DocumentType.Image})}
-                                    alt='Photo'
+                                    src={documents[photo.id]}
+                                    alt='Profile Photo'
                                 />
                             </Grid>
                         </Grid>
@@ -194,9 +213,9 @@ const Index = (props: ITemplateProps) => {
                                 Upload Signature
                             </Button>
                         </Grid>
-                        <EditDialog open={open} onClose={handleClose} title='Upload Signature' >
+                        <VerifyDialog open={open} onClose={handleClose} title='Upload Signature'>
                             <VerifyForm onClose={handleClose} {...props}/>
-                        </EditDialog>
+                        </VerifyDialog>
                     </Grid>
                 }
                 {
@@ -227,5 +246,19 @@ const Index = (props: ITemplateProps) => {
         </Grid>
     );
 }
+
+interface IDialogProps {
+    open: boolean
+    onClose: () => any
+    title: string
+    children?: any
+}
+
+const VerifyDialog = (props: IDialogProps) => <Dialog open={props.open} onClose={props.onClose} maxWidth="xl">
+    <DialogTitle>{props.title}</DialogTitle>
+    <DialogContent>
+        {props.children}
+    </DialogContent>
+</Dialog>
 
 export default Index;

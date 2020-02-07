@@ -7,9 +7,10 @@ import {printDateTime} from "../../../../utils/dateHelpers";
 import DataValue from "../../../../components/DataValue";
 import {ContactCategory, renderName, toTitleCase} from "../../../contacts/types";
 import ContactLink from "../../../../components/links/ContactLink";
-import {DateIcon, ErrorIcon, SuccessIcon} from "../../../../components/xicons";
+import {DateIcon, SuccessIcon} from "../../../../components/xicons";
 import IconLabel from "../../../../components/IconLabel";
 import {hasValue} from "../../../../components/inputs/inputHelpers";
+import {Typography} from "@material-ui/core";
 
 interface IProps {
     action: IAction
@@ -57,7 +58,7 @@ const CreateCif = ({action}: IProps) => {
             <Grid item xs={12} sm={6} md={4}>
                 <IconLabel icon={
                     <SuccessIcon fontSize='inherit'/>
-                } label={`${data.type}: ${data.cifId}`}/>
+                } label={<div>{data.cifId}&nbsp;<Typography variant='caption'>({data.type})</Typography></div>}/>
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
                 <IconLabel icon={<DateIcon fontSize='inherit'/>} label={printDateTime(action.runDate)}/>

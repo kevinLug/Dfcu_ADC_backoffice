@@ -1,5 +1,4 @@
 import {remoteRoutes} from "../data/constants";
-import {fakeDembeRequest, fakeLoanRequest, fakeOnBoardRequest} from "./fakeCase";
 import {testLogin} from "./login";
 import * as superagent from "superagent";
 import {fakeJointRequest} from "./test-joint";

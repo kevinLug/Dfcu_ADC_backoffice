@@ -125,3 +125,14 @@ export const del = (url: string, callBack: CallbackFunction, errorCallBack?: Err
         .timeout(timeout)
         .end(handleResponse(callBack, errorCallBack, endCallBack))
 }
+
+
+export const downLoad = (url: string, callBack: CallbackFunction, errorCallBack?: ErrorCallback, endCallBack?: EndCallback) => {
+    superagent.get(url)
+        .set('Authorization', `Bearer ${getToken()}`)
+        .responseType('blob')
+        .end(handleResponse(callBack, errorCallBack, endCallBack))
+}
+
+
+

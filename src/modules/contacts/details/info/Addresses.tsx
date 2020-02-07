@@ -4,13 +4,9 @@ import {IAddress, IContact, printAddress} from "../../types";
 import EditIconButton, {AddIconButton, DeleteIconButton} from "../../../../components/EditIconButton";
 import EditDialog from "../../../../components/EditDialog";
 import AddressEditor from "../editors/AddressEditor";
-import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
-import Divider from "@material-ui/core/Divider";
-import PersonIcon from "@material-ui/icons/PermIdentity";
 import SectionTitle from "./SectionTitle";
-import {printDate} from "../../../../utils/dateHelpers";
 import SectionItem, {SectionItemContent} from "./SectionItem";
 import {trimString} from "../../../../utils/stringHelpers";
 

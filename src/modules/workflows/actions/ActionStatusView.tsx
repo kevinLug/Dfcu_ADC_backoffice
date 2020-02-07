@@ -1,5 +1,5 @@
 import React, {Fragment} from "react";
-import {ActionStatus, IAction, ITask, TaskStatus} from "../types";
+import {ActionStatus, IAction} from "../types";
 import Typography from "@material-ui/core/Typography";
 import {printDateTime} from "../../../utils/dateHelpers";
 import {ErrorIcon, SuccessIcon, WarningIcon} from "../../../components/xicons";

@@ -1,4 +1,3 @@
-import grey from '@material-ui/core/colors/grey';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 
 export const useTableStyles = makeStyles((theme: Theme) =>

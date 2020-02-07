@@ -3,7 +3,6 @@ import {Grid} from "@material-ui/core";
 import {ActionStatus, IAction} from "../../types";
 import Error from "./error";
 import Pending from "./pending";
-import Typography from "@material-ui/core/Typography";
 import RawData from "./RawData";
 import {printDateTime} from "../../../../utils/dateHelpers";
 import DataLabel from "../../../../components/DataLabel";

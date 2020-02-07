@@ -1,6 +1,5 @@
 import React from 'react';
-import {Box, Paper} from "@material-ui/core";
-import {colors} from "@material-ui/core";
+import {Box, colors, Paper} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 
 interface IProps {

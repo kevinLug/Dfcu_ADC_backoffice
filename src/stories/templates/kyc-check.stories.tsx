@@ -1,6 +1,4 @@
 import React from 'react';
-import {action} from '@storybook/addon-actions';
-import {BrowserRouter as Router} from 'react-router-dom'
 import {Button} from '@storybook/react/demo';
 import KycCheck from "../../modules/workflows/actions/templates/kyc-check";
 import {ActionStatus, IAction} from "../../modules/workflows/types";

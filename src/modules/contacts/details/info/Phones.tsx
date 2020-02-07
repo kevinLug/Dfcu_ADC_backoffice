@@ -4,7 +4,6 @@ import {IContact, IPhone} from "../../types";
 import EditIconButton, {AddIconButton, DeleteIconButton} from "../../../../components/EditIconButton";
 import EditDialog from "../../../../components/EditDialog";
 import PhoneEditor from "../editors/PhoneEditor";
-import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import SectionTitle from "./SectionTitle";

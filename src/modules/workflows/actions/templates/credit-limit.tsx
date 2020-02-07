@@ -1,5 +1,5 @@
 import React from 'react';
-import {createStyles, makeStyles, Theme, Typography} from "@material-ui/core";
+import {createStyles, makeStyles} from "@material-ui/core";
 import RawData from "./RawData";
 import {ActionStatus, IAction} from "../../types";
 import Error from "./error";

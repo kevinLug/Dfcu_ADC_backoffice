@@ -1,9 +1,8 @@
 import * as React from "react";
 import Navigation from "../../components/Layout";
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
 import XTextInput from "../../components/inputs/XTextInput";
-import {Form, Formik, FormikActions} from 'formik';
+import {FormikActions} from 'formik';
 import XSelectInput from "../../components/inputs/XSelectInput";
 import XCheckBoxInput from "../../components/inputs/XCheckBoxInput";
 import XRadioInput from "../../components/inputs/XRadioInput";

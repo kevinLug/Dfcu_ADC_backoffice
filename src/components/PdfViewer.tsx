@@ -3,6 +3,7 @@ import {createStyles, makeStyles, Theme} from "@material-ui/core";
 
 
 interface IProps {
+    data: string
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -20,12 +21,11 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const PdfViewer = (props: IProps) => {
+const PdfViewer = ({data}: IProps) => {
     const classes = useStyles()
-    const url = 'http://localhost:6001/sample.pdf'
     return (
         <div className={classes.root}>
-            <iframe src={url} className={classes.iframe} scrolling='no'/>
+            <iframe src={data} className={classes.iframe} scrolling='no'/>
         </div>
     );
 }

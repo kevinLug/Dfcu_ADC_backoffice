@@ -1,7 +1,4 @@
 import {BaseModel} from "../../data/types";
-import * as faker from 'faker';
-import {remoteRoutes} from "../../data/constants";
-import {getRandomStr} from "../../utils/stringHelpers";
 
 export interface IWorkflowInclude {
     caseData?: boolean
@@ -81,6 +78,7 @@ export interface IWorkflow extends BaseModel {
     runDate?: Date
 
     tasks: ITask[]
+    documents: IDocument[]
     caseData: any
     metaData: any
 
@@ -146,9 +144,11 @@ export enum DocumentType {
 }
 
 export interface IDocument {
-    type: DocumentType
     id: string
     name: string
+    fileName: string
+    contentType: string
+    sizeInMbs: number
 }
 
 export interface IManualDecision {
@@ -186,28 +186,3 @@ export const printTaskStatus = (status: WorkflowStatus) => {
 export const trimCaseId = (data: string) => {
     return data.substr(0, 8)
 }
-
-export const getDocumentUrl = (doc: IDocument): string => {
-    if (doc.type === DocumentType.Image) {
-        return faker.image.people()
-    } else {
-        return remoteRoutes.samplePdf
-    }
-}
-
-export const sampleDocuments: IDocument[] = [
-    {
-        id: getRandomStr(10),
-        type: DocumentType.Image,
-        name: "Passport Photo",
-
-    },
-    {
-        id: getRandomStr(10),
-        type: DocumentType.Pdf,
-        name: "Application Form"
-    }
-]
-
-
-

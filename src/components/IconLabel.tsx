@@ -4,7 +4,7 @@ import DataValue from "./DataValue";
 
 interface IProps {
     icon: any
-    label: string
+    label: any
 }
 
 const IconLabel = (props: IProps) => {

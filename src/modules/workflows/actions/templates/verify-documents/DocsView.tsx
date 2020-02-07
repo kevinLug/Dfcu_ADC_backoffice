@@ -7,9 +7,11 @@ import Button from '@material-ui/core/Button';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import PdfViewer from "../../../../../components/PdfViewer";
-import {DocumentType, getDocumentUrl, IDocument} from "../../../types";
+import {IDocument} from "../../../types";
 import {Divider} from "@material-ui/core";
 import Box from "@material-ui/core/Box";
+import {useSelector} from "react-redux";
+import {IState} from "../../../../../data/types";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -39,40 +41,37 @@ interface IProps {
 
 export default function DocsView({docs}: IProps) {
     const classes = useStyles();
-
     const [activeStep, setActiveStep] = React.useState(0);
     const maxSteps = docs.length;
-
+    const documents = useSelector((state: IState) => state.core.documents)
     const handleNext = () => {
         setActiveStep(prevActiveStep => prevActiveStep + 1);
     };
-
     const handleBack = () => {
         setActiveStep(prevActiveStep => prevActiveStep - 1);
     };
-
     const document: IDocument = docs[activeStep]
     return (
         <div style={{height: '100%'}}>
             <Paper square elevation={0} className={classes.header}>
                 <Typography variant='h5' display='inline'>Documents: <Typography
-                    variant="body1"  display='inline' >{document.name}</Typography></Typography>
+                    variant="body1" display='inline'>{document.name}</Typography></Typography>
                 <Box mt={1}>
                     <Divider/>
                 </Box>
             </Paper>
             <div className={classes.body}>
                 {
-                    document.type === DocumentType.Image ? (
+                    document.contentType.indexOf('image') > -1 ? (
                         <div key={document.id} className={classes.imgHolder}>
                             <img
                                 className={classes.img}
-                                src={getDocumentUrl(document)}
+                                src={documents[document.id]}
                                 alt={document.name}
                             />
                         </div>
                     ) : (
-                        <PdfViewer key={document.id}/>
+                        <PdfViewer key={document.id} data={documents[document.id]}/>
                     )
                 }
             </div>
@@ -82,13 +81,15 @@ export default function DocsView({docs}: IProps) {
                 variant="text"
                 activeStep={activeStep}
                 nextButton={
-                    <Button size="small" color='primary' variant='outlined' onClick={handleNext} disabled={activeStep === maxSteps - 1}>
+                    <Button size="small" color='primary' variant='outlined' onClick={handleNext}
+                            disabled={activeStep === maxSteps - 1}>
                         Next
                         <KeyboardArrowRight/>
                     </Button>
                 }
                 backButton={
-                    <Button size="small" color='primary' variant='outlined' onClick={handleBack} disabled={activeStep === 0}>
+                    <Button size="small" color='primary' variant='outlined' onClick={handleBack}
+                            disabled={activeStep === 0}>
                         <KeyboardArrowLeft/>
                         Back
                     </Button>
@@ -97,4 +98,3 @@ export default function DocsView({docs}: IProps) {
         </div>
     );
 }
-

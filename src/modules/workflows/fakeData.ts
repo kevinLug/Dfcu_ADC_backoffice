@@ -28,6 +28,7 @@ export const fakeCase = (): IWorkflow => {
         subStatus: faker.random.arrayElement(enumToArray(WorkflowSubStatus)) as WorkflowSubStatus,
         subStatusComment: faker.lorem.sentence(),
         tasks: [],
+        documents: [],
         userId: uuid(),
         assigneeId: uuid()
     };

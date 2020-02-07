@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {RouteComponentProps, withRouter} from "react-router";
 import Navigation from "../../../components/Layout";
 import {getRouteParam} from "../../../utils/routHelpers";
@@ -78,18 +78,15 @@ const Details = (props: IProps) => {
     const [blocker, setBlocker] = useState<boolean>(false)
     const {loading, workflow}: IWorkflowState = useSelector((state: any) => state.workflows)
     const dispatch: Dispatch<any> = useDispatch();
-    const mainRef: any = useRef<any>()
-    const viewRef: any = useRef<any>()
-
-    useEffect(() => {
-        dispatch(startWorkflowFetch())
-        dispatch(fetchWorkflowAsync(caseId))
-    }, [caseId])
 
     function loadData() {
         dispatch(startWorkflowFetch())
         dispatch(fetchWorkflowAsync(caseId))
     }
+
+    useEffect(() => {
+        loadData()
+    }, [caseId,dispatch])
 
     function onResume() {
         const url = `${remoteRoutes.workflows}/${caseId}`
@@ -113,17 +110,12 @@ const Details = (props: IProps) => {
             <Error text='Failed load case data'/>
         </Navigation>
 
-    function handleTaskClick(id: string) {
-        if (mainRef && mainRef.current) {
-            const ref = mainRef.current.myRefs[id]
-            viewRef.current.scrollTo(0, ref.offsetTop - 100)
-        }
-    }
+
 
     const caseData = workflow as IWorkflow
     return (
         <Navigation>
-            <div className={classes.root} ref={viewRef}>
+            <div className={classes.root} >
                 <LoaderDialog open={blocker} onClose={() => setBlocker(false)}/>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
@@ -153,7 +145,7 @@ const Details = (props: IProps) => {
                         </Box>
                         <Divider/>
                         <Box pt={1}>
-                            <WorkflowView data={caseData} classes={wfClasses} ref={mainRef}/>
+                            <WorkflowView data={caseData} classes={wfClasses} />
                         </Box>
                     </Grid>
                     <Grid item xs={12} sm={3}>
@@ -164,7 +156,7 @@ const Details = (props: IProps) => {
                         </Box>
                         <Divider/>
                         <Box pt={1}>
-                            <Summary data={caseData} onTaskClick={handleTaskClick}/>
+                            <Summary data={caseData} />
                         </Box>
                     </Grid>
                 </Grid>
