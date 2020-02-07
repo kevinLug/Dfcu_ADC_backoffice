@@ -17,10 +17,6 @@ interface IProps {
 }
 
 
-export enum IKycStatus {
-    NotRun = 'NotRun', InProgress = 'InProgress', Passed = 'Passed', NotPassed = 'NotPassed', Error = '', Override = 'Error'
-}
-
 interface ICifResponse {
     id: string
     type: string

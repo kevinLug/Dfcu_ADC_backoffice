@@ -10,7 +10,6 @@ interface IProps {
 }
 
 const ContactLink = ({id, name}: IProps) => {
-    const theme =useTheme()
     return (
         <Link style={{textDecoration: 'none' ,color:linkColor}} to={`${localRoutes.contacts}/${id}`}>{name}</Link>
     );

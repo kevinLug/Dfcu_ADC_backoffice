@@ -10,7 +10,7 @@ export const fakeOnBoardRequest = (): any => {
         "type": "emata-on-boarding",
         "referenceNumber": "4505945",
         "externalReference": uuid(),
-        "applicationDate": faker.date.past(),
+        "applicationDate": new Date(),
         "caseData": {
             "person": {
                 "memberId": uuid(),
