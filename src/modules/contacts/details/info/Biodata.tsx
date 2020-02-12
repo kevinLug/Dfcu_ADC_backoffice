@@ -1,12 +1,14 @@
 import React, {useState} from 'react';
 import {ContactCategory, IContact} from "../../types";
-import {DetailViewX, IRec} from "../../../../components/DetailView";
+import DetailView, {IRec} from "../../../../components/DetailView";
 import {printDate} from "../../../../utils/dateHelpers";
 import PersonIcon from '@material-ui/icons/PermIdentity';
 import EditIconButton from "../../../../components/EditIconButton";
 import EditDialog from "../../../../components/EditDialog";
 import PersonEditor from "../editors/PersonEditor";
 import Grid from "@material-ui/core/Grid";
+import Box from "@material-ui/core/Box";
+import Divider from "@material-ui/core/Divider";
 import SectionTitle from "./SectionTitle";
 
 interface IProps {
@@ -18,7 +20,7 @@ export const idFields = (data: IContact): IRec[] => {
         const {person} = data
         return [
             {
-                label: 'D.O.B',
+                label: 'BirthDay',
                 value: printDate(person.dateOfBirth)
             },
             {
@@ -43,6 +45,7 @@ export const idFields = (data: IContact): IRec[] => {
             }
         ]
     }
+
 }
 
 const BioData = ({data}: IProps) => {
@@ -59,16 +62,19 @@ const BioData = ({data}: IProps) => {
     const displayData = idFields(data);
 
     return (
-        <Grid container spacing={0}>
+        <Grid container spacing={1}>
             <Grid item xs={12}>
                 <SectionTitle
                     title='Basic data'
-                    editButton={<EditIconButton onClick={handleClick} style={{marginTop:5}}/>}
-                    icon={<PersonIcon fontSize='small'/>}
+                    editButton={<EditIconButton onClick={handleClick}/>}
+                    icon={<PersonIcon fontSize='inherit'/>}
                 />
+                <Divider/>
             </Grid>
-            <Grid item xs={12} style={{paddingTop:0}}>
-                <DetailViewX data={displayData}/>
+            <Grid item xs={12}>
+                <Box p={1}>
+                    <DetailView data={displayData} />
+                </Box>
             </Grid>
             <EditDialog title='Edit Basic Data' open={dialog} onClose={handleClose}>
                 <PersonEditor data={data.person} contactId={id} done={handleClose}/>

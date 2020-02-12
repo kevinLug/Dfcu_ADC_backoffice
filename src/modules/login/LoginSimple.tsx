@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Button} from "@material-ui/core";
 import Avatar from '@material-ui/core/Avatar';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -10,6 +10,7 @@ import {useLoginStyles} from "./loginStyles";
 
 function Login() {
     const classes = useLoginStyles();
+    const [loading,setLoading]=useState(false)
     return (
         <main className={classes.main}>
             <CssBaseline/>
@@ -24,8 +25,12 @@ function Login() {
                     <Button
                         onClick={(event)=> {
                             event.preventDefault();
-                            authService.login()
+                            setLoading(true)
+                            authService.login().finally(()=>{
+                                setLoading(false)
+                            })
                         }}
+                        disabled={loading}
                         type="submit"
                         fullWidth
                         variant="contained"

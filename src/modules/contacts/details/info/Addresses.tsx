@@ -4,11 +4,14 @@ import {IAddress, IContact, printAddress} from "../../types";
 import EditIconButton, {AddIconButton, DeleteIconButton} from "../../../../components/EditIconButton";
 import EditDialog from "../../../../components/EditDialog";
 import AddressEditor from "../editors/AddressEditor";
+import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
+import Divider from "@material-ui/core/Divider";
+import PersonIcon from "@material-ui/icons/PermIdentity";
 import SectionTitle from "./SectionTitle";
-import SectionItem, {SectionItemContent} from "./SectionItem";
-import {trimString} from "../../../../utils/stringHelpers";
+import {printDate} from "../../../../utils/dateHelpers";
+import SectionItem from "./SectionItem";
 
 interface IProps {
     data: IContact
@@ -42,14 +45,14 @@ const Addresses = (props: IProps) => {
     }
 
     return (
-        <Grid container spacing={0}>
+        <Grid container spacing={1}>
             <Grid item xs={12}>
                 <SectionTitle
                     title='Addresses'
                     editButton={<AddIconButton onClick={handleNew}/>}
-                    icon={ <PinDropIcon fontSize='small'/>}
+                    icon={ <PinDropIcon fontSize='inherit'/>}
                 />
-                {/*<Divider/>*/}
+                <Divider/>
             </Grid>
             {addresses.map(it => (
                 <Grid item xs={12} key={it.id}>
@@ -59,7 +62,10 @@ const Addresses = (props: IProps) => {
                             <DeleteIconButton onClick={handleDelete(it)}/>
                         </Box>
                     }>
-                        <SectionItemContent value={trimString(printAddress(it),15)} category={it.category}/>
+                        <Box flexGrow={1}>
+                            <Typography variant='body1'>{printAddress(it)}</Typography>
+                            <Typography variant='caption'>{it.category}</Typography>
+                        </Box>
                     </SectionItem>
                 </Grid>
             ))}

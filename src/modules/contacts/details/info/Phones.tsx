@@ -4,10 +4,14 @@ import {IContact, IPhone} from "../../types";
 import EditIconButton, {AddIconButton, DeleteIconButton} from "../../../../components/EditIconButton";
 import EditDialog from "../../../../components/EditDialog";
 import PhoneEditor from "../editors/PhoneEditor";
+import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
+import Divider from "@material-ui/core/Divider";
 import SectionTitle from "./SectionTitle";
-import SectionItem, {SectionItemContent} from "./SectionItem";
+import ListIcon from "@material-ui/icons/List";
+import {trimString} from "../../../../utils/stringHelpers";
+import SectionItem from "./SectionItem";
 
 interface IProps {
     data: IContact
@@ -39,24 +43,27 @@ const Phones = (props: IProps) => {
     const {phones, id = ''} = props.data
 
     return (
-        <Grid container spacing={0}>
-            <Grid item xs={12} >
+        <Grid container spacing={1}>
+            <Grid item xs={12}>
                 <SectionTitle
                     title='Phones'
-                    editButton={<AddIconButton onClick={handleNew} style={{marginTop:5}}/>}
-                    icon={ <PhoneIcon fontSize='small' />}
+                    editButton={<AddIconButton onClick={handleNew}/>}
+                    icon={ <PhoneIcon fontSize='inherit' />}
                 />
-                {/*<Divider/>*/}
+                <Divider/>
             </Grid>
             {phones.map(it => (
-                <Grid item xs={12} key={it.id} style={{paddingTop:0}}>
+                <Grid item xs={12} key={it.id}>
                     <SectionItem buttons={
                         <Box>
                             <EditIconButton onClick={handleClick(it)}/>
                             <DeleteIconButton onClick={handleDelete(it)}/>
                         </Box>
                     }>
-                        <SectionItemContent value={it.value} category={it.category}/>
+                        <Box flexGrow={1}>
+                            <Typography variant='body1'>{it.value}</Typography>
+                            <Typography variant='caption'>{it.category}</Typography>
+                        </Box>
                     </SectionItem>
                 </Grid>
             ))}

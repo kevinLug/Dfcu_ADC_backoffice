@@ -17,13 +17,18 @@ const SectionTitle = ({title, editButton, icon}: IProps) => {
         setCanEdit(false)
     }
     return (
-        <Box display="flex"
+        <Box display="flex" px={1} py={1}
              onMouseEnter={handleEntered}
              onMouseLeave={handleLeave}
-             className='has-edit-icon'
+            className='has-hidden-icon'
         >
-            <Box pt={1}>
-                <Typography variant='body2'><b>{title.toUpperCase()}</b>&nbsp;&nbsp;</Typography>
+            <Box display='flex' flexGrow={1} pt={1}>
+                <Box >
+                    <Typography variant='body1'>{icon}</Typography>
+                </Box>
+                <Box >
+                    <Typography variant='body2'>&nbsp;<b>{title}</b></Typography>
+                </Box>
             </Box>
             {editButton &&
             <Box>

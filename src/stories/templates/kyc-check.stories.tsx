@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button} from '@storybook/react/demo';
-import KycCheck from "../../modules/workflows/actions/templates/kyc-check";
+import Index from "../../modules/workflows/actions/templates/kyc-check";
 import {ActionStatus, IAction} from "../../modules/workflows/types";
 import StoryWrapper from "../StoryWrapper";
 
@@ -40,7 +40,7 @@ const actionOk: IAction = {
 }
 export const RegulatorySuccess = () => (
     <StoryWrapper>
-        <KycCheck action={actionOk}/>
+        <Index action={actionOk} taskName="" workflowId=''/>
     </StoryWrapper>
 );
 
@@ -71,7 +71,7 @@ export const RegulatoryError = () => {
     return (
 
         <StoryWrapper>
-            <KycCheck action={data}/>
+            <Index action={data} taskName='' workflowId=''/>
         </StoryWrapper>
     );
 };

@@ -30,8 +30,8 @@ class AuthService {
         return this.userManager.getUser();
     }
 
-    public login(): Promise<void> {
-        return this.userManager.signinRedirect();
+    public async login(): Promise<void> {
+        await this.userManager.signinRedirect();
     }
 
     public renewToken(): Promise<User> {

@@ -10,14 +10,14 @@ export interface IWorkflowFilter {
     id?: string
     referenceNumber?: string
     externalReference?: string
-    userId?: boolean
-    applicant?: boolean
-    assignee?: boolean
+    userId?: string
+    applicant?: string
+    assignee?: string
     showNew?: boolean
     showAssigned?: boolean
     statuses?: string[]
-    from?: Date
-    to?: Date
+    from?: Date|null
+    to?: Date|null
     subStatuses?: string[]
     workflowTypes?: string[]
     include?: IWorkflowInclude

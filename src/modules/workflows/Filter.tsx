@@ -8,7 +8,8 @@ import TextField from '@material-ui/core/TextField';
 import PSelectInput from "../../components/plain-inputs/PSelectInput";
 import PDateInput from "../../components/plain-inputs/PDateInput";
 import {enumToArray} from "../../utils/stringHelpers";
-import {WorkflowStatus} from "./types";
+import {IWorkflowFilter, WorkflowStatus, WorkflowSubStatus} from "./types";
+import {printDate} from "../../utils/dateHelpers";
 
 interface IProps {
     onFilter: (data: any) => any
@@ -16,16 +17,15 @@ interface IProps {
 }
 
 const Filter = ({onFilter, loading}: IProps) => {
-    const [data, setData] = useState({
-
+    const [data, setData] = useState<IWorkflowFilter>({
         from: null,
         to: null,
-        status: '',
-        subStatus: '',
-        type: '',
+        statuses: [],
+        subStatuses: [],
+        workflowTypes: [],
         applicant: '',
         assignee: '',
-        user: ''
+        userId: ''
     })
 
     function submitForm(values: any) {
@@ -41,6 +41,10 @@ const Filter = ({onFilter, loading}: IProps) => {
     }
 
     const handleValueChange = (name: string) => (value: any) => {
+        if (name === 'from' || name === 'to') {
+            value = value ? value.toISOString() : value
+        }
+        console.log("Value Change", {name, value})
         const newData = {...data, [name]: value}
         setData({...newData})
         submitForm(newData)
@@ -51,7 +55,7 @@ const Filter = ({onFilter, loading}: IProps) => {
             <Grid item xs={12}>
                 <PDateInput
                     name="from"
-                    value={data['from']}
+                    value={data['from'] || null}
                     onChange={handleValueChange('from')}
                     label="From"
                     variant="inline"
@@ -61,7 +65,7 @@ const Filter = ({onFilter, loading}: IProps) => {
             <Grid item xs={12}>
                 <PDateInput
                     name="to"
-                    value={data['to']}
+                    value={data['to'] || null}
                     onChange={handleValueChange('to')}
                     label="To"
                     variant="inline"
@@ -70,9 +74,10 @@ const Filter = ({onFilter, loading}: IProps) => {
             </Grid>
             <Grid item xs={12}>
                 <PSelectInput
-                    name="status"
-                    value={data['status']}
+                    name="statuses"
+                    value={data['statuses']}
                     onChange={handleChange}
+                    multiple
                     label="Status"
                     variant="outlined"
                     size='small'
@@ -81,21 +86,23 @@ const Filter = ({onFilter, loading}: IProps) => {
             </Grid>
             <Grid item xs={12}>
                 <PSelectInput
-                    name="subStatus"
-                    value={data['subStatus']}
+                    name="subStatuses"
+                    value={data['subStatuses']}
                     onChange={handleChange}
+                    multiple
                     label="Sub Status"
                     variant="outlined"
                     size='small'
-                    options={toOptions(enumToArray(WorkflowStatus))}
+                    options={toOptions(enumToArray(WorkflowSubStatus))}
                 />
             </Grid>
 
             <Grid item xs={12}>
                 <PSelectInput
-                    name="type"
-                    value={data['type']}
+                    name="workflowTypes"
+                    value={data['workflowTypes']}
                     onChange={handleChange}
+                    multiple
                     label="Account Type"
                     variant="outlined"
                     size='small'
@@ -128,8 +135,8 @@ const Filter = ({onFilter, loading}: IProps) => {
             </Grid>
             <Grid item xs={12}>
                 <TextField
-                    name="user"
-                    value={data['user']}
+                    name="userId"
+                    value={data['userId']}
                     onChange={handleChange}
                     label="User/Agent"
                     type="text"

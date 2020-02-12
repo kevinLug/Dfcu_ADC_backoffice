@@ -4,12 +4,13 @@ import {IContact, IEmail} from "../../types";
 import EmailEditor from "../editors/EmailEditor";
 import EditIconButton, {AddIconButton, DeleteIconButton} from "../../../../components/EditIconButton";
 import EditDialog from "../../../../components/EditDialog";
+import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
+import Divider from "@material-ui/core/Divider";
 import {trimString} from "../../../../utils/stringHelpers";
 import SectionTitle from "./SectionTitle";
-import SectionItem, {SectionItemContent} from "./SectionItem";
-import EmailLink from "../../../../components/links/EmalLink";
+import SectionItem from "./SectionItem";
 
 interface IProps {
     data: IContact
@@ -40,24 +41,27 @@ const Emails = (props: IProps) => {
 
 
     return (
-        <Grid container spacing={0}>
+        <Grid container spacing={1}>
             <Grid item xs={12}>
                 <SectionTitle
                     title='Emails'
-                    editButton={<AddIconButton onClick={handleNew} style={{marginTop:5}}/>}
-                    icon={ <MailIcon fontSize='small'/>}
+                    editButton={<AddIconButton onClick={handleNew}/>}
+                    icon={ <MailIcon fontSize='inherit'/>}
                 />
-                {/*<Divider/>*/}
+                <Divider/>
             </Grid>
             {emails.map(it => (
-                <Grid item xs={12} key={it.id} >
+                <Grid item xs={12} key={it.id}>
                     <SectionItem buttons={
-                        <Box style={{padding:0}}>
+                        <Box>
                             <EditIconButton onClick={handleClick(it)}/>
                             <DeleteIconButton onClick={handleDelete(it)}/>
                         </Box>
                     }>
-                        <SectionItemContent value={<EmailLink value={trimString(it.value,15)}/>} category={it.category}/>
+                        <Box flexGrow={1}>
+                            <Typography variant='body1' noWrap >{trimString(it.value,23)}</Typography>
+                            <Typography variant='caption'>{it.category}</Typography>
+                        </Box>
                     </SectionItem>
                 </Grid>
             ))}

@@ -2,6 +2,8 @@ import {format, isValid, parseISO} from "date-fns";
 
 export const dateFormat = 'dd.MM.yyyy'
 export const dateTimeFormat = 'dd.MM.yyyy HH:mm'
+export const standardDateTimeFormat = 'dd-MM-yyyy HH:mm'
+export const standardDateFormat = 'dd-MM-yyyy'
 export const printDateTime = (value: any): string => {
     if (typeof value === 'string') {
         return printDateTime(strToDate(value))
@@ -69,6 +71,26 @@ export const printDate = (value: any): string => {
     }
     if (isValid(value))
         return format(value, dateFormat)
+    else
+        return ''
+}
+
+export const printStdDate = (value: any): string => {
+    if (typeof value === 'string') {
+        return printDate(strToDate(value))
+    }
+    if (isValid(value))
+        return format(value, standardDateFormat)
+    else
+        return ''
+}
+
+export const printStdDatetime = (value: any): string => {
+    if (typeof value === 'string') {
+        return printDate(strToDate(value))
+    }
+    if (isValid(value))
+        return format(value, standardDateTimeFormat)
     else
         return ''
 }

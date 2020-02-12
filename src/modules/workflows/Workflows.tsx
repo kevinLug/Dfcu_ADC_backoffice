@@ -51,19 +51,21 @@ const Workflows = () => {
         showNew: false,
         showAssigned: true
     });
-    const [newFilter, setNewFilter] = useState<IWorkflowFilter>({
-        workflowTypes: ['DEMBE', 'DEMBE-JOINT'],
-        showNew: true,
-        showAssigned: false
-    });
+
 
     useEffect(() => {
+        const newFilter = {
+            workflowTypes: ['DEMBE', 'DEMBE-JOINT'],
+            showNew: true,
+            showAssigned: false
+        };
         search(remoteRoutes.workflows, newFilter, resp => {
             setNewData(resp)
         })
-    }, [newFilter])
+    }, [])
 
     useEffect(() => {
+        console.log("Filter",filter)
         setLoading(true)
         search(remoteRoutes.workflows, filter, resp => {
             setData(resp)
@@ -75,7 +77,8 @@ const Workflows = () => {
     }
 
     function handleFilter(f: IWorkflowFilter) {
-
+        console.log("Handle Filter",f)
+        setFilter({...filter, ...f})
     }
 
     return (
@@ -83,7 +86,7 @@ const Workflows = () => {
             <Grid container spacing={3}>
                 <Grid item xs={open ? 9 : 12} className={clsx(classes.content, {[classes.contentShift]: open})}>
                     <Grid container spacing={2}>
-                        <Grid item sm={12} >
+                        <Grid item sm={12}>
                             <Typography variant='h4'>New Applications</Typography>
                         </Grid>
                         <Grid item xs={12}>

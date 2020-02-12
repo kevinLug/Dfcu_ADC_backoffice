@@ -7,6 +7,19 @@ export const handleLogin = (data: any) => {
     }
 }
 
+
+export const startLoading = () => {
+    return {
+        type: coreConstants.startLoading
+    }
+}
+
+export const stopLoading = () => {
+    return {
+        type: coreConstants.stopLoading
+    }
+}
+
 export const saveDocument = (data: IStoreDoc) => {
     return {
         type: coreConstants.coreCreateDocument,
