@@ -13,6 +13,7 @@ import {post} from "../../../../../utils/ajax";
 import {remoteRoutes} from "../../../../../data/constants";
 import {fetchWorkflowAsync, startWorkflowFetch} from "../../../../../data/redux/workflows/reducer";
 import {Dispatch} from "redux";
+import {IKycResponse} from "./index";
 
 
 interface IFormProps {
@@ -21,9 +22,11 @@ interface IFormProps {
 
 const KycOverride = (props: IFormProps & ITemplateProps) => {
 
+    const dataString = props.action.outputData
+
+    const data: IKycResponse = JSON.parse(dataString);
     const dispatch: Dispatch<any> = useDispatch();
-    const initialState: any = {remarks: '', approved: false}
-    const [metaData, setMetaData] = useState<any>(initialState)
+    const [metaData, setMetaData] = useState<any>(data)
     const [loading, setLoading] = useState<boolean>(false)
 
     const handleTextChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,11 +38,12 @@ const KycOverride = (props: IFormProps & ITemplateProps) => {
     };
 
     function handleDecision() {
-        const hasRemarks = hasValue(metaData['remarks'])
+        const hasRemarks = hasValue(metaData['comment'])
         if (!metaData.approved && !hasRemarks) {
             Toast.error("Please enter a remark")
             return
         }
+        metaData.checkStatus = 'Passed';
         const data: IManualDecision = {
             caseId: props.workflowId,
             taskName: props.taskName,
@@ -78,9 +82,9 @@ const KycOverride = (props: IFormProps & ITemplateProps) => {
                         label='Approved'
                         control={
                             <Checkbox
-                                checked={metaData['approved']}
-                                onChange={handleCbChange('approved')}
-                                value={metaData['approved']}
+                                checked={metaData['override']}
+                                onChange={handleCbChange('override')}
+                                value={metaData['override']}
                             />
                         }
                     />
@@ -88,14 +92,13 @@ const KycOverride = (props: IFormProps & ITemplateProps) => {
             </Grid>
             <Grid item xs={12}>
                 <TextField
-                    id="remarks-field"
                     label="Remarks"
                     fullWidth
                     multiline
                     rowsMax="3"
                     rows='3'
-                    value={metaData['remarks']}
-                    onChange={handleTextChange('remarks')}
+                    value={metaData['comment']}
+                    onChange={handleTextChange('comment')}
                     margin="none"
                     variant="outlined"
                 />
@@ -103,8 +106,14 @@ const KycOverride = (props: IFormProps & ITemplateProps) => {
             <Grid item xs={12}>
                 <Grid container spacing={2} alignContent='flex-end' justify='flex-end'>
                     <Grid item>
-                        <Button variant="outlined" size="small" color="primary" onClick={handleDecision} disabled={loading}>
-                            Submit
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            color="primary"
+                            onClick={handleDecision}
+                            disabled={loading}
+                        >
+                            Override
                         </Button>
                     </Grid>
                 </Grid>

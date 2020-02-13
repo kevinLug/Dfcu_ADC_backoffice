@@ -8,12 +8,12 @@ const makeApplicant =()=>{
     const withMn = faker.random.number(20) % 2 === 0
     return {
         "person": {
-            "firstName": faker.name.firstName(),
-            "lastName": faker.name.lastName(),
-            "middleName": withMn ? faker.name.lastName() : "",
-            // "firstName": 'Lisa',
-            // "lastName": "Namugga",
-            // "middleName": "",
+            // "firstName": faker.name.firstName(),
+            // "lastName": faker.name.lastName(),
+            // "middleName": withMn ? faker.name.lastName() : "",
+            "firstName": 'Lisa',
+            "lastName": "Namugga",
+            "middleName": "",
             "gender": faker.random.arrayElement(enumToArray(Gender)) as Gender,
             "dateOfBirth": '2000-08-24T11:54:33.006Z',
             "civilStatus": faker.random.arrayElement(enumToArray(CivilStatus)) as CivilStatus,
@@ -64,8 +64,7 @@ export const fakeJointRequest = (): any => {
                 "requestQuickBanking": true
             },
             'applicants':[
-                makeApplicant(),
-                makeApplicant(),
+                makeApplicant()
             ],
             "device": {
                 "androidVersion": "26",

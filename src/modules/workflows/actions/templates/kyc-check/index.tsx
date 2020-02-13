@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
-import {ActionStatus, IAction} from "../../../types";
+import {ActionStatus} from "../../../types";
 import Error from "../error";
 import Pending from "../pending";
 import Grid from "@material-ui/core/Grid";
-import {printDate, printDateTime} from "../../../../../utils/dateHelpers";
 import DataValue from "../../../../../components/DataValue";
-import {ContactCategory, getPhone, IContact, renderName, toTitleCase} from "../../../../contacts/types";
+import {ContactCategory, renderName, toTitleCase} from "../../../../contacts/types";
 import ContactLink from "../../../../../components/links/ContactLink";
+import CommentIcon from '@material-ui/icons/Comment';
 import {DateIcon, ErrorIcon, SuccessIcon} from "../../../../../components/xicons";
 import IconLabel from "../../../../../components/IconLabel";
 import Collapse from '@material-ui/core/Collapse';
@@ -17,8 +17,7 @@ import Divider from "@material-ui/core/Divider";
 import EditDialog from "../../../../../components/EditDialog";
 import KycOverride from "./KycOverride";
 import ITemplateProps from "../ITemplateProps";
-
-
+import UserLink from "../../../../../components/links/UserLink";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -32,24 +31,26 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-
 export enum IKycStatus {
     NotRun = 'NotRun', InProgress = 'InProgress', Passed = 'Passed', NotPassed = 'NotPassed', Error = '', Override = 'Error'
 }
 
-interface IKycResponse {
+export interface IKycResponse {
     id: string
     referenceId: string
     checkType: string
     checkStatus: IKycStatus
+    override: boolean
     value?: string
     comment?: string
+    userId?: string
+    userName?: string
     data: any
     runDate?: string
 }
 
 const fields = (data: IKycResponse): IRec[] => {
-    return [
+    const recs = [
         {
             label: 'Check Type',
             value: data.checkType
@@ -68,6 +69,14 @@ const fields = (data: IKycResponse): IRec[] => {
         }
     ]
 
+    if (data.override) {
+        const rec: IRec = {
+            label: 'Overriden by',
+            value: <UserLink id={data.userId || ''} name={data.userName || ''}/>
+        }
+        recs.push(rec)
+    }
+    return recs;
 }
 
 
@@ -80,7 +89,7 @@ const hasError = (outData: string): boolean => {
     }
 }
 
-const Index = ({action,...rest}: ITemplateProps) => {
+const Index = ({action, ...rest}: ITemplateProps) => {
 
     const [open, setOpen] = useState(false)
     const [dialog, setDialog] = useState(false)
@@ -95,6 +104,7 @@ const Index = ({action,...rest}: ITemplateProps) => {
         e.preventDefault()
         setDialog(true)
     }
+
     function handleCloseOverride() {
 
         setDialog(false)
@@ -117,23 +127,23 @@ const Index = ({action,...rest}: ITemplateProps) => {
             </Grid>
             <Grid item xs={12} md={4}>
                 <Box display="flex">
-                    <Box >
+                    <Box>
                         <IconLabel icon={
                             data.checkStatus === IKycStatus.Passed ?
                                 <SuccessIcon fontSize='inherit'/> :
                                 <ErrorIcon fontSize='inherit'/>
-                        } label={`${data.checkStatus}/${data.value}`}/>
+                        } label={`${data.override ? 'Overriden' : data.checkStatus}/${data.value}`}/>
                     </Box>
                     {
-                        data.checkStatus !== IKycStatus.Passed&&
-                        <Box pl={1} style={{marginTop:2}}>
+                        data.checkStatus !== IKycStatus.Passed &&
+                        <Box pl={1} style={{marginTop: 2}}>
                             <a href='/' className={classes.link} onClick={handleOverride}>Override</a>
                         </Box>
                     }
                 </Box>
             </Grid>
             <Grid item xs={12} md={3}>
-                <IconLabel icon={<DateIcon fontSize='inherit'/>} label={printDateTime(data.runDate)}/>
+                <IconLabel icon={<CommentIcon fontSize='inherit'/>} label={data.comment}/>
             </Grid>
             <Grid item xs={12} md={1}>
                 <a href='/' className={classes.link} onClick={toggleIo}>{open ? '- Less' : '+ More'}</a>
@@ -143,7 +153,7 @@ const Index = ({action,...rest}: ITemplateProps) => {
                     <Box pt={1}>
                         <Divider/>
                         <Box pt={1}>
-                        <DetailView data={fields(data)} columns={2}/>
+                            <DetailView data={fields(data)} columns={2}/>
                         </Box>
                     </Box>
                 </Collapse>
