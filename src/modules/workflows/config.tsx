@@ -22,7 +22,7 @@ export const workflowHeadCells: XHeadCell[] = [
         }
     },
     {
-        name: 'type', label: 'Type', render: (value:string)=>value.toLocaleLowerCase(),
+        name: 'type', label: 'Type', render: (value: string) => value.toLocaleLowerCase(),
         cellProps: {
             style: {
                 width: 100,
@@ -58,3 +58,6 @@ export const workflowHeadCells: XHeadCell[] = [
         render: (data, {metaData}) => data ? <ContactLink id={data} name={getInitials(metaData.assigneeName)}/> : ''
     },
 ];
+
+
+export const workflowTypes = ['DEMBE', 'JOINT', 'INDIVIDUAL', 'ENTITY']

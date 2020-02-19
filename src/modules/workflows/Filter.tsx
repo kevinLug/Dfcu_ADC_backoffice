@@ -10,6 +10,7 @@ import PDateInput from "../../components/plain-inputs/PDateInput";
 import {enumToArray} from "../../utils/stringHelpers";
 import {IWorkflowFilter, WorkflowStatus, WorkflowSubStatus} from "./types";
 import {printDate} from "../../utils/dateHelpers";
+import {workflowTypes} from "./config";
 
 interface IProps {
     onFilter: (data: any) => any
@@ -106,7 +107,7 @@ const Filter = ({onFilter, loading}: IProps) => {
                     label="Account Type"
                     variant="outlined"
                     size='small'
-                    options={toOptions(['DEMBE-JOINT', 'DEMBE'])}
+                    options={toOptions(workflowTypes)}
                 />
             </Grid>
             <Grid item xs={12}>

@@ -10,7 +10,7 @@ import Filter from "./Filter";
 import Typography from "@material-ui/core/Typography";
 import {search} from "../../utils/ajax";
 import {remoteRoutes} from "../../data/constants";
-import {workflowHeadCells} from "./config";
+import {workflowHeadCells, workflowTypes} from "./config";
 import Box from "@material-ui/core/Box";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -47,7 +47,7 @@ const Workflows = () => {
     const [data, setData] = useState([]);
 
     const [filter, setFilter] = useState<IWorkflowFilter>({
-        workflowTypes: ['DEMBE', 'JOINT','INDIVIDUAL','ENTITY'],
+        workflowTypes: workflowTypes,
         showNew: false,
         showAssigned: true
     });
@@ -55,7 +55,7 @@ const Workflows = () => {
 
     useEffect(() => {
         const newFilter = {
-            workflowTypes: ['DEMBE', 'JOINT','INDIVIDUAL','ENTITY'],
+            workflowTypes: workflowTypes,
             showNew: true,
             showAssigned: false
         };
