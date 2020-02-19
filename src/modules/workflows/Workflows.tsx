@@ -47,7 +47,7 @@ const Workflows = () => {
     const [data, setData] = useState([]);
 
     const [filter, setFilter] = useState<IWorkflowFilter>({
-        workflowTypes: ['DEMBE', 'DEMBE-JOINT'],
+        workflowTypes: ['DEMBE', 'JOINT','INDIVIDUAL','ENTITY'],
         showNew: false,
         showAssigned: true
     });
@@ -55,7 +55,7 @@ const Workflows = () => {
 
     useEffect(() => {
         const newFilter = {
-            workflowTypes: ['DEMBE', 'DEMBE-JOINT'],
+            workflowTypes: ['DEMBE', 'JOINT','INDIVIDUAL','ENTITY'],
             showNew: true,
             showAssigned: false
         };
