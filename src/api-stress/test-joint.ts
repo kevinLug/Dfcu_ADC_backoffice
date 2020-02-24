@@ -1,10 +1,11 @@
 import * as faker from "faker";
 import {enumToArray, getRandomStr} from "../utils/stringHelpers";
 import {CivilStatus, Gender} from "../modules/contacts/types";
+import {randomInt} from "../utils/numberHelpers";
 
 const uuid = require('uuid/v4');
 
-const makeApplicant =()=>{
+const makeApplicant = () => {
     const withMn = faker.random.number(20) % 2 === 0
     return {
         "person": {
@@ -50,21 +51,96 @@ const makeApplicant =()=>{
     }
 }
 
-export const fakeJointRequest = (): any => {
+
+export const fakeEntityRequest = (): any => {
     return {
-        "type": "DEMBE-JOINT",
-        "referenceNumber": "4505945",
+        "workflowType": "entity",
+        "referenceNumber": randomInt(100000, 500000),
         "externalReference": uuid(),
         "applicationDate": new Date(),
         "caseData": {
             "metaData": {
-                "accountName": "Test Joint Account",
+                "accountName": faker.company.companyName(),
+                "contactPersonName": `${faker.name.firstName()} ${faker.name.lastName()} `,
+                "contactPersonPhone": "0700106164",
+                "currency": "UGX",
+                "product": "religiousbody"
+            },
+            'applicants': [
+            ],
+            "device": {
+                "androidVersion": "26",
+                "appId": "e3hZ9SSLlsU",
+                "gpsCoordinates": "0.3195606 32.6180306",
+                "imei": "357060093217498",
+                "imsi": ""
+            },
+            "user": {
+                "id": '1f824a84-46b6-4e7f-b601-5d041118439d',
+                "name": "Timothy Emmanuel Kasasa",
+                "phone": "0700106164",
+                "agentCode": "2345566",
+                "branchName": "02",
+                "region": "GKLA"
+            }
+        }
+    }
+}
+
+export const fakeIndividualRequest = (): any => {
+    return {
+        "workflowType": "individual",
+        "referenceNumber": randomInt(100000, 500000),
+        "externalReference": uuid(),
+        "applicationDate": new Date(),
+        "caseData": {
+            "metaData": {
+                "product": "DEMBE",
+                "currency": "UGX",
                 "requestAtmCard": true,
                 "requestChequeBook": true,
                 "requestQuickBanking": true
             },
-            'applicants':[
+            'applicants': [
                 makeApplicant()
+            ],
+            "device": {
+                "androidVersion": "26",
+                "appId": "e3hZ9SSLlsU",
+                "gpsCoordinates": "0.3195606 32.6180306",
+                "imei": "357060093217498",
+                "imsi": ""
+            },
+            "user": {
+                "id": '1f824a84-46b6-4e7f-b601-5d041118439d',
+                "name": "Timothy Emmanuel Kasasa",
+                "phone": "0700106164",
+                "agentCode": "2345566",
+                "branchName": "02",
+                "region": "GKLA"
+            }
+        }
+    }
+}
+
+export const fakeJointRequest = (): any => {
+    return {
+        "workflowType": "JOINT",
+        "referenceNumber": randomInt(100000, 500000),
+        "externalReference": uuid(),
+        "applicationDate": new Date(),
+        "caseData": {
+            "metaData": {
+                "accountName": faker.company.companyName(),
+                "product": "DEMBE",
+                "currency": "UGX",
+                "requestAtmCard": true,
+                "requestChequeBook": true,
+                "requestQuickBanking": true
+            },
+            'applicants': [
+                makeApplicant(),
+                makeApplicant(),
             ],
             "device": {
                 "androidVersion": "26",

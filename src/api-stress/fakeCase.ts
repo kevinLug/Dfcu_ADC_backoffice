@@ -1,14 +1,16 @@
 import * as faker from "faker";
+import {random,range} from 'lodash';
 import {enumToArray, getRandomStr} from "../utils/stringHelpers";
 import {CivilStatus, Gender} from "../modules/contacts/types";
+import {randomInt} from "../utils/numberHelpers";
 
 const uuid = require('uuid/v4');
 
 export const fakeOnBoardRequest = (): any => {
     const withMn = faker.random.number(20) % 2 === 0
     return {
-        "type": "emata-on-boarding",
-        "referenceNumber": "4505945",
+        "workflowType": "emata-on-boarding",
+        "referenceNumber": randomInt(100000,500000),
         "externalReference": uuid(),
         "applicationDate": new Date(),
         "caseData": {
@@ -60,7 +62,7 @@ export const fakeOnBoardRequest = (): any => {
 
 export const fakeLoanRequest = (): any => {
     return {
-        "type": "ussd-loan",
+        "workflowType": "ussd-loan",
         "referenceNumber": "4505945",
         "externalReference": uuid(),
         "applicationDate": faker.date.past(),
@@ -74,57 +76,6 @@ export const fakeLoanRequest = (): any => {
                     "timeUnit": "days",
                     "interestRate": "12"
                 }
-            },
-            "score": {
-                "creditInformation": {
-                    "creditLimit": 10000,
-                    "minimumAmount": 1000,
-                    "grade": "A",
-                    "remarks": "Good borrower."
-                },
-                "existingLoans": [
-                    {
-                        "type": "Refinancing",
-                        "amount": 30000,
-                        "period": 15,
-                        "timeUnit": "days",
-                        "interestRate": "12"
-                    },
-                    {
-                        "type": "Consumer",
-                        "amount": 28500,
-                        "period": 30,
-                        "timeUnit": "days",
-                        "interestRate": "12"
-                    },
-                    {
-                        "type": "CreditCheckOff",
-                        "amount": 34000,
-                        "period": 90,
-                        "timeUnit": "days",
-                        "interestRate": "12"
-                    }
-                ],
-                "repaymentPlans": [
-                    {
-                        "id": "23244",
-                        "period": 15,
-                        "timeUnit": "days",
-                        "interestRate": 12
-                    },
-                    {
-                        "id": "354353",
-                        "period": 30,
-                        "timeUnit": "days",
-                        "interestRate": 12
-                    },
-                    {
-                        "id": "334567",
-                        "period": 90,
-                        "timeUnit": "days",
-                        "interestRate": 12
-                    }
-                ]
             },
             "dependencies": [
                 "9ca948dd-94a0-49b6-ba6e-01fd334a6d56"
@@ -142,7 +93,7 @@ export const fakeDembeRequest = (): any => {
     const withMn = faker.random.number(20) % 2 === 0
     return {
         "type": "DEMBE-ACCOUNT",
-        "referenceNumber": "4505945",
+        "referenceNumber": randomInt(100000,500000),
         "externalReference": uuid(),
         "applicationDate": faker.date.past(),
         "caseData": {

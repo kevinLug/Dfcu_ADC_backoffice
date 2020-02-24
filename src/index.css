@@ -10,3 +10,8 @@ body, #root, .fill {
 .has-hidden-icon {
     height: 40px;
 }
+
+.skeleton-loader {
+
+    height: 200px;
+}

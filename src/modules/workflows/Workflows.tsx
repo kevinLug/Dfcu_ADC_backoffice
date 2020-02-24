@@ -12,6 +12,9 @@ import {search} from "../../utils/ajax";
 import {remoteRoutes} from "../../data/constants";
 import {workflowHeadCells, workflowTypes} from "./config";
 import Box from "@material-ui/core/Box";
+import Loading from "../../components/Loading";
+import {Skeleton} from "@material-ui/lab";
+import HiddenCss from "@material-ui/core/Hidden/HiddenCss";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -43,6 +46,7 @@ const Workflows = () => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [loadingNew, setLoadingNew] = useState(false);
     const [newData, setNewData] = useState([]);
     const [data, setData] = useState([]);
 
@@ -54,6 +58,7 @@ const Workflows = () => {
 
 
     useEffect(() => {
+        setLoadingNew(true)
         const newFilter = {
             workflowTypes: workflowTypes,
             showNew: true,
@@ -61,11 +66,13 @@ const Workflows = () => {
         };
         search(remoteRoutes.workflows, newFilter, resp => {
             setNewData(resp)
+        }, undefined, () => {
+            setLoadingNew(false)
         })
     }, [])
 
     useEffect(() => {
-        console.log("Filter",filter)
+        console.log("Filter", filter)
         setLoading(true)
         search(remoteRoutes.workflows, filter, resp => {
             setData(resp)
@@ -77,7 +84,6 @@ const Workflows = () => {
     }
 
     function handleFilter(f: IWorkflowFilter) {
-        console.log("Handle Filter",f)
         setFilter({...filter, ...f})
     }
 
@@ -91,6 +97,7 @@ const Workflows = () => {
                         </Grid>
                         <Grid item xs={12}>
                             <XTable
+                                loading={loadingNew}
                                 headCells={newCells}
                                 data={newData}
                                 initialRowsPerPage={3}
@@ -102,6 +109,7 @@ const Workflows = () => {
                         </Grid>
                         <Grid item xs={12}>
                             <XTable
+                                loading={loading}
                                 headCells={workflowHeadCells}
                                 data={data}
                                 onFilterToggle={handleFilterToggle}

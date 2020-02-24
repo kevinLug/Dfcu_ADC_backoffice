@@ -19,9 +19,8 @@ export const handleError = (err: any = {}, res: superagent.Response) => {
 
         })
     } else if (res && res.badRequest) {
-
         const {message, errors} = res.body
-        let msg = message + '\n'
+        let msg = message||'' + '\n'
         for (const key in errors) {
             if (errors.hasOwnProperty(key)) {
                 const error = errors[key][0]

@@ -1,4 +1,4 @@
-import * as validate from "validate.js";
+import {isEmpty} from "lodash";
 
 export interface IOption {
     label: string
@@ -10,7 +10,6 @@ export const toOptions = (data: string[]): IOption[] => {
 }
 
 
-export const hasValue = (text: string) => {
-    const errors = validate.single(text, {presence: {allowEmpty: false}});
-    return !errors;
+export const hasValue = (text: any) => {
+    return!isEmpty(text)
 }

@@ -6,10 +6,15 @@ import ContactLink from "../../components/links/ContactLink";
 import {getInitials, trimString} from "../../utils/stringHelpers";
 import React from "react";
 import {renderStatus, renderSubStatus} from "./widgets";
+import {toTitleCase} from "../contacts/types";
+import {hasValue} from "../../components/inputs/inputHelpers";
+import XLink from "../../components/links/XLink";
+import UserLink from "../../components/links/UserLink";
 
 export const workflowHeadCells: XHeadCell[] = [
     {
-        name: 'id', label: 'ID', render: (value, rec) => <ApplicationLink id={value} name={trimCaseId(value)}/>,
+        name: 'referenceNumber', label: 'Ref.No',
+        render: (value, rec) => <ApplicationLink id={rec.id} name={rec.referenceNumber}/>,
         cellProps: {style: {width: 70}}
     },
     {
@@ -22,7 +27,8 @@ export const workflowHeadCells: XHeadCell[] = [
         }
     },
     {
-        name: 'type', label: 'Type', render: (value: string) => value.toLocaleLowerCase(),
+        name: 'type', label: 'Type',
+        render: (value: string, rec: any) => `${toTitleCase(value)}/${toTitleCase(rec.metaData.product)}`,
         cellProps: {
             style: {
                 width: 100,
@@ -48,14 +54,24 @@ export const workflowHeadCells: XHeadCell[] = [
         }
     },
     {
-        name: 'metaData',
+        name: 'metaData.applicantName',
         label: 'Applicant',
-        render: (data) => <ContactLink id={data.applicantId} name={trimString(data.applicantName, 20)}/>
+        render: (data, rec) => {
+            if (hasValue(rec.metaData.applicantId))
+                return <ContactLink
+                    id={rec.metaData.applicantId}
+                    name={trimString(data, 20)}
+                />
+            return <XLink
+                name={trimString(data, 20)}
+                title={data}
+            />
+        }
     },
     {
-        name: 'assigneeId',
+        name: 'metaData.assigneeName',
         label: 'Assignee',
-        render: (data, {metaData}) => data ? <ContactLink id={data} name={getInitials(metaData.assigneeName)}/> : ''
+        render: (data, {metaData}) => data ? <UserLink id={data} name={getInitials(metaData.assigneeName)} title={metaData.assigneeName}/> : ''
     },
 ];
 
