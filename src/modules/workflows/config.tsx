@@ -1,6 +1,5 @@
 import {XHeadCell} from "../../components/table/XTableHead";
 import ApplicationLink from "../../components/links/ApplicationLink";
-import {trimCaseId} from "./types";
 import {printDateTime} from "../../utils/dateHelpers";
 import ContactLink from "../../components/links/ContactLink";
 import {getInitials, trimString} from "../../utils/stringHelpers";
@@ -28,10 +27,10 @@ export const workflowHeadCells: XHeadCell[] = [
     },
     {
         name: 'type', label: 'Type',
-        render: (value: string, rec: any) => `${toTitleCase(value)}/${toTitleCase(rec.metaData.product)}`,
+        render: (value: string, rec: any) => `${toTitleCase(value)}`,
         cellProps: {
             style: {
-                width: 100,
+                width: 60,
                 whiteSpace: 'nowrap'
             }
         }
@@ -40,7 +39,7 @@ export const workflowHeadCells: XHeadCell[] = [
         name: 'status', label: 'Status', render: (data) => renderStatus(data),
         cellProps: {
             style: {
-                width: 30
+                width: 60
             }
         }
     },
@@ -75,5 +74,7 @@ export const workflowHeadCells: XHeadCell[] = [
     },
 ];
 
+export const workflowHeadCellsNew: XHeadCell[]=[...workflowHeadCells.filter(it=>it.name!=='metaData.assigneeName')]
 
-export const workflowTypes = ['DEMBE', 'JOINT', 'INDIVIDUAL', 'ENTITY']
+
+export const workflowTypes = ['JOINT', 'INDIVIDUAL', 'ENTITY','OTHER']

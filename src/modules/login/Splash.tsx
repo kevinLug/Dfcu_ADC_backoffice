@@ -11,7 +11,6 @@ export default function Splash() {
     const dispatch = useDispatch()
     useEffect(() => {
         authService.getUser().then((user:User|null) => {
-            console.log("Got User.......",user)
             if (user) {
                 dispatch(handleLogin({user: user.profile, token: user.access_token}))
             } else {

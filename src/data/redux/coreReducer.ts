@@ -1,18 +1,28 @@
 import {AUTH_TOKEN_KEY, AUTH_USER_KEY} from "../constants";
-import {ILoginResponse} from "../types";
+import {ILoginResponse, Metadata} from "../types";
 
 export interface ICoreState {
     splash: boolean,
     user: any | null,
     isLoading: boolean,
-    documents: any
+    documents: any,
+    metadata: Metadata
 }
+
+
 
 const initialState: ICoreState = {
     splash: true,
     user: null,
     isLoading: true,
-    documents: {}
+    documents: {},
+    metadata: {
+        versionMessage:'',
+        version: 0,
+        districts: [],
+        businesses: [],
+        accountCategories: [],
+    }
 }
 
 export interface IStoreDoc {
@@ -25,8 +35,8 @@ export const coreConstants = {
     startLoading: "CORE_START_LOADING",
     stopLoading: "CORE_STOP_LOADING",
     coreLogout: "CORE_LOGOUT",
-
-    coreCreateDocument: "CORE_CREATE_DOC"
+    coreCreateDocument: "CORE_CREATE_DOC",
+    coreLoadMetadata: "CORE_LOAD_METADATA"
 }
 
 export default function reducer(state = initialState, action: any) {
@@ -53,8 +63,14 @@ export default function reducer(state = initialState, action: any) {
         case coreConstants.stopLoading: {
             return {...state, isLoading: false}
         }
+
         case coreConstants.startLoading: {
             return {...state, isLoading: true}
+        }
+
+        case coreConstants.coreLoadMetadata: {
+            const metadata: Metadata = action.payload
+            return {...state, metadata}
         }
         default: {
             return state

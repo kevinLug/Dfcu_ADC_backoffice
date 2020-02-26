@@ -1,5 +1,6 @@
 import {ICoreState} from "./redux/coreReducer";
 import {ICrmState} from "./redux/contacts/reducer";
+import {IWorkflowState} from "./redux/workflows/reducer";
 
 export interface BaseModel {
     id: string
@@ -24,6 +25,7 @@ export interface ILoginResponse {
 
 export interface IState {
     core: ICoreState
+    workflows: IWorkflowState
     crm: ICrmState
     contacts: any
 }
@@ -57,4 +59,51 @@ export interface IOidcProfile {
     role: string
     sid: string
     sub: string
+}
+
+
+
+export interface Metadata {
+    version:           number;
+    versionMessage:    string;
+    districts:         District[];
+    businesses:        GatewayBusiness[];
+    accountCategories: AccountCategory[];
+}
+
+export interface AccountCategory {
+    name:     string;
+    code:     string;
+    type:     number;
+    accounts: GatewayAccount[];
+}
+
+export interface GatewayAccount {
+    name:       string;
+    code:       string;
+    documents:  GatewayDocument[];
+    currencies: GatewayStatus[];
+}
+
+export interface GatewayStatus {
+    name: string;
+    code: string;
+}
+
+export interface GatewayDocument {
+    required: boolean;
+    name:     string;
+    code:     string;
+}
+
+export interface GatewayBusiness {
+    name:     string;
+    code:     string;
+    statuses: GatewayStatus[];
+}
+
+export interface District {
+    name:     string;
+    code:     string;
+    counties: GatewayStatus[];
 }

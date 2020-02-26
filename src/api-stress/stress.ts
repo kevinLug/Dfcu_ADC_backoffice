@@ -1,7 +1,7 @@
 import {remoteRoutes} from "../data/constants";
 import {testLogin} from "./login";
 import * as superagent from "superagent";
-import {fakeEntityRequest, fakeIndividualRequest, fakeJointRequest} from "./test-joint";
+import {fakeEntityRequest, fakeIndividualRequest, fakeJointRequest, fakeOtherRequest} from "./test-joint";
 
 
 const postData = (token: string, requestData: any, callBack: (data: any) => any) => {
@@ -40,10 +40,11 @@ const postData = (token: string, requestData: any, callBack: (data: any) => any)
 // })
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = '0';
 testLogin(({access_token}: any) => {
-    for (let i = 0; i < 1; i++) {
-        //const loanReq = fakeIndividualRequest()
-        //const loanReq = fakeJointRequest()
-        const loanReq = fakeEntityRequest()
+    for (let i = 0; i < 2; i++) {
+        // const loanReq = fakeIndividualRequest()
+        const loanReq = fakeJointRequest()
+        // const loanReq = fakeEntityRequest()
+        // const loanReq = fakeOtherRequest()
         postData(access_token, loanReq, (resp: any) => {
             console.log("Submitted data", resp)
         })

@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {IAction, IDocument, IManualDecision} from "../../../types";
 import DocsView from "./DocsView";
 import DocumentsDialog from "./DocumentsDialog";
-import {createStyles, Grid, makeStyles, Theme} from "@material-ui/core";
+import {createStyles, Grid, makeStyles} from "@material-ui/core";
 
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -27,10 +27,11 @@ interface IProps {
     docs: IDocument[],
     workflowId: string
     taskName: string
-    action: IAction
+    action: IAction,
+    showCheckBoxes: boolean
 }
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
     createStyles({
         fillHeight: {
             height: '100%'
@@ -41,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-export default function Verify({open, onClose, docs, ...props}: IProps) {
+export default function Verify({open, onClose, docs, showCheckBoxes, ...props}: IProps) {
     const classes = useStyles()
     const dispatch: Dispatch<any> = useDispatch();
     const initialState: any = {remarks: ''}
@@ -103,6 +104,7 @@ export default function Verify({open, onClose, docs, ...props}: IProps) {
                         </Box>
                     </div>
                     <Grid container spacing={1}>
+                        {showCheckBoxes?
                         <Grid item xs={12}>
                             <FormGroup>
                                 {
@@ -118,7 +120,23 @@ export default function Verify({open, onClose, docs, ...props}: IProps) {
                                     />)
                                 }
                             </FormGroup>
-                        </Grid>
+                        </Grid>:
+                            <Grid item xs={12}>
+                                <FormGroup>
+                                    <FormControlLabel
+                                        label='Approved'
+                                        control={
+                                            <Checkbox
+                                                checked={metaData['approved']}
+                                                onChange={handleChange('approved')}
+                                                value={metaData['approved']}
+                                            />
+                                        }
+                                    />
+                                </FormGroup>
+                            </Grid>
+                        }
+
                         <Grid item xs={12}>
                             <Box pr={1}>
                                 <TextField

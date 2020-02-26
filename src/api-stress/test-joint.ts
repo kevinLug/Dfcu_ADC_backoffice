@@ -51,6 +51,41 @@ const makeApplicant = () => {
     }
 }
 
+export const fakeOtherRequest = (): any => {
+    return {
+        "workflowType": "other",
+        "referenceNumber": randomInt(100000, 500000),
+        "externalReference": uuid(),
+        "applicationDate": new Date(),
+        "caseData": {
+            "metaData": {
+                "accountName": faker.company.companyName(),
+                "contactPersonName": `${faker.name.firstName()} ${faker.name.lastName()} `,
+                "contactPersonPhone": "0700106164",
+                "currency": "UGX",
+                "product": faker.random.arrayElement(["foreignAccount",'refugeeAccount'])
+            },
+            'applicants': [
+            ],
+            "device": {
+                "androidVersion": "26",
+                "appId": "e3hZ9SSLlsU",
+                "gpsCoordinates": "0.3195606 32.6180306",
+                "imei": "357060093217498",
+                "imsi": ""
+            },
+            "user": {
+                "id": '1f824a84-46b6-4e7f-b601-5d041118439d',
+                "name": "Timothy Emmanuel Kasasa",
+                "phone": "0700106164",
+                "agentCode": "2345566",
+                "branchName": "02",
+                "region": "GKLA"
+            }
+        }
+    }
+}
+
 
 export const fakeEntityRequest = (): any => {
     return {
@@ -64,7 +99,7 @@ export const fakeEntityRequest = (): any => {
                 "contactPersonName": `${faker.name.firstName()} ${faker.name.lastName()} `,
                 "contactPersonPhone": "0700106164",
                 "currency": "UGX",
-                "product": "religiousbody"
+                "product": faker.random.arrayElement(["corporateBusiness",'partnershipsProprietorships'])
             },
             'applicants': [
             ],
@@ -95,7 +130,7 @@ export const fakeIndividualRequest = (): any => {
         "applicationDate": new Date(),
         "caseData": {
             "metaData": {
-                "product": "DEMBE",
+                "product": faker.random.arrayElement(["dembe",'pinnacle','standardPersonal']),
                 "currency": "UGX",
                 "requestAtmCard": true,
                 "requestChequeBook": true,
@@ -132,7 +167,7 @@ export const fakeJointRequest = (): any => {
         "caseData": {
             "metaData": {
                 "accountName": faker.company.companyName(),
-                "product": "DEMBE",
+                "product": faker.random.arrayElement(['youngSavers','standardPersonal','savingsPlus']),
                 "currency": "UGX",
                 "requestAtmCard": true,
                 "requestChequeBook": true,

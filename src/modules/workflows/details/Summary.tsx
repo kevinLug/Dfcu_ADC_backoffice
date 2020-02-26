@@ -29,6 +29,14 @@ const Summary = ({data, onTaskClick}: IProps) => {
             value: data.type
         },
         {
+            label: 'Product',
+            value: data.metaData.product
+        },
+        {
+            label: 'Currency',
+            value: data.metaData.currency
+        },
+        {
             label: 'Ref Number',
             value: data.referenceNumber
         },

@@ -6,14 +6,13 @@ class AuthService {
     public userManager: UserManager;
     private clientRoot=`${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`
     constructor() {
-
         const clientRoot = this.clientRoot
         const settings = {
             client_id: 'dfcu:backoffice',
             redirect_uri: `${clientRoot}/signin-callback.html`,
             post_logout_redirect_uri: clientRoot,
             response_type: 'token id_token',
-            scope: 'openid profile offline_access roles agent_details Crm CaseHandling KycConnector',
+            scope: 'openid profile offline_access roles agent_details Crm CaseHandling KycConnector Gateway IdentityServerApi',
             authority: remoteRoutes.authServer,
             silent_redirect_uri: `${clientRoot}/silent_renew.html`,
             automaticSilentRenew: true,

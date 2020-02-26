@@ -11,5 +11,9 @@ export const toOptions = (data: string[]): IOption[] => {
 
 
 export const hasValue = (text: any) => {
-    return!isEmpty(text)
+    return !isEmpty(text)
+}
+
+export const hasNoValue = (text: any) => {
+    return isEmpty(text)
 }

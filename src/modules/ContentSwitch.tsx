@@ -1,6 +1,6 @@
-import React from "react"
+import React, {useEffect} from "react"
 import {Link, Route, Switch} from 'react-router-dom'
-import {localRoutes} from "../data/constants";
+import {localRoutes, remoteRoutes} from "../data/constants";
 import Dashboard from "./dashboard/Dashboard";
 import Contacts from "./contacts/list/Contacts";
 import ContactDetails from "./contacts/details/Details";
@@ -8,9 +8,22 @@ import ApplicationDetails from "./workflows/details/Details";
 import Settings from "./settings/Settings";
 import Workflows from "./workflows/Workflows";
 import Layout from "../components/Layout";
+import {useDispatch} from "react-redux";
+import authService from "../data/oidc/AuthService";
+import {User} from "oidc-client";
+import {handleLogin, handleLogout, loadMetadata} from "../data/redux/coreActions";
+import {search} from "../utils/ajax";
 
 
 const ContentSwitch = () => {
+    const dispatch = useDispatch()
+    useEffect(() => {
+
+        search(remoteRoutes.gatewayMetadata,{},resp=>{
+
+            dispatch(loadMetadata(resp))
+        })
+    },[dispatch])
     return <Switch>
         <Route exact={true} path="/" component={Workflows}/>
         <Route path={localRoutes.dashboard} component={Dashboard}/>

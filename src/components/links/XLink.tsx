@@ -7,7 +7,7 @@ interface IProps {
 }
 
 const XLink = ({name, title}: IProps) => (
-    <a style={{textDecoration: 'none', color: linkColor, cursor:'pointer'}} title={title} onClick={(e)=>e.preventDefault()}>{name}</a>
+    <a style={{textDecoration: 'none', color: linkColor, cursor:'pointer'}} onClick={(e)=>e.preventDefault()} title={title} >{name}</a>
 );
 
 export default XLink

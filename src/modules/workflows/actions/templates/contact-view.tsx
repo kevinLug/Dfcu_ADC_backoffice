@@ -3,7 +3,7 @@ import Grid from "@material-ui/core/Grid";
 import {ActionStatus, IAction} from "../../types";
 import Error from "./error";
 import Pending from "./pending";
-import {ContactCategory, getPhone, IContact, renderName} from "../../../contacts/types";
+import {ContactCategory, getNin, getPhone, IContact, renderName} from "../../../contacts/types";
 import DetailView, {IRec} from "../../../../components/DetailView";
 import {printDate} from "../../../../utils/dateHelpers";
 import ContactLink from "../../../../components/links/ContactLink";
@@ -26,8 +26,8 @@ const fields = (data: IContact): IRec[] => {
                 value: printDate(person.dateOfBirth)
             },
             {
-                label: 'Gender',
-                value: person.gender
+                label: 'NIN',
+                value: getNin(data)
             }
         ]
     } else {

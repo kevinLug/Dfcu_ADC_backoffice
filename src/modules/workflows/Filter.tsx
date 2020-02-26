@@ -27,6 +27,7 @@ const Filter = ({onFilter, loading}: IProps) => {
         workflowTypes: [],
         applicant: '',
         assignee: '',
+        referenceNumber: '',
         userId: ''
     })
 

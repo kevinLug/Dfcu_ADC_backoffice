@@ -7,10 +7,16 @@ export const handleLogin = (data: any) => {
     }
 }
 
+export const loadMetadata = (data:any) => {
+    return {
+        type: coreConstants.coreLoadMetadata,
+        payload: {...data},
+    }
+}
 
 export const startLoading = () => {
     return {
-        type: coreConstants.startLoading
+        type: coreConstants.startLoading,
     }
 }
 

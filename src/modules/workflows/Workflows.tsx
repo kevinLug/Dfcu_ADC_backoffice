@@ -10,7 +10,7 @@ import Filter from "./Filter";
 import Typography from "@material-ui/core/Typography";
 import {search} from "../../utils/ajax";
 import {remoteRoutes} from "../../data/constants";
-import {workflowHeadCells, workflowTypes} from "./config";
+import {workflowHeadCells, workflowHeadCellsNew, workflowTypes} from "./config";
 import Box from "@material-ui/core/Box";
 import Loading from "../../components/Loading";
 import {Skeleton} from "@material-ui/lab";
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 
-const newCells = workflowHeadCells.filter(it => it.name !== 'assigneeId')
+
 
 const Workflows = () => {
     const classes = useStyles();
@@ -98,7 +98,7 @@ const Workflows = () => {
                         <Grid item xs={12}>
                             <XTable
                                 loading={loadingNew}
-                                headCells={newCells}
+                                headCells={workflowHeadCellsNew}
                                 data={newData}
                                 initialRowsPerPage={3}
                                 usePagination={true}

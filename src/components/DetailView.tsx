@@ -49,7 +49,6 @@ interface IProps {
 
 const TableView = ({data, useGrid = false,bold=false}: IProps) => {
     const classes = useStyles();
-    console.log("Use grid", {useGrid})
     if (useGrid)
         return (
             <Grid container spacing={0}>
