@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export interface IRec {
-    label: string
+    label: any
     value: any
 }
 

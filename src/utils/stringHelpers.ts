@@ -1,6 +1,8 @@
+import {hasNoValue} from "../components/inputs/inputHelpers";
+
 export const getInitials = (fullName = '') => {
     try {
-        if(!fullName)
+        if (!fullName)
             return ''
         return fullName.split(' ').map(it => it[0].toUpperCase()).join("")
     } catch (e) {
@@ -8,7 +10,7 @@ export const getInitials = (fullName = '') => {
     }
 }
 
-export function getRandomStr(max=16) {
+export function getRandomStr(max = 16) {
     const letters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let str = '';
     for (let i = 0; i < max; i++) {
@@ -23,7 +25,7 @@ export function enumToArray(typeData: any) {
 }
 
 export const trimString = (data: string, count = 10) => {
-    if(!data)
+    if (!data)
         return ''
     if (data.length > count)
         return data.substr(0, count) + "..."
@@ -33,7 +35,7 @@ export const trimString = (data: string, count = 10) => {
 // Split pascal case
 export function camelPad(str: string) {
     return str
-    // Look for long acronyms and filter out the last letter
+        // Look for long acronyms and filter out the last letter
         .replace(/([A-Z]+)([A-Z][a-z])/g, ' $1 $2')
         // Look for lower-case letters followed by upper-case letters
         .replace(/([a-z\d])([A-Z])/g, '$1 $2')
@@ -45,3 +47,5 @@ export function camelPad(str: string) {
         // Remove any white space left around the word
         .trim();
 }
+
+
