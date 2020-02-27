@@ -25,6 +25,8 @@ export const localRoutes = {
     contacts: '/contacts',
     contactsDetails: '/contacts/:contactId',
     settings: '/settings',
+    users: '/users',
+    usersDetails: '/users/:userId',
 }
 
 const servers: any = {
@@ -37,7 +39,7 @@ const servers: any = {
         Notification: "https://emata-poc-smsservice-test.laboremus.no",
         Payments: "https://emata-poc-payments-test.laboremus.no",
     },
-    test:{
+    test: {
         Auth: 'https://authservice-test.laboremus.no',
         Crm: 'https://crmservice-test.laboremus.no',
         Case: 'https://dfcu-customeronboarding-casehandling-test.laboremus.no',
@@ -46,7 +48,7 @@ const servers: any = {
         Notification: 'https://notificationservice-test.laboremus.no',
         Log: 'https://dfcu-customeronboarding-logging-test.laboremus.no'
     },
-    sit:{
+    sit: {
         Auth: 'https://authentication-test.onboarding.dfcugroup.com',
         Crm: 'https://crm-test.onboarding.dfcugroup.com',
         Case: 'https://casehandling-test.onboarding.dfcugroup.com/',
@@ -56,7 +58,7 @@ const servers: any = {
         Accounts: 'https://finacle-connector-test.onboarding.dfcugroup.com',
         Log: 'https://logging-test.onboarding.dfcugroup.com'
     },
-    uat:{
+    uat: {
         Auth: "https://authentication-staging.onboarding.dfcugroup.com",
         Crm: "https://crm-staging.onboarding.dfcugroup.com",
         Case: "https://casehandling-staging.onboarding.dfcugroup.com",
@@ -66,7 +68,7 @@ const servers: any = {
         Accounts: "https://finacle-connector-staging.onboarding.dfcugroup.com",
         Log: "https://logging-staging.onboarding.dfcugroup.com"
     },
-    production:{
+    production: {
         Auth: "https://authentication.onboarding.dfcugroup.com",
         Crm: "https://crm.onboarding.dfcugroup.com",
         Case: "https://casehandling.onboarding.dfcugroup.com",
@@ -92,6 +94,7 @@ const notificationURL = env.Notification
 
 export const remoteRoutes = {
     authServer: authURL,
+    gatewayUpload: gatewayURL + '/files/"',
     login: authURL + '/api/test/login',
     profile: authURL + '/api/test/profile',
     register: authURL + '/api/auth/register',
@@ -116,6 +119,9 @@ export const remoteRoutes = {
     workflowsManual: caseHandlingURL + '/api/manual',
     samplePdf: caseHandlingURL + '/sample.pdf',
     gatewayMetadata: gatewayURL + '/api/meta/data',
+
+
+    users: authURL + '/api/user',
 }
 
 

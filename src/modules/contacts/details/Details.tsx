@@ -38,35 +38,6 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
-interface TabPanelProps {
-    children?: React.ReactNode;
-    index: any;
-    value: any;
-}
-
-function TabPanel(props: TabPanelProps) {
-    const {children, value, index, ...other} = props;
-
-    return (
-        <Typography
-            component="div"
-            role="tabpanel"
-            hidden={value !== index}
-            id={`wrapped-tabpanel-${index}`}
-            aria-labelledby={`wrapped-tab-${index}`}
-            {...other}
-        >
-            <Box paddingTop={2}>{children}</Box>
-        </Typography>
-    );
-}
-
-function a11yProps(index: any) {
-    return {
-        id: `wrapped-tab-${index}`,
-        'aria-controls': `wrapped-tabpanel-${index}`,
-    };
-}
 
 
 const Details = (props: IProps) => {

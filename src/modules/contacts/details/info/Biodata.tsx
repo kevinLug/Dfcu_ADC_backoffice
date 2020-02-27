@@ -45,7 +45,6 @@ export const idFields = (data: IContact): IRec[] => {
             }
         ]
     }
-
 }
 
 const BioData = ({data}: IProps) => {

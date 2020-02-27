@@ -55,7 +55,7 @@
     "yup": "^0.27.0"
   },
   "scripts": {
-    "api-test": "set REACT_APP_ENV=dev && ts-node -O \"{\\\"module\\\": \\\"commonjs\\\"}\" ./src/api-stress/stress.ts",
+    "api-test": "set REACT_APP_ENV=test && ts-node -O \"{\\\"module\\\": \\\"commonjs\\\"}\" ./src/api-stress/stress.ts",
     "start": "set REACT_APP_ENV=dev && react-scripts start",
     "build": "react-scripts build",
     "build-test": "set REACT_APP_ENV=test && react-scripts build",
@@ -96,6 +96,8 @@
     "@storybook/addons": "^6.0.0-alpha.6",
     "@storybook/preset-create-react-app": "^1.5.2",
     "@storybook/react": "^6.0.0-alpha.6",
-    "msdeploy": "1.1.0"
+    "adm-zip": "^0.4.14",
+    "msdeploy": "1.1.0",
+    "tus-js-client": "^1.8.0"
   }
 }

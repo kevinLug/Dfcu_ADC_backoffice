@@ -1,5 +1,4 @@
 import * as faker from "faker";
-import {random,range} from 'lodash';
 import {enumToArray, getRandomStr} from "../utils/stringHelpers";
 import {CivilStatus, Gender} from "../modules/contacts/types";
 import {randomInt} from "../utils/numberHelpers";

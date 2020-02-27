@@ -1,6 +1,7 @@
 import {ICoreState} from "./redux/coreReducer";
 import {ICrmState} from "./redux/contacts/reducer";
 import {IWorkflowState} from "./redux/workflows/reducer";
+import {IUserState} from "./redux/users/reducer";
 
 export interface BaseModel {
     id: string
@@ -27,6 +28,7 @@ export interface IState {
     core: ICoreState
     workflows: IWorkflowState
     crm: ICrmState
+    users: IUserState
     contacts: any
 }
 

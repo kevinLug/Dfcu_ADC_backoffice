@@ -188,14 +188,14 @@ function Layout(props: any) {
                             </Typography>
                         }/>
                 </ListItem>
-                <ListItem button onClick={onClick(localRoutes.settings)} selected={isSelected(localRoutes.settings)}>
+                <ListItem button onClick={onClick(localRoutes.users)} selected={isSelected(localRoutes.users)}>
                     <ListItemIcon>
-                        <SettingsIcon className={getCls(localRoutes.settings)}/>
+                        <SettingsIcon className={getCls(localRoutes.users)}/>
                     </ListItemIcon>
                     <ListItemText
                         primary={
-                            <Typography className={getCls(localRoutes.settings)}>
-                                Settings
+                            <Typography className={getCls(localRoutes.users)}>
+                                Users
                             </Typography>
                         }/>
                 </ListItem>

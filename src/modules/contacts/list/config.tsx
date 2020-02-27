@@ -13,7 +13,8 @@ export const columns: XHeadCell[] = [
         }
     },
     {
-        name: 'category', label: 'Category',
+        name: 'gender', label: 'Gender',
+        render: (value, rec) => rec.person.gender,
         cellProps: {
             style: {
                 whiteSpace: 'nowrap'
