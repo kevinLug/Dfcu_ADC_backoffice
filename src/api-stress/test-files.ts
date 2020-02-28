@@ -1,36 +1,40 @@
 import fs from 'fs'
+import path from 'path'
 import {remoteRoutes} from "../data/constants";
+import {GatewayDocument} from "../data/types";
 
 const tus = require('tus-js-client')
 const AdmZip = require('adm-zip')
-const fetch = require('node-fetch')
-const querystring = require('querystring')
-
 
 const caseId = 'fake-case'
-const jpegFile = `${__dirname}\\data\\${caseId}-photo.jpg`
-const pdfFile = `${__dirname}\\data\\${caseId}-form.pdf`
+const jpegFile = `${__dirname}\\sample\\${caseId}-photo.jpg`
+const pdfFile = `${__dirname}\\sample\\${caseId}-form.pdf`
 const jsonFile = `${__dirname}\\data\\${caseId}-json.json`
 
 const zipName = `${caseId}-data.zip`
 const zipFile = `${__dirname}\\data\\${zipName}`
 
 
-export const createJsonFile = (caseData: any, callBack: () => any) => {
+export const createJsonFile = (caseData: any) => {
     const text = JSON.stringify(caseData, null, 2)
-    fs.writeFile(jsonFile, text, function (err) {
-        if (err) throw err
-        console.log('Json File is created successfully.')
-        callBack()
-    })
+    fs.writeFileSync(jsonFile, text)
+    console.log('Json File is created successfully.')
 }
 
-export const createZipFile = (callBack: () => any) => {
+export const createZipFile = (docsList: GatewayDocument[] ): string => {
     const zip = new AdmZip()
     zip.addLocalFile(jpegFile)
-    zip.addLocalFile(pdfFile)
     zip.addLocalFile(jsonFile)
-    zip.writeZip(zipFile, callBack)
+    // randomly chose from optional docs
+    docsList.forEach(it=>{
+        const newFile = `${__dirname}\\data\\file-${it.code}.pdf`
+        if (!fs.existsSync(newFile)) {
+            fs.copyFileSync(pdfFile, newFile);
+        }
+        zip.addLocalFile(newFile)
+    })
+    zip.writeZip(zipFile)
+    return zipFile
 }
 
 export const uploadFile = (token: string, callBack: () => any) => {
@@ -61,6 +65,39 @@ export const uploadFile = (token: string, callBack: () => any) => {
     }
     const upload = new tus.Upload(file, options)
     upload.start()
+}
+
+
+export const uploadZipAsync = (token: string, filePath: string) => {
+    return new Promise((resolve, reject) => {
+        const fileStats = fs.statSync(filePath)
+        const options = {
+            endpoint: remoteRoutes.gatewayUpload,
+            resume: true,
+            metadata: {
+                filename: path.basename(filePath),
+                filetype: "application/zip"
+            },
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            uploadSize: fileStats.size,
+            onError: function (error: any) {
+                reject(error)
+            },
+            onProgress: function (bytesUploaded: number, bytesTotal: number) {
+                const percentage = (bytesUploaded / bytesTotal * 100).toFixed(2)
+                console.log(bytesUploaded, bytesTotal, percentage + "%")
+            },
+            onSuccess: function () {
+                console.log("Upload finished:", upload.url)
+                resolve(upload.url)
+            }
+        }
+        const upload = new tus.Upload(fs.createReadStream(zipFile), options)
+
+        upload.start()
+    })
 }
 
 

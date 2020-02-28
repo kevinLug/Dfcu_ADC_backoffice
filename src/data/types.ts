@@ -65,7 +65,7 @@ export interface IOidcProfile {
 
 
 
-export interface Metadata {
+export interface GatewayMetadata {
     version:           number;
     versionMessage:    string;
     districts:         District[];

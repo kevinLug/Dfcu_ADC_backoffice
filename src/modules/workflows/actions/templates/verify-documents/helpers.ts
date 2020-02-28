@@ -1,7 +1,7 @@
-import {AccountCategory} from "../../../../../data/types";
+import {AccountCategory, GatewayDocument} from "../../../../../data/types";
 import {hasNoValue} from "../../../../../components/inputs/inputHelpers";
 
-export const getGatewayDocsList = (category: string, product: string, accountCategories: AccountCategory[]) => {
+export const getGatewayDocsList = (category: string, product: string, accountCategories: AccountCategory[]): GatewayDocument[] => {
     const categoryArr = accountCategories.filter(it => it.code.toLocaleLowerCase() === category.toLocaleLowerCase())
     if (hasNoValue(categoryArr) || hasNoValue(categoryArr[0])) {
         return []

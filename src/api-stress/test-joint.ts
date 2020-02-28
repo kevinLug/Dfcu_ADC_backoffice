@@ -51,7 +51,7 @@ const makeApplicant = () => {
     }
 }
 
-export const fakeOtherRequest = (): any => {
+export const fakeOtherRequest = (accountsList: string[]): any => {
     return {
         "workflowType": "other",
         "referenceNumber": randomInt(100000, 500000),
@@ -63,7 +63,7 @@ export const fakeOtherRequest = (): any => {
                 "contactPersonName": `${faker.name.firstName()} ${faker.name.lastName()} `,
                 "contactPersonPhone": "0700106164",
                 "currency": "UGX",
-                "product": faker.random.arrayElement(["foreignAccount",'refugeeAccount'])
+                "product": faker.random.arrayElement(accountsList)
             },
             'applicants': [
             ],
@@ -87,7 +87,7 @@ export const fakeOtherRequest = (): any => {
 }
 
 
-export const fakeEntityRequest = (): any => {
+export const fakeEntityRequest = (accountsList: string[]): any => {
     return {
         "workflowType": "entity",
         "referenceNumber": randomInt(100000, 500000),
@@ -99,7 +99,7 @@ export const fakeEntityRequest = (): any => {
                 "contactPersonName": `${faker.name.firstName()} ${faker.name.lastName()} `,
                 "contactPersonPhone": "0700106164",
                 "currency": "UGX",
-                "product": faker.random.arrayElement(["corporateBusiness",'partnershipsProprietorships'])
+                "product": faker.random.arrayElement(accountsList)
             },
             'applicants': [
             ],
@@ -122,7 +122,7 @@ export const fakeEntityRequest = (): any => {
     }
 }
 
-export const fakeIndividualRequest = (): any => {
+export const fakeIndividualRequest = (accountsList: string[]): any => {
     return {
         "workflowType": "individual",
         "referenceNumber": randomInt(100000, 500000),
@@ -130,7 +130,7 @@ export const fakeIndividualRequest = (): any => {
         "applicationDate": new Date(),
         "caseData": {
             "metaData": {
-                "product": faker.random.arrayElement(["dembe",'pinnacle','standardPersonal']),
+                "product": faker.random.arrayElement(accountsList),
                 "currency": "UGX",
                 "requestAtmCard": true,
                 "requestChequeBook": true,
@@ -158,7 +158,7 @@ export const fakeIndividualRequest = (): any => {
     }
 }
 
-export const fakeJointRequest = (): any => {
+export const fakeJointRequest = (accountsList: string[]): any => {
     return {
         "workflowType": "JOINT",
         "referenceNumber": randomInt(100000, 500000),
@@ -167,7 +167,7 @@ export const fakeJointRequest = (): any => {
         "caseData": {
             "metaData": {
                 "accountName": faker.company.companyName(),
-                "product": faker.random.arrayElement(['youngSavers','standardPersonal','savingsPlus']),
+                "product": faker.random.arrayElement(accountsList),
                 "currency": "UGX",
                 "requestAtmCard": true,
                 "requestChequeBook": true,

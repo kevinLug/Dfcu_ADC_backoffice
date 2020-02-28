@@ -34,7 +34,7 @@ const servers: any = {
         Auth: 'https://authservice-test.laboremus.no',
         Crm: 'https://crmservice-test.laboremus.no',
         Case: 'http://localhost:6001',
-        Gateway: 'https://dfcu-customeronboarding-gateway-test.laboremus.no',
+        Gateway: 'http://localhost:5003',
         Kyc: "https://kyc-connector-staging.onboarding.dfcugroup.com",
         Notification: "https://emata-poc-smsservice-test.laboremus.no",
         Payments: "https://emata-poc-payments-test.laboremus.no",
@@ -94,13 +94,11 @@ const notificationURL = env.Notification
 
 export const remoteRoutes = {
     authServer: authURL,
-    gatewayUpload: gatewayURL + '/files/"',
+    gatewayUpload: gatewayURL + '/files',
     login: authURL + '/api/test/login',
     profile: authURL + '/api/test/profile',
     register: authURL + '/api/auth/register',
     resetPass: authURL + '/reset',
-
-
     contacts: crmURL + '/api/contact',
     contactSearch: crmURL + '/api/contact/search',
     contactById: crmURL + '/api/contact/id',

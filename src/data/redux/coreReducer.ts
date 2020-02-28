@@ -1,12 +1,12 @@
 import {AUTH_TOKEN_KEY, AUTH_USER_KEY} from "../constants";
-import {ILoginResponse, Metadata} from "../types";
+import {ILoginResponse, GatewayMetadata} from "../types";
 
 export interface ICoreState {
     splash: boolean,
     user: any | null,
     isLoading: boolean,
     documents: any,
-    metadata: Metadata
+    metadata: GatewayMetadata
 }
 
 
@@ -69,7 +69,7 @@ export default function reducer(state = initialState, action: any) {
         }
 
         case coreConstants.coreLoadMetadata: {
-            const metadata: Metadata = action.payload
+            const metadata: GatewayMetadata = action.payload
             return {...state, metadata}
         }
         default: {

@@ -55,7 +55,7 @@
     "yup": "^0.27.0"
   },
   "scripts": {
-    "api-test": "set REACT_APP_ENV=test && ts-node -O \"{\\\"module\\\": \\\"commonjs\\\"}\" ./src/api-stress/stress.ts",
+    "api-test": "set REACT_APP_ENV=dev && ts-node -O \"{\\\"module\\\": \\\"commonjs\\\"}\" ./src/api-stress/stress.ts",
     "start": "set REACT_APP_ENV=dev && react-scripts start",
     "build": "react-scripts build",
     "build-test": "set REACT_APP_ENV=test && react-scripts build",

@@ -10,11 +10,8 @@ import Filter from "./Filter";
 import Typography from "@material-ui/core/Typography";
 import {search} from "../../utils/ajax";
 import {remoteRoutes} from "../../data/constants";
-import {workflowHeadCells, workflowHeadCellsNew, workflowTypes} from "./config";
+import {wfInitialSort, workflowHeadCells, workflowHeadCellsNew, workflowTypes} from "./config";
 import Box from "@material-ui/core/Box";
-import Loading from "../../components/Loading";
-import {Skeleton} from "@material-ui/lab";
-import HiddenCss from "@material-ui/core/Hidden/HiddenCss";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -102,6 +99,8 @@ const Workflows = () => {
                                 data={newData}
                                 initialRowsPerPage={3}
                                 usePagination={true}
+                                initialSortBy={wfInitialSort}
+                                initialOrder="desc"
                             />
                         </Grid>
                         <Grid item sm={12}>
@@ -113,6 +112,8 @@ const Workflows = () => {
                                 headCells={workflowHeadCells}
                                 data={data}
                                 onFilterToggle={handleFilterToggle}
+                                initialSortBy={wfInitialSort}
+                                initialOrder="desc"
                             />
                         </Grid>
                     </Grid>

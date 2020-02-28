@@ -1,12 +1,13 @@
 import {remoteRoutes} from "../data/constants";
-import {doLogin} from "./login";
+import {login, readMetadata} from "./login";
 import * as superagent from "superagent";
 import {fakeEntityRequest, fakeIndividualRequest, fakeJointRequest, fakeOtherRequest} from "./test-joint";
-import {createJsonFile, createZipFile, uploadFile} from "./test-files";
+import {createJsonFile, createZipFile, uploadFile, uploadZipAsync} from "./test-files";
+import {getGatewayDocsList} from "../modules/workflows/actions/templates/verify-documents/helpers";
+import {AccountCategory, GatewayDocument, GatewayMetadata} from "../data/types";
 
 
 const postData = (token: string, requestData: any, callBack: (data: any) => any) => {
-
     superagent.post(remoteRoutes.workflows)
         .set('Authorization', `Bearer ${token}`)
         .send(requestData)
@@ -20,60 +21,63 @@ const postData = (token: string, requestData: any, callBack: (data: any) => any)
 }
 
 
-
-function runInd(token:string){
-    const loanReq = fakeIndividualRequest()
+function runCaseDirect(token: string, type: RequestType, accountCategories: AccountCategory[]) {
+    const loanReq = getCaseData(type, accountCategories)
     postData(token, loanReq, (resp: any) => {
-        console.log("Submitted Individual", resp)
-    })
-}
-function runJnt(token:string){
-    const loanReq = fakeJointRequest()
-    postData(token, loanReq, (resp: any) => {
-        console.log("Submitted Joint", resp)
+        console.log(`Submitted ${type}`, resp)
     })
 }
 
-function runEntity(token:string){
-    const loanReq = fakeEntityRequest()
-    postData(token, loanReq, (resp: any) => {
-        console.log("Submitted Entity", resp)
-    })
+
+function getCaseData(type: RequestType, accountCategories: AccountCategory[]): any {
+    const cat = accountCategories.filter(it => it.code.toLocaleLowerCase() === type.toLocaleLowerCase())[0]
+    const accountsList: string[] = cat.accounts.map(it => it.code)
+    let caseData: any = {}
+    if (type === RequestType.Individual)
+        caseData = fakeIndividualRequest(accountsList)
+    if (type === RequestType.Joint)
+        caseData = fakeJointRequest(accountsList)
+    if (type === RequestType.Entity)
+        caseData = fakeEntityRequest(accountsList)
+    if (type === RequestType.Other)
+        caseData = fakeOtherRequest(accountsList)
+    return caseData
 }
 
-function runOther(token:string){
-    const loanReq = fakeOtherRequest()
-    postData(token, loanReq, (resp: any) => {
-        console.log("Submitted Other", resp)
-    })
+
+async function runCase(token: string, metadata: GatewayMetadata, type: RequestType): Promise<any> {
+    const data = getCaseData(type, metadata.accountCategories)
+    const wfType = data.workflowType
+    const productType = data.caseData.metaData.product
+    const docsList = getGatewayDocsList(wfType, productType, metadata.accountCategories)
+    createJsonFile(data)
+    const zipFile = createZipFile(docsList)
+    await uploadZipAsync(token, zipFile)
 }
 
-process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = '0';
-doLogin(({access_token}: any) => {
-    for (let i = 0; i < 1; i++) {
-        runInd(access_token)
-        runJnt(access_token)
-        runEntity(access_token)
-        runOther(access_token)
+enum RequestType {
+    Individual = 'individual',
+    Joint = 'joint',
+    Other = 'other',
+    Entity = 'entity'
+}
+
+async function run(reqCount: number, type: RequestType): Promise<any> {
+    const {access_token} = await login()
+    console.log("Got token")
+    const metaData = await readMetadata(access_token)
+    console.log("Got Metadata")
+    for (let i = 0; i < reqCount; i++) {
+        await runCase(access_token, metaData, type)
     }
-})
+}
 
-// console.log("!!!Dfcu Stress test!!!")
-// const max = 1
-// console.log(`### Running ${max} Tests ###`)
-// doLogin(({access_token}) => {
-//     console.log("### Got Access Token ###")
-//     for (let i = 0; i < max; i++) {
-//         const loanReq = fakeOtherRequest()
-//         createJsonFile(loanReq,() => {
-//             console.log(`### ${i} Created JSON File ###`)
-//             createZipFile(() => {
-//                 console.log(`### ${i} Created ZIP with all files ###`)
-//                 uploadFile(access_token,()=>{
-//                     console.log(`### ${i} Done With Request ###`)
-//                 })
-//             })
-//         })
-//     }
-// })
+
+run(1, RequestType.Entity)
+    .then(r =>
+        console.log("Done uploading", r)
+    )
+    .catch(e => {
+        console.error(e)
+    })
 

@@ -10,6 +10,7 @@ import {hasValue} from "../../components/inputs/inputHelpers";
 import XLink from "../../components/links/XLink";
 import UserLink from "../../components/links/UserLink";
 
+export const wfInitialSort = 'applicationDate';
 export const workflowHeadCells: XHeadCell[] = [
     {
         name: 'referenceNumber', label: 'Ref.No',
