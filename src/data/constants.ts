@@ -31,8 +31,8 @@ export const localRoutes = {
 
 const servers: any = {
     dev: {
-        Auth: 'https://authservice-test.laboremus.no',
-        Crm: 'https://crmservice-test.laboremus.no',
+        Auth: 'https://localhost:44313',
+        Crm: 'http://localhost:5002',
         Case: 'http://localhost:6001',
         Gateway: 'http://localhost:5003',
         Kyc: "https://kyc-connector-staging.onboarding.dfcugroup.com",

@@ -85,7 +85,8 @@ const Details = (props: IProps) => {
     }
 
     useEffect(() => {
-        loadData()
+        dispatch(startWorkflowFetch())
+        dispatch(fetchWorkflowAsync(caseId))
     }, [caseId,dispatch])
 
     function onResume() {

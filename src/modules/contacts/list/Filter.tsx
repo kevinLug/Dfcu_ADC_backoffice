@@ -6,6 +6,8 @@ import {toOptions} from "../../../components/inputs/inputHelpers";
 import {Box} from "@material-ui/core";
 import TextField from '@material-ui/core/TextField';
 import PSelectInput from "../../../components/plain-inputs/PSelectInput";
+import {enumToArray} from "../../../utils/stringHelpers";
+import {Gender} from "../types";
 
 interface IProps {
     onFilter: (data: any) => any
@@ -14,9 +16,8 @@ interface IProps {
 
 const Filter = ({onFilter, loading}: IProps) => {
     const [data, setData] = useState({
-        query: '',
-        category: '',
-        contactType: '',
+        name: '',
+        gender: '',
         email: '',
         phone: '',
         nin: ''
@@ -39,8 +40,8 @@ const Filter = ({onFilter, loading}: IProps) => {
         <Grid spacing={3} container>
             <Grid item xs={12}>
                 <TextField
-                    name="query"
-                    value={data['query']}
+                    name="name"
+                    value={data['name']}
                     onChange={handleChange}
                     label="Name"
                     variant="outlined"
@@ -50,13 +51,13 @@ const Filter = ({onFilter, loading}: IProps) => {
             </Grid>
             <Grid item xs={12}>
                 <PSelectInput
-                    name="category"
-                    value={data['category']}
+                    name="gender"
+                    value={data['gender']}
                     onChange={handleChange}
-                    label="Categories"
+                    label="Gender"
                     variant="outlined"
                     size='small'
-                    options={toOptions(['Company', 'Person'])}
+                    options={toOptions(enumToArray(Gender))}
                 />
             </Grid>
             <Grid item xs={12}>

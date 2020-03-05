@@ -11,9 +11,9 @@ import {getSorting, Order, stableSort} from "./helpers";
 import XToolbar from "./XToolbar";
 import {useTableStyles} from "./tableStyles";
 import XTableHead, {XHeadCell} from "./XTableHead";
-import {useTheme} from "@material-ui/core";
 import Loading from "../Loading";
 import {parseXpath} from "../../utils/jsonHelpers";
+import Alert from '@material-ui/lab/Alert';
 
 interface XTableProps {
     initialSortBy?: string
@@ -133,7 +133,9 @@ export default function XTable(props: XTableProps) {
                                     </TableRow>
                                 </TableBody>:
                                 <TableBody>
-                                    {stableSort(data, getSorting(order, orderBy))
+                                    {
+                                        data.length>0?
+                                        stableSort(data, getSorting(order, orderBy))
                                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                         .map((row: any, index: number) => {
                                             const isItemSelected = isSelected(row.id);
@@ -172,7 +174,13 @@ export default function XTable(props: XTableProps) {
                                                     }
                                                 </TableRow>
                                             );
-                                        })}
+                                        }):
+                                            <TableRow style={{height: 49 * 2}}>
+                                                <TableCell colSpan={headCells.length}>
+                                                    <Alert severity="warning">No records to display</Alert>
+                                                </TableCell>
+                                            </TableRow>
+                                    }
                                     {emptyRows > 0 && (
                                         <TableRow style={{height: 49 * emptyRows}}>
                                             <TableCell colSpan={headCells.length}/>

@@ -8,7 +8,7 @@ import ApplicationDetails from "./workflows/details/Details";
 import Settings from "./settings/Settings";
 import Workflows from "./workflows/Workflows";
 import Users from "./settings/users/List";
-import UserDetails from "./settings/users/Details";
+import UserDetails from "./settings/users/details/Details";
 import Layout from "../components/Layout";
 import {useDispatch} from "react-redux";
 import {loadMetadata} from "../data/redux/coreActions";

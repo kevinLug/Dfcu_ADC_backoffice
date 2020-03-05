@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import Grid from "@material-ui/core/Grid";
 import {ActionStatus, canRunAction} from "../../../types";
 import DataValue from "../../../../../components/DataValue";
-import {Flex} from "../../../../../components/widgets";
 import {errorColor, successColor, warningColor} from "../../../../../theme/custom-colors";
 import {Button} from "@material-ui/core";
 import Preview from "./Preview";
@@ -17,7 +16,6 @@ import {getGatewayDocsList} from "./helpers";
 import DocumentsList from "./DocumentsList";
 import {ErrorIcon, SuccessIcon} from "../../../../../components/xicons";
 import UserLink from "../../../../../components/links/UserLink";
-import {getInitials} from "../../../../../utils/stringHelpers";
 import Typography from "@material-ui/core/Typography";
 
 

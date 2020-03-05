@@ -71,7 +71,7 @@ const Component = (props: FieldProps & IProps) => {
     </FormControl>
 }
 
-const SelectInput = (props: IProps) => {
+const XSelectInput = (props: IProps) => {
     return (
         <Field
             {...props}
@@ -80,4 +80,4 @@ const SelectInput = (props: IProps) => {
     )
 }
 
-export default SelectInput
+export default XSelectInput

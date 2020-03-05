@@ -79,8 +79,6 @@ const Contacts = () => {
         setCreateDialog(true)
     }
 
-
-
     function closeCreateDialog() {
         setCreateDialog(false)
     }

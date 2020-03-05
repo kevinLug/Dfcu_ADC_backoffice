@@ -2,9 +2,9 @@ import {remoteRoutes} from "../data/constants";
 import {login, readMetadata} from "./login";
 import * as superagent from "superagent";
 import {fakeEntityRequest, fakeIndividualRequest, fakeJointRequest, fakeOtherRequest} from "./test-joint";
-import {createJsonFile, createZipFile, uploadFile, uploadZipAsync} from "./test-files";
+import {createJsonFile, createZipFile, uploadZipAsync} from "./test-files";
 import {getGatewayDocsList} from "../modules/workflows/actions/templates/verify-documents/helpers";
-import {AccountCategory, GatewayDocument, GatewayMetadata} from "../data/types";
+import {AccountCategory, GatewayMetadata} from "../data/types";
 
 
 const postData = (token: string, requestData: any, callBack: (data: any) => any) => {
@@ -19,7 +19,6 @@ const postData = (token: string, requestData: any, callBack: (data: any) => any)
             }
         }))
 }
-
 
 function runCaseDirect(token: string, type: RequestType, accountCategories: AccountCategory[]) {
     const loanReq = getCaseData(type, accountCategories)

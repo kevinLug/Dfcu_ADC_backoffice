@@ -1,8 +1,9 @@
 import * as React from "react";
 import {useState} from "react";
+import {flatMap, uniqBy} from "lodash";
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import {toOptions} from "../../components/inputs/inputHelpers";
+import {IOption, toOptions} from "../../components/inputs/inputHelpers";
 import {Box} from "@material-ui/core";
 import TextField from '@material-ui/core/TextField';
 import PSelectInput from "../../components/plain-inputs/PSelectInput";
@@ -12,6 +13,8 @@ import {IWorkflowFilter, WorkflowStatus, WorkflowSubStatus} from "./types";
 import {workflowTypes} from "./config";
 import {PRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {remoteRoutes} from "../../data/constants";
+import {useSelector} from "react-redux";
+import {IState} from "../../data/types";
 
 interface IProps {
     onFilter: (data: any) => any
@@ -19,6 +22,12 @@ interface IProps {
 }
 
 const Filter = ({onFilter, loading}: IProps) => {
+
+    const metaData = useSelector((state: IState) => state.core.metadata)
+    const accountCategories: IOption[] = uniqBy(flatMap(metaData.accountCategories, it => it.accounts.map(({code, name}) => ({
+        label: name,
+        value: code
+    }))), "value")
     const [data, setData] = useState<IWorkflowFilter>({
         from: null,
         to: null,
@@ -27,6 +36,7 @@ const Filter = ({onFilter, loading}: IProps) => {
         workflowTypes: [],
         applicant: '',
         assignee: '',
+        product: '',
         referenceNumber: '',
         userId: ''
     })
@@ -55,7 +65,7 @@ const Filter = ({onFilter, loading}: IProps) => {
     const handleComboValueChange = (name: string) => (value: any) => {
 
         const newData = {...data, [name]: value}
-        const newFilterData = {...data, [name]: value?value.id:null}
+        const newFilterData = {...data, [name]: value ? value.id : null}
         setData(newData)
         submitForm(newFilterData)
     }
@@ -120,6 +130,17 @@ const Filter = ({onFilter, loading}: IProps) => {
                 />
             </Grid>
             <Grid item xs={12}>
+                <PSelectInput
+                    name="product"
+                    value={data['product']}
+                    onChange={handleChange}
+                    label="Product"
+                    variant="outlined"
+                    size='small'
+                    options={accountCategories}
+                />
+            </Grid>
+            <Grid item xs={12}>
                 <TextField
                     name="referenceNumber"
                     value={data['referenceNumber']}
@@ -143,8 +164,8 @@ const Filter = ({onFilter, loading}: IProps) => {
                         {variant: "outlined", size: "small"}
                     }
                     filter={{
-                        'IdField':'MetaData.ApplicantName',
-                        'DisplayField':'MetaData.ApplicantName',
+                        'IdField': 'MetaData.ApplicantName',
+                        'DisplayField': 'MetaData.ApplicantName',
                     }}
                 />
             </Grid>
@@ -160,8 +181,8 @@ const Filter = ({onFilter, loading}: IProps) => {
                         {variant: "outlined", size: "small"}
                     }
                     filter={{
-                        'IdField':'UserId',
-                        'DisplayField':'MetaData.userName',
+                        'IdField': 'UserId',
+                        'DisplayField': 'MetaData.userName',
                     }}
                 />
             </Grid>
@@ -177,8 +198,8 @@ const Filter = ({onFilter, loading}: IProps) => {
                         {variant: "outlined", size: "small"}
                     }
                     filter={{
-                        'IdField':'UserId',
-                        'DisplayField':'MetaData.userName',
+                        'IdField': 'UserId',
+                        'DisplayField': 'MetaData.userName',
                     }}
                 />
             </Grid>

@@ -8,7 +8,6 @@ import {errorColor, successColor} from "../../../../../theme/custom-colors";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import {Button, Dialog, DialogContent, DialogTitle, TextField, Typography} from "@material-ui/core";
-import EditDialog from "../../../../../components/EditDialog";
 import Pending from "../pending";
 import {useDispatch, useSelector} from "react-redux";
 import ITemplateProps from "../ITemplateProps";
@@ -24,12 +23,7 @@ import {Dispatch} from "redux";
 import Box from "@material-ui/core/Box";
 import PdfViewer from "../../../../../components/PdfViewer";
 import {IState} from "../../../../../data/types";
-import Error from "../error";
 import Alert from "@material-ui/lab/Alert";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
 
 
 interface IFormProps {

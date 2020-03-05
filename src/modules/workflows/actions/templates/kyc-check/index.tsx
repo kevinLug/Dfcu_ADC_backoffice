@@ -7,7 +7,7 @@ import DataValue from "../../../../../components/DataValue";
 import {ContactCategory, renderName, toTitleCase} from "../../../../contacts/types";
 import ContactLink from "../../../../../components/links/ContactLink";
 import CommentIcon from '@material-ui/icons/Comment';
-import {DateIcon, ErrorIcon, SuccessIcon} from "../../../../../components/xicons";
+import {ErrorIcon, SuccessIcon} from "../../../../../components/xicons";
 import IconLabel from "../../../../../components/IconLabel";
 import Collapse from '@material-ui/core/Collapse';
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";

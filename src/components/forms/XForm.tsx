@@ -1,13 +1,12 @@
 import React, {useState} from "react";
-import {Form, Formik, FormikActions} from 'formik';
-
+import {Form, Formik, FormikHelpers} from 'formik';
 import {Grid} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
 
 interface IProps {
     schema?: any
-    onSubmit: (values: any, actions: FormikActions<any>) => any
+    onSubmit: (values: any, actions: FormikHelpers<any>) => any
     onCancel?: () => any
     onDelete?: () => any
     debug?: boolean
@@ -33,8 +32,9 @@ const XForm = (props: IProps) => {
             validationSchema={props.schema}
             validateOnBlur
             enableReinitialize
-            render={({submitForm, isSubmitting, values, errors, touched}) => (
-                <Form>
+        >{
+            ({submitForm, isSubmitting, values, errors, touched}) => (
+                <Form translate="yes">
                     <Grid container spacing={1}>
                         <Grid item xs={12}>
                             <Box p={1}>
@@ -87,8 +87,8 @@ const XForm = (props: IProps) => {
                         }
                     </Grid>
                 </Form>
-            )}
-        />
+            )
+        }</Formik>
     </>
 }
 

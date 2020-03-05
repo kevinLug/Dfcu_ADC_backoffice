@@ -6,4 +6,5 @@ export interface IUserView {
     password: string,
     telephone: string,
     claims: any
+    claimsList: any[]
 }

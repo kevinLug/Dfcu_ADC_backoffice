@@ -6,8 +6,6 @@ import {IContact} from "../types";
 import Loading from "../../../components/Loading";
 import Error from "../../../components/Error";
 import {createStyles, Grid, makeStyles, Theme} from "@material-ui/core";
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Profile from "./info/Profile";
 import Info from "./info/Info";

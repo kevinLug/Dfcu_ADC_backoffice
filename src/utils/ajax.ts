@@ -14,13 +14,13 @@ type EndCallback = (data?: any) => void;
 export const handleError = (err: any = {}, res: superagent.Response) => {
     const defaultMessage = "Invalid request, please contact admin";
     if ((res && res.forbidden) || (res && res.unauthorized)) {
-        Toast.error("Authentication Error")
-        authService.login().then(()=>{
-
-        })
+        console.log("Auth error logging out")
+        authService.logout()
+            .then(() => {
+            })
     } else if (res && res.badRequest) {
         const {message, errors} = res.body
-        let msg = message||'' + '\n'
+        let msg = message || '' + '\n'
         for (const key in errors) {
             if (errors.hasOwnProperty(key)) {
                 const error = errors[key][0]

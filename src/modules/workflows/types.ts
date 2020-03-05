@@ -15,6 +15,7 @@ export interface IWorkflowFilter {
     assignee?: string
     showNew?: boolean
     showAssigned?: boolean
+    product?: string
     statuses?: string[]
     from?: Date|null
     to?: Date|null

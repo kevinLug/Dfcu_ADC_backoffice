@@ -10,8 +10,7 @@ import {ICoreState} from "./data/redux/coreReducer";
 
 const App: React.FC = () => {
     console.log("Starting App")
-    const authState: ICoreState = useSelector((state: any) => state.core)
-    const {isLoading, user} = authState
+    const {isLoading, user}: ICoreState = useSelector((state: any) => state.core)
     if (isLoading) {
         return <Splash/>
     } else {
@@ -28,5 +27,4 @@ const App: React.FC = () => {
         </Router>;
     }
 }
-
 export default App;

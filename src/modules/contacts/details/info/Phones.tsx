@@ -9,8 +9,6 @@ import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import Divider from "@material-ui/core/Divider";
 import SectionTitle from "./SectionTitle";
-import ListIcon from "@material-ui/icons/List";
-import {trimString} from "../../../../utils/stringHelpers";
 import SectionItem from "./SectionItem";
 
 interface IProps {
