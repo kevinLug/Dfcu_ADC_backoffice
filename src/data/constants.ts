@@ -120,6 +120,8 @@ export const remoteRoutes = {
 
 
     users: authURL + '/api/user',
+    userClaims: authURL + '/api/User/Claim'
+
 }
 
 

@@ -11,13 +11,14 @@ interface IProps {
     url: string
     data: any | null
     isNew: boolean
+    debug?: boolean
     done?: () => any
     onNew: (data: any) => any
     onEdited: (data: any) => any
     schema?: any
 }
 
-const EditForm = ({data, isNew, url, columns, done, ...props}: IProps) => {
+const EditForm = ({data, isNew, url, columns, done,debug, ...props}: IProps) => {
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
         const submission: ISubmission = {
@@ -36,6 +37,7 @@ const EditForm = ({data, isNew, url, columns, done, ...props}: IProps) => {
             onSubmit={handleSubmit}
             schema={props.schema}
             initialValues={data}
+            debug={debug}
         >
             <Grid spacing={0} container>
                 {

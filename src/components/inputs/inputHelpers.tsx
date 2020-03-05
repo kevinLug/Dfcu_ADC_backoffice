@@ -5,6 +5,7 @@ import {IColumn, InputType} from "../dynamic-editor/types";
 import XDateInput from "./XDateInput";
 import XRadioInput from "./XRadioInput";
 import XSelectInput from "./XSelectInput";
+import XTextAreaInput from "./XTextAreaInput";
 
 export interface IOption {
     label: string
@@ -40,6 +41,10 @@ export const renderInput = ({inputType, name, label, inputProps, ...rest}: IColu
                 />
             case InputType.Radio:
                 return <XRadioInput
+                    {...inputProperties}
+                />
+            case InputType.TextArea:
+                return <XTextAreaInput
                     {...inputProperties}
                 />
             case InputType.Select:

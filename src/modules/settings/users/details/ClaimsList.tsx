@@ -1,6 +1,12 @@
-import React from 'react';
+import React, {useState} from 'react';
 import ListView from "../../../../components/dynamic-editor/ListView";
-import {IColumn} from "../../../../components/dynamic-editor/types";
+import {IColumn, InputType} from "../../../../components/dynamic-editor/types";
+import {toOptions} from "../../../../components/inputs/inputHelpers";
+import {addressCategories} from "../../../../data/comboCategories";
+import EditDialog from "../../../../components/EditDialog";
+import EditForm from "../../../../components/dynamic-editor/EditForm";
+import {IAddress} from "../../../contacts/types";
+import {remoteRoutes} from "../../../../data/constants";
 
 interface IProps {
     data: any[]
@@ -13,23 +19,55 @@ interface IProps {
     "claimValue": "string"
  */
 
+
+export const claims = ["phone", "region", "branch", "agent_code"]
 const columns: IColumn[] = [
-    {name: 'claimType', label: 'Claim Type'},
-    {name: 'claimValue', label: 'Claim Value'}
+    {
+        name: 'claimType', label: 'Claim Type',
+        inputType: InputType.Select,
+        inputProps: {
+            options: toOptions(claims),
+            variant: 'outlined'
+        }
+    },
+    {
+        name: 'claimValue', label: 'Claim Value',
+        inputType: InputType.Text,
+        inputProps: {
+            type: 'text',
+            variant: 'outlined'
+        }
+    }
 ]
+
 
 const ClaimsList = (props: IProps) => {
 
-    function handleAdd() {
+    const [selected, setSelected] = useState<any | null>(null)
+    const [dialog, setDialog] = useState(false)
 
+    const handleEdit = (dt: any) => () => {
+        console.log("On edit", dt)
+        setSelected(dt)
+        setDialog(true)
     }
 
-    function handleEdit(data: any) {
-        console.log("On edit", data)
+    const handleClose = () => {
+        setDialog(false)
+        setSelected(null)
     }
 
-    function handleDelete(data: any) {
-        console.log("On delete", data)
+    const handleAdd = () => {
+        setSelected(null)
+        setDialog(true)
+    }
+
+    function handleAdded(data:any) {
+        console.log("Claim added", data)
+    }
+
+    function handleEdited(data:any) {
+        console.log("Claim Edited", data)
     }
 
     return (
@@ -40,9 +78,19 @@ const ClaimsList = (props: IProps) => {
                 columns={columns}
                 primaryKey='id'
                 onAdd={handleAdd}
-                onDelete={handleDelete}
+                onDelete={handleEdit}
                 onEdit={handleEdit}
             />
+            <EditDialog open={dialog} onClose={handleClose} title='Edit Claim'>
+                <EditForm
+                    columns={columns}
+                    url={remoteRoutes.userClaims}
+                    data={selected}
+                    isNew={!selected}
+                    onNew={handleAdded}
+                    onEdited={handleEdited}
+                />
+            </EditDialog>
         </div>
     );
 }

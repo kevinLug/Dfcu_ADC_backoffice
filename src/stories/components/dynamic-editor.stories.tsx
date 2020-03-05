@@ -7,7 +7,7 @@ import {action} from "@storybook/addon-actions";
 import {IColumn, InputType} from "../../components/dynamic-editor/types";
 import EditForm from "../../components/dynamic-editor/EditForm";
 import {toOptions} from "../../components/inputs/inputHelpers";
-import {addressCategories} from "../../data/comboCategories";
+import {addressCategories, genderCategories} from "../../data/comboCategories";
 
 const uuid = require('uuid/v4');
 
@@ -53,40 +53,56 @@ const formColumns: IColumn[] = [
             options: toOptions(addressCategories),
             variant: 'outlined'
         }
-    },
+    }
+    ,
     {
         name: 'age', label: 'Age',
-        inputType: InputType.Select,
+        inputType: InputType.Text,
         inputProps: {
-            options: toOptions(addressCategories),
+            type: 'number',
+            variant: 'outlined'
+        }
+    },
+    {
+        name: 'word', label: 'Words',
+        inputType: InputType.Text,
+        inputProps: {
+            type: 'text',
             variant: 'outlined'
         }
     },
     {
         name: 'gender', label: 'Gender',
-        inputType: InputType.Select,
+        inputType: InputType.Radio,
         inputProps: {
-            options: toOptions(addressCategories),
+            options: toOptions(genderCategories),
             variant: 'outlined'
         }
     },
     {
-        name: 'about', label: 'About',
-        inputType: InputType.Select,
+        name: 'dob', label: 'DOB',
+        inputType: InputType.Date,
         inputProps: {
-            options: toOptions(addressCategories),
-            variant: 'outlined'
+            inputVariant: 'outlined'
         }
     },
+    {
+        name: 'about', label: 'About',
+        inputType: InputType.TextArea,
+        inputProps: {
+            variant: 'outlined'
+        }
+    }
 ]
 
 export const DynamicForm = () => <EditForm
     columns={formColumns}
     url=''
-    data={null}
+    data={{}}
     isNew={true}
     done={() => undefined}
     onNew={() => undefined}
     onEdited={() => undefined}
     schema={undefined}
+    debug
 />;

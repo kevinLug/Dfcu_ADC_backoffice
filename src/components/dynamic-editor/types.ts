@@ -11,6 +11,7 @@ export enum InputType {
     Text = 'Text',
     Select = 'Select',
     Date = 'Date',
+    TextArea = 'TextArea',
     RemoteSelect = 'RemoteSelect',
     Radio = 'Radio',
 }

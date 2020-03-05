@@ -40,19 +40,7 @@ export const basicData = (data: any): any[] => {
     return display
 }
 
-export const toData = ({claims: data}: any): any[] => {
-    const display: any[] = []
-    for (const key of Object.keys(data)) {
-        if (typeof data[key] !== 'object') {
-            const v: string = data[key]
-            display.push({
-                name: key,
-                value: v
-            })
-        }
-    }
-    return display
-}
+
 
 const Details = (props: IProps) => {
     const dispatch = useDispatch();

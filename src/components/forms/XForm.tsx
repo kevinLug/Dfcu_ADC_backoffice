@@ -3,6 +3,7 @@ import {Form, Formik, FormikHelpers} from 'formik';
 import {Grid} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
+import {hasValue} from "../inputs/inputHelpers";
 
 interface IProps {
     schema?: any
@@ -16,6 +17,7 @@ interface IProps {
 
 const XForm = (props: IProps) => {
     const [count, setCount] = useState<number>(0)
+
     function handleDelete() {
         if (count === 1) {
             setCount(0)
@@ -27,7 +29,7 @@ const XForm = (props: IProps) => {
 
     return <>
         <Formik
-            initialValues={props.initialValues}
+            initialValues={hasValue(props.initialValues) ? props.initialValues : {}}
             onSubmit={props.onSubmit}
             validationSchema={props.schema}
             validateOnBlur
@@ -52,7 +54,7 @@ const XForm = (props: IProps) => {
                                                 color='default'
                                                 onClick={handleDelete}
                                                 disabled={isSubmitting}
-                                            >{count === 1?'! Confirm':'Delete'}</Button>
+                                            >{count === 1 ? '! Confirm' : 'Delete'}</Button>
                                         </Grid>
                                     }
                                     {
