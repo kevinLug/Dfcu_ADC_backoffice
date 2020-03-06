@@ -2,23 +2,14 @@ import React, {useState} from 'react';
 import ListView from "../../../../components/dynamic-editor/ListView";
 import {IColumn, InputType} from "../../../../components/dynamic-editor/types";
 import {toOptions} from "../../../../components/inputs/inputHelpers";
-import {addressCategories} from "../../../../data/comboCategories";
 import EditDialog from "../../../../components/EditDialog";
 import EditForm from "../../../../components/dynamic-editor/EditForm";
-import {IAddress} from "../../../contacts/types";
 import {remoteRoutes} from "../../../../data/constants";
 
 interface IProps {
     data: any[]
+    user: any
 }
-
-/*
-    "id": 0,
-    "userId": "string",
-    "claimType": "string",
-    "claimValue": "string"
- */
-
 
 export const claims = ["phone", "region", "branch", "agent_code"]
 const columns: IColumn[] = [
@@ -43,11 +34,11 @@ const columns: IColumn[] = [
 
 const ClaimsList = (props: IProps) => {
 
+    const [data, setData] = useState<any []>(props.data)
     const [selected, setSelected] = useState<any | null>(null)
     const [dialog, setDialog] = useState(false)
 
-    const handleEdit = (dt: any) => () => {
-        console.log("On edit", dt)
+    const handleEdit = (dt: any) => {
         setSelected(dt)
         setDialog(true)
     }
@@ -62,33 +53,44 @@ const ClaimsList = (props: IProps) => {
         setDialog(true)
     }
 
-    function handleAdded(data:any) {
-        console.log("Claim added", data)
+    function handleAdded(dt: any) {
+        setData([...data, dt])
+        handleClose()
     }
 
-    function handleEdited(data:any) {
-        console.log("Claim Edited", data)
+    function handleEdited(dt: any) {
+        const newData = data.map(it => it.id === dt.id ? dt : it)
+        setData(newData)
+        handleClose()
     }
 
+    function handleDeleted(dt: any) {
+        const newData = data.filter(it => it.id !== dt.id)
+        setData(newData)
+        handleClose()
+    }
+
+    const isNew = !selected
     return (
         <div>
             <ListView
                 title='User Claims'
-                data={props.data}
+                data={data}
                 columns={columns}
                 primaryKey='id'
                 onAdd={handleAdd}
                 onDelete={handleEdit}
                 onEdit={handleEdit}
             />
-            <EditDialog open={dialog} onClose={handleClose} title='Edit Claim'>
+            <EditDialog open={dialog} onClose={handleClose} title={isNew ? "New claim":"Edit claim"}>
                 <EditForm
                     columns={columns}
                     url={remoteRoutes.userClaims}
-                    data={selected}
-                    isNew={!selected}
+                    data={isNew ? {userId: props.user.id} : selected}
+                    isNew={isNew}
                     onNew={handleAdded}
                     onEdited={handleEdited}
+                    onDeleted={handleDeleted}
                 />
             </EditDialog>
         </div>

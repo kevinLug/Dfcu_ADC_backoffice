@@ -5,12 +5,28 @@ import DataValue from "../../../../../components/DataValue";
 import FileFilledIcon from "@material-ui/icons/InsertDriveFile";
 import FileOutlinedIcon from "@material-ui/icons/InsertDriveFileOutlined";
 import {GatewayDocument} from "../../../../../data/types";
+import {IDocument} from "../../../types";
+import {hasValue} from "../../../../../components/inputs/inputHelpers";
 
 interface IProps {
-    documents:GatewayDocument[]
+    gatewayDocuments: GatewayDocument[]
+    documents: IDocument[]
 }
 
-const DocumentsList = ({documents}: IProps) => {
+const DocumentsList = ({documents, gatewayDocuments}: IProps) => {
+
+    const getName = (str: string) => {
+
+        if (str.toLocaleLowerCase().indexOf('passportphoto') > -1) {
+            return "Passport photo (jpg)"
+        }
+        const gatewayDocument = gatewayDocuments.filter(it => str.toLocaleLowerCase().indexOf(it.code.toLocaleLowerCase()) > -1)[0]
+        if (hasValue(gatewayDocument)) {
+            return gatewayDocument.name + ' (pdf)';
+        }
+        return str;
+    }
+
     return (
         <div>
             <Box pb={1}>
@@ -19,19 +35,15 @@ const DocumentsList = ({documents}: IProps) => {
             <Box>
                 {documents.map(
                     it => {
-                        return <Box display='flex' key={it.code}>
+                        return <Box display='flex' key={it.id}>
                             <div style={{paddingTop: 3}}>
                                 <DataValue>
-                                    {
-                                        it.required ?
-                                            <FileFilledIcon fontSize='inherit'/> :
-                                            <FileOutlinedIcon fontSize='inherit'/>
-                                    }
+                                    <FileOutlinedIcon fontSize='inherit'/>
                                     &nbsp;&nbsp;
                                 </DataValue>
                             </div>
                             <DataValue>
-                                {it.name}
+                                {getName(it.name)}
                             </DataValue>
                         </Box>
                     })

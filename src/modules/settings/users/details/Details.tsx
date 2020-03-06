@@ -94,7 +94,7 @@ const Details = (props: IProps) => {
                             />
                         </Grid>
                         <Grid item xs={4}>
-                            <ClaimsList data={data.claimsList}/>
+                            <ClaimsList data={data.claimsList} user={data}/>
                         </Grid>
                     </Grid>
                 </Box>

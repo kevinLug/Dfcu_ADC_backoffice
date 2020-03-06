@@ -17,6 +17,7 @@ import DocumentsList from "./DocumentsList";
 import {ErrorIcon, SuccessIcon} from "../../../../../components/xicons";
 import UserLink from "../../../../../components/links/UserLink";
 import Typography from "@material-ui/core/Typography";
+import {Alert} from "@material-ui/lab";
 
 
 const Index = (props: ITemplateProps) => {
@@ -69,7 +70,7 @@ const Index = (props: ITemplateProps) => {
                 <>
                     <Grid item xs={6}>
                         <DataValue style={{color: isDone ? null : errorColor}}>
-                            {isDone ? <SuccessIcon fontSize='inherit'/> : <ErrorIcon fontSize='inherit' />}
+                            {isDone ? <SuccessIcon fontSize='inherit'/> : <ErrorIcon fontSize='inherit'/>}
                             &nbsp;
                             {isDone ? 'Approved' : 'Rejected'}
                             &nbsp;by&nbsp;
@@ -78,7 +79,8 @@ const Index = (props: ITemplateProps) => {
                     </Grid>
                     <Grid item xs={6}>
                         <DataValue style={{color: isDone ? null : errorColor}}>
-                            Remarks : <Typography variant='body2' component='span'><i>"{data['remarks']}"</i></Typography>
+                            Remarks : <Typography variant='body2'
+                                                  component='span'><i>"{data['remarks']}"</i></Typography>
                         </DataValue>
                     </Grid>
                 </>
@@ -87,7 +89,14 @@ const Index = (props: ITemplateProps) => {
                 <Box pt={2}>&nbsp;</Box>
             </Grid>
             <Grid item xs={6}>
-                <DocumentsList documents={gatewayDocsList}/>
+                {docs.length === 0 ?
+                    <Box p={3}>
+                        <Alert severity="error">Failed to load documents</Alert>
+                    </Box>
+                    :
+                    <DocumentsList gatewayDocuments={gatewayDocsList} documents={docs} />
+                }
+
             </Grid>
             <Grid item xs={6}>
                 <DocumentsChecks {...props} color={color}/>

@@ -39,9 +39,8 @@ const VerifyForm = (props: IFormProps & ITemplateProps) => {
     const workflow: IWorkflow = useSelector((state: any) => state.workflows.workflow)
     const documents = useSelector((state: IState) => state.core.documents)
 
-
-    const form = workflow.documents.filter(it => it.fileName.indexOf('ApplicationForm') > -1)[0]
-    const photo = workflow.documents.filter(it => it.fileName.indexOf('PassportPhoto') > -1)[0]
+    const form = workflow.documents.filter(it => it.fileName.toLocaleLowerCase().indexOf('applicationform') > -1)[0]
+    const photo = workflow.documents.filter(it => it.fileName.toLocaleLowerCase().indexOf('passportphoto') > -1)[0]
     if (!form || !photo) {
         return <Box p={3}>
             <Alert severity="error"><Typography>Failed to read documents</Typography></Alert>
@@ -202,11 +201,20 @@ const Index = (props: ITemplateProps) => {
                 {
                     action.status === ActionStatus.Pending &&
                     <Grid container spacing={2} alignContent='flex-end' justify='flex-end'>
-                        <Grid item>
-                            <Button variant="outlined" size="small" color="primary" onClick={handleClick}>
-                                Upload Signature
-                            </Button>
-                        </Grid>
+                        {
+                            workflow.documents.length === 0 ?
+                                <Grid item sm={6}>
+                                    <Box p={3}>
+                                        <Alert severity="error">Failed to load documents</Alert>
+                                    </Box>
+                                </Grid> :
+                                <Grid item>
+                                    <Button variant="outlined" size="small" color="primary" onClick={handleClick}>
+                                        Upload Signature
+                                    </Button>
+                                </Grid>
+                        }
+
                         <VerifyDialog open={open} onClose={handleClose} title='Upload Signature'>
                             <VerifyForm onClose={handleClose} {...props}/>
                         </VerifyDialog>

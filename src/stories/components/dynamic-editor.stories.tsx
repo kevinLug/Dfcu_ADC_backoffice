@@ -103,6 +103,7 @@ export const DynamicForm = () => <EditForm
     done={() => undefined}
     onNew={() => undefined}
     onEdited={() => undefined}
+    onDeleted={() => undefined}
     schema={undefined}
     debug
 />;

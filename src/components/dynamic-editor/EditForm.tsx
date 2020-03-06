@@ -5,6 +5,8 @@ import {handleSubmission, ISubmission} from "../../utils/formHelpers";
 import XForm from "../forms/XForm";
 import Grid from "@material-ui/core/Grid";
 import {renderInput} from "../inputs/inputHelpers";
+import {del} from "../../utils/ajax";
+import Toast from "../../utils/Toast";
 
 interface IProps {
     columns: IColumn[]
@@ -15,10 +17,12 @@ interface IProps {
     done?: () => any
     onNew: (data: any) => any
     onEdited: (data: any) => any
+    onDeleted: (data: any) => any
     schema?: any
+    primaryKey?: any
 }
 
-const EditForm = ({data, isNew, url, columns, done,debug, ...props}: IProps) => {
+const EditForm = ({data, isNew, url, columns, done, debug, primaryKey = 'id', ...props}: IProps) => {
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
         const submission: ISubmission = {
@@ -32,9 +36,20 @@ const EditForm = ({data, isNew, url, columns, done,debug, ...props}: IProps) => 
         handleSubmission(submission)
     }
 
+    function handleDelete() {
+        console.log("Deleting", {dt: data, key: primaryKey, v: data[primaryKey]})
+        const delUrl = `${url}/${data[primaryKey]}`
+        del(delUrl, resp => {
+            console.log("deleted", resp)
+            Toast.success("Operation succeeded")
+            props.onDeleted(data)
+        })
+    }
+
     return (
         <XForm
             onSubmit={handleSubmit}
+            onDelete={isNew ? undefined : handleDelete}
             schema={props.schema}
             initialValues={data}
             debug={debug}

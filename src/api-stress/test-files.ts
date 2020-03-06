@@ -7,7 +7,7 @@ const tus = require('tus-js-client')
 const AdmZip = require('adm-zip')
 
 const caseId = 'fake-case'
-const jpegFile = `${__dirname}\\sample\\${caseId}-photo.jpg`
+const jpegFile = `${__dirname}\\sample\\file-passportPhoto-photo.jpg`
 const pdfFile = `${__dirname}\\sample\\${caseId}-form.pdf`
 const jsonFile = `${__dirname}\\data\\${caseId}-json.json`
 

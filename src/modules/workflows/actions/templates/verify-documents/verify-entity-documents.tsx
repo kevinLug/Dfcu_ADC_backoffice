@@ -17,6 +17,7 @@ import UserLink from "../../../../../components/links/UserLink";
 import {getInitials} from "../../../../../utils/stringHelpers";
 import {ErrorIcon, SuccessIcon} from "../../../../../components/xicons";
 import {getGatewayDocsList} from "./helpers";
+import {Alert} from "@material-ui/lab";
 
 const EntityVerifyDocuments = (props: ITemplateProps) => {
     const {action, taskName} = props
@@ -68,15 +69,17 @@ const EntityVerifyDocuments = (props: ITemplateProps) => {
                 <>
                     <Grid item xs={6}>
                         <DataValue style={{color: isDone ? null : errorColor}}>
-                            {isDone ? <SuccessIcon fontSize='inherit'/> : <ErrorIcon fontSize='inherit' />}
+                            {isDone ? <SuccessIcon fontSize='inherit'/> : <ErrorIcon fontSize='inherit'/>}
                             &nbsp;
                             {isDone ? 'Approved' : 'Rejected'}
                             &nbsp;by&nbsp;
-                            <UserLink id={data['userId']} name={getInitials(data['userName'])} title={data['userName']}/>
+                            <UserLink id={data['userId']} name={getInitials(data['userName'])}
+                                      title={data['userName']}/>
                         </DataValue>
                         <Box pt={1} pl={2}>
                             <DataValue style={{color: isDone ? null : errorColor}}>
-                                Remarks : <Typography variant='body2' component='span'><i>"{data['remarks']}"</i></Typography>
+                                Remarks : <Typography variant='body2'
+                                                      component='span'><i>"{data['remarks']}"</i></Typography>
                             </DataValue>
                         </Box>
 
@@ -84,7 +87,12 @@ const EntityVerifyDocuments = (props: ITemplateProps) => {
                 </>
             }
             <Grid item xs={6}>
-                <DocumentsList documents={reqDocs}/>
+                {docs.length === 0 ?
+                    <Box p={3}>
+                        <Alert severity="error">Failed to load documents</Alert>
+                    </Box> :
+                    <DocumentsList gatewayDocuments={reqDocs} documents={docs}/>
+                }
             </Grid>
 
             <Grid item xs={12}>
