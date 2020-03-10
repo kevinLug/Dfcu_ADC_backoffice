@@ -31,7 +31,7 @@ export const columns: XHeadCell[] = [
         }
     },
     {
-        name: 'claims.phone', label: 'Phone',
+        name: 'claims.phone_number', label: 'Phone',
         cellProps: {
             style: {
                 whiteSpace: 'nowrap'
@@ -47,7 +47,7 @@ export const columns: XHeadCell[] = [
         }
     },
     {
-        name: 'claims.branch', label: 'Branch',
+        name: 'claims.branch_name', label: 'Branch',
         cellProps: {
             style: {
                 whiteSpace: 'nowrap'

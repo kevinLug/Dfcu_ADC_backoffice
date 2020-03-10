@@ -11,7 +11,7 @@ interface IProps {
     user: any
 }
 
-export const claims = ["phone", "region", "branch", "agent_code"]
+export const claims = ["phone_number", "region", "branch_name", "agent_code"]
 const columns: IColumn[] = [
     {
         name: 'claimType', label: 'Claim Type',
