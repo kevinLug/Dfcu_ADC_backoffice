@@ -2,32 +2,43 @@ import {IUserView} from "../../../modules/settings/users/types";
 
 export const userConstants = {
     usersCommitFetch: "usersCommitFetch",
+    usersStartFetch: "usersStartFetch",
+    usersStopFetch: "usersStopFetch",
     userCommitFetch: "userCommitFetch",
+    userStartFetch: "userStartFetch",
 }
 
 export interface IUserState {
     loading: boolean
     selected?: IUserView
-    data: IUserView[]
+    data: IUserView[],
+    loadingSingle: boolean
 }
 
 const initialState: IUserState = {
     selected: undefined,
     data: [],
-    loading: false
+    loading: false,
+    loadingSingle: false
 }
 
 export default function reducer(state = initialState, action: any): IUserState {
     switch (action.type) {
 
+        case userConstants.usersStartFetch: {
+            return {...state, loading: true}
+        }
         case userConstants.usersCommitFetch: {
             const data: IUserView[] = action.payload
-            return {...state, data}
+            return {...state, data, loading: false}
         }
 
+        case userConstants.userStartFetch: {
+            return {...state, loadingSingle: true}
+        }
         case userConstants.userCommitFetch: {
             const selected: IUserView = action.payload
-            return {...state, selected}
+            return {...state, selected,loadingSingle:false}
         }
 
         default: {
@@ -40,6 +51,18 @@ export function userCommitFetch(payload: any) {
     return {
         type: userConstants.userCommitFetch,
         payload
+    }
+}
+
+export function usersStartFetch() {
+    return {
+        type: userConstants.usersStartFetch
+    }
+}
+
+export function usersStopFetch() {
+    return {
+        type: userConstants.usersStopFetch
     }
 }
 

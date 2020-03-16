@@ -1,17 +1,15 @@
 import React, {useEffect, useState} from "react";
 import Layout from "../../../components/Layout";
-
 import XTable from "../../../components/table/XTable";
 import {XHeadCell} from "../../../components/table/XTableHead";
 import Grid from '@material-ui/core/Grid';
-
 import {search} from "../../../utils/ajax";
 import {remoteRoutes} from "../../../data/constants";
 import Typography from "@material-ui/core/Typography";
 import {useDispatch, useSelector} from "react-redux";
 import {IState} from "../../../data/types";
 import {columns, localFilter} from "./config";
-import {IUserState, userConstants} from "../../../data/redux/users/reducer";
+import {IUserState, usersCommitFetch, usersStartFetch, usersStopFetch} from "../../../data/redux/users/reducer";
 import {Box} from "@material-ui/core";
 import SearchInput from "../../../components/SearchInput";
 
@@ -19,43 +17,28 @@ const headCells: XHeadCell[] = [...columns];
 
 const List = () => {
     const dispatch = useDispatch();
-    const [editDialog, setEditDialog] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const {data}: IUserState = useSelector((state: IState) => state.users)
-    const [displayData, setDisplayData] = useState([]);
+    const {data,loading}: IUserState = useSelector((state: IState) => state.users)
     const [filter, setFilter] = useState<any>("");
 
     useEffect(() => {
+        dispatch(usersStartFetch())
         search(
             remoteRoutes.users,
             {
                 ItemsPerPage: 200
             },
             (resp) => {
-                dispatch({
-                    type: userConstants.usersCommitFetch,
-                    payload: [...resp],
-                })
+                dispatch(usersCommitFetch(resp))
             },
             undefined,
             () => {
-                setLoading(false)
+                dispatch(usersStopFetch())
             })
     }, [dispatch])
-
 
     function handleFilter(value: any) {
         setFilter(value)
     }
-
-    function handleEdit() {
-        setEditDialog(true)
-    }
-
-    function handleClose() {
-        setEditDialog(false)
-    }
-
     return (
         <Layout>
             <Box p={2}>
@@ -68,6 +51,7 @@ const List = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <XTable
+                            loading={loading}
                             headCells={headCells}
                             data={data.filter(it => localFilter(it, filter))}
                             initialRowsPerPage={10}

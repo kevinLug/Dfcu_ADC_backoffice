@@ -46,6 +46,21 @@ const CustomClaimsList = () => {
             })
     }, [filter, dispatch])
 
+
+    function handleClaimsAdded() {
+        setLoading(true)
+        search(
+            remoteRoutes.userCustomClaims,
+            filter,
+            (resp) => {
+                setData(resp.map(fromAuthCustomClaimObject))
+            },
+            undefined,
+            () => {
+                setLoading(false)
+            })
+    }
+
     function handleFilter(value: any) {
         setFilter({query: value})
     }
@@ -77,6 +92,9 @@ const CustomClaimsList = () => {
         setData([...data, dt])
         handleClose()
     }
+
+
+
 
     function handleEdited(dt: any) {
 
@@ -175,7 +193,7 @@ const CustomClaimsList = () => {
                     />
                 </EditDialog>
                 <CsvDialog open={bulk} onClose={handleCloseBulk}  >
-                    <CsvReader/>
+                    <CsvReader done={handleClaimsAdded}/>
                 </CsvDialog>
 
             </Box>

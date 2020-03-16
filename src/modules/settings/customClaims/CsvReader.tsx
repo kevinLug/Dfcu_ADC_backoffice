@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface IProps {
+    done:()=>any
 }
 
 interface IFileState {
@@ -140,6 +141,7 @@ const CsvReader = (props: IProps) => {
         const submitData = data.map(toAuthCustomClaimObject)
         post(remoteRoutes.userMultiClaims,submitData,resp=>{
             Toast.success("Claims successfully uploaded")
+            props.done()
         },undefined,()=>{
             setUpLoading(false)
         })
