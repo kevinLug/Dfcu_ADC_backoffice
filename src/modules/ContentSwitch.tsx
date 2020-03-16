@@ -8,6 +8,8 @@ import ApplicationDetails from "./workflows/details/Details";
 import Settings from "./settings/Settings";
 import Workflows from "./workflows/Workflows";
 import Users from "./settings/users/List";
+import CustomClaims from "./settings/customClaims/CustomClaimsList";
+import CustomClaimsDetails from "./settings/customClaims/details/Details";
 import UserDetails from "./settings/users/details/Details";
 import Layout from "../components/Layout";
 import {useDispatch} from "react-redux";
@@ -30,8 +32,13 @@ const ContentSwitch = () => {
         <Route path={localRoutes.applicationsDetails} component={ApplicationDetails}/>
         <Route path={localRoutes.applications} component={Workflows}/>
         <Route path={localRoutes.settings} component={Settings}/>
+
         <Route path={localRoutes.usersDetails} component={UserDetails}/>
         <Route path={localRoutes.users} component={Users}/>
+
+        <Route path={localRoutes.customClaimsDetails} component={CustomClaimsDetails}/>
+        <Route path={localRoutes.customClaims} component={CustomClaims}/>
+
         <Route component={NoMatch}/>
     </Switch>
 }

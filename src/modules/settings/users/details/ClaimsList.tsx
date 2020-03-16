@@ -11,13 +11,13 @@ interface IProps {
     user: any
 }
 
-export const claims = ["phone_number", "region", "branch_name", "agent_code"]
+export const authEditableClaims = ["phone_number", "region", "branch_name", "agent_code"]
 const columns: IColumn[] = [
     {
         name: 'claimType', label: 'Claim Type',
         inputType: InputType.Select,
         inputProps: {
-            options: toOptions(claims),
+            options: toOptions(authEditableClaims),
             variant: 'outlined'
         }
     },

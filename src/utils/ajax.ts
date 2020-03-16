@@ -12,12 +12,18 @@ type ErrorCallback = (err: any, res: superagent.Response) => void;
 type EndCallback = (data?: any) => void;
 
 export const handleError = (err: any = {}, res: superagent.Response) => {
+    const authError = 22000986
+    const ajaxError = 22000987
     const defaultMessage = "Invalid request, please contact admin";
-    if ((res && res.forbidden) || (res && res.unauthorized)) {
+    if (res && res.unauthorized) {
+        Toast.error("Authentication Error, Please login again", authError)
+    }
+    if (res && res.forbidden) {
         console.log("Auth error logging out")
-        // authService.logout()
-        //     .then(() => {
-        //     })
+        Toast.error("Oops, You do not have permission to be here", authError)
+        authService.logout()
+            .then(() => {
+            })
     } else if (res && res.badRequest) {
         const {message, errors} = res.body
         let msg = message || '' + '\n'
@@ -27,17 +33,17 @@ export const handleError = (err: any = {}, res: superagent.Response) => {
                 msg += (error + '\n')
             }
         }
-        Toast.error(msg || defaultMessage)
+        Toast.error(msg || defaultMessage, ajaxError)
     } else if ((res && res.clientError) || (res && res.notAcceptable) || (res && res.error)) {
-        Toast.error(defaultMessage)
+        Toast.error(defaultMessage, ajaxError)
     } else if (res && res.body && res.body.message) {
-        Toast.error(res.body.message)
+        Toast.error(res.body.message, ajaxError)
     } else {
         const message = err.message || 'Unknown error, contact admin'
         const finalMessage = message.indexOf("offline") !== -1
             ? "Can't reach server, Check connectivity"
             : message
-        Toast.error(finalMessage)
+        Toast.error(finalMessage, ajaxError)
     }
 }
 

@@ -22,6 +22,7 @@ import {successColor} from "../../../theme/custom-colors";
 import {renderStatus, renderSubStatus} from "../widgets";
 import Box from "@material-ui/core/Box";
 import Divider from "@material-ui/core/Divider";
+import Preview from "../actions/templates/verify-documents/Preview";
 
 
 interface IProps extends RouteComponentProps {
@@ -75,10 +76,17 @@ const Details = (props: IProps) => {
     const caseId = getRouteParam(props, 'caseId')
     const wfClasses = useWfStyles()
     const classes = useStyles()
+    const [preview, setPreview] = useState(false)
     const [blocker, setBlocker] = useState<boolean>(false)
     const {loading, workflow}: IWorkflowState = useSelector((state: any) => state.workflows)
     const dispatch: Dispatch<any> = useDispatch();
+    function handlePreviewDocs() {
+        setPreview(true)
+    }
 
+    function closePreview() {
+        return setPreview(false);
+    }
     function loadData() {
         dispatch(startWorkflowFetch())
         dispatch(fetchWorkflowAsync(caseId))
@@ -99,6 +107,7 @@ const Details = (props: IProps) => {
                 setBlocker(false)
             })
     }
+
 
     if (loading)
         return <Navigation>
@@ -135,7 +144,7 @@ const Details = (props: IProps) => {
                                 <Typography variant='h5'>Details</Typography>
                             </Box>
                             <Box>
-                                <Button size='small' variant="outlined" color='primary' onClick={onResume}>
+                                <Button size='small' variant="outlined" color='primary' onClick={handlePreviewDocs}>
                                     Preview Docs
                                 </Button>
                                 &nbsp;
@@ -162,6 +171,7 @@ const Details = (props: IProps) => {
                     </Grid>
                 </Grid>
             </div>
+            <Preview open={preview} onClose={closePreview} docs={caseData.documents}/>
         </Navigation>
     );
 }

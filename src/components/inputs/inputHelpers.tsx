@@ -25,7 +25,6 @@ export const hasNoValue = (text: any) => {
     return isEmpty(text)
 }
 
-
 export const renderInput = ({inputType, name, label, inputProps, ...rest}: IColumn) => {
     if (inputType) {
         const type: InputType = inputType

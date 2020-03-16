@@ -25,6 +25,8 @@ export const localRoutes = {
     contacts: '/contacts',
     contactsDetails: '/contacts/:contactId',
     settings: '/settings',
+    customClaimsDetails: '/customClaims/:id',
+    customClaims: '/customClaims',
     users: '/users',
     usersDetails: '/users/:userId',
 }
@@ -34,7 +36,7 @@ const servers: any = {
         Auth: 'https://authservice-test.laboremus.no',
         Crm: 'https://crmservice-test.laboremus.no',
         Case: 'http://localhost:6001',
-        Gateway: 'http://localhost:5003',
+        Gateway: 'https://dfcu-customeronboarding-gateway-test.laboremus.no',
         Kyc: "https://kyc-connector-staging.onboarding.dfcugroup.com",
         Notification: "https://emata-poc-smsservice-test.laboremus.no",
         Payments: "https://emata-poc-payments-test.laboremus.no",
@@ -118,9 +120,10 @@ export const remoteRoutes = {
     samplePdf: caseHandlingURL + '/sample.pdf',
     gatewayMetadata: gatewayURL + '/api/meta/data',
 
-
     users: authURL + '/api/user',
-    userClaims: authURL + '/api/User/Claim'
+    userClaims: authURL + '/api/User/Claim',
+    userMultiClaims: authURL + '/api/multipleClaims',
+    userCustomClaims: authURL + '/api/customClaims'
 
 }
 

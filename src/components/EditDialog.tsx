@@ -36,7 +36,6 @@ const EditDialog = (props: IProps) => {
     const matches = useMediaQuery(theme.breakpoints.down('sm'));
     return (
         <Dialog open={props.open} onClose={props.onClose} fullScreen={matches} >
-
             {
                 matches ?
                     <AppBar className={classes.appBar}>

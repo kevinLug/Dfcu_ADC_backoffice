@@ -12,6 +12,8 @@ import {Divider} from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import {useSelector} from "react-redux";
 import {IState} from "../../../../../data/types";
+import {hasValue} from "../../../../../components/inputs/inputHelpers";
+import {Alert} from "@material-ui/lab";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -39,7 +41,7 @@ interface IProps {
     docs: IDocument[]
 }
 
-export default function DocsView({docs}: IProps) {
+export default function DocsView({docs=[]}: IProps) {
     const classes = useStyles();
     const [activeStep, setActiveStep] = React.useState(0);
     const maxSteps = docs.length;
@@ -55,46 +57,55 @@ export default function DocsView({docs}: IProps) {
         <div style={{height: '100%'}}>
             <Paper square elevation={0} className={classes.header}>
                 <Typography variant='h5' display='inline'>Documents: <Typography
-                    variant="body1" display='inline'>{document.name}</Typography></Typography>
+                    variant="body1" display='inline'>{document&&document.name}</Typography></Typography>
                 <Box mt={1}>
                     <Divider/>
                 </Box>
             </Paper>
-            <div className={classes.body}>
-                {
-                    document.contentType.indexOf('image') > -1 ? (
-                        <div key={document.id} className={classes.imgHolder}>
-                            <img
-                                className={classes.img}
-                                src={documents[document.id]}
-                                alt={document.name}
-                            />
+            {
+                hasValue(docs)?
+                    <>
+                        <div className={classes.body}>
+                            {
+                                document.contentType.indexOf('image') > -1 ? (
+                                    <div key={document.id} className={classes.imgHolder}>
+                                        <img
+                                            className={classes.img}
+                                            src={documents[document.id]}
+                                            alt={document.name}
+                                        />
+                                    </div>
+                                ) : (
+                                    <PdfViewer key={document.id} data={documents[document.id]}/>
+                                )
+                            }
                         </div>
-                    ) : (
-                        <PdfViewer key={document.id} data={documents[document.id]}/>
-                    )
-                }
-            </div>
-            <MobileStepper
-                steps={maxSteps}
-                position="static"
-                variant="text"
-                activeStep={activeStep}
-                nextButton={
-                    <Button size="small" color='primary' variant='outlined' onClick={handleNext}
-                            disabled={activeStep === maxSteps - 1}>
-                        Next
-                        <KeyboardArrowRight/>
-                    </Button>
-                }
-                backButton={
-                    <Button size="small" color='primary' variant='outlined' onClick={handleBack}
-                            disabled={activeStep === 0}>
-                        <KeyboardArrowLeft/>
-                        Back
-                    </Button>
-                }
-            />
+                        <MobileStepper
+                            steps={maxSteps}
+                            position="static"
+                            variant="text"
+                            activeStep={activeStep}
+                            nextButton={
+                                <Button size="small" color='primary' variant='outlined' onClick={handleNext}
+                                        disabled={activeStep === maxSteps - 1}>
+                                    Next
+                                    <KeyboardArrowRight/>
+                                </Button>
+                            }
+                            backButton={
+                                <Button size="small" color='primary' variant='outlined' onClick={handleBack}
+                                        disabled={activeStep === 0}>
+                                    <KeyboardArrowLeft/>
+                                    Back
+                                </Button>
+                            }
+                        />
+                    </>:
+                    <Box p={3}>
+                        <Alert severity="error">Failed to load documents</Alert>
+                    </Box>
+            }
+
         </div>
     );
 }

@@ -53,6 +53,7 @@ export const SimpleTable = () => {
         createPerson(),
         createPerson(),
     ]
+    
     return <div>
         <Typography>Our table</Typography>
         <XTable headCells={cells} data={data}/>

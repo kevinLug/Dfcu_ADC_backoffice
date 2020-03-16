@@ -20,15 +20,31 @@ interface IProps {
     onDeleted: (data: any) => any
     schema?: any
     primaryKey?: any
+    submitParser?: (data: any) => any
+    submitResponseParser?: (data: any) => any
 }
 
-const EditForm = ({data, isNew, url, columns, done, debug, primaryKey = 'id', ...props}: IProps) => {
+const EditForm = ({
+                      data,
+                      isNew,
+                      url, columns,
+                      done,
+                      debug,
+                      primaryKey = 'id',
+                      submitParser,
+                      submitResponseParser,
+                      ...props
+                  }: IProps) => {
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
+        const toSubmit = submitParser ?
+            submitParser(values) :
+            values;
         const submission: ISubmission = {
-            url, values, actions, isNew,
-            onAjaxComplete: (data: any) => {
-                isNew ? props.onNew(data) : props.onEdited(data);
+            url, values: toSubmit, actions, isNew,
+            onAjaxComplete: (resp: any) => {
+                const saved = submitResponseParser ? submitResponseParser(resp) : resp
+                isNew ? props.onNew(saved) : props.onEdited(saved);
                 if (done)
                     done()
             }
@@ -37,7 +53,6 @@ const EditForm = ({data, isNew, url, columns, done, debug, primaryKey = 'id', ..
     }
 
     function handleDelete() {
-        console.log("Deleting", {dt: data, key: primaryKey, v: data[primaryKey]})
         const delUrl = `${url}/${data[primaryKey]}`
         del(delUrl, resp => {
             console.log("deleted", resp)

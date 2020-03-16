@@ -21,6 +21,7 @@ interface XTableProps {
     initialRowsPerPage?: number
     headCells: XHeadCell[]
     title?: string
+    primaryKey?: string
     data: any[]
     useCheckbox?: boolean
     handleSelection?: (id: any) => any
@@ -32,7 +33,7 @@ interface XTableProps {
 }
 
 export default function XTable(props: XTableProps) {
-    const {usePagination = true, title, headCells, data, useCheckbox, initialSortBy = 'id', initialOrder = 'asc', initialRowsPerPage = 10, headerSize = 'medium', bodySize = 'medium'} = props
+    const {primaryKey='id',usePagination = true, title, headCells, data, useCheckbox, initialSortBy = 'id', initialOrder = 'asc', initialRowsPerPage = 10, headerSize = 'medium', bodySize = 'medium'} = props
     const classes = useTableStyles();
     const [order, setOrder] = React.useState<Order>(initialOrder);
     const [orderBy, setOrderBy] = React.useState<string>(initialSortBy);
@@ -138,16 +139,16 @@ export default function XTable(props: XTableProps) {
                                         stableSort(data, getSorting(order, orderBy))
                                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                         .map((row: any, index: number) => {
-                                            const isItemSelected = isSelected(row.id);
+                                            const isItemSelected = isSelected(row[primaryKey]);
                                             const labelId = `enhanced-table-checkbox-${index}`;
                                             return (
                                                 <TableRow
                                                     hover
-                                                    onClick={event => handleClick(event, row.id)}
+                                                    onClick={event => handleClick(event, row[primaryKey])}
                                                     role="checkbox"
                                                     aria-checked={isItemSelected}
                                                     tabIndex={-1}
-                                                    key={row.id}
+                                                    key={row[primaryKey]}
                                                     selected={isItemSelected}
                                                     style={{backgroundColor: isEven(index) ? 'white' : grey[50]}}
                                                 >

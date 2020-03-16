@@ -24,6 +24,9 @@ import logo from "../assets/download.png";
 import {Typography} from "@material-ui/core";
 import {themeBackground} from "../theme/custom-colors";
 import Paper from "@material-ui/core/Paper";
+import Collapse from '@material-ui/core/Collapse';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
 
 const drawerWidth = 240;
 
@@ -83,7 +86,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         logo: {
             [theme.breakpoints.only('xs')]: {
-                height: 25 ,
+                height: 25,
                 width: 'auto',
             },
             height: 30,
@@ -113,8 +116,24 @@ const useStyles = makeStyles((theme: Theme) =>
                 width: theme.spacing(9) + 1,
             },
         },
+        nested: {
+            paddingLeft: theme.spacing(9),
+        }
     }),
 );
+
+
+interface ItemProps {
+    text: string,
+    route: string,
+    Icon: any
+}
+
+interface CollapsibleItemProps {
+    text: string,
+    Icon: any,
+    items: ItemProps[]
+}
 
 function Layout(props: any) {
     const classes = useStyles();
@@ -135,10 +154,10 @@ function Layout(props: any) {
 
     const pathMatches = (path: string, str: string) => path.indexOf(str) > -1
 
-    const getCls = (pathStr: string): string => {
+    const getCls = (pathStrings: string[]): string => {
         const {match: {path}} = props
 
-        return pathMatches(path, pathStr) ? classes.menuSelected : classes.menu
+        return pathStrings.some(pathStr=>pathMatches(path, pathStr) )? classes.menuSelected : classes.menu
     }
 
     const isSelected = (pathStr: string): boolean => {
@@ -146,6 +165,59 @@ function Layout(props: any) {
         return pathMatches(path, pathStr)
     }
 
+    const MyMenuItem = (props: ItemProps) => {
+        return <ListItem button
+                         onClick={onClick(props.route)}
+                         selected={isSelected(props.route)}>
+            <ListItemIcon>
+                <props.Icon className={getCls([props.route])}/>
+            </ListItemIcon>
+            <ListItemText primary={
+                <Typography className={getCls([props.route])}>
+                    {props.text}
+                </Typography>
+            }/>
+        </ListItem>;
+    }
+
+    const MyCollapsibleMenuItem = (props: CollapsibleItemProps) => {
+        const [open, setOpen] = React.useState(true);
+        const routes = props.items.map(it=>it.route)
+        const handleClick = () => {
+            setOpen(!open);
+        };
+        return <>
+            <ListItem button onClick={handleClick}>
+                <ListItemIcon>
+                    <props.Icon className={getCls(routes)}/>
+                </ListItemIcon>
+                <ListItemText primary={
+                    <Typography className={getCls(routes)}>
+                        {props.text}
+                    </Typography>
+                }/>
+                {open ? <ExpandLess/> : <ExpandMore/>}
+            </ListItem>
+
+            <Collapse in={open} timeout="auto" unmountOnExit>
+
+                <List component="div" disablePadding>
+                    {props.items.map(it => (
+                        <ListItem key={it.route} button className={classes.nested}
+                                  onClick={onClick(it.route)}
+                                  selected={isSelected(it.route)}>
+                            <ListItemText primary={
+                                <Typography className={getCls([it.route])}>
+                                    {it.text}
+                                </Typography>
+                            }/>
+                        </ListItem>
+                    ))}
+
+                </List>
+            </Collapse>
+        </>;
+    }
 
     const drawer = (
         <div style={{backgroundColor: themeBackground, color: 'white'}}>
@@ -156,49 +228,39 @@ function Layout(props: any) {
             </div>
             <Divider/>
             <List>
-                <ListItem button onClick={onClick(localRoutes.dashboard)} selected={isSelected(localRoutes.dashboard)}>
-                    <ListItemIcon>
-                        <AppsIcon className={getCls(localRoutes.dashboard)}/>
-                    </ListItemIcon>
-                    <ListItemText primary={
-                        <Typography className={getCls(localRoutes.dashboard)}>
-                            Dashboard
-                        </Typography>
-                    }/>
-                </ListItem>
-                <ListItem button onClick={onClick(localRoutes.applications)}
-                          selected={isSelected(localRoutes.applications)}>
-                    <ListItemIcon>
-                        <AssignmentIcon className={getCls(localRoutes.applications)}/>
-                    </ListItemIcon>
-                    <ListItemText primary={
-                        <Typography className={getCls(localRoutes.applications)}>
-                           Applications
-                        </Typography>
-                    }/>
-                </ListItem>
-                <ListItem button onClick={onClick(localRoutes.contacts)} selected={isSelected(localRoutes.contacts)}>
-                    <ListItemIcon>
-                        <PeopleIcon className={getCls(localRoutes.contacts)}/>
-                    </ListItemIcon>
-                    <ListItemText
-                        primary={
-                            <Typography className={getCls(localRoutes.contacts)}>
-                                Contacts
-                            </Typography>
-                        }/>
-                </ListItem>
-                <ListItem button onClick={onClick(localRoutes.users)} selected={isSelected(localRoutes.users)}>
-                    <ListItemIcon>
-                        <SettingsIcon className={getCls(localRoutes.users)}/>
-                    </ListItemIcon>
-                    <ListItemText
-                        primary={
-                            <Typography className={getCls(localRoutes.users)}>
-                                Users
-                            </Typography>
-                        }/>
-                </ListItem>
+                <MyMenuItem
+                    route={localRoutes.dashboard}
+                    text="Dashboard"
+                    Icon={AppsIcon}
+                />
+                <MyMenuItem
+                    route={localRoutes.applications}
+                    text="Applications"
+                    Icon={AssignmentIcon}
+                />
+                <MyMenuItem
+                    route={localRoutes.contacts}
+                    text="Contacts"
+                    Icon={PeopleIcon}
+                />
+                <MyCollapsibleMenuItem
+                    text="Settings"
+                    Icon={SettingsIcon}
+                    items={
+                        [
+                            {
+                                route: localRoutes.users,
+                                text: "Users",
+                                Icon: SettingsIcon
+                            },
+                            {
+                                route: localRoutes.customClaims,
+                                text: "Custom Claims",
+                                Icon: SettingsIcon
+                            }
+                        ]
+                    }
+                />
             </List>
         </div>
     );
@@ -254,7 +316,7 @@ function Layout(props: any) {
             </nav>
             <main className={classes.content}>
                 <div className={classes.toolbar}/>
-                <Paper className={classes.body} >
+                <Paper className={classes.body}>
                     {props.children}
                 </Paper>
             </main>
