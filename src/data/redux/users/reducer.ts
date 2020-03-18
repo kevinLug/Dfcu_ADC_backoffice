@@ -36,6 +36,10 @@ export default function reducer(state = initialState, action: any): IUserState {
         case userConstants.userStartFetch: {
             return {...state, loadingSingle: true}
         }
+
+        case userConstants.usersStopFetch: {
+            return {...state, loading: false}
+        }
         case userConstants.userCommitFetch: {
             const selected: IUserView = action.payload
             return {...state, selected,loadingSingle:false}
@@ -68,7 +72,7 @@ export function usersStopFetch() {
 
 export function usersCommitFetch(payload: any) {
     return {
-        type: userConstants.userCommitFetch,
+        type: userConstants.usersCommitFetch,
         payload
     }
 }

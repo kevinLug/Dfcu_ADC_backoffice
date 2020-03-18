@@ -61,18 +61,25 @@ enum RequestType {
     Entity = 'entity'
 }
 
-async function run(reqCount: number, type: RequestType): Promise<any> {
+async function run(reqCount: number, type: RequestType,direct=false): Promise<any> {
     const {access_token} = await login()
     console.log("Got token")
     const metaData = await readMetadata(access_token)
     console.log("Got Metadata")
-    for (let i = 0; i < reqCount; i++) {
-        await runCase(access_token, metaData, type)
+    if(direct){
+        for (let i = 0; i < reqCount; i++) {
+            await runCaseDirect(access_token, type, metaData.accountCategories)
+        }
+    }else {
+        for (let i = 0; i < reqCount; i++) {
+            await runCase(access_token, metaData, type)
+        }
     }
+
 }
 
 
-run(1, RequestType.Individual)
+run(1, RequestType.Individual,true)
     .then(r =>
         console.log("Done uploading", r)
     )
