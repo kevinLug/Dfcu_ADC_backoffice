@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import ListView from "../../../../components/dynamic-editor/ListView";
 import {IColumn, InputType} from "../../../../components/dynamic-editor/types";
-import {toOptions} from "../../../../components/inputs/inputHelpers";
+import {IOption, toOptions} from "../../../../components/inputs/inputHelpers";
 import EditDialog from "../../../../components/EditDialog";
 import EditForm from "../../../../components/dynamic-editor/EditForm";
 import {remoteRoutes} from "../../../../data/constants";
@@ -12,12 +12,17 @@ interface IProps {
 }
 
 export const authEditableClaims = ["phone_number", "region", "branch_name", "agent_code"]
+export const authEditableClaimsDisplay:any = {"phone_number":"Phone", "region":"Region Code", "branch_name":"Branch SolID", "agent_code":"Agent Code"}
+
+export const toOptionsClaims = (data: string[]): IOption[] => {
+    return data.map(it => ({label: authEditableClaimsDisplay[it], value: it}))
+}
 const columns: IColumn[] = [
     {
         name: 'claimType', label: 'Claim Type',
         inputType: InputType.Select,
         inputProps: {
-            options: toOptions(authEditableClaims),
+            options: toOptionsClaims(authEditableClaims),
             variant: 'outlined'
         }
     },

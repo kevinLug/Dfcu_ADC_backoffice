@@ -3,9 +3,8 @@ import {hasValue} from "../../../components/inputs/inputHelpers";
 import {authEditableClaims} from "../users/details/ClaimsList";
 import Toast from "../../../utils/Toast";
 import {IColumn, InputType} from "../../../components/dynamic-editor/types";
-import {reqEmail, reqString} from "../../../data/validations";
+import {reqString} from "../../../data/validations";
 import * as yup from "yup";
-import {emailCategories} from "../../../data/comboCategories";
 
 export const createEditColumns = (isNew: boolean): IColumn[] => {
     const toReturn: IColumn[] = [
@@ -62,7 +61,6 @@ export const fromAuthCustomClaimObject = (data: any) => {
         data.claims.forEach(({type, value}: any) => {
             sample[type] = value
         })
-
         return sample
     } catch (e) {
         console.error(e)

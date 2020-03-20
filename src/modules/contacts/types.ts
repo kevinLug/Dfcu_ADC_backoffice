@@ -1,6 +1,6 @@
 import * as faker from 'faker';
 import {getRandomStr} from "../../utils/stringHelpers";
-import {hasValue} from "../../components/inputs/inputHelpers";
+import {hasNoValue, hasValue} from "../../components/inputs/inputHelpers";
 
 const uuid = require('uuid/v4');
 
@@ -286,6 +286,10 @@ export const fakeContact = (): IContact | null => {
 
 
 export const renderName = (contact: IContact, salutation?: boolean): string => {
+    if(hasNoValue(contact.person)){
+        const ct = contact as any
+        return ct.name
+    }
     if (contact.category === ContactCategory.Person) {
         const person = contact.person
         const name: string =

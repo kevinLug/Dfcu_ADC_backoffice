@@ -1,8 +1,6 @@
 import * as faker from "faker"
 import {authEditableClaims} from "./details/ClaimsList";
 import {ICsvColumn} from "../../../utils/stringHelpers";
-import Toast from "../../../utils/Toast";
-import {hasValue} from "../../../components/inputs/inputHelpers";
 
 export interface IUserView {
     id: string,

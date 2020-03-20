@@ -18,6 +18,7 @@ import EditDialog from "../../../../../components/EditDialog";
 import KycOverride from "./KycOverride";
 import ITemplateProps from "../ITemplateProps";
 import UserLink from "../../../../../components/links/UserLink";
+import {hasNoValue} from "../../../../../components/inputs/inputHelpers";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -119,6 +120,9 @@ const Index = ({action, ...rest}: ITemplateProps) => {
     }
     const data: IKycResponse = JSON.parse(dataString);
     const contact: any = JSON.parse(action.inputData);
+    if(hasNoValue(contact.person)){
+        contact.id = contact.contactId
+    }
     contact.category = ContactCategory.Person
     return (
         <Grid container>

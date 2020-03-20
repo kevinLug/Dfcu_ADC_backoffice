@@ -45,8 +45,9 @@ const makeApplicant = () => {
             "requestAtmCard": true,
             "signedKfd": true,
             "sourceOfFunds": "Personal Savings",
-            "employmentStatus": "self",
-            "occupation": "selfe"
+            "employmentStatus": "LGC",
+            "occupation": "LGC",
+            "countryOfResidence":faker.random.arrayElement(["RUG","REA","0EA"])
         },
     }
 }
