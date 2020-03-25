@@ -39,7 +39,7 @@ export const columns: XHeadCell[] = [
         }
     },
     {
-        name: 'claims.region', label: 'Region',
+        name: 'claims.region', label: 'Region Code',
         cellProps: {
             style: {
                 whiteSpace: 'nowrap'
@@ -47,7 +47,15 @@ export const columns: XHeadCell[] = [
         }
     },
     {
-        name: 'claims.branch_name', label: 'Branch',
+        name: 'claims.branch_name', label: 'Branch SolId',
+        cellProps: {
+            style: {
+                whiteSpace: 'nowrap'
+            }
+        }
+    },
+    {
+        name: 'claims.agent_code', label: 'Agent Code',
         cellProps: {
             style: {
                 whiteSpace: 'nowrap'

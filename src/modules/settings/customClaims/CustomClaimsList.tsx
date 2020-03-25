@@ -9,10 +9,16 @@ import {search} from "../../../utils/ajax";
 import {remoteRoutes} from "../../../data/constants";
 import Typography from "@material-ui/core/Typography";
 import {useDispatch} from "react-redux";
-import {createEditColumns, customClaimsSchema, fromAuthCustomClaimObject, toAuthCustomClaimObject} from "./config";
+import {
+    authCustomClaims,
+    createEditColumns,
+    customClaimsSchema,
+    fromAuthCustomClaimObject,
+    toAuthCustomClaimObject
+} from "./config";
 import {Box} from "@material-ui/core";
 import SearchInput from "../../../components/SearchInput";
-import {authEditableClaims} from "../users/details/ClaimsList";
+
 import EditIconButton from "../../../components/EditIconButton";
 import EditDialog from "../../../components/EditDialog";
 import EditForm from "../../../components/dynamic-editor/EditForm";
@@ -21,6 +27,7 @@ import Button from "@material-ui/core/Button";
 import {Alert} from "@material-ui/lab";
 import CsvReader from "./CsvReader";
 import CsvDialog from "./CsvDialog";
+import {hasNoValue} from "../../../components/inputs/inputHelpers";
 
 
 const CustomClaimsList = () => {
@@ -61,8 +68,14 @@ const CustomClaimsList = () => {
             })
     }
 
-    function handleFilter(value: any) {
-        setFilter({query: value})
+    function handleFilter(value: string) {
+        if(hasNoValue(value)){
+            setFilter({query: ""})
+            return;
+        }
+        if(value.length>=3){
+            setFilter({query: ""})
+        }
     }
 
     const handleEdit = (dt: any) => () => {
@@ -114,10 +127,10 @@ const CustomClaimsList = () => {
         const toReturn: XHeadCell[] = [
             {name: "email", label: 'email'}
         ]
-        authEditableClaims.forEach(it => {
+        authCustomClaims.forEach(({name,label}) => {
             toReturn.push({
-                name: it,
-                label: it
+                name,
+                label
             })
         })
         toReturn.push({

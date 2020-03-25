@@ -1,6 +1,7 @@
 import * as faker from "faker"
-import {authEditableClaims} from "./details/ClaimsList";
+
 import {ICsvColumn} from "../../../utils/stringHelpers";
+import {authCustomClaims} from "../customClaims/config";
 
 export interface IUserView {
     id: string,
@@ -10,7 +11,14 @@ export interface IUserView {
     password: string,
     telephone: string,
     claims: any
-    claimsList: any[]
+    claimsList: IUserClaim[]
+}
+
+export interface IUserClaim {
+    id: number
+    userId: string
+    claimType: string
+    claimValue: string
 }
 
 
@@ -18,8 +26,8 @@ const fakeClaim = () => {
     const sample: any = {
         email: faker.internet.email()
     }
-    authEditableClaims.forEach(it => {
-        sample[it] = faker.lorem.word()
+    authCustomClaims.forEach(it => {
+        sample[it.name] = faker.lorem.word()
     })
     return sample
 }
@@ -38,9 +46,9 @@ export const createCsvColumns = (): ICsvColumn[] => {
             dataKey: "email", title: 'email'
         }
     ]
-    authEditableClaims.forEach(it => {
+    authCustomClaims.forEach(({name, label}) => {
         toReturn.push({
-            dataKey: it, title: it
+            dataKey: name, title: label
         })
     })
     return toReturn;

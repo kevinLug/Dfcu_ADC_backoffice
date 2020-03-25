@@ -47,7 +47,7 @@ const makeApplicant = () => {
             "sourceOfFunds": "Personal Savings",
             "employmentStatus": "LGC",
             "occupation": "LGC",
-            "countryOfResidence":faker.random.arrayElement(["RUG","REA","0EA"])
+            "countryOfResidence":faker.random.arrayElement(["RUG","REA","OEA"])
         },
     }
 }

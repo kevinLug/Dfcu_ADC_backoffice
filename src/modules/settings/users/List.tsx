@@ -6,39 +6,39 @@ import Grid from '@material-ui/core/Grid';
 import {search} from "../../../utils/ajax";
 import {remoteRoutes} from "../../../data/constants";
 import Typography from "@material-ui/core/Typography";
-import {useDispatch, useSelector} from "react-redux";
-import {IState} from "../../../data/types";
 import {columns, localFilter} from "./config";
-import {IUserState, usersCommitFetch, usersStartFetch, usersStopFetch} from "../../../data/redux/users/reducer";
 import {Box} from "@material-ui/core";
 import SearchInput from "../../../components/SearchInput";
 
 const headCells: XHeadCell[] = [...columns];
 
 const List = () => {
-    const dispatch = useDispatch();
-    const {data,loading}: IUserState = useSelector((state: IState) => state.users)
+
+    const [data, setData] = useState<any[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
     const [filter, setFilter] = useState<any>("");
 
     useEffect(() => {
-        dispatch(usersStartFetch())
+        setLoading(true)
         search(
             remoteRoutes.users,
             {
-                ItemsPerPage: 200
+                email: filter,
+                itemsPerPage: 500
             },
             (resp) => {
-                dispatch(usersCommitFetch(resp))
+                setData(resp)
             },
             undefined,
             () => {
-                dispatch(usersStopFetch())
+                setLoading(false)
             })
-    }, [dispatch])
+    }, [filter])
 
     function handleFilter(value: any) {
         setFilter(value)
     }
+
     return (
         <Layout>
             <Box p={2}>

@@ -6,7 +6,6 @@ import {createJsonFile, createZipFile, uploadZipAsync} from "./test-files";
 import {getGatewayDocsList} from "../modules/workflows/actions/templates/verify-documents/helpers";
 import {AccountCategory, GatewayMetadata} from "../data/types";
 
-
 const postData = (token: string, requestData: any, callBack: (data: any) => any) => {
     superagent.post(remoteRoutes.workflows)
         .set('Authorization', `Bearer ${token}`)
@@ -26,7 +25,6 @@ function runCaseDirect(token: string, type: RequestType, accountCategories: Acco
         console.log(`Submitted ${type}`, resp)
     })
 }
-
 
 function getCaseData(type: RequestType, accountCategories: AccountCategory[]): any {
     const cat = accountCategories.filter(it => it.code.toLocaleLowerCase() === type.toLocaleLowerCase())[0]
@@ -75,15 +73,12 @@ async function run(reqCount: number, type: RequestType,direct=false): Promise<an
             await runCase(access_token, metaData, type)
         }
     }
-
 }
 
-
-run(1, RequestType.Individual,true)
+run(1, RequestType.Individual,false)
     .then(r =>
         console.log("Done uploading", r)
     )
     .catch(e => {
         console.error(e)
     })
-

@@ -22,6 +22,7 @@ interface IProps {
     primaryKey?: any
     submitParser?: (data: any) => any
     submitResponseParser?: (data: any) => any
+    externalValidator?: (data: any) => boolean
 }
 
 const EditForm = ({
@@ -37,6 +38,11 @@ const EditForm = ({
                   }: IProps) => {
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
+
+        if(props.externalValidator && !props.externalValidator(values)){
+            return
+        }
+
         const toSubmit = submitParser ?
             submitParser(values) :
             values;

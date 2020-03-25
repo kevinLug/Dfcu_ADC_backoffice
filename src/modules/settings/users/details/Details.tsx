@@ -9,10 +9,7 @@ import {Grid} from "@material-ui/core";
 
 import {get} from "../../../../utils/ajax";
 import {remoteRoutes} from "../../../../data/constants";
-import {useDispatch, useSelector} from "react-redux";
 import {IUserView} from "../types";
-import {userCommitFetch} from "../../../../data/redux/users/reducer";
-import {IState} from "../../../../data/types";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import {trimCaseId} from "../../../workflows/types";
@@ -35,16 +32,13 @@ export const basicData = (data: any): any[] => {
                 value: `${v}`
             })
         }
-
     }
     return display
 }
 
-
-
 const Details = (props: IProps) => {
-    const dispatch = useDispatch();
-    const data: IUserView | undefined = useSelector((state: IState) => state.users.selected)
+
+    const [data, setData] = useState<IUserView|null>(null)
     const [loading, setLoading] = useState<boolean>(true)
     const userId = getRouteParam(props, 'userId')
 
@@ -52,10 +46,10 @@ const Details = (props: IProps) => {
         setLoading(true)
         get(
             `${remoteRoutes.users}/${userId}`,
-            resp => dispatch(userCommitFetch(resp)),
+            resp => setData(resp),
             undefined,
             () => setLoading(false))
-    }, [dispatch, userId])
+    }, [ userId])
     const hasError = !loading && !data
 
     function handleEdit() {

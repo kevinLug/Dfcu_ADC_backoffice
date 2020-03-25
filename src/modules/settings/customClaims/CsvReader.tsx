@@ -4,7 +4,7 @@ import {Box, createStyles, Theme} from "@material-ui/core";
 import UploadIcon from '@material-ui/icons/CloudUpload';
 import {jsArray2CSV, parseCSV} from "../../../utils/stringHelpers";
 import {XHeadCell} from "../../../components/table/XTableHead";
-import {authEditableClaims} from "../users/details/ClaimsList";
+
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
@@ -16,7 +16,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import {hasNoValue, hasValue} from "../../../components/inputs/inputHelpers";
 import {post} from "../../../utils/ajax";
 import {remoteRoutes} from "../../../data/constants";
-import {toAuthCustomClaimObject} from "./config";
+import {authCustomClaims, toAuthCustomClaimObject} from "./config";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface IProps {
-    done:()=>any
+    done: () => any
 }
 
 interface IFileState {
@@ -64,8 +64,8 @@ const readState = (evt: ProgressEvent<FileReader>): IFileState | undefined => {
 const columns: XHeadCell[] = [
     {name: "email", label: "Email"}
 ]
-authEditableClaims.forEach(it => {
-    columns.push({name: it, label: it})
+authCustomClaims.forEach(({name, label}) => {
+    columns.push({name, label})
 })
 
 const CsvReader = (props: IProps) => {
@@ -139,10 +139,10 @@ const CsvReader = (props: IProps) => {
     function handleSubmit() {
         setUpLoading(true)
         const submitData = data.map(toAuthCustomClaimObject)
-        post(remoteRoutes.userMultiClaims,submitData,resp=>{
+        post(remoteRoutes.userMultiClaims, submitData, resp => {
             Toast.success("Claims successfully uploaded")
             props.done()
-        },undefined,()=>{
+        }, undefined, () => {
             setUpLoading(false)
         })
     }
@@ -157,7 +157,8 @@ const CsvReader = (props: IProps) => {
                         <Typography variant='body1'>Select a valid '.csv' file from your computer</Typography>
                     </Box>
                     <Box>
-                        <Button onClick={handleDownLoad} variant='outlined' size='small' color='primary' disabled={uploading||loading}>Download sample
+                        <Button onClick={handleDownLoad} variant='outlined' size='small' color='primary'
+                                disabled={uploading || loading}>Download sample
                             '.csv'</Button>
                     </Box>
                 </Box>
