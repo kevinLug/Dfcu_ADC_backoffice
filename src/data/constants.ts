@@ -7,7 +7,7 @@ export const systemRoles = {
     SUPERVISOR: 'SUPERVISOR',
     ADMIN: 'ADMIN',
 }
-
+//COMPLIANCE,BACKOFFICE,SUPERVISOR or ADMIN
 export const isSystemUser = (user: any): boolean => {
     const roles = [
         systemRoles.COMPLIANCE,
