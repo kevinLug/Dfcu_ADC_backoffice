@@ -17,7 +17,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
 import {createStyles, makeStyles, Theme, useTheme} from '@material-ui/core/styles';
 import {withRouter} from 'react-router'
-import {localRoutes} from "../data/constants";
+import {hasAnyRole, localRoutes, systemRoles} from "../data/constants";
 import grey from '@material-ui/core/colors/grey';
 import {BarView} from "./Profile";
 import logo from "../assets/download.png";
@@ -27,6 +27,8 @@ import Paper from "@material-ui/core/Paper";
 import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
+import {useSelector} from "react-redux";
+import {IState} from "../data/types";
 
 const drawerWidth = 240;
 
@@ -138,6 +140,7 @@ interface CollapsibleItemProps {
 function Layout(props: any) {
     const classes = useStyles();
     const theme = useTheme();
+    const user = useSelector((state: IState) => state.core.user)
 
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -157,7 +160,7 @@ function Layout(props: any) {
     const getCls = (pathStrings: string[]): string => {
         const {match: {path}} = props
 
-        return pathStrings.some(pathStr=>pathMatches(path, pathStr) )? classes.menuSelected : classes.menu
+        return pathStrings.some(pathStr => pathMatches(path, pathStr)) ? classes.menuSelected : classes.menu
     }
 
     const isSelected = (pathStr: string): boolean => {
@@ -182,7 +185,7 @@ function Layout(props: any) {
 
     const MyCollapsibleMenuItem = (props: CollapsibleItemProps) => {
         const [open, setOpen] = React.useState(true);
-        const routes = props.items.map(it=>it.route)
+        const routes = props.items.map(it => it.route)
         const handleClick = () => {
             setOpen(!open);
         };
@@ -243,24 +246,27 @@ function Layout(props: any) {
                     text="Contacts"
                     Icon={PeopleIcon}
                 />
-                <MyCollapsibleMenuItem
-                    text="Settings"
-                    Icon={SettingsIcon}
-                    items={
-                        [
-                            {
-                                route: localRoutes.users,
-                                text: "Users",
-                                Icon: SettingsIcon
-                            },
-                            {
-                                route: localRoutes.customClaims,
-                                text: "Custom Claims",
-                                Icon: SettingsIcon
-                            }
-                        ]
-                    }
-                />
+                {
+                    hasAnyRole(user, [systemRoles.ADMIN, systemRoles.SUPERVISOR]) &&
+                    <MyCollapsibleMenuItem
+                        text="Settings"
+                        Icon={SettingsIcon}
+                        items={
+                            [
+                                {
+                                    route: localRoutes.users,
+                                    text: "Users",
+                                    Icon: SettingsIcon
+                                },
+                                {
+                                    route: localRoutes.customClaims,
+                                    text: "Custom Claims",
+                                    Icon: SettingsIcon
+                                }
+                            ]
+                        }
+                    />
+                }
             </List>
         </div>
     );

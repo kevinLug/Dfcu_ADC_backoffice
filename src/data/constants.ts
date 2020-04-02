@@ -2,12 +2,25 @@ export const AUTH_TOKEN_KEY = '__demo__dfcu__token'
 export const AUTH_USER_KEY = '__demo__dfcu__user'
 
 export const systemRoles = {
-    contacts: {
-        view: 'contacts_view',
-        edit: 'contacts_edit',
-        chc: 'contacts_chc',
-        teams: 'contacts_teams',
-    }
+    COMPLIANCE: 'COMPLIANCE',
+    BACKOFFICE: 'BACKOFFICE',
+    SUPERVISOR: 'SUPERVISOR',
+    ADMIN: 'ADMIN',
+}
+
+export const isSystemUser = (user: any): boolean => {
+    const roles = [
+        systemRoles.COMPLIANCE,
+        systemRoles.BACKOFFICE,
+        systemRoles.SUPERVISOR,
+        systemRoles.ADMIN,
+    ]
+    return hasAnyRole(user, roles)
+}
+export const hasAnyRole = (user: any, roles: string[] = []): boolean => {
+    const rolesList = roles.map(it => it.toLocaleLowerCase())
+    const userRole = user.role ? user.role.toLocaleLowerCase() : "NA"
+    return rolesList.indexOf(userRole) >= 0
 }
 
 export const redux = {

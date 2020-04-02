@@ -25,7 +25,7 @@ export const BarView = (props: any) => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const menuOpen = Boolean(anchorEl);
-
+    console.log(">>>>",profile)
     function openDialog() {
         setDialogOpen(true)
     }
@@ -57,7 +57,7 @@ export const BarView = (props: any) => {
             <AccountCircle className={props.textClass}/>
             &nbsp;
             <HiddenJs xsDown>
-                <Typography className={props.textClass}>{profile.name}</Typography>
+                <Typography className={props.textClass}>{`${profile.name} (${profile.role})`}</Typography>
             </HiddenJs>
             <HiddenJs smUp>
                 <Typography className={props.textClass}>{getInitials(profile.name)}</Typography>
@@ -89,7 +89,7 @@ export const BarView = (props: any) => {
                             <PersonIcon/>
                         </Avatar>
                     </ListItemAvatar>
-                    <ListItemText primary={profile.fullName}/>
+                    <ListItemText primary={`${profile.fullName} (${profile.role})`}/>
                 </ListItem>
                 <ListItem button>
                     <ListItemIcon>
