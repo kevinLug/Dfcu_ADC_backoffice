@@ -18,9 +18,15 @@ export const isSystemUser = (user: any): boolean => {
     return hasAnyRole(user, roles)
 }
 export const hasAnyRole = (user: any, roles: string[] = []): boolean => {
+    const roleData = user.role;
     const rolesList = roles.map(it => it.toLocaleLowerCase())
-    const userRole = user.role ? user.role.toLocaleLowerCase() : "NA"
-    return rolesList.indexOf(userRole) >= 0
+    if (typeof roleData === 'string') {
+        const userRole = user.role ? user.role.toLocaleLowerCase() : "NA"
+        return rolesList.indexOf(userRole) >= 0
+    } else {
+        const roles = user.role ? user.role.map((it: any) => it.toLocaleLowerCase()) : []
+        return roles.some((r: any) => rolesList.indexOf(r) >= 0)
+    }
 }
 
 export const redux = {

@@ -29,7 +29,6 @@ export const renderStatus = (value: WorkflowStatus) => {
 }
 
 
-
 export const renderSubStatus = (value: WorkflowSubStatus) => {
     let color = successColor
     switch (value) {
@@ -62,6 +61,8 @@ export const renderSubStatus = (value: WorkflowSubStatus) => {
         case WorkflowSubStatus.AwaitingSignatureUpload:
             color = warningColor
             break
+        default:
+            color = errorColor
     }
 
     return <Chip
@@ -72,7 +73,6 @@ export const renderSubStatus = (value: WorkflowSubStatus) => {
         style={{padding: 0, height: 18, backgroundColor: color, marginBottom: 2}}
     />
 }
-
 
 
 export function printTaskIcon(task: ITask): any {

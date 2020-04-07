@@ -47,7 +47,7 @@ const makeApplicant = () => {
             "sourceOfFunds": "Personal Savings",
             "employmentStatus": "LGC",
             "occupation": "LGC",
-            "countryOfResidence":faker.random.arrayElement(["RUG","REA","OEA"])
+            "countryOfResidence": faker.random.arrayElement(["RUG", "REA", "OEA"])
         },
     }
 }
@@ -66,8 +66,7 @@ export const fakeOtherRequest = (accountsList: string[]): any => {
                 "currency": "UGX",
                 "product": faker.random.arrayElement(accountsList)
             },
-            'applicants': [
-            ],
+            'applicants': [],
             "device": {
                 "androidVersion": "26",
                 "appId": "e3hZ9SSLlsU",
@@ -102,8 +101,7 @@ export const fakeEntityRequest = (accountsList: string[]): any => {
                 "currency": "UGX",
                 "product": faker.random.arrayElement(accountsList)
             },
-            'applicants': [
-            ],
+            'applicants': [],
             "device": {
                 "androidVersion": "26",
                 "appId": "e3hZ9SSLlsU",

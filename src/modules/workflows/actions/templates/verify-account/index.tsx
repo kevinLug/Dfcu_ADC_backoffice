@@ -63,7 +63,7 @@ const Index = (props: ITemplateProps) => {
                         Account Verified by&nbsp;
                         <UserLink
                             id={data.userId}
-                            name={getInitials(data.userName)}
+                            name={data.userName}
                             title={data.userName}
                         />
                     </DataValue>
@@ -75,7 +75,7 @@ const Index = (props: ITemplateProps) => {
                         Account Rejected by
                         <UserLink
                             id={data.userId}
-                            name={getInitials(data.userName)}
+                            name={data.userName}
                             title={data.userName}
                         />
                     </DataValue>

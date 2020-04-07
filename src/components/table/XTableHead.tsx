@@ -29,7 +29,6 @@ export interface XHeadCell {
     numeric?: boolean
     cellProps?: any
     render?: (data: any, rec: any) => any
-
 }
 
 function XTableHead(props: XTableHeadProps) {

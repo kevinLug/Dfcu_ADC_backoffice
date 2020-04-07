@@ -63,8 +63,6 @@ export interface IOidcProfile {
     sub: string
 }
 
-
-
 export interface GatewayMetadata {
     version:           number;
     versionMessage:    string;

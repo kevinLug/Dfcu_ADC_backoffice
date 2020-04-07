@@ -7,7 +7,6 @@ export const getGatewayDocsList = (category: string, product: string, accountCat
         return []
     }
     const categoryObj = categoryArr[0]
-
     const accountArr = categoryObj.accounts.filter(it => it.code.toLocaleLowerCase() === product.toLocaleLowerCase())
     if (hasNoValue(accountArr) || hasNoValue(accountArr[0])) {
         return []

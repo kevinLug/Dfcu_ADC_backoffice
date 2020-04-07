@@ -80,7 +80,7 @@ const CsvReader = (props: IProps) => {
     const [uploading, setUpLoading] = useState<boolean>(false)
 
     function handleFileChosen(files: any[]) {
-        console.log("On files chose", files)
+        console.log("On files chosen", files)
         if (hasNoValue(files)) {
             return;
         }
