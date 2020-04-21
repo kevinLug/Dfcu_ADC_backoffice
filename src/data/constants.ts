@@ -69,6 +69,15 @@ const servers: any = {
         Notification: 'https://notificationservice-test.laboremus.no',
         Log: 'https://dfcu-customeronboarding-logging-test.laboremus.no'
     },
+    visolit: {
+        Auth: 'https://dfcu-auth-api-test.test001.laboremus.no',
+        Crm: 'https://dfcu-crm-service-test.test001.laboremus.no',
+        Case: 'https://dfcu-casehandling-service-test.test001.laboremus.no',
+        Gateway: 'https://dfcu-gateway-service-test.test001.laboremus.no',
+        Kyc: 'https://dfcu-kycconnector-service-test.test001.laboremus.no',
+        Notification: 'https://dfcu-notification-api-test.test001.laboremus.no',
+        Log: 'https://dfcu-customeronboarding-logging-test.laboremus.no'
+    },
     sit: {
         Auth: 'https://authentication-test.onboarding.dfcugroup.com',
         Crm: 'https://crm-test.onboarding.dfcugroup.com',
