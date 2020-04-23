@@ -37,8 +37,10 @@ class AuthService {
         return this.userManager.signinSilent();
     }
 
-    public logout(): Promise<void> {
-        return this.userManager.signoutRedirect();
+    public logout(): Promise<any> {
+        this.userManager.clearStaleState()
+        return  this.userManager.signoutRedirectCallback(this.clientRoot);
+
     }
 }
 

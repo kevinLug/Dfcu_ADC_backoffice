@@ -17,6 +17,9 @@ export const handleError = (err: any = {}, res: superagent.Response) => {
     const defaultMessage = "Invalid request, please contact admin";
     if (res && res.unauthorized) {
         Toast.error("Authentication Error, Please login again", authError)
+        // authService.logout()
+        //     .then(() => {
+        //     })
     }
     if (res && res.forbidden) {
         console.log("Auth error logging out")

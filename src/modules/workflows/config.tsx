@@ -71,11 +71,11 @@ export const workflowHeadCells: XHeadCell[] = [
     {
         name: 'metaData.assigneeName',
         label: 'Assignee',
-        render: (data, {metaData}) => data ? <UserLink id={data} name={getInitials(metaData.assigneeName)} title={metaData.assigneeName}/> : ''
+        render: (data, rec) => data ? <UserLink id={rec.assigneeId} name={getInitials(data)} title={data}/> : ''
     },
 ];
 
-export const workflowHeadCellsNew: XHeadCell[]=[...workflowHeadCells.filter(it=>it.name!=='metaData.assigneeName')]
+export const workflowHeadCellsNew: XHeadCell[] = [...workflowHeadCells.filter(it => it.name !== 'metaData.assigneeName')]
 
 
-export const workflowTypes = ['JOINT', 'INDIVIDUAL', 'ENTITY','OTHER']
+export const workflowTypes = ['JOINT', 'INDIVIDUAL', 'ENTITY', 'OTHER']

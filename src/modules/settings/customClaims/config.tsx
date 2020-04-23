@@ -3,7 +3,7 @@ import {hasValue, IOption} from '../../../components/inputs/inputHelpers';
 
 import Toast from '../../../utils/Toast';
 import {IColumn, InputType} from '../../../components/dynamic-editor/types';
-import {reqEmail, reqNumber, reqString} from '../../../data/validations';
+import {reqEmail, reqNumber, reqPhoneNumber, reqString} from '../../../data/validations';
 import * as yup from 'yup';
 import {IUserClaim} from "../users/types";
 import {branches, regions} from "./region-data";
@@ -45,12 +45,13 @@ export const authCustomClaims: IAuthCustomClaim[] = [
         label: 'Phone No',
         rules: {
             presence: {allowEmpty: false},
+            length: {minimum: 13,maximum: 13},
             format: {
-                pattern: /^[0-9]+$/,
+                pattern: /^\+256([37])[0-9]{8}$/,
                 message: "Invalid input"
             }
         },
-        schema: reqNumber,
+        schema: reqPhoneNumber,
     },
     {
         name: 'agent_code',

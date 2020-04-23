@@ -66,7 +66,6 @@ const ClaimEditorForm = (props: IProps) => {
         setData({...newData})
     }
 
-
     function handleSubmit() {
         const values = {...data}
         if (hasNoValue(values.claimType) || hasNoValue(values.claimValue)) {
@@ -75,7 +74,7 @@ const ClaimEditorForm = (props: IProps) => {
         }
 
         if (isValid(values.claimType, values.claimValue)) {
-            Toast.warn("PLease validate input")
+            Toast.warn("Please validate input")
             return;
         }
         setSubmitting(true);
