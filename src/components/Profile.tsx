@@ -25,7 +25,6 @@ export const BarView = (props: any) => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const menuOpen = Boolean(anchorEl);
-    console.log(">>>>",profile)
     function openDialog() {
         setDialogOpen(true)
     }

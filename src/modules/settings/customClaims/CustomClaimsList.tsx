@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import Layout from "../../../components/Layout";
 
 import XTable from "../../../components/table/XTable";
@@ -8,7 +8,6 @@ import Grid from '@material-ui/core/Grid';
 import {search} from "../../../utils/ajax";
 import {remoteRoutes} from "../../../data/constants";
 import Typography from "@material-ui/core/Typography";
-import {useDispatch} from "react-redux";
 import {
     authCustomClaims,
     createEditColumns,
@@ -28,10 +27,10 @@ import {Alert} from "@material-ui/lab";
 import CsvReader from "./CsvReader";
 import CsvDialog from "./CsvDialog";
 import {hasNoValue} from "../../../components/inputs/inputHelpers";
+import {debounce} from "lodash";
 
 
 const CustomClaimsList = () => {
-    const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
     const [selected, setSelected] = useState<any | null>(null)
     const [dialog, setDialog] = useState(false)
@@ -39,11 +38,13 @@ const CustomClaimsList = () => {
     const [data, setData] = useState<any []>([])
     const [filter, setFilter] = useState<any>({});
 
-    useEffect(() => {
+    const fetchData = useCallback((f: any) => {
+        console.log("Fetching data")
+        debounce(() => {
+            console.log("Calling debouced")
+        }, 300)
         setLoading(true)
-        search(
-            remoteRoutes.userCustomClaims,
-            filter,
+        search(remoteRoutes.userCustomClaims, f,
             (resp) => {
                 setData(resp.map(fromAuthCustomClaimObject))
             },
@@ -51,30 +52,24 @@ const CustomClaimsList = () => {
             () => {
                 setLoading(false)
             })
-    }, [filter, dispatch])
+    }, [])
+
+    useEffect(() => {
+        fetchData(filter)
+    }, [filter])
 
 
     function handleClaimsAdded() {
-        setLoading(true)
-        search(
-            remoteRoutes.userCustomClaims,
-            filter,
-            (resp) => {
-                setData(resp.map(fromAuthCustomClaimObject))
-            },
-            undefined,
-            () => {
-                setLoading(false)
-            })
+        fetchData(filter)
     }
 
     function handleFilter(value: string) {
-        if(hasNoValue(value)){
+        if (hasNoValue(value)) {
             setFilter({query: ""})
             return;
         }
-        if(value.length>=3){
-            setFilter({query: ""})
+        if (value.length >= 3) {
+            setFilter({query: value})
         }
     }
 
@@ -106,11 +101,7 @@ const CustomClaimsList = () => {
         handleClose()
     }
 
-
-
-
     function handleEdited(dt: any) {
-
         const newData = data.map(it => it.id === dt.id ? dt : it)
         setData(newData)
         handleClose()
@@ -127,7 +118,7 @@ const CustomClaimsList = () => {
         const toReturn: XHeadCell[] = [
             {name: "email", label: 'email'}
         ]
-        authCustomClaims.forEach(({name,label}) => {
+        authCustomClaims.forEach(({name, label}) => {
             toReturn.push({
                 name,
                 label
@@ -150,10 +141,10 @@ const CustomClaimsList = () => {
                         <Box pt={2}>
                             <Typography variant='h5'>Custom claims</Typography>
                         </Box>
-
                     </Grid>
                     <Grid item sm={9}>
-                        <Alert severity="warning">These claims only apply if a user has never logged in and they will be deleted after the user logs in!</Alert>
+                        <Alert severity="warning">These claims only apply if a user has never logged in and they will be
+                            deleted after the user logs in!</Alert>
                     </Grid>
                     <Grid item sm={9}>
                         <SearchInput onFilter={handleFilter}/>
@@ -203,12 +194,12 @@ const CustomClaimsList = () => {
                         submitParser={toAuthCustomClaimObject}
                         submitResponseParser={fromAuthCustomClaimObject}
                         schema={customClaimsSchema()}
+                        primaryKey="email"
                     />
                 </EditDialog>
-                <CsvDialog open={bulk} onClose={handleCloseBulk}  >
+                <CsvDialog open={bulk} onClose={handleCloseBulk}>
                     <CsvReader done={handleClaimsAdded}/>
                 </CsvDialog>
-
             </Box>
         </Layout>
     );

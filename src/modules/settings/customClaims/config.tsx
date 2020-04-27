@@ -133,6 +133,7 @@ export const toAuthCustomClaimObject = (data: any) => {
 export const fromAuthCustomClaimObject = (data: any) => {
     try {
         const sample: any = {
+            id: data.id,
             email: data.id
         }
         data.claims.forEach(({type, value}: any) => {
