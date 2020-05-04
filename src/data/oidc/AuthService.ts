@@ -4,7 +4,8 @@ import {remoteRoutes} from "../constants";
 
 class AuthService {
     public userManager: UserManager;
-    private clientRoot=`${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`
+    private clientRoot = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`
+
     constructor() {
         const clientRoot = this.clientRoot
         const settings = {
@@ -37,10 +38,8 @@ class AuthService {
         return this.userManager.signinSilent();
     }
 
-    public logout(): Promise<any> {
-        this.userManager.clearStaleState()
-        return  this.userManager.signoutRedirectCallback(this.clientRoot);
-
+    public async logout(): Promise<void> {
+        return await this.userManager.signoutRedirect();
     }
 }
 

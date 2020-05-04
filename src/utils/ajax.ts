@@ -143,4 +143,12 @@ export const downLoad = (url: string, callBack: CallbackFunction, errorCallBack?
 }
 
 
+export const triggerDownLoad = (data: Blob, fileName = 'export.csv') => {
+    const a = document.createElement('a');
+    a.href = window.URL.createObjectURL(data);
+    a.download = fileName;
+    a.click();
+}
+
+
 

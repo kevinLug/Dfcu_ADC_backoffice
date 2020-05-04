@@ -8,13 +8,14 @@ import {Box} from "@material-ui/core";
 import TextField from '@material-ui/core/TextField';
 import PSelectInput from "../../components/plain-inputs/PSelectInput";
 import PDateInput from "../../components/plain-inputs/PDateInput";
-import {enumToArray} from "../../utils/stringHelpers";
+import {enumToArray, getRandomStr} from "../../utils/stringHelpers";
 import {IWorkflowFilter, WorkflowStatus, WorkflowSubStatus} from "./types";
 import {workflowTypes} from "./config";
 import {PRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {remoteRoutes} from "../../data/constants";
 import {useSelector} from "react-redux";
 import {IState} from "../../data/types";
+import {downLoad, triggerDownLoad} from "../../utils/ajax";
 
 interface IProps {
     onFilter: (data: any) => any
@@ -63,11 +64,16 @@ const Filter = ({onFilter, loading}: IProps) => {
     }
 
     const handleComboValueChange = (name: string) => (value: any) => {
-
         const newData = {...data, [name]: value}
         const newFilterData = {...data, [name]: value ? value.id : null}
         setData(newData)
         submitForm(newFilterData)
+    }
+
+    function handleExport() {
+        downLoad(remoteRoutes.workflowsReports, data => {
+            triggerDownLoad(data, `file-${getRandomStr(5)}.xlsx`)
+        })
     }
 
     return <form>
@@ -209,7 +215,7 @@ const Filter = ({onFilter, loading}: IProps) => {
                         disabled={loading}
                         variant="outlined"
                         color="primary"
-                        onClick={submitForm}>Excel Export</Button>
+                        onClick={handleExport}>Excel Export</Button>
                 </Box>
             </Grid>
         </Grid>
