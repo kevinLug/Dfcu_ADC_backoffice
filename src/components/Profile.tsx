@@ -10,29 +10,29 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Dialog from '@material-ui/core/Dialog';
 import PersonIcon from '@material-ui/icons/Person';
 import Avatar from '@material-ui/core/Avatar';
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {IState} from "../data/types";
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import MailIcon from '@material-ui/icons/Mail';
 import HiddenJs from "@material-ui/core/Hidden/HiddenJs";
 import {getInitials} from "../utils/stringHelpers";
-import userManager from "../data/auth/userManager";
+import {handleLogout} from "../data/redux/coreActions";
+import authService from "../data/oidc/AuthService";
 
 export const BarView = (props: any) => {
-    const userPro = useSelector((state: IState) => state.oidc.user)
-    const {profile = {}} = userPro || {}
+    const profile = useSelector((state: IState) => state.core.user)
+    const dispatch = useDispatch();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const menuOpen = Boolean(anchorEl);
-
     function openDialog() {
         setDialogOpen(true)
     }
 
-    function doLogout() {
-        userManager.removeUser();
-        userManager.signoutPopup();
+    async function doLogout() {
+        dispatch(handleLogout())
+        await authService.logout()
     }
 
     function closeDialog() {
@@ -58,12 +58,11 @@ export const BarView = (props: any) => {
             <AccountCircle className={props.textClass}/>
             &nbsp;
             <HiddenJs xsDown>
-                <Typography className={props.textClass}>{profile.name}</Typography>
+                <Typography className={props.textClass}>{`${profile.name} (${profile.role})`}</Typography>
             </HiddenJs>
             <HiddenJs smUp>
                 <Typography className={props.textClass}>{getInitials(profile.name)}</Typography>
             </HiddenJs>
-
         </IconButton>
         <Menu
             id="menu-appbar"
@@ -91,7 +90,7 @@ export const BarView = (props: any) => {
                             <PersonIcon/>
                         </Avatar>
                     </ListItemAvatar>
-                    <ListItemText primary={profile.fullName}/>
+                    <ListItemText primary={`${profile.fullName} (${profile.role})`}/>
                 </ListItem>
                 <ListItem button>
                     <ListItemIcon>
@@ -103,5 +102,3 @@ export const BarView = (props: any) => {
         </Dialog>
     </div>
 }
-
-

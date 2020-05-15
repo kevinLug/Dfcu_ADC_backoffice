@@ -1,19 +1,16 @@
-import React, {Fragment} from 'react';
+import React from 'react';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 import {ToastContainer} from "react-toastify";
 import ContentSwitch from "./modules/ContentSwitch";
-import Login from "./modules/login/LoginOidc";
+import Login from "./modules/login/LoginSimple";
 import Splash from "./modules/login/Splash";
 import {useSelector} from 'react-redux'
-import {UserState} from "redux-oidc";
-import {localRoutes} from "./data/constants";
-import CallbackPage from "./modules/login/CallbackPage";
+import {ICoreState} from "./data/redux/coreReducer";
 
 const App: React.FC = () => {
-    const authState: UserState = useSelector((state: any) => state.oidc)
-
-    const {isLoadingUser, user} = authState
-    if (isLoadingUser) {
+    console.log("Starting App")
+    const {isLoading, user}: ICoreState = useSelector((state: any) => state.core)
+    if (isLoading) {
         return <Splash/>
     } else {
         return <Router>
@@ -22,7 +19,6 @@ const App: React.FC = () => {
                 {user ?
                     <ContentSwitch/> :
                     <Switch>
-                        <Route path={localRoutes.callback} component={CallbackPage}/>
                         <Route exact component={Login}/>
                     </Switch>
                 }
@@ -30,5 +26,4 @@ const App: React.FC = () => {
         </Router>;
     }
 }
-
 export default App;

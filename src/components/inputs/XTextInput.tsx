@@ -2,9 +2,11 @@ import * as React from 'react'
 import {Field, FieldProps, getIn} from 'formik';
 import TextField, {TextFieldProps} from '@material-ui/core/TextField';
 import {hasValue} from "./inputHelpers";
+
 interface IProps {
     name: string
 }
+
 const XTextInput = (props: TextFieldProps & IProps) => {
     const {...rest} = props
     const render = (fieldProps: FieldProps) => {
@@ -18,9 +20,10 @@ const XTextInput = (props: TextFieldProps & IProps) => {
             fullWidth
             margin="normal"
             error={Boolean(showError)}
+            helperText={showError && error}
             {...field}
             {...props}
-            helperText={showError && error}
+            value={field.value || ""}
         />
     }
     return (

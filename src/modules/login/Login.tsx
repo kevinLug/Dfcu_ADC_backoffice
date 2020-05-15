@@ -5,9 +5,9 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import LockIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import {Form, Formik, FormikActions} from 'formik';
+import {Form, Formik, FormikHelpers} from 'formik';
 import {useDispatch} from 'react-redux'
-import {handleLogin} from "../../data/coreActions";
+import {handleLogin} from "../../data/redux/coreActions";
 
 import * as yup from "yup";
 import {post} from "../../utils/ajax";
@@ -15,12 +15,13 @@ import {remoteRoutes} from "../../data/constants";
 import Toast from "../../utils/Toast";
 import XTextInput from "../../components/inputs/XTextInput";
 import {useLoginStyles} from "./loginStyles";
+import {Dispatch} from "redux";
 
 
 function Login() {
     const classes = useLoginStyles();
-    const dispatch = useDispatch();
-    const onSubmit = (data: any, actions: FormikActions<any>) => {
+    const dispatch: Dispatch<any> = useDispatch();
+    const onSubmit = (data: any, actions: FormikHelpers<any>) => {
         post(remoteRoutes.login, data, resp => {
             dispatch(handleLogin(resp))
         }, () => {

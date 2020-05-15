@@ -1,22 +1,27 @@
 import * as superagent from "superagent";
+import {remoteRoutes} from "../data/constants";
+import {GatewayMetadata} from "../data/types";
 
-const authService = "https://authservice-test.laboremus.no/connect/token"
+const authService = remoteRoutes.authServer
 const authData = {
     client_id: 'casehandling',
     client_secret: 'casehandling@lug',
     grant_type: 'client_credentials',
-    scope: 'Crm Notifications KycConnector Accounts CaseHandling',
+    scope: 'CaseHandling Gateway',
 }
 
-export const testLogin = (callBack: (data: any) => any) => {
-    superagent.post(authService)
+export const login = async (): Promise<any> => {
+    const resp = await superagent.post(authService + '/connect/token')
         .type('form')
         .send(authData)
-        .end(((err, res) => {
-            if (err) {
-                console.error(err.error)
-            } else {
-                callBack(res.body)
-            }
-        }))
+    return resp.body
+}
+
+
+export const readMetadata = async (token:string): Promise<GatewayMetadata> => {
+    const resp = await superagent.get(remoteRoutes.gatewayMetadata)
+        .set('Authorization', `Bearer ${token}`)
+        .set('Accept', 'application/json')
+        .send()
+    return resp.body
 }

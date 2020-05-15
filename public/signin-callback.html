@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Authentication callback...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        html,
+        body {
+            margin: 0;
+            border: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
+        .message{
+            margin: 100px auto;
+            text-align: center;
+            width: 100%;
+        }
+
+        .loader {
+            margin: 20px auto;
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #3498db;
+            width: 120px;
+            height: 120px;
+            -webkit-animation: spin 2s linear infinite; /* Safari */
+            animation: spin 2s linear infinite;
+        }
+
+        /* Safari */
+        @-webkit-keyframes spin {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+<noscript>
+    You need to enable JavaScript to run this app.
+</noscript>
+<h3 class="message">Loading...</h3>
+<div class="loader"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/oidc-client/1.8.2/oidc-client.js"></script>
+<script>
+   new Oidc.UserManager({
+        response_type: 'token id_token',
+        userStore: new Oidc.WebStorageStateStore({store: window.localStorage}),
+        loadUserInfo: true,
+        filterProtocolClaims: true
+    }).signinRedirectCallback().then(function () {
+        window.location = "/";
+    }).catch(function (e) {
+        console.error(e);
+       window.location = "/";
+    });
+</script>
+</body>
+</html>

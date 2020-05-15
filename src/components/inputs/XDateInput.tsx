@@ -1,20 +1,24 @@
 import React from "react";
 import {Field, FieldProps, getIn} from 'formik';
 import 'date-fns';
-import { useTheme } from '@material-ui/core/styles';
+import {useTheme} from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import DateFnsUtils from '@date-io/date-fns';
-import {KeyboardDatePicker, DatePicker, MuiPickersUtilsProvider,} from '@material-ui/pickers'
+import {DatePicker, KeyboardDatePicker, MuiPickersUtilsProvider,} from '@material-ui/pickers'
 import {hasValue} from "./inputHelpers";
+import {dateFormat} from "../../utils/dateHelpers";
 
 interface IProps {
     name: string
     label: string
+    value?: string
+    inputVariant?: 'outlined'|'filled'|'standard'
 }
 
 const Component = ({field, form, ...other}: FieldProps) => {
     const theme = useTheme();
     const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+
     const error = getIn(form.errors, field.name);
     const isTouched = getIn(form.touched, field.name);
     const wasSubmitted = form.submitCount > 0;
@@ -32,9 +36,9 @@ const Component = ({field, form, ...other}: FieldProps) => {
         {
             isSmall?
                 <DatePicker
-                    variant="inline"
+                    fullWidth
                     margin="normal"
-                    format="dd/MM/yyyy"
+                    format={dateFormat}
                     name={field.name}
                     value={field.value || null}
                     helperText={showError && error}
@@ -44,13 +48,15 @@ const Component = ({field, form, ...other}: FieldProps) => {
                     onTouchEnd={handleTouch}
                     onBlur={handleTouch}
                     autoOk
+
                     {...other}
                 />
                 :
                 <KeyboardDatePicker
+                    fullWidth
                     variant="inline"
                     margin="normal"
-                    format="dd/MM/yyyy"
+                    format={dateFormat}
                     KeyboardButtonProps={{
                         'aria-label': 'change date',
                     }}
@@ -72,8 +78,7 @@ const Component = ({field, form, ...other}: FieldProps) => {
 const XDateInput = (props: IProps) => {
     return (
         <Field
-            name={props.name}
-            label={props.label}
+            {...props}
             component={Component}
         />
     )

@@ -1,47 +1,53 @@
 import * as superagent from 'superagent'
 import Toast from './Toast'
-import {AUTH_USER_KEY} from "../data/constants";
-import * as validate from "validate.js";
-import store from "../data/store";
-import {IState} from "../data/types";
+import {AUTH_TOKEN_KEY} from "../data/constants";
+import authService from "../data/oidc/AuthService";
+import store from "../data/redux/store";
+import {handleLogout} from "../data/redux/coreActions";
 
-export const getToken = (): string | undefined => {
-    const state:IState = store.getState();
-    const user = state.oidc.user
-    if(user)
-        return user.access_token
+export const getToken = (): string | null => {
+
+    return localStorage.getItem(AUTH_TOKEN_KEY)
 }
-
 
 type CallbackFunction = (data?: any) => void;
 type ErrorCallback = (err: any, res: superagent.Response) => void;
 type EndCallback = (data?: any) => void;
 
 export const handleError = (err: any = {}, res: superagent.Response) => {
+    const authError = 22000987
+    const ajaxError = 22000987
     const defaultMessage = "Invalid request, please contact admin";
-    if ((res && res.forbidden) || (res && res.unauthorized)) {
-        Toast.error("Authentication Error")
+    if (res && res.unauthorized) {
+        Toast.error("Authentication Error, Please login again", authError)
+        store.dispatch(handleLogout())
+    }
+    if (res && res.forbidden) {
+        console.log("Auth error logging out")
+        Toast.error("Oops, You do not have permission to be here", authError)
+        authService.logout()
+            .then(() => {
+            })
     } else if (res && res.badRequest) {
-
         const {message, errors} = res.body
-        let msg = message + '\n'
+        let msg = message || '' + '\n'
         for (const key in errors) {
             if (errors.hasOwnProperty(key)) {
                 const error = errors[key][0]
                 msg += (error + '\n')
             }
         }
-        Toast.error(msg || defaultMessage)
+        Toast.error(msg || defaultMessage, ajaxError)
     } else if ((res && res.clientError) || (res && res.notAcceptable) || (res && res.error)) {
-        Toast.error(defaultMessage)
+        Toast.error(defaultMessage, ajaxError)
     } else if (res && res.body && res.body.message) {
-        Toast.error(res.body.message)
+        Toast.error(res.body.message, ajaxError)
     } else {
         const message = err.message || 'Unknown error, contact admin'
         const finalMessage = message.indexOf("offline") !== -1
             ? "Can't reach server, Check connectivity"
             : message
-        Toast.error(finalMessage)
+        Toast.error(finalMessage, ajaxError)
     }
 }
 
@@ -128,3 +134,22 @@ export const del = (url: string, callBack: CallbackFunction, errorCallBack?: Err
         .timeout(timeout)
         .end(handleResponse(callBack, errorCallBack, endCallBack))
 }
+
+
+export const downLoad = (url: string, callBack: CallbackFunction, errorCallBack?: ErrorCallback, endCallBack?: EndCallback) => {
+    superagent.get(url)
+        .set('Authorization', `Bearer ${getToken()}`)
+        .responseType('blob')
+        .end(handleResponse(callBack, errorCallBack, endCallBack))
+}
+
+
+export const triggerDownLoad = (data: Blob, fileName = 'export.csv') => {
+    const a = document.createElement('a');
+    a.href = window.URL.createObjectURL(data);
+    a.download = fileName;
+    a.click();
+}
+
+
+

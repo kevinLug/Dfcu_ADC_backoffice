@@ -1,9 +1,12 @@
-import {UserState} from "redux-oidc";
+import {ICoreState} from "./redux/coreReducer";
+import {ICrmState} from "./redux/contacts/reducer";
+import {IWorkflowState} from "./redux/workflows/reducer";
+import {IUserState} from "./redux/users/reducer";
 
 export interface BaseModel {
     id: string
     createdAt: Date
-    lastUpdated?: Date
+    lastUpdated?: Date | null
     isDeleted: boolean
 }
 
@@ -23,14 +26,12 @@ export interface ILoginResponse {
 
 export interface IState {
     core: ICoreState
+    workflows: IWorkflowState
+    crm: ICrmState
+    users: IUserState
     contacts: any
-    oidc: UserState
 }
 
-export interface ICoreState {
-    user: IUser
-    token: string
-}
 
 export interface ISearch {
     limit: number,
@@ -60,4 +61,49 @@ export interface IOidcProfile {
     role: string
     sid: string
     sub: string
+}
+
+export interface GatewayMetadata {
+    version:           number;
+    versionMessage:    string;
+    districts:         District[];
+    businesses:        GatewayBusiness[];
+    accountCategories: AccountCategory[];
+}
+
+export interface AccountCategory {
+    name:     string;
+    code:     string;
+    type:     number;
+    accounts: GatewayAccount[];
+}
+
+export interface GatewayAccount {
+    name:       string;
+    code:       string;
+    documents:  GatewayDocument[];
+    currencies: GatewayStatus[];
+}
+
+export interface GatewayStatus {
+    name: string;
+    code: string;
+}
+
+export interface GatewayDocument {
+    required: boolean;
+    name:     string;
+    code:     string;
+}
+
+export interface GatewayBusiness {
+    name:     string;
+    code:     string;
+    statuses: GatewayStatus[];
+}
+
+export interface District {
+    name:     string;
+    code:     string;
+    counties: GatewayStatus[];
 }

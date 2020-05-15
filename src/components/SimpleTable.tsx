@@ -1,5 +1,5 @@
 import React from 'react';
-import {createStyles, makeStyles, Theme, Typography} from "@material-ui/core";
+import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import DataLabel from "./DataLabel";
 import DataValue from "./DataValue";
 
