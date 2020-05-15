@@ -75,7 +75,7 @@ async function run(reqCount: number, type: RequestType,direct=false): Promise<an
     }
 }
 
-run(1, RequestType.Individual,true)
+run(1, RequestType.Joint,false)
     .then(r =>
         console.log("Done uploading", r)
     )

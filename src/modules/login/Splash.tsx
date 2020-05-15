@@ -11,7 +11,7 @@ export default function Splash() {
     const dispatch = useDispatch()
     useEffect(() => {
         authService.getUser().then((user:User|null) => {
-            if (user) {
+            if (user && !user.expired) {
                 dispatch(handleLogin({user: user.profile, token: user.access_token}))
             } else {
                 dispatch(handleLogout())

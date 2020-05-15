@@ -6,7 +6,7 @@ import Loading from "../../../components/Loading";
 import Error from "../../../components/Error";
 import {createStyles, Grid, makeStyles, Theme} from "@material-ui/core";
 
-import {IWorkflow, trimCaseId} from "../types";
+import {IWorkflow, trimCaseId, WorkflowStatus} from "../types";
 import Typography from "@material-ui/core/Typography";
 import {Flex} from "../../../components/widgets";
 import Summary from "./Summary";
@@ -80,6 +80,7 @@ const Details = (props: IProps) => {
     const [blocker, setBlocker] = useState<boolean>(false)
     const {loading, workflow}: IWorkflowState = useSelector((state: any) => state.workflows)
     const dispatch: Dispatch<any> = useDispatch();
+
     function handlePreviewDocs() {
         setPreview(true)
     }
@@ -87,6 +88,7 @@ const Details = (props: IProps) => {
     function closePreview() {
         return setPreview(false);
     }
+
     function loadData() {
         dispatch(startWorkflowFetch())
         dispatch(fetchWorkflowAsync(caseId))
@@ -95,7 +97,7 @@ const Details = (props: IProps) => {
     useEffect(() => {
         dispatch(startWorkflowFetch())
         dispatch(fetchWorkflowAsync(caseId))
-    }, [caseId,dispatch])
+    }, [caseId, dispatch])
 
     function onResume() {
         const url = `${remoteRoutes.workflows}/${caseId}`
@@ -121,11 +123,10 @@ const Details = (props: IProps) => {
         </Navigation>
 
 
-
     const caseData = workflow as IWorkflow
     return (
         <Navigation>
-            <div className={classes.root} >
+            <div className={classes.root}>
                 <LoaderDialog open={blocker} onClose={() => setBlocker(false)}/>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
@@ -148,14 +149,17 @@ const Details = (props: IProps) => {
                                     Preview Docs
                                 </Button>
                                 &nbsp;
-                                <Button size='small' variant="outlined" color='primary' onClick={onResume}>
-                                    Resume Case
-                                </Button>
+                                {
+                                    workflow && workflow.status !== WorkflowStatus.Closed &&
+                                    <Button size='small' variant="outlined" color='primary' onClick={onResume}>
+                                        Resume Case
+                                    </Button>
+                                }
                             </Box>
                         </Box>
                         <Divider/>
                         <Box pt={1}>
-                            <WorkflowView data={caseData} classes={wfClasses} />
+                            <WorkflowView data={caseData} classes={wfClasses}/>
                         </Box>
                     </Grid>
                     <Grid item xs={12} sm={3}>
@@ -166,7 +170,7 @@ const Details = (props: IProps) => {
                         </Box>
                         <Divider/>
                         <Box pt={1}>
-                            <Summary data={caseData} />
+                            <Summary data={caseData}/>
                         </Box>
                     </Grid>
                 </Grid>

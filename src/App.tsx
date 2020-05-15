@@ -7,7 +7,6 @@ import Splash from "./modules/login/Splash";
 import {useSelector} from 'react-redux'
 import {ICoreState} from "./data/redux/coreReducer";
 
-
 const App: React.FC = () => {
     console.log("Starting App")
     const {isLoading, user}: ICoreState = useSelector((state: any) => state.core)

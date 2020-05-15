@@ -18,6 +18,7 @@ import MailIcon from '@material-ui/icons/Mail';
 import HiddenJs from "@material-ui/core/Hidden/HiddenJs";
 import {getInitials} from "../utils/stringHelpers";
 import {handleLogout} from "../data/redux/coreActions";
+import authService from "../data/oidc/AuthService";
 
 export const BarView = (props: any) => {
     const profile = useSelector((state: IState) => state.core.user)
@@ -29,8 +30,9 @@ export const BarView = (props: any) => {
         setDialogOpen(true)
     }
 
-    function doLogout() {
+    async function doLogout() {
         dispatch(handleLogout())
+        await authService.logout()
     }
 
     function closeDialog() {

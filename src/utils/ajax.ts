@@ -2,8 +2,11 @@ import * as superagent from 'superagent'
 import Toast from './Toast'
 import {AUTH_TOKEN_KEY} from "../data/constants";
 import authService from "../data/oidc/AuthService";
+import store from "../data/redux/store";
+import {handleLogout} from "../data/redux/coreActions";
 
 export const getToken = (): string | null => {
+
     return localStorage.getItem(AUTH_TOKEN_KEY)
 }
 
@@ -12,14 +15,12 @@ type ErrorCallback = (err: any, res: superagent.Response) => void;
 type EndCallback = (data?: any) => void;
 
 export const handleError = (err: any = {}, res: superagent.Response) => {
-    const authError = 22000986
+    const authError = 22000987
     const ajaxError = 22000987
     const defaultMessage = "Invalid request, please contact admin";
     if (res && res.unauthorized) {
         Toast.error("Authentication Error, Please login again", authError)
-        // authService.logout()
-        //     .then(() => {
-        //     })
+        store.dispatch(handleLogout())
     }
     if (res && res.forbidden) {
         console.log("Auth error logging out")

@@ -17,6 +17,8 @@ export const isSystemUser = (user: any): boolean => {
     ]
     return hasAnyRole(user, roles)
 }
+
+
 export const hasAnyRole = (user: any, roles: string[] = []): boolean => {
     const roleData = user.role;
     const rolesList = roles.map(it => it.toLocaleLowerCase())
