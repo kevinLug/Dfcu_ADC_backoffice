@@ -55,7 +55,7 @@ const Index = (props: ITemplateProps) => {
                     action.status === ActionStatus.Done &&
                     <DataValue>
                         <CheckCircleIcon fontSize='inherit' style={{color: successColor}}/>&nbsp;
-                        Workflow closed by&nbsp;
+                        Case closed by&nbsp;
                         <UserLink
                             id={data.userId}
                             name={data.userName}
@@ -67,7 +67,7 @@ const Index = (props: ITemplateProps) => {
                     action.status === ActionStatus.Error &&
                     <DataValue>
                         <HighlightOffIcon fontSize='inherit' style={{color: errorColor}}/>&nbsp;
-                        Workflow Rejected by
+                        Case Rejected by
                         <UserLink
                             id={data.userId}
                             name={data.userName}

@@ -18,6 +18,7 @@ import {getInitials} from "../../../../../utils/stringHelpers";
 import {ErrorIcon, SuccessIcon} from "../../../../../components/xicons";
 import {getGatewayDocsList} from "./helpers";
 import {Alert} from "@material-ui/lab";
+import DocsUpdater from "./update-docs/DocsUpdater";
 
 const EntityVerifyDocuments = (props: ITemplateProps) => {
     const {action, taskName} = props
@@ -28,7 +29,7 @@ const EntityVerifyDocuments = (props: ITemplateProps) => {
     const canRun = canRunAction(action.name, taskName, workflow)
     const [preview, setPreview] = useState(false)
     const [verify, setVerify] = useState(false)
-
+    const [update, setUpdate] = useState(false)
     function previewDocs() {
         setPreview(true)
     }
@@ -96,23 +97,33 @@ const EntityVerifyDocuments = (props: ITemplateProps) => {
             </Grid>
 
             <Grid item xs={12}>
-                <Grid container spacing={2} alignContent='flex-end' justify='flex-end'>
-                    <Grid item>
-                        <Button variant="outlined" size="small" color="primary" onClick={previewDocs}>
-                            Preview
-                        </Button>
-                    </Grid>
-                    {
-                        isPending &&
+                <Box pt={1}>
+                    <Grid container spacing={2} alignContent='flex-end' justify='flex-end'>
                         <Grid item>
-                            <Button variant="outlined" size="small" color="primary" onClick={verifyDocs}>
-                                Verify
+                            <Button variant="outlined" size="small" color="primary" onClick={previewDocs}>
+                                Preview
                             </Button>
                         </Grid>
-                    }
-                </Grid>
-                <Preview open={preview} onClose={closePreview} docs={docs}/>
+                        {
+                            isPending &&
+                            <Grid item>
+                                <Button variant="outlined" size="small" color="primary" onClick={verifyDocs}>
+                                    Verify
+                                </Button>
+                            </Grid>
+                        }
+                        {
+                            isPending &&
+                            <Grid item>
+                                <Button variant="outlined" size="small" color="primary" onClick={()=>setUpdate(true)}>
+                                    Update Docs
+                                </Button>
+                            </Grid>
+                        }
+                    </Grid>
+                </Box>
 
+                <Preview open={preview} onClose={closePreview} docs={docs}/>
                 <Verify open={verify}
                         showCheckBoxes={false}
                         onClose={closeVerify}
@@ -120,6 +131,13 @@ const EntityVerifyDocuments = (props: ITemplateProps) => {
                         action={props.action}
                         workflowId={props.workflowId}
                         taskName={props.taskName}
+                />
+                <DocsUpdater
+                    open={update}
+                    onClose={()=>setUpdate(false)}
+                    docs={docs}
+                    gatewayDocuments={reqDocs}
+                    workflow={workflow}
                 />
             </Grid>
         </Grid>

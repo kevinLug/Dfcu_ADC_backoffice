@@ -104,23 +104,23 @@ export default function Verify({open, onClose, docs, showCheckBoxes, ...props}: 
                         </Box>
                     </div>
                     <Grid container spacing={1}>
-                        {showCheckBoxes?
-                        <Grid item xs={12}>
-                            <FormGroup>
-                                {
-                                    docMetadata.map(it => <FormControlLabel
-                                        key={it.name}
-                                        control={
-                                            <Checkbox
-                                                checked={metaData[it.name]}
-                                                onChange={handleChange(it.name)}
-                                                value={metaData[it.name]}
-                                            />}
-                                        label={it.text}
-                                    />)
-                                }
-                            </FormGroup>
-                        </Grid>:
+                        {showCheckBoxes ?
+                            <Grid item xs={12}>
+                                <FormGroup>
+                                    {
+                                        docMetadata.map(it => <FormControlLabel
+                                            key={it.name}
+                                            control={
+                                                <Checkbox
+                                                    checked={metaData[it.name]}
+                                                    onChange={handleChange(it.name)}
+                                                    value={metaData[it.name]}
+                                                />}
+                                            label={it.text}
+                                        />)
+                                    }
+                                </FormGroup>
+                            </Grid> :
                             <Grid item xs={12}>
                                 <FormGroup>
                                     <FormControlLabel

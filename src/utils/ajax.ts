@@ -43,6 +43,7 @@ export const handleError = (err: any = {}, res: superagent.Response) => {
     } else if (res && res.body && res.body.message) {
         Toast.error(res.body.message, ajaxError)
     } else {
+        console.log(">>>>>",res)
         const message = err.message || 'Unknown error, contact admin'
         const finalMessage = message.indexOf("offline") !== -1
             ? "Can't reach server, Check connectivity"

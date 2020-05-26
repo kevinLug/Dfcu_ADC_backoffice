@@ -143,6 +143,7 @@ export const remoteRoutes = {
     contactsAddress: crmURL + '/api/address',
     contactsIdentification: crmURL + '/api/identification',
 
+    workflowsDocsUpload: caseHandlingURL + '/api/documents/upload',
     workflows: caseHandlingURL + '/api/workflows',
     workflowsCombo: caseHandlingURL + '/api/queries/combo',
     workflowsReports: caseHandlingURL + '/api/report/download',

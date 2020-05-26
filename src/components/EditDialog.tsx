@@ -15,6 +15,7 @@ interface IProps {
     onClose: () => any
     title: string
     children?: any
+    disableBackdropClick?:boolean
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -35,7 +36,7 @@ const EditDialog = (props: IProps) => {
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.down('sm'));
     return (
-        <Dialog open={props.open} onClose={props.onClose} fullScreen={matches} >
+        <Dialog open={props.open} onClose={props.onClose} fullScreen={matches} disableBackdropClick={props.disableBackdropClick}>
             {
                 matches ?
                     <AppBar className={classes.appBar}>
