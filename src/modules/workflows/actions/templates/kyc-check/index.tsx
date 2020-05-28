@@ -136,7 +136,7 @@ const Index = ({action, ...rest}: ITemplateProps) => {
                             data.checkStatus === IKycStatus.Passed ?
                                 <SuccessIcon fontSize='inherit'/> :
                                 <ErrorIcon fontSize='inherit'/>
-                        } label={`${data.override ? 'Overriden' : data.checkStatus}/${data.value}`}/>
+                        } label={`${data.override ? 'Overridden' : data.checkStatus}/${data.value}`}/>
                     </Box>
                     {
                         data.checkStatus !== IKycStatus.Passed &&
