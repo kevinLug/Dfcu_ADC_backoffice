@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import Grid from "@material-ui/core/Grid";
-import {ActionStatus, canRunAction} from "../../../types";
+import {ActionStatus, canRunAction, IWorkflow} from "../../../types";
 import DataValue from "../../../../../components/DataValue";
 import {errorColor, successColor, warningColor} from "../../../../../theme/custom-colors";
 import {Button} from "@material-ui/core";
@@ -18,17 +18,19 @@ import {ErrorIcon, SuccessIcon} from "../../../../../components/xicons";
 import UserLink from "../../../../../components/links/UserLink";
 import Typography from "@material-ui/core/Typography";
 import {Alert} from "@material-ui/lab";
+import DocsUpdater from "./update-docs/DocsUpdater";
 
 
 const Index = (props: ITemplateProps) => {
     const {action, taskName} = props
-    const workflow = useSelector((state: any) => state.workflows.workflow)
+    const workflow:IWorkflow = useSelector((state: any) => state.workflows.workflow)
     const metadata = useSelector((state: IState) => state.core.metadata)
     const docs = workflow.documents
     const gatewayDocsList = getGatewayDocsList(workflow.type, workflow.metaData.product, metadata.accountCategories)
     const canRun = canRunAction(action.name, taskName, workflow)
     const [preview, setPreview] = useState(false)
     const [verify, setVerify] = useState(false)
+    const [update, setUpdate] = useState(false)
 
     function previewDocs() {
         setPreview(true)
@@ -117,6 +119,14 @@ const Index = (props: ITemplateProps) => {
                             </Button>
                         </Grid>
                     }
+                    {
+                        isPending &&
+                        <Grid item>
+                            <Button variant="outlined" size="small" color="primary" onClick={()=>setUpdate(true)}>
+                                Update Docs
+                            </Button>
+                        </Grid>
+                    }
                 </Grid>
                 <Preview open={preview} onClose={closePreview} docs={docs}/>
                 <Verify open={verify}
@@ -126,6 +136,13 @@ const Index = (props: ITemplateProps) => {
                         action={props.action}
                         workflowId={props.workflowId}
                         taskName={props.taskName}
+                />
+                <DocsUpdater
+                    open={update}
+                    onClose={()=>setUpdate(false)}
+                    docs={docs}
+                    gatewayDocuments={gatewayDocsList}
+                    workflow={workflow}
                 />
             </Grid>
         </Grid>

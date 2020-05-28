@@ -16,16 +16,17 @@ interface IProps {
     helperText?: string
     options: IOption[]
     multiple?: boolean;
+    disabled?: boolean;
 }
 
-const PSelectInput = ({name, multiple, helperText, size, options, variant, label, value, onChange}: IProps) => {
+const PSelectInput = ({name, multiple, helperText, size, options, variant, label, value, onChange,disabled}: IProps) => {
     const inputLabel = React.useRef<HTMLLabelElement>(null);
     const [labelWidth, setLabelWidth] = React.useState(0);
     React.useEffect(() => {
         setLabelWidth(inputLabel.current!.offsetWidth);
     }, []);
     return (
-        <FormControl variant={variant} fullWidth size={size}>
+        <FormControl variant={variant} fullWidth size={size} disabled={disabled}>
             <InputLabel ref={inputLabel}>{label}</InputLabel>
             <Select
                 name={name}
