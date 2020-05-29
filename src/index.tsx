@@ -16,4 +16,12 @@ ReactDOM.render(
         </ThemeProvider>
     </Provider>, document.getElementById('root'));
 
-serviceWorker.register();
+serviceWorker.register({
+    onUpdate: registration => {
+        if (window.confirm("New content available, update now?")) {
+            window.location.reload()
+            if (registration.waiting)
+                registration.waiting.postMessage({type: 'SKIP_WAITING'});
+        }
+    }
+});
