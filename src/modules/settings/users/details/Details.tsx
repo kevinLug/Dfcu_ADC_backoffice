@@ -52,14 +52,6 @@ const Details = (props: IProps) => {
     }, [ userId])
     const hasError = !loading && !data
 
-    function handleEdit() {
-
-    }
-
-    function handleAdd() {
-
-    }
-
     return (
         <Layout>
             {loading && <Loading/>}

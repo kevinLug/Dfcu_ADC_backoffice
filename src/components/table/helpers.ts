@@ -2,10 +2,12 @@ import {parseXpath} from "../../utils/jsonHelpers";
 
 
 export function desc<T>(a: T, b: T, orderBy: keyof T) {
-    if (parseXpath(b,orderBy) < parseXpath(a,orderBy)) {
+    const aVal = parseXpath(a, orderBy);
+    const bVal = parseXpath(b, orderBy);
+    if (bVal < aVal) {
         return -1;
     }
-    if (parseXpath(b,orderBy) > parseXpath(a,orderBy)) {
+    if (bVal > aVal) {
         return 1;
     }
     return 0;

@@ -117,6 +117,7 @@ const ClaimEditorForm = (props: IProps) => {
         <Grid container spacing={1}>
             <Grid item xs={6}>
                 <PSelectInput
+                    disabled={!props.isNew}
                     name="claimType"
                     label="Claim Type"
                     value={data.claimType || ''}
