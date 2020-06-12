@@ -41,7 +41,7 @@ const makeApplicant = () => {
             "idField3": "iBV7PqTA4nOusjbhIfzhM0kvftAwzyjP2oLRnW1RaLUDKvTKb1X0G5lY45Tw1Cw9uq2iTI11audFo95Xzc8vDLtMKVMQiwMWeYLaCSPyIDJzyw+feTznE4i9VRp+hi1C/RfFTAFc6Vtl1Bzw0ieATQ6Pe4V5T0fwN/MInoIg/coTP+eW0+1iR8WM5fcRIFtor4f/Cq8YS9FojcondOhqmLiBphnX3TWrMUP/KoLxo7nuLCBhCJhKncjYesi5NxjOWpG4y0nv9voHrjR2yCDOGqprWXN"
         },
         "metaData": {
-            "phone": "+256700106164",
+            "phone": "256700106164",
             "requestAtmCard": true,
             "signedKfd": true,
             "sourceOfFunds": "Personal Savings",
@@ -62,7 +62,7 @@ export const fakeOtherRequest = (accountsList: string[]): any => {
             "metaData": {
                 "accountName": faker.company.companyName(),
                 "contactPersonName": `${faker.name.firstName()} ${faker.name.lastName()} `,
-                "contactPersonPhone": "0700106164",
+                "contactPersonPhone": "256700106164",
                 "currency": "UGX",
                 "product": faker.random.arrayElement(accountsList)
             },
@@ -77,7 +77,7 @@ export const fakeOtherRequest = (accountsList: string[]): any => {
             "user": {
                 "id": '1f824a84-46b6-4e7f-b601-5d041118439d',
                 "name": "Timothy Emmanuel Kasasa",
-                "phone": "+256700106164",
+                "phone": "256700106164",
                 "agentCode": "2345566",
                 "branchName": "02",
                 "region": "GKLA"
@@ -97,7 +97,7 @@ export const fakeEntityRequest = (accountsList: string[]): any => {
             "metaData": {
                 "accountName": faker.company.companyName(),
                 "contactPersonName": `${faker.name.firstName()} ${faker.name.lastName()} `,
-                "contactPersonPhone": "0700106164",
+                "contactPersonPhone": "256700106164",
                 "currency": "UGX",
                 "product": faker.random.arrayElement(accountsList)
             },
@@ -112,7 +112,7 @@ export const fakeEntityRequest = (accountsList: string[]): any => {
             "user": {
                 "id": '1f824a84-46b6-4e7f-b601-5d041118439d',
                 "name": "Timothy Emmanuel Kasasa",
-                "phone": "+256700106164",
+                "phone": "256700106164",
                 "agentCode": "2345566",
                 "branchName": "02",
                 "region": "GKLA"
@@ -148,7 +148,7 @@ export const fakeIndividualRequest = (accountsList: string[]): any => {
             "user": {
                 "id": '1f824a84-46b6-4e7f-b601-5d041118439d',
                 "name": "Timothy Emmanuel Kasasa",
-                "phone": "+256700106164",
+                "phone": "256700106164",
                 "agentCode": "2345566",
                 "branchName": "02",
                 "region": "GKLA"
