@@ -164,7 +164,7 @@ const Filter = ({onFilter, loading}: IProps) => {
                     name="idNumber"
                     value={data['idNumber']}
                     onChange={handleChange}
-                    label="ID. Number (NIN)"
+                    label="ID.Number (NIN)"
                     type="text"
                     variant='outlined'
                     size='small'
