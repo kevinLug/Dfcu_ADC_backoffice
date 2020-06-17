@@ -48,8 +48,6 @@ const readState = (evt: ProgressEvent<FileReader>): IFileState | undefined => {
         const result = target.result || null;
         if (typeof result === 'string') {
             text = result
-        } else {
-            Toast.error("Invalid File content")
         }
         return {
             isTrusted,
@@ -67,6 +65,7 @@ const columns: XHeadCell[] = [
 authCustomClaims.forEach(({name, label}) => {
     columns.push({name, label})
 })
+
 
 const CsvReader = (props: IProps) => {
     const classes = useStyles()
@@ -112,6 +111,7 @@ const CsvReader = (props: IProps) => {
         };
         reader.onload = (evt) => {
 
+            console.log("onload",evt)
             const fileState = readState(evt)
             if (fileState) {
                 setTotal(fileState.total)

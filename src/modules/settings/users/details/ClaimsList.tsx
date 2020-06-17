@@ -2,11 +2,8 @@ import React, {useState} from 'react';
 import ListView from "../../../../components/dynamic-editor/ListView";
 import {IColumn, InputType} from "../../../../components/dynamic-editor/types";
 import EditDialog from "../../../../components/EditDialog";
-import EditForm from "../../../../components/dynamic-editor/EditForm";
-import {localRoutes, remoteRoutes} from "../../../../data/constants";
 import {authCustomClaims} from "../../customClaims/config";
 import {IUserClaim} from "../types";
-import {useHistory} from "react-router";
 import ClaimEditorForm from "./ClaimEditorForm";
 
 interface IProps {
@@ -38,7 +35,7 @@ const columns: IColumn[] = [
     }
 ]
 
-const getColumns = (claim: IUserClaim):IColumn[] => {
+const getColumns = (claim: IUserClaim): IColumn[] => {
     return [
         {
             name: 'claimType', label: 'Claim Type',
@@ -94,12 +91,10 @@ const ClaimsList = (props: IProps) => {
         handleClose()
     }
 
-    function handleDeleted(dt: any) {
-        const newData = data.filter(it => it.id !== dt.id)
-        setData(newData)
-        handleClose()
-    }
-
+    const optionList = authCustomClaims
+        .map(({name}) => name)
+    const availableClaims = data.map(it => it.claimType)
+    const hasAllClaims = optionList.every(it => availableClaims.indexOf(it) > -1)
     const isNew = !selected
     return (
         <div>
@@ -108,7 +103,7 @@ const ClaimsList = (props: IProps) => {
                 data={data}
                 columns={columns}
                 primaryKey='id'
-                onAdd={handleAdd}
+                onAdd={hasAllClaims ? undefined : handleAdd}
                 onEdit={handleEdit}
             />
             <EditDialog open={dialog} onClose={handleClose} title={isNew ? "New claim" : "Edit claim"}>

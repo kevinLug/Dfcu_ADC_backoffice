@@ -48,7 +48,7 @@ export const createCsvColumns = (): ICsvColumn[] => {
     ]
     authCustomClaims.forEach(({name, label}) => {
         toReturn.push({
-            dataKey: name, title: label
+            dataKey: name, title: name
         })
     })
     return toReturn;

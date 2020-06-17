@@ -72,6 +72,7 @@ export function parseCSV(csv: string): any[] {
             }
             result.push(obj);
         }
+        console.log("Parsed CSV",result)
         return result;
     } catch (e) {
         Toast.error("Error parsing csv data")

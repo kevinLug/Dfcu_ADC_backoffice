@@ -39,6 +39,7 @@ const Filter = ({onFilter, loading}: IProps) => {
         assignee: '',
         product: '',
         referenceNumber: '',
+        idNumber: '',
         userId: ''
     })
 
@@ -152,6 +153,18 @@ const Filter = ({onFilter, loading}: IProps) => {
                     value={data['referenceNumber']}
                     onChange={handleChange}
                     label="Ref. Number"
+                    type="text"
+                    variant='outlined'
+                    size='small'
+                    fullWidth
+                />
+            </Grid>
+            <Grid item xs={12}>
+                <TextField
+                    name="idNumber"
+                    value={data['idNumber']}
+                    onChange={handleChange}
+                    label="ID.Number (NIN)"
                     type="text"
                     variant='outlined'
                     size='small'
