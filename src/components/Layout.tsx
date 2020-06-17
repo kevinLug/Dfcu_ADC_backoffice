@@ -232,11 +232,6 @@ function Layout(props: any) {
             <Divider/>
             <List>
                 <MyMenuItem
-                    route={localRoutes.dashboard}
-                    text="Dashboard"
-                    Icon={AppsIcon}
-                />
-                <MyMenuItem
                     route={localRoutes.applications}
                     text="Applications"
                     Icon={AssignmentIcon}
