@@ -10,7 +10,7 @@ import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import {useDispatch, useSelector} from "react-redux";
 import {crmConstants, ICrmState} from "../../../data/redux/contacts/reducer";
-import {columns} from "./config";
+import {columns, parseContacts} from "./config";
 
 const headCells: XHeadCell[] = [...columns];
 
@@ -49,7 +49,7 @@ const RecentContacts = () => {
                         <Grid item xs={12}>
                             <XTable
                                 headCells={headCells}
-                                data={recent}
+                                data={parseContacts(recent)}
                                 initialRowsPerPage={3}
                                 usePagination={false}
                             />

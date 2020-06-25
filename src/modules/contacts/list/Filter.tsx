@@ -18,7 +18,6 @@ const Filter = ({onFilter, loading}: IProps) => {
     const [data, setData] = useState({
         name: '',
         gender: '',
-        email: '',
         phone: '',
         nin: ''
     })
@@ -58,18 +57,6 @@ const Filter = ({onFilter, loading}: IProps) => {
                     variant="outlined"
                     size='small'
                     options={toOptions(enumToArray(Gender))}
-                />
-            </Grid>
-            <Grid item xs={12}>
-                <TextField
-                    name="email"
-                    value={data['email']}
-                    onChange={handleChange}
-                    label="Email"
-                    type="email"
-                    variant='outlined'
-                    size='small'
-                    fullWidth
                 />
             </Grid>
             <Grid item xs={12}>

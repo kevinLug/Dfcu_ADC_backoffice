@@ -75,7 +75,7 @@ async function run(reqCount: number, type: RequestType,direct=false): Promise<an
     }
 }
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = '0';
-run(1, RequestType.Joint,true)
+run(1, RequestType.Joint,false)
     .then(r =>
         console.log("Done uploading", r)
     )

@@ -37,13 +37,21 @@ const ContentSwitch = () => {
         </Switch>
     return <Suspense fallback={<Loading/>}>
         <Switch>
-            <Route exact={true} path="/" component={Workflows}/>
-            <Route path={localRoutes.dashboard} component={Dashboard}/>
-            <Route path={localRoutes.contactsDetails} component={ContactDetails}/>
-            <Route path={localRoutes.contacts} component={Contacts}/>
-            <Route path={localRoutes.applicationsDetails} component={ApplicationDetails}/>
-            <Route path={localRoutes.applications} component={Workflows}/>
-            <Route path={localRoutes.settings} component={Settings}/>
+            {
+                hasAnyRole(user, [systemRoles.ADMIN])?
+                    <Route exact={true} path="/" component={Users}/>:
+                    <Route exact={true} path="/" component={Workflows}/>
+            }
+            {
+                hasAnyRole(user, [systemRoles.BACKOFFICE, systemRoles.COMPLIANCE, systemRoles.SUPERVISOR])&&
+                    <>
+                        <Route path={localRoutes.contactsDetails} component={ContactDetails}/>
+                        <Route path={localRoutes.contacts} component={Contacts}/>
+                        <Route path={localRoutes.applicationsDetails} component={ApplicationDetails}/>
+                        <Route path={localRoutes.applications} component={Workflows}/>
+                    </>
+            }
+
             {
                 hasAnyRole(user, [systemRoles.ADMIN, systemRoles.SUPERVISOR]) &&
                 <>

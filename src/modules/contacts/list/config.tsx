@@ -1,11 +1,11 @@
 import {XHeadCell} from "../../../components/table/XTableHead";
 import ContactLink from "../../../components/links/ContactLink";
-import {getNin, getPhone, renderName} from "../types";
+import {getNin, getPhone, IContact, renderName} from "../types";
 import React from "react";
 
 export const columns: XHeadCell[] = [
     {
-        name: 'id', label: 'Name', render: (value, rec) => <ContactLink id={value} name={renderName(rec)}/>,
+        name: 'name', label: 'Name', render: (value, rec) => <ContactLink id={rec.id} name={value}/>,
         cellProps: {
             style: {
                 whiteSpace: 'nowrap'
@@ -14,7 +14,6 @@ export const columns: XHeadCell[] = [
     },
     {
         name: 'gender', label: 'Gender',
-        render: (value, rec) => rec.person.gender,
         cellProps: {
             style: {
                 whiteSpace: 'nowrap'
@@ -22,7 +21,7 @@ export const columns: XHeadCell[] = [
         }
     },
     {
-        name: 'tin', label: 'NIN', render: (_, rec) => getNin(rec),
+        name: 'nin', label: 'NIN',
         cellProps: {
             style: {
                 whiteSpace: 'nowrap'
@@ -30,7 +29,7 @@ export const columns: XHeadCell[] = [
         }
     },
     {
-        name: 'phone', label: 'Phone', render: (_, rec) => getPhone(rec),
+        name: 'phone', label: 'Phone',
         cellProps: {
             style: {
                 whiteSpace: 'nowrap'
@@ -38,3 +37,15 @@ export const columns: XHeadCell[] = [
         }
     }
 ];
+
+export const parseContacts = (data:IContact[])=>{
+    return data.map(it=>{
+        return{
+            id: it.id,
+            phone: getPhone(it),
+            gender: it.person.gender,
+            nin: getNin(it),
+            name: renderName(it),
+        }
+    })
+}
