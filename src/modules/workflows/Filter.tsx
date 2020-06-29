@@ -200,8 +200,8 @@ const Filter = ({onFilter, loading}: IProps) => {
                         {variant: "outlined", size: "small"}
                     }
                     filter={{
-                        'IdField': 'UserId',
-                        'DisplayField': 'MetaData.userName',
+                        'IdField': 'AssigneeId',
+                        'DisplayField': 'MetaData.AssigneeName',
                     }}
                 />
             </Grid>
