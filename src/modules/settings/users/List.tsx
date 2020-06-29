@@ -20,6 +20,7 @@ import {IState} from "../../../data/types";
 const headCells: XHeadCell[] = [...columns];
 
 const List = () => {
+    console.log("Loading user list")
     const user = useSelector((state: IState) => state.core.user)
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(false);

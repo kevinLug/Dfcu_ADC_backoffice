@@ -231,16 +231,22 @@ function Layout(props: any) {
             </div>
             <Divider/>
             <List>
-                <MyMenuItem
-                    route={localRoutes.applications}
-                    text="Applications"
-                    Icon={AssignmentIcon}
-                />
-                <MyMenuItem
-                    route={localRoutes.contacts}
-                    text="Contacts"
-                    Icon={PeopleIcon}
-                />
+                {
+                    hasAnyRole(user, [systemRoles.BACKOFFICE, systemRoles.COMPLIANCE, systemRoles.SUPERVISOR]) &&
+                    <MyMenuItem
+                        route={localRoutes.applications}
+                        text="Applications"
+                        Icon={AssignmentIcon}
+                    />
+                }
+                {
+                    hasAnyRole(user, [systemRoles.BACKOFFICE, systemRoles.COMPLIANCE, systemRoles.SUPERVISOR]) &&
+                    <MyMenuItem
+                        route={localRoutes.contacts}
+                        text="Contacts"
+                        Icon={PeopleIcon}
+                    />
+                }
                 {
                     hasAnyRole(user, [systemRoles.ADMIN, systemRoles.SUPERVISOR]) &&
                     <MyCollapsibleMenuItem

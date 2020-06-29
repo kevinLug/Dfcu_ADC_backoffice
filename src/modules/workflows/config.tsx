@@ -9,6 +9,7 @@ import {toTitleCase} from "../contacts/types";
 import {hasValue} from "../../components/inputs/inputHelpers";
 import XLink from "../../components/links/XLink";
 import UserLink from "../../components/links/UserLink";
+import {IWorkflow} from "./types";
 
 export const wfInitialSort = 'applicationDate';
 export const workflowHeadCells: XHeadCell[] = [
@@ -79,3 +80,12 @@ export const workflowHeadCellsNew: XHeadCell[] = [...workflowHeadCells.filter(it
 
 
 export const workflowTypes = ['JOINT', 'INDIVIDUAL', 'ENTITY', 'OTHER']
+
+
+export const parseWorkflows = (data: IWorkflow[]) => {
+    return data.map(it=>{
+        return{
+
+        }
+    })
+}

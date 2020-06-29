@@ -18,7 +18,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {crmConstants, ICrmState} from "../../../data/redux/contacts/reducer";
 import RecentContacts from "./RecentContacts";
 import {IState} from "../../../data/types";
-import {columns} from "./config";
+import {columns, parseContacts} from "./config";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -102,7 +102,7 @@ const Contacts = () => {
                                     <Grid item xs={12}>
                                         <XTable
                                             headCells={headCells}
-                                            data={data}
+                                            data={parseContacts(data)}
                                             initialRowsPerPage={10}
                                         />
                                     </Grid>

@@ -54,10 +54,10 @@ export const localRoutes = {
 
 const servers: any = {
     dev: {
-        Auth: 'https://authservice-test.laboremus.no',
+        Auth: 'https://dfcu-auth-api-test.test001.laboremus.no',
         Crm: 'https://crmservice-test.laboremus.no',
         Case: 'http://localhost:6001',
-        Gateway: 'https://dfcu-customeronboarding-gateway-test.laboremus.no',
+        Gateway: 'http://localhost:5003',
         Kyc: "https://kyc-connector-staging.onboarding.dfcugroup.com",
         Notification: "https://emata-poc-smsservice-test.laboremus.no",
         Payments: "https://emata-poc-payments-test.laboremus.no",
