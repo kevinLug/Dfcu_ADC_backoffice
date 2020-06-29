@@ -9,14 +9,14 @@ import {search} from "../utils/ajax";
 import {IState} from "../data/types";
 import ErrorMessage from "../components/messages/ErrorMessage";
 import Loading from "../components/Loading";
-
+import Users from "./settings/users/List"
 const Dashboard = React.lazy(() => import("./dashboard/Dashboard"));
 const Contacts = React.lazy(() => import("./contacts/list/Contacts"));
 const ContactDetails = React.lazy(() => import("./contacts/details/Details"));
 const ApplicationDetails = React.lazy(() => import( "./workflows/details/Details"));
 
 const Workflows = React.lazy(() => import("./workflows/Workflows"));
-const Users = React.lazy(() => import("./settings/users/List"));
+//const Users = React.lazy(() => import("./settings/users/List"));
 const CustomClaims = React.lazy(() => import("./settings/customClaims/CustomClaimsList"));
 const CustomClaimsDetails = React.lazy(() => import("./settings/customClaims/details/Details"));
 const UserDetails = React.lazy(() => import("./settings/users/details/Details"));
@@ -42,26 +42,14 @@ const ContentSwitch = () => {
                     <Route exact={true} path="/" component={Users}/>:
                     <Route exact={true} path="/" component={Workflows}/>
             }
-            {
-                hasAnyRole(user, [systemRoles.BACKOFFICE, systemRoles.COMPLIANCE, systemRoles.SUPERVISOR])&&
-                    <>
-                        <Route path={localRoutes.contactsDetails} component={ContactDetails}/>
-                        <Route path={localRoutes.contacts} component={Contacts}/>
-                        <Route path={localRoutes.applicationsDetails} component={ApplicationDetails}/>
-                        <Route path={localRoutes.applications} component={Workflows}/>
-                    </>
-            }
-
-            {
-                hasAnyRole(user, [systemRoles.ADMIN, systemRoles.SUPERVISOR]) &&
-                <>
-                    <Route path={localRoutes.usersDetails} component={UserDetails}/>
-                    <Route path={localRoutes.users} component={Users}/>
-
-                    <Route path={localRoutes.customClaimsDetails} component={CustomClaimsDetails}/>
-                    <Route path={localRoutes.customClaims} component={CustomClaims}/>
-                </>
-            }
+            <Route path={localRoutes.contactsDetails} component={ContactDetails}/>
+            <Route path={localRoutes.contacts} component={Contacts}/>
+            <Route path={localRoutes.applicationsDetails} component={ApplicationDetails}/>
+            <Route path={localRoutes.applications} component={Workflows}/>
+            <Route path={localRoutes.usersDetails} component={UserDetails}/>
+            <Route path={localRoutes.users} component={Users}/>
+            <Route path={localRoutes.customClaimsDetails} component={CustomClaimsDetails}/>
+            <Route path={localRoutes.customClaims} component={CustomClaims}/>
             <Route component={NoMatch}/>
         </Switch>
     </Suspense>

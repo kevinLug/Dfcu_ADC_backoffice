@@ -27,7 +27,8 @@ import Alert from "@material-ui/lab/Alert";
 
 
 interface IFormProps {
-    onClose: () => any
+    onClose: () => any,
+    isForm:boolean
 }
 
 const VerifyForm = (props: IFormProps & ITemplateProps) => {
@@ -121,53 +122,57 @@ const VerifyForm = (props: IFormProps & ITemplateProps) => {
                             </Grid>
                         </Grid>
                     </Box>
-                    <Box pb={12} css={{width: '100%'}}>
-                        <Grid container spacing={1}>
-                            <Grid item xs={12}>
-                                <FormGroup>
-                                    <FormControlLabel
-                                        label='Approved'
-                                        control={
-                                            <Checkbox
-                                                checked={metaData['approved']}
-                                                onChange={handleCbChange('approved')}
-                                                value={metaData['approved']}
-                                            />
-                                        }
+                    {
+                        props.isForm &&
+                        <Box pb={12} css={{width: '100%'}}>
+                            <Grid container spacing={1}>
+                                <Grid item xs={12}>
+                                    <FormGroup>
+                                        <FormControlLabel
+                                            label='Approved'
+                                            control={
+                                                <Checkbox
+                                                    checked={metaData['approved']}
+                                                    onChange={handleCbChange('approved')}
+                                                    value={metaData['approved']}
+                                                />
+                                            }
+                                        />
+                                    </FormGroup>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        id="remarks-field"
+                                        label="Remarks"
+                                        fullWidth
+                                        multiline
+                                        rowsMax="3"
+                                        rows='3'
+                                        value={metaData['remarks']}
+                                        onChange={handleTextChange('remarks')}
+                                        margin="none"
+                                        variant="outlined"
                                     />
-                                </FormGroup>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    id="remarks-field"
-                                    label="Remarks"
-                                    fullWidth
-                                    multiline
-                                    rowsMax="3"
-                                    rows='3'
-                                    value={metaData['remarks']}
-                                    onChange={handleTextChange('remarks')}
-                                    margin="none"
-                                    variant="outlined"
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Grid container spacing={2} alignContent='flex-end' justify='flex-end'>
-                                    <Grid item>
-                                        <Button
-                                            variant="outlined"
-                                            size="small"
-                                            color="primary"
-                                            onClick={handleDecision}
-                                            disabled={loading}
-                                        >
-                                            Submit
-                                        </Button>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Grid container spacing={2} alignContent='flex-end' justify='flex-end'>
+                                        <Grid item>
+                                            <Button
+                                                variant="outlined"
+                                                size="small"
+                                                color="primary"
+                                                onClick={handleDecision}
+                                                disabled={loading}
+                                            >
+                                                Submit
+                                            </Button>
+                                        </Grid>
                                     </Grid>
                                 </Grid>
                             </Grid>
-                        </Grid>
-                    </Box>
+                        </Box>
+                    }
+
                 </Box>
             </Grid>
 
@@ -178,6 +183,7 @@ const VerifyForm = (props: IFormProps & ITemplateProps) => {
 const Index = (props: ITemplateProps) => {
     const {action, taskName} = props
     const [open, setOpen] = useState<boolean>(false)
+    const [preview, setPreview] = useState<boolean>(false)
     const workflow: IWorkflow = useSelector((state: any) => state.workflows.workflow)
     const canRun = canRunAction(action.name, taskName, workflow)
     const dataString = action.outputData
@@ -216,34 +222,57 @@ const Index = (props: ITemplateProps) => {
                         }
 
                         <VerifyDialog open={open} onClose={handleClose} title='Upload Signature'>
-                            <VerifyForm onClose={handleClose} {...props}/>
+                            <VerifyForm onClose={handleClose} {...props} isForm={true}/>
                         </VerifyDialog>
                     </Grid>
                 }
                 {
                     action.status === ActionStatus.Done &&
-                    <DataValue>
-                        <CheckCircleIcon fontSize='inherit' style={{color: successColor}}/>&nbsp;
-                        Signature uploaded by&nbsp;
-                        <UserLink
-                            id={data.userId}
-                            name={data.userName}
-                            title={data.userName}
-                        />
-                    </DataValue>
+                        <Grid container spacing={0}>
+                            <Grid item xs={8}>
+                                <DataValue>
+                                    <CheckCircleIcon fontSize='inherit' style={{color: successColor}}/>&nbsp;
+                                    Signature uploaded by&nbsp;
+                                    <UserLink
+                                        id={data.userId}
+                                        name={data.userName}
+                                        title={data.userName}
+                                    />
+                                </DataValue>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <Button variant="outlined" size="small" color="primary" onClick={()=>setPreview(true)}>
+                                    Preview
+                                </Button>
+                            </Grid>
+                        </Grid>
+
                 }
                 {
                     action.status === ActionStatus.Error &&
-                    <DataValue>
-                        <HighlightOffIcon fontSize='inherit' style={{color: errorColor}}/>&nbsp;
-                        Signature Rejected by
-                        <UserLink
-                            id={data.userId}
-                            name={getInitials(data.userName)}
-                            title={data.userName}
-                        />
-                    </DataValue>
+                    <Grid container spacing={0}>
+                        <Grid item xs={8}>
+                            <DataValue>
+                                <HighlightOffIcon fontSize='inherit' style={{color: errorColor}}/>&nbsp;
+                                Signature Rejected by
+                                <UserLink
+                                    id={data.userId}
+                                    name={getInitials(data.userName)}
+                                    title={data.userName}
+                                />
+                            </DataValue>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Button variant="outlined" size="small" color="primary" onClick={()=>setPreview(true)}>
+                                Preview
+                            </Button>
+                        </Grid>
+                    </Grid>
+
                 }
+                <VerifyDialog open={preview} onClose={()=>setPreview(false)} title='Signature preview'>
+                    <VerifyForm onClose={()=>setPreview(false)} {...props} isForm={false}/>
+                </VerifyDialog>
             </Grid>
         </Grid>
     );
