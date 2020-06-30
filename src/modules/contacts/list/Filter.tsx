@@ -19,7 +19,7 @@ const Filter = ({onFilter, loading}: IProps) => {
         name: '',
         gender: '',
         phone: '',
-        nin: ''
+        nationalId: ''
     })
 
     function submitForm(values: any) {
@@ -73,8 +73,8 @@ const Filter = ({onFilter, loading}: IProps) => {
             </Grid>
             <Grid item xs={12}>
                 <TextField
-                    name="nin"
-                    value={data['nin']}
+                    name="nationalId"
+                    value={data['nationalId']}
                     onChange={handleChange}
                     label="NIN"
                     type="text"

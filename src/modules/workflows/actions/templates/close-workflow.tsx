@@ -19,7 +19,7 @@ const Index = (props: ITemplateProps) => {
     const {action, taskName} = props
     const [open, setOpen] = useState<boolean>(false)
     const workflow: IWorkflow = useSelector((state: any) => state.workflows.workflow)
-    const canRun = canRunAction(action.name, taskName, workflow)
+
     const dataString = action.outputData
     const data: any = dataString ? JSON.parse(dataString) : {};
 
@@ -29,10 +29,6 @@ const Index = (props: ITemplateProps) => {
 
     function handleClose() {
         setOpen(false)
-    }
-
-    if (!canRun) {
-        return <Pending text="Pending Execution"/>
     }
 
     return (
