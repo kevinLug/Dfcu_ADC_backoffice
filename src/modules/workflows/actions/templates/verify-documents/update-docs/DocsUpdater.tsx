@@ -64,6 +64,7 @@ const DocsUpdater = ({open, onClose, gatewayDocuments, workflow}: IProps) => {
             updateCaseDocs(resp)
             setFiles(null)
             setDocType("")
+            onClose()
         }, undefined, () => {
             setLoading(false)
         })
