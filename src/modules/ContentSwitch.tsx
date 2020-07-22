@@ -1,4 +1,4 @@
-import React, {useEffect, Suspense} from "react"
+import React, {Suspense, useEffect} from "react"
 import {Link, Route, Switch} from 'react-router-dom'
 import {hasAnyRole, isSystemUser, localRoutes, remoteRoutes, systemRoles} from "../data/constants";
 
@@ -10,6 +10,7 @@ import {IState} from "../data/types";
 import ErrorMessage from "../components/messages/ErrorMessage";
 import Loading from "../components/Loading";
 import Users from "./settings/users/List"
+
 const Dashboard = React.lazy(() => import("./dashboard/Dashboard"));
 const Contacts = React.lazy(() => import("./contacts/list/Contacts"));
 const ContactDetails = React.lazy(() => import("./contacts/details/Details"));
@@ -38,8 +39,8 @@ const ContentSwitch = () => {
     return <Suspense fallback={<Loading/>}>
         <Switch>
             {
-                hasAnyRole(user, [systemRoles.ADMIN])?
-                    <Route exact={true} path="/" component={Users}/>:
+                hasAnyRole(user, [systemRoles.ADMIN]) ?
+                    <Route exact={true} path="/" component={Users}/> :
                     <Route exact={true} path="/" component={Workflows}/>
             }
             <Route path={localRoutes.contactsDetails} component={ContactDetails}/>
@@ -47,9 +48,15 @@ const ContentSwitch = () => {
             <Route path={localRoutes.applicationsDetails} component={ApplicationDetails}/>
             <Route path={localRoutes.applications} component={Workflows}/>
             <Route path={localRoutes.usersDetails} component={UserDetails}/>
-            <Route path={localRoutes.users} component={Users}/>
-            <Route path={localRoutes.customClaimsDetails} component={CustomClaimsDetails}/>
-            <Route path={localRoutes.customClaims} component={CustomClaims}/>
+            {
+                hasAnyRole(user, [systemRoles.ADMIN]) &&
+                <>
+                    <Route path={localRoutes.users} component={Users}/>
+                    <Route path={localRoutes.customClaimsDetails} component={CustomClaimsDetails}/>
+                    <Route path={localRoutes.customClaims} component={CustomClaims}/>
+                </>
+            }
+
             <Route component={NoMatch}/>
         </Switch>
     </Suspense>

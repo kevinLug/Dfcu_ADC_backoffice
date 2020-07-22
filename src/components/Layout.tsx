@@ -248,7 +248,7 @@ function Layout(props: any) {
                     />
                 }
                 {
-                    hasAnyRole(user, [systemRoles.ADMIN, systemRoles.SUPERVISOR]) &&
+                    hasAnyRole(user, [systemRoles.ADMIN]) &&
                     <MyCollapsibleMenuItem
                         text="Settings"
                         Icon={SettingsIcon}
