@@ -12,10 +12,11 @@ import {Box} from "@material-ui/core";
 import SearchInput from "../../../components/SearchInput";
 import Button from "@material-ui/core/Button";
 import {excelExport, IExcelColumn} from "../../../utils/excelUtils";
-import {hasNoValue, hasValue} from "../../../components/inputs/inputHelpers";
+import {hasNoValue} from "../../../components/inputs/inputHelpers";
 import Toast from "../../../utils/Toast";
 import {useSelector} from "react-redux";
 import {IState} from "../../../data/types";
+import {printDateTime} from "../../../utils/dateHelpers";
 
 const headCells: XHeadCell[] = [...columns];
 
@@ -83,13 +84,27 @@ const List = () => {
             {
                 dataKey: 'agent_code',
                 title: 'Agent Code'
+            },
+            {
+                dataKey: 'lastLogin',
+                title: 'Last Login'
             }
         ]
         const excelData = data.map(it => {
             const {claims, ...rest} = it
-            return {...rest, ...claims}
+
+            return {...rest, ...claims,lastLogin:parseTime(claims.iat)}
         })
         excelExport(excelData, columns, "user-list")
+    }
+
+    const parseTime = (dt: any) => {
+        if (dt) {
+            const timestamp = parseInt(dt)
+            const date = new Date(timestamp * 1000);
+            return printDateTime(date)
+        }
+        return ""
     }
 
     return (
