@@ -88,6 +88,10 @@ const List = () => {
             {
                 dataKey: 'lastLogin',
                 title: 'Last Login'
+            },
+            {
+                dataKey: 'roles',
+                title: 'Roles'
             }
         ]
         const excelData = data.map(it => {

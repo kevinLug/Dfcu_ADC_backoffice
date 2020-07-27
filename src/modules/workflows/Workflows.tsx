@@ -36,9 +36,6 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-
-
-
 const Workflows = () => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
@@ -69,7 +66,6 @@ const Workflows = () => {
     }, [])
 
     useEffect(() => {
-        console.log("Filter", filter)
         setLoading(true)
         search(remoteRoutes.workflows, filter, resp => {
             setData(resp)
