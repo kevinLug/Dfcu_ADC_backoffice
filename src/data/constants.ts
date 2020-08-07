@@ -54,7 +54,7 @@ export const localRoutes = {
 
 const servers: any = {
     dev: {
-        Auth: 'https://dfcu-auth-api-test.test001.laboremus.no',
+        Auth: 'https://localhost:44313',
         Crm: 'https://dfcu-crm-service-test.test001.laboremus.no',
         Case: 'http://localhost:6001',
         Gateway: 'http://localhost:5003',
