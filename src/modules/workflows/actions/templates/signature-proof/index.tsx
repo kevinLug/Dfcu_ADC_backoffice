@@ -28,7 +28,7 @@ import Alert from "@material-ui/lab/Alert";
 
 interface IFormProps {
     onClose: () => any,
-    isForm:boolean
+    isForm: boolean
 }
 
 const VerifyForm = (props: IFormProps & ITemplateProps) => {
@@ -42,7 +42,7 @@ const VerifyForm = (props: IFormProps & ITemplateProps) => {
 
     // TODO fix me
     let form = workflow.documents.filter(it => it.fileName.toLocaleLowerCase().indexOf('applicationform') > -1)[0]
-    form = form||workflow.documents.filter(it => it.fileName.toLocaleLowerCase().indexOf('null (9)') > -1)[0]
+    form = form || workflow.documents.filter(it => it.fileName.toLocaleLowerCase().indexOf('null') > -1 && it.fileName.toLocaleLowerCase().indexOf('.pdf') > -1)[0]
     const photo = workflow.documents.filter(it => it.fileName.toLocaleLowerCase().indexOf('passportphoto') > -1)[0]
     if (!form || !photo) {
         return <Box p={3}>
@@ -203,7 +203,7 @@ const Index = (props: ITemplateProps) => {
         return <Pending text="Pending Execution"/>
     }
 
-    console.log("Docs>>>>>>", {workflow,len:workflow.documents.length})
+    console.log("Docs>>>>>>", {workflow, len: workflow.documents.length})
     return (
         <Grid container spacing={0}>
             <Grid item xs={12}>
@@ -231,24 +231,24 @@ const Index = (props: ITemplateProps) => {
                 }
                 {
                     action.status === ActionStatus.Done &&
-                        <Grid container spacing={0}>
-                            <Grid item xs={8}>
-                                <DataValue>
-                                    <CheckCircleIcon fontSize='inherit' style={{color: successColor}}/>&nbsp;
-                                    Signature uploaded by&nbsp;
-                                    <UserLink
-                                        id={data.userId}
-                                        name={data.userName}
-                                        title={data.userName}
-                                    />
-                                </DataValue>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <Button variant="outlined" size="small" color="primary" onClick={()=>setPreview(true)}>
-                                    Preview
-                                </Button>
-                            </Grid>
+                    <Grid container spacing={0}>
+                        <Grid item xs={8}>
+                            <DataValue>
+                                <CheckCircleIcon fontSize='inherit' style={{color: successColor}}/>&nbsp;
+                                Signature uploaded by&nbsp;
+                                <UserLink
+                                    id={data.userId}
+                                    name={data.userName}
+                                    title={data.userName}
+                                />
+                            </DataValue>
                         </Grid>
+                        <Grid item xs={4}>
+                            <Button variant="outlined" size="small" color="primary" onClick={() => setPreview(true)}>
+                                Preview
+                            </Button>
+                        </Grid>
+                    </Grid>
 
                 }
                 {
@@ -266,15 +266,15 @@ const Index = (props: ITemplateProps) => {
                             </DataValue>
                         </Grid>
                         <Grid item xs={4}>
-                            <Button variant="outlined" size="small" color="primary" onClick={()=>setPreview(true)}>
+                            <Button variant="outlined" size="small" color="primary" onClick={() => setPreview(true)}>
                                 Preview
                             </Button>
                         </Grid>
                     </Grid>
 
                 }
-                <VerifyDialog open={preview} onClose={()=>setPreview(false)} title='Signature preview'>
-                    <VerifyForm onClose={()=>setPreview(false)} {...props} isForm={false}/>
+                <VerifyDialog open={preview} onClose={() => setPreview(false)} title='Signature preview'>
+                    <VerifyForm onClose={() => setPreview(false)} {...props} isForm={false}/>
                 </VerifyDialog>
             </Grid>
         </Grid>
