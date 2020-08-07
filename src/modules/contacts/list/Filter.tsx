@@ -83,15 +83,6 @@ const Filter = ({onFilter, loading}: IProps) => {
                     fullWidth
                 />
             </Grid>
-            <Grid item xs={12}>
-                <Box display="flex" flexDirection="row-reverse" >
-                    <Button
-                        disabled={loading}
-                        variant="outlined"
-                        color="primary"
-                        onClick={submitForm}>Excel Export</Button>
-                </Box>
-            </Grid>
         </Grid>
     </form>
 

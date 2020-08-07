@@ -40,7 +40,9 @@ const VerifyForm = (props: IFormProps & ITemplateProps) => {
     const workflow: IWorkflow = useSelector((state: any) => state.workflows.workflow)
     const documents = useSelector((state: IState) => state.core.documents)
 
-    const form = workflow.documents.filter(it => it.fileName.toLocaleLowerCase().indexOf('applicationform') > -1)[0]
+    // TODO fix me
+    let form = workflow.documents.filter(it => it.fileName.toLocaleLowerCase().indexOf('applicationform') > -1)[0]
+    form = form||workflow.documents.filter(it => it.fileName.toLocaleLowerCase().indexOf('null (9)') > -1)[0]
     const photo = workflow.documents.filter(it => it.fileName.toLocaleLowerCase().indexOf('passportphoto') > -1)[0]
     if (!form || !photo) {
         return <Box p={3}>
@@ -201,6 +203,7 @@ const Index = (props: ITemplateProps) => {
         return <Pending text="Pending Execution"/>
     }
 
+    console.log("Docs>>>>>>", {workflow,len:workflow.documents.length})
     return (
         <Grid container spacing={0}>
             <Grid item xs={12}>
