@@ -99,7 +99,7 @@ const VerifyForm = (props: IFormProps & ITemplateProps) => {
     const height = 842 * magnifier
     const width = 630 * magnifier
     return (
-        <Grid container spacing={1} style={{height}} alignContent='center' justify='center'>
+        <Grid container spacing={1} style={{height,minWidth:1000}} alignContent='center' justify='center'>
             <Grid style={{height: '100%', width}}>
                 <Box p={2} css={{height: '100%'}}>
                     <PdfViewer data={documents[form.id]}/>
@@ -109,7 +109,6 @@ const VerifyForm = (props: IFormProps & ITemplateProps) => {
                 <Box
                     display='flex'
                     flexDirection="column-reverse"
-
                     css={{height: '100%'}}
                     p={2}
                 >
@@ -288,7 +287,7 @@ interface IDialogProps {
     children?: any
 }
 
-const VerifyDialog = (props: IDialogProps) => <Dialog open={props.open} onClose={props.onClose} maxWidth="xl">
+const VerifyDialog = (props: IDialogProps) => <Dialog open={props.open} onClose={props.onClose} maxWidth="lg">
     <DialogTitle>{props.title}</DialogTitle>
     <DialogContent>
         {props.children}

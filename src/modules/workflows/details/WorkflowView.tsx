@@ -62,7 +62,7 @@ function WorkflowView({classes,data}: IProps) {
                         </Paper>
                     </StepLabel>
                     <StepContent className={classes.stepContent}>
-                        <TaskBodyView task={task} workflowId={data.id}/>
+                        <TaskBodyView task={task} workflowId={data.id} workflow={data}/>
                     </StepContent>
                 </Step>
             ))}
