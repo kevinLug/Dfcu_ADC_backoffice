@@ -4,7 +4,7 @@ import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import {createStyles, Divider, makeStyles, Theme, useTheme} from "@material-ui/core";
-import {IAction} from "../types";
+import {IAction, IWorkflow} from "../types";
 import Grid from "@material-ui/core/Grid";
 import ActionStatusView from "./ActionStatusView";
 import BaseTemplate from "./templates/base-template";
@@ -15,6 +15,7 @@ interface IProps {
     workflowId: string,
     taskName: string,
     action: IAction,
+    workflow?: IWorkflow,
     children?: React.ReactNode
 }
 
@@ -30,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
-const ActionView = ({action, taskName, workflowId}: IProps) => {
+const ActionView = ({action, taskName, workflowId,workflow}: IProps) => {
     const classes = useStyles()
     const theme = useTheme()
     let ViewComponent: any = BaseTemplate
@@ -60,7 +61,7 @@ const ActionView = ({action, taskName, workflowId}: IProps) => {
             <Divider/>
             <CardContent style={{paddingBottom: theme.spacing(1)}}>
                 <Suspense fallback={<Loading/>}>
-                    <ViewComponent action={action} workflowId={workflowId} taskName={taskName}/>
+                    <ViewComponent action={action} workflowId={workflowId} taskName={taskName} workflow={workflow}/>
                 </Suspense>
             </CardContent>
         </Card>
