@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {ActionStatus} from "../../../types";
+import {ActionStatus, IAction} from "../../../types";
 import Error from "../error";
 import Pending from "../pending";
 import Grid from "@material-ui/core/Grid";
@@ -50,7 +50,7 @@ export interface IKycResponse {
     runDate?: string
 }
 
-const fields = (data: IKycResponse): IRec[] => {
+const fields = (data: IKycResponse,action:IAction): IRec[] => {
     const recs = [
         {
             label: 'Check Type',
@@ -74,6 +74,14 @@ const fields = (data: IKycResponse): IRec[] => {
         const rec: IRec = {
             label: 'Overriden by',
             value: <UserLink id={data.userId || ''} name={data.userName || ''}/>
+        }
+        recs.push(rec)
+    }
+    if(action.name.indexOf("risk-profiling")>-1){
+        const input: any = JSON.parse(action.inputData);
+        const rec: IRec = {
+            label: 'Is PEP',
+            value: input.isPep?"Yes":"No"
         }
         recs.push(rec)
     }
@@ -157,7 +165,7 @@ const Index = ({action, ...rest}: ITemplateProps) => {
                     <Box pt={1}>
                         <Divider/>
                         <Box pt={1}>
-                            <DetailView data={fields(data)} columns={2}/>
+                            <DetailView data={fields(data,action)} columns={2}/>
                         </Box>
                     </Box>
                 </Collapse>
