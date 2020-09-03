@@ -47,7 +47,16 @@ const makeApplicant = () => {
             "sourceOfFunds": "Personal Savings",
             "employmentStatus": "LGC",
             "occupation": "LGC",
-            "countryOfResidence": faker.random.arrayElement(["RUG", "REA", "OEA"])
+            "countryOfResidence": faker.random.arrayElement(["RUG", "REA", "OEA"]),
+            "accountNoOrMobileMoney": "",
+            "email": "",
+            "expectedMonthlyIncome": "580,000",
+            "isPEP": true,
+            "nationality": "UGA",
+            "otherBankOrTelecom": "",
+            "sector": "DF001",
+            "sourceOfIncome": "salary",
+            "subSector": "160"
         },
     }
 }
