@@ -117,4 +117,4 @@ export function jsArray2CSV(objectsRaw:any[], colsRaw:ICsvColumn[]) {
     return true;
 }
 
-
+export const isNullOrEmpty = (str:string): boolean =>  (str === null || str === '');

@@ -5,11 +5,14 @@ import core from "./coreReducer";
 import workflows from "./workflows/reducer";
 import crm from './contacts/reducer';
 import users from './users/reducer';
+import {reducer as transfers} from './transfers/reducer'
+import {reducer as workflowResponse} from './workflow-response/reducer'
+import {reducer as checks} from './checks/reducer'
 
 const myWindow = window as any;
 const toolsName = '__REDUX_DEVTOOLS_EXTENSION__';
 const devTools: any = myWindow[toolsName] ? myWindow[toolsName]() : (f: any) => f;
-const reducers = combineReducers({core, workflows, crm, users});
+const reducers = combineReducers({core, workflows, crm, users, transfers, workflowResponse, checks});
 const middleware = applyMiddleware(createLogger(), ReduxThunk);
 const store: any = middleware(devTools(createStore))(reducers);
 export default store

@@ -44,6 +44,8 @@ export const localRoutes = {
     applicationsDetails: '/applications/:caseId',
     dashboard: '/dashboard',
     contacts: '/contacts',
+    scan: '/scan',
+    scanCrop: '/scanCrop',
     contactsDetails: '/contacts/:contactId',
     settings: '/settings',
     customClaimsDetails: '/customClaims/:id',

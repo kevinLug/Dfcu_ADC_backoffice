@@ -7,8 +7,8 @@ export interface ICoreState {
     isLoading: boolean,
     documents: any,
     metadata: GatewayMetadata
+    startNewTransferRequest: boolean;
 }
-
 
 
 const initialState: ICoreState = {
@@ -17,12 +17,13 @@ const initialState: ICoreState = {
     isLoading: true,
     documents: {},
     metadata: {
-        versionMessage:'',
+        versionMessage: '',
         version: 0,
         districts: [],
         businesses: [],
-        accountCategories: [],
-    }
+        transferCategories: [],
+    },
+    startNewTransferRequest: false
 }
 
 export interface IStoreDoc {
@@ -36,7 +37,8 @@ export const coreConstants = {
     stopLoading: "CORE_STOP_LOADING",
     coreLogout: "CORE_LOGOUT",
     coreCreateDocument: "CORE_CREATE_DOC",
-    coreLoadMetadata: "CORE_LOAD_METADATA"
+    coreLoadMetadata: "CORE_LOAD_METADATA",
+    startNewTransferRequest: "CORE_START_NEW_TRANSFER_REQUEST"
 }
 
 export default function reducer(state = initialState, action: any) {
@@ -72,6 +74,11 @@ export default function reducer(state = initialState, action: any) {
             const metadata: GatewayMetadata = action.payload
             return {...state, metadata}
         }
+
+        case coreConstants.startNewTransferRequest: {
+            return {...state, startNewTransferRequest:true}
+        }
+
         default: {
             return state
         }

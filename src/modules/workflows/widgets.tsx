@@ -43,8 +43,8 @@ export const renderSubStatus = (value: WorkflowSubStatus) => {
         case WorkflowSubStatus.InternalWatchlistFailed:
         case WorkflowSubStatus.RegulationCheckFailed:
 
-        case WorkflowSubStatus.CifCreationFailed:
-        case WorkflowSubStatus.AccountCreationFailed:
+        // case WorkflowSubStatus.CifCreationFailed:
+        // case WorkflowSubStatus.AccountCreationFailed:
 
 
         case WorkflowSubStatus.DocumentsValidationFailed:
@@ -59,6 +59,9 @@ export const renderSubStatus = (value: WorkflowSubStatus) => {
         case WorkflowSubStatus.AwaitingCaseClosure:
         case WorkflowSubStatus.AwaitingDocumentsApproval:
         case WorkflowSubStatus.AwaitingSignatureUpload:
+        case WorkflowSubStatus.AwaitingCSOApproval:
+        case WorkflowSubStatus.AwaitingCheckerApproval:
+        case WorkflowSubStatus.AwaitingClearingDeptApproval:
             color = warningColor
             break
         default:

@@ -82,7 +82,7 @@ export const fakeLoanRequest = (): any => {
             "metaData": {},
             "user": {
                 "id": '1f824a84-46b6-4e7f-b601-5d041118439d',
-                "name": "Timothy Emmanuel Kasasa"
+                "name": "Daniel Comboni"
             }
         }
     }
@@ -103,7 +103,7 @@ export const fakeDembeRequest = (): any => {
                 "gender": faker.random.arrayElement(enumToArray(Gender)) as Gender,
                 "dateOfBirth": faker.date.past(15),
                 "civilStatus": faker.random.arrayElement(enumToArray(CivilStatus)) as CivilStatus,
-                "phone": "0700106164"
+                "phone": "0781750721"
             },
             "address": {
                 "country": 800,
@@ -142,8 +142,8 @@ export const fakeDembeRequest = (): any => {
             },
             "user": {
                 "id": '1f824a84-46b6-4e7f-b601-5d041118439d',
-                "name": "Timothy Emmanuel Kasasa",
-                "phone": "0700106164",
+                "name": "Daniel Comboni",
+                "phone": "0781750721",
                 "agentCode": "2345566",
                 "branchName": "02",
                 "region": "GKLA"

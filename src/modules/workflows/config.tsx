@@ -15,7 +15,9 @@ export const wfInitialSort = 'applicationDate';
 export const workflowHeadCells: XHeadCell[] = [
     {
         name: 'referenceNumber', label: 'Ref.No',
-        render: (value, rec) => <ApplicationLink id={rec.id} name={rec.referenceNumber}/>,
+        render: (value, rec) => {
+            return <ApplicationLink id={rec.id} name={rec.referenceNumber}/>
+        },
         cellProps: {style: {width: 70}}
     },
     {
@@ -28,6 +30,36 @@ export const workflowHeadCells: XHeadCell[] = [
         }
     },
     {
+        name: 'metaData.applicantName',
+        label: 'Applicant',
+        render: (data, rec) => {
+            // if (hasValue(rec.caseData))
+            //     console.log(`the case data: `, rec.caseData)
+            // return <ContactLink
+            //     id={rec.caseData}
+            //     name={trimString(data, 20)}
+            // />
+            // return <XLink
+            //     name={trimString(data, 20)}
+            //     title={data}
+            // />
+            return data
+        }
+    },
+
+    {
+        name: 'metaData.beneficiaryName',
+        label: 'Beneficiary',
+        render: (data, rec) => data
+    },
+
+    {
+        name: 'metaData.beneficiaryBankName',
+        label: 'Beneficiary Bank',
+        render: (data, rec) => data
+    },
+
+    {
         name: 'type', label: 'Type',
         render: (value: string, rec: any) => `${toTitleCase(value)}`,
         cellProps: {
@@ -37,6 +69,28 @@ export const workflowHeadCells: XHeadCell[] = [
             }
         }
     },
+
+    {
+        name: 'metaData.currency',
+        label: 'Currency',
+        render: (data, rec) => data
+    },
+
+
+    {
+        name: 'metaData.amount', label: 'Amount',
+        render: (value: string, rec: any) => {
+            return `${value}  ${rec.metaData.currency}`
+        },
+        cellProps: {
+            style: {
+                width: 60,
+                whiteSpace: 'nowrap'
+            }
+        }
+    },
+
+
     {
         name: 'status', label: 'Status', render: (data) => renderStatus(data),
         cellProps: {
@@ -54,38 +108,32 @@ export const workflowHeadCells: XHeadCell[] = [
             }
         }
     },
-    {
-        name: 'metaData.applicantName',
-        label: 'Applicant',
-        render: (data, rec) => {
-            if (hasValue(rec.metaData.applicantId))
-                return <ContactLink
-                    id={rec.metaData.applicantId}
-                    name={trimString(data, 20)}
-                />
-            return <XLink
-                name={trimString(data, 20)}
-                title={data}
-            />
-        }
-    },
-    {
-        name: 'metaData.assigneeName',
-        label: 'Assignee',
-        render: (data, rec) => data ? <UserLink id={rec.assigneeId} name={getInitials(data)} title={data}/> : ''
-    },
+
+    // {
+    //     name: 'metaData.assigneeName',
+    //     label: 'Assignee',
+    //     render: (data, rec) => data ? <UserLink id={rec.assigneeId} name={getInitials(data)} title={data} /> : ''
+    // },
 ];
 
 export const workflowHeadCellsNew: XHeadCell[] = [...workflowHeadCells.filter(it => it.name !== 'metaData.assigneeName')]
 
+export const workflowTypes = ['Foreign Remittances', 'EFT', 'RTGS', 'RTGS (Local)', 'EAPS', 'REPSS', 'Foreign Draft']
 
-export const workflowTypes = ['JOINT', 'INDIVIDUAL', 'ENTITY', 'OTHER']
+export enum RequestType {
 
+    ForeignRemittance = 'foreignRemittance',
+    EFT = 'EFT',
+    RTGSLocal = 'RTGSLocal',
+    RTGS = 'RTGS',
+    EAPS = 'EAPS',
+    REPSS = 'REPSS',
+    ForeignDraft = 'foreignDraft',
+
+}
 
 export const parseWorkflows = (data: IWorkflow[]) => {
-    return data.map(it=>{
-        return{
-
-        }
+    return data.map(it => {
+        return {}
     })
 }

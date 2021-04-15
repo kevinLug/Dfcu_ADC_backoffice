@@ -13,6 +13,7 @@ export default function TaskStatusView({data}: IProps) {
     let actionNames = actions.map(it => it.name).join("\n")
 
     if (status === TaskStatus.Done) {
+
         return <Fragment>
             <Typography
                 variant='body1'

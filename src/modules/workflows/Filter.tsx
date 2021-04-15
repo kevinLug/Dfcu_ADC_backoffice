@@ -1,31 +1,31 @@
 import * as React from "react";
-import {useState} from "react";
-import {flatMap, uniqBy} from "lodash";
+import { useState } from "react";
+import { flatMap, uniqBy } from "lodash";
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import {IOption, toOptions} from "../../components/inputs/inputHelpers";
-import {Box} from "@material-ui/core";
+import { IOption, toOptions } from "../../components/inputs/inputHelpers";
+import { Box } from "@material-ui/core";
 import TextField from '@material-ui/core/TextField';
 import PSelectInput from "../../components/plain-inputs/PSelectInput";
 import PDateInput from "../../components/plain-inputs/PDateInput";
-import {enumToArray, getRandomStr} from "../../utils/stringHelpers";
-import {IWorkflowFilter, WorkflowStatus, WorkflowSubStatus} from "./types";
-import {workflowTypes} from "./config";
-import {PRemoteSelect} from "../../components/inputs/XRemoteSelect";
-import {remoteRoutes} from "../../data/constants";
-import {useSelector} from "react-redux";
-import {IState} from "../../data/types";
-import {downLoad, triggerDownLoad} from "../../utils/ajax";
+import { enumToArray, getRandomStr } from "../../utils/stringHelpers";
+import { IWorkflowFilter, WorkflowStatus, WorkflowSubStatus } from "./types";
+import { workflowTypes } from "./config";
+import { PRemoteSelect } from "../../components/inputs/XRemoteSelect";
+import { remoteRoutes } from "../../data/constants";
+import { useSelector } from "react-redux";
+import { IState } from "../../data/types";
+import { downLoad, triggerDownLoad } from "../../utils/ajax";
 
 interface IProps {
     onFilter: (data: any) => any
     loading: boolean
 }
 
-const Filter = ({onFilter, loading}: IProps) => {
+const Filter = ({ onFilter, loading }: IProps) => {
 
     const metaData = useSelector((state: IState) => state.core.metadata)
-    const accountCategories: IOption[] = uniqBy(flatMap(metaData.accountCategories, it => it.accounts.map(({code, name}) => ({
+    const accountCategories: IOption[] = uniqBy(flatMap(metaData.transferCategories, it => it.accounts.map(({ code, name }) => ({
         label: name,
         value: code
     }))), "value")
@@ -50,7 +50,7 @@ const Filter = ({onFilter, loading}: IProps) => {
     function handleChange(event: React.ChangeEvent<any>) {
         const name = event.target.name
         const value = event.target.value
-        const newData = {...data, [name]: value}
+        const newData = { ...data, [name]: value }
         setData(newData)
         submitForm(newData)
     }
@@ -59,14 +59,14 @@ const Filter = ({onFilter, loading}: IProps) => {
         if (name === 'from' || name === 'to') {
             value = value ? value.toISOString() : value
         }
-        const newData = {...data, [name]: value}
+        const newData = { ...data, [name]: value }
         setData(newData)
         submitForm(newData)
     }
 
     const handleComboValueChange = (name: string) => (value: any) => {
-        const newData = {...data, [name]: value}
-        const newFilterData = {...data, [name]: value ? value.id : null}
+        const newData = { ...data, [name]: value }
+        const newFilterData = { ...data, [name]: value ? value.id : null }
         setData(newData)
         submitForm(newFilterData)
     }
@@ -78,28 +78,58 @@ const Filter = ({onFilter, loading}: IProps) => {
     }
 
     return <form>
-        <Grid spacing={3} container>
-            <Grid item xs={12}>
-                <PDateInput
-                    name="from"
-                    value={data['from'] || null}
-                    onChange={handleValueChange('from')}
-                    label="From"
-                    variant="inline"
-                    inputVariant='outlined'
+        <Grid spacing={2} container>
+
+            <Grid item xs={1}>
+                <PRemoteSelect
+                    name="applicant"
+                    value={data['applicant']}
+                    onChange={handleComboValueChange('applicant')}
+                    label="Applicant"
+                    remote={remoteRoutes.workflowsCombo}
+                    parser={({ id, name }: any) => ({ id, label: name })}
+                    textFieldProps={
+                        { variant: "outlined", size: "small" }
+                    }
+                    filter={{
+                        'IdField': 'MetaData.ApplicantName',
+                        'DisplayField': 'MetaData.ApplicantName',
+                    }}
                 />
             </Grid>
-            <Grid item xs={12}>
-                <PDateInput
-                    name="to"
-                    value={data['to'] || null}
-                    onChange={handleValueChange('to')}
-                    label="To"
-                    variant="inline"
-                    inputVariant='outlined'
+
+            <Grid item xs={1}>
+                <PRemoteSelect
+                    name="userId"
+                    value={data['userId']}
+                    onChange={handleComboValueChange('userId')}
+                    label="Beneficiary"
+                    remote={remoteRoutes.workflowsCombo}
+                    parser={({ id, name }: any) => ({ id, label: name })}
+                    textFieldProps={
+                        { variant: "outlined", size: "small" }
+                    }
+                    filter={{
+                        'IdField': 'UserId',
+                        'DisplayField': 'MetaData.userName',
+                    }}
                 />
             </Grid>
-            <Grid item xs={12}>
+
+            <Grid item xs={1}>
+                <PSelectInput
+                    name="workflowTypes"
+                    value={data['workflowTypes']}
+                    onChange={handleChange}
+                    multiple
+                    label="Transfer Type"
+                    variant="outlined"
+                    size='small'
+                    options={toOptions(workflowTypes)}
+                />
+            </Grid>
+
+            <Grid item xs={1}>
                 <PSelectInput
                     name="statuses"
                     value={data['statuses']}
@@ -111,7 +141,8 @@ const Filter = ({onFilter, loading}: IProps) => {
                     options={toOptions(enumToArray(WorkflowStatus))}
                 />
             </Grid>
-            <Grid item xs={12}>
+
+            <Grid item xs={1}>
                 <PSelectInput
                     name="subStatuses"
                     value={data['subStatuses']}
@@ -124,30 +155,7 @@ const Filter = ({onFilter, loading}: IProps) => {
                 />
             </Grid>
 
-            <Grid item xs={12}>
-                <PSelectInput
-                    name="workflowTypes"
-                    value={data['workflowTypes']}
-                    onChange={handleChange}
-                    multiple
-                    label="Account Type"
-                    variant="outlined"
-                    size='small'
-                    options={toOptions(workflowTypes)}
-                />
-            </Grid>
-            <Grid item xs={12}>
-                <PSelectInput
-                    name="product"
-                    value={data['product']}
-                    onChange={handleChange}
-                    label="Product"
-                    variant="outlined"
-                    size='small'
-                    options={accountCategories}
-                />
-            </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={1}>
                 <TextField
                     name="referenceNumber"
                     value={data['referenceNumber']}
@@ -159,78 +167,39 @@ const Filter = ({onFilter, loading}: IProps) => {
                     fullWidth
                 />
             </Grid>
-            <Grid item xs={12}>
-                <TextField
-                    name="idNumber"
-                    value={data['idNumber']}
-                    onChange={handleChange}
-                    label="ID.Number (NIN)"
-                    type="text"
-                    variant='outlined'
-                    size='small'
-                    fullWidth
+
+            <Grid item xs={1}>
+                <PDateInput
+                    name="from"
+                    value={data['from'] || null}
+                    onChange={handleValueChange('from')}
+                    label="From"
+                    variant="inline"
+                    inputVariant='outlined'
                 />
             </Grid>
-            <Grid item xs={12}>
-                <PRemoteSelect
-                    name="applicant"
-                    value={data['applicant']}
-                    onChange={handleComboValueChange('applicant')}
-                    label="Applicant"
-                    remote={remoteRoutes.workflowsCombo}
-                    parser={({id, name}: any) => ({id, label: name})}
-                    textFieldProps={
-                        {variant: "outlined", size: "small"}
-                    }
-                    filter={{
-                        'IdField': 'MetaData.ApplicantName',
-                        'DisplayField': 'MetaData.ApplicantName',
-                    }}
+
+            <Grid item xs={1}>
+                <PDateInput
+                    name="to"
+                    value={data['to'] || null}
+                    onChange={handleValueChange('to')}
+                    label="To"
+                    variant="inline"
+                    inputVariant='outlined'
                 />
             </Grid>
-            <Grid item xs={12}>
-                <PRemoteSelect
-                    name="assignee"
-                    value={data['assignee']}
-                    onChange={handleComboValueChange('assignee')}
-                    label="Assignee"
-                    remote={remoteRoutes.workflowsCombo}
-                    parser={({id, name}: any) => ({id, label: name})}
-                    textFieldProps={
-                        {variant: "outlined", size: "small"}
-                    }
-                    filter={{
-                        'IdField': 'AssigneeId',
-                        'DisplayField': 'MetaData.AssigneeName',
-                    }}
-                />
-            </Grid>
-            <Grid item xs={12}>
-                <PRemoteSelect
-                    name="userId"
-                    value={data['userId']}
-                    onChange={handleComboValueChange('userId')}
-                    label="CSO User/Agent"
-                    remote={remoteRoutes.workflowsCombo}
-                    parser={({id, name}: any) => ({id, label: name})}
-                    textFieldProps={
-                        {variant: "outlined", size: "small"}
-                    }
-                    filter={{
-                        'IdField': 'UserId',
-                        'DisplayField': 'MetaData.userName',
-                    }}
-                />
-            </Grid>
-            <Grid item xs={12}>
+
+            <Grid item xs={4}>
                 <Box display="flex" flexDirection="row-reverse">
                     <Button
                         disabled={loading}
                         variant="outlined"
                         color="primary"
-                        onClick={handleExport}>Excel Export</Button>
+                        onClick={handleExport}>Export</Button>
                 </Box>
             </Grid>
+
         </Grid>
     </form>
 

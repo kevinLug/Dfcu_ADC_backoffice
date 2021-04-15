@@ -44,7 +44,6 @@ const useWfStyles = makeStyles((theme: Theme) =>
         stepContent: {
             paddingRight: 0,
             paddingBottom: theme.spacing(1)
-
         },
         taskIcon: {
             marginTop: 1
@@ -117,10 +116,13 @@ const Details = (props: IProps) => {
         </Navigation>
 
     const hasError = !loading && !workflow
-    if (hasError)
+    if (hasError){
+        console.log('workflow erred',workflow)
         return <Navigation>
             <Error text='Failed load case data'/>
         </Navigation>
+    }
+
 
 
     const caseData = workflow as IWorkflow

@@ -26,6 +26,13 @@ export const stopLoading = () => {
     }
 }
 
+export const startNewTransferRequest = (flag:boolean) => {
+    return {
+        type: coreConstants.startNewTransferRequest,
+        payload: flag
+    }
+}
+
 export const saveDocument = (data: IStoreDoc) => {
     return {
         type: coreConstants.coreCreateDocument,

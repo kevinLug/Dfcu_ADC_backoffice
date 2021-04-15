@@ -98,7 +98,6 @@ export const search = (url: string, data: any, callBack: CallbackFunction, error
         .end(handleResponse(callBack, errorCallBack, endCallBack))
 }
 
-
 export const post = (url: string, data: any, callBack: CallbackFunction, errorCallBack?: ErrorCallback, endCallBack?: EndCallback) => {
     superagent.post(url)
         .set('Authorization', `Bearer ${getToken()}`)
@@ -136,14 +135,12 @@ export const del = (url: string, callBack: CallbackFunction, errorCallBack?: Err
         .end(handleResponse(callBack, errorCallBack, endCallBack))
 }
 
-
 export const downLoad = (url: string, callBack: CallbackFunction, errorCallBack?: ErrorCallback, endCallBack?: EndCallback) => {
     superagent.get(url)
         .set('Authorization', `Bearer ${getToken()}`)
         .responseType('blob')
         .end(handleResponse(callBack, errorCallBack, endCallBack))
 }
-
 
 export const triggerDownLoad = (data: Blob, fileName = 'export.csv') => {
     const a = document.createElement('a');

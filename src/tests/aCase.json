@@ -1,0 +1,76 @@
+{
+  "workflowType": "RTGS",
+  "referenceNumber": 293152,
+  "externalReference": "a3c07280-637c-4bc7-b5b6-defe10213633",
+  "applicationDate": "2021-04-01T11:57:04.249Z",
+  "caseData": {
+    "transferDetails": {
+      "branch": "Tania Well",
+      "type": "RTGS",
+      "rate": 3500,
+      "currency": "USD",
+      "amount": 600,
+      "ugxAmount": 2200000,
+      "amountInWords": "",
+      "beneficiaryName": "Bradley Weber",
+      "beneficiaryAddress": {
+        "country": "San Marino",
+        "town": "Avon",
+        "plot": "34227 Dayne Causeway",
+        "building": "6120 Bessie Coves"
+      }
+    },
+    "bankDetails": {
+      "beneficiaryBank": {
+        "bankName": "stanbic bank",
+        "accountNumber": "69568634",
+        "swiftCode": "sbicugkx",
+        "sortCode": "12-34-56",
+        "aba": "0260-0959-3",
+        "fedWire": "152307768324",
+        "ifsc": "icic0001359",
+        "iban": "AL81009427513109O4S6529Y74X3"
+      },
+      "correspondentBankDetails": {
+        "bankName": "Some bank",
+        "accountNumber": "66314578",
+        "swiftCode": "sbicugkx",
+        "sortCode": "12-34-56",
+        "aba": "0260-0959-3",
+        "fedWire": "152307768324",
+        "ifsc": "icic0001359",
+        "iban": "IS657003985002500404528004",
+        "transferPurpose": "college tuition",
+        "charges": {
+          "applicant": true,
+          "beneficiary": false,
+          "amount": 5
+        }
+      }
+    },
+    "senderDetails": {
+      "name": "Garfield Weimann",
+      "email": "GarfieldWeimann.Tromp46@gmail.com",
+      "accountNumber": "34069003",
+      "telephone": "149-597-0372 x1181",
+      "natureOfBusiness": "Unbranded Frozen Fish",
+      "chequeNumber": 501500,
+      "physicalAddress": {
+        "plotNumber": "Apt. 000",
+        "street": "Ruecker Highway",
+        "town": "Bedfordshire",
+        "district": "East Brisafurt",
+        "signatureOfMandate": ""
+      }
+    },
+    "metaData": {},
+    "user": {
+      "id": "1f824a84-46b6-4e7f-b601-5d041118439d",
+      "name": "Daniel Comboni",
+      "phone": "256781750721",
+      "agentCode": "2345566",
+      "branchName": "02",
+      "region": ""
+    }
+  }
+}
