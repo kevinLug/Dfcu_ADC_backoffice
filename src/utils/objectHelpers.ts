@@ -21,6 +21,8 @@ export enum CriteriaTest {
     StringContains = "StringContains",
     GreaterThanOrEqualTo = "GreaterThanOrEqualTo",
     LessThanOrEqualTo = "LessThanOrEqualTo",
+
+    IsAnObject = "IsAnObject",
 }
 
 export default class DeterminantFlag {
@@ -97,6 +99,9 @@ export const testData = (criterion: CriteriaTest, data: any, expected?: any, dev
             return setTestResult(criterion, !isNullOrEmpty(dataStr) && Number(data) <= Number(expected), data, expected, devMsgFailure, userMsgFailure, devMsgSuccess, userMessageSuccess);
         case CriteriaTest.GreaterThanOrEqualTo:
             return setTestResult(criterion, !isNullOrEmpty(dataStr) && Number(data) >= Number(expected), data, expected, devMsgFailure, userMsgFailure, devMsgSuccess, userMessageSuccess);
+
+        case CriteriaTest.IsAnObject:
+            return setTestResult(criterion, !isObject(data), data, expected, devMsgFailure, userMsgFailure, devMsgSuccess, userMessageSuccess);
     }
 };
 
