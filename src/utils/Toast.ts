@@ -13,20 +13,20 @@ const defPosition = positions.TOP_CENTER
 
 export default class Toast {
     public static success(message: string, position = defPosition) {
-        toast.success(message, {
+        toast.success( ` \u2714️`+message, {
             position
         });
     }
 
     public static error(message: string, toastId?: number, position = defPosition) {
-        toast.error(message, {
+        toast.error(`❌ `+message, {
             toastId,
             position
         });
     }
 
     public static warn(message: string, position = defPosition) {
-        toast.warn(message, {
+        toast.warn(`⚠️ `+message, {
             position
         });
     }
