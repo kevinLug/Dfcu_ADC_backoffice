@@ -28,10 +28,10 @@ const styles = {
         maxHeight: '100%',
     },
 }
-
-function Transition(props) {
-    return <Slide direction="up" {...props} />
-}
+//
+// function Transition(props) {
+//     return <Slide direction="up" {...props} />
+// }
 
 class ImgDialog extends React.Component {
     state = {
@@ -53,7 +53,7 @@ class ImgDialog extends React.Component {
                 fullScreen
                 open={!!this.props.img}
                 onClose={this.props.onClose}
-                TransitionComponent={Transition}
+                // TransitionComponent={Transition}
             >
                 <AppBar className={classes.appBar}>
                     <Toolbar>
