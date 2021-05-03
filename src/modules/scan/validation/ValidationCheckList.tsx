@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import Grid from "@material-ui/core/Grid";
-import {initialChecks, IPropsChecks} from "./Check";
+import {IPropsChecks} from "./Check";
 import CheckBoxTemplate from "./Check";
 import {IList, List} from "../../../utils/collections/list";
 import Box from "@material-ui/core/Box";
@@ -10,13 +10,16 @@ import {IWorkflowResponseMessageState} from "../../../data/redux/workflow-respon
 import {useDispatch, useSelector} from "react-redux";
 
 import {ICheckKeyValueState} from "../../../data/redux/checks/reducer";
-import {Dispatch} from "redux";
+
 import {IManualDecision} from "../../workflows/types";
-import * as superagent from "superagent";
+
 import {remoteRoutes} from "../../../data/constants";
-import Toast from "../../../utils/Toast";
-import {login} from "../../../api-stress/login";
+
 import {post} from "../../../utils/ajax";
+import {getChecksToPopulate} from "../populateLabelAndValue";
+import {fetchWorkflowAsync, startWorkflowFetch} from "../../../data/redux/workflows/reducer";
+import {Dispatch} from "redux";
+import {startNewTransferRequest} from "../../../data/redux/coreActions";
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -39,22 +42,18 @@ const ValidationCheckList = () => {
 
     const classes = useStyles()
     const {workflowResponseMessage}: IWorkflowResponseMessageState = useSelector((state: any) => state.workflowResponse)
-    const [data] = useState()
+    // const [data] = useState()
     const {check}: ICheckKeyValueState = useSelector((state: any) => state.checks)
 
+    const dispatch: Dispatch<any> = useDispatch();
+
     useEffect(() => {
-        console.log(check.checks)
-    }, [check, data])
+        // console.log(check.checks)
+    }, [check])
 
     const handleCSOApproval = async () => {
 
-        // todo... consider sprouting this elsewhere for re-use
-        let data = {}
-        check.checks.keyValueMapToArray().forEach(v => {
-            console.log(v)
-            // @ts-ignore
-            data[v.key] = v.value
-        })
+        let data = getChecksToPopulate(check.checks);
 
         const manualCSOApproval: IManualDecision = {
             caseId: workflowResponseMessage.caseId,
@@ -66,15 +65,13 @@ const ValidationCheckList = () => {
             override: false
         }
 
-        post(remoteRoutes.workflowsManual,manualCSOApproval,(resp:any) => {
-            console.log(resp) // todo ... consider providing a message for but success and failure
-            },undefined,
+        post(remoteRoutes.workflowsManual, manualCSOApproval, (resp: any) => {
+                console.log(resp) // todo ... consider providing a message for but success and failure
+            }, undefined,
             () => {
-
+                window.location.reload()
             }
         )
-
-
     }
 
     const addCheck = (label: string, name: string, value: boolean = false) => {
@@ -89,14 +86,14 @@ const ValidationCheckList = () => {
     const checkList = (): IList<IPropsChecks> => {
 
         const theCheckList = new List<IPropsChecks>();
-        theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate", true))
-        theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex", true))
+        theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate"))
+        theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex"))
         theCheckList.add(addCheck("Sender's account number is correct", "isSenderAccountNumberCorrect"))
         theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds"))
         theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete"))
         theCheckList.add(addCheck("Recipient's physical address is complete (TTs)", "isRecipientPhysicalAddressComplete"))
 
-        console.log(theCheckList)
+        // console.log(theCheckList)
 
         return theCheckList;
     }
