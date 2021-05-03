@@ -1,88 +1,262 @@
 import {ICase} from "./types";
-import DeterminantFlag, {CriteriaTest, testData, testDataCallBack} from "../../utils/objectHelpers";
+import ObjectHelpersFluent from "../../utils/objectHelpersFluent";
+import SuccessCriteria from "../../utils/successCriteria";
+import {List} from "../../utils/collections/list";
 
 const validateRTGS = async (data: ICase): Promise<boolean> => {
 
     return new Promise((resolve) => {
 
-        const workflowTypeExists = testData(CriteriaTest.Presence, data.workflowType, true, "transfer type not specified","Transfer type must be specified");
-        testDataCallBack(workflowTypeExists,  () => {}, () => {}, true);
+        const tests = new List<ObjectHelpersFluent>()
 
-        const workflowType = testData(CriteriaTest.EqualTo, data.workflowType, "RTGS");
-        testDataCallBack(workflowType,  () => {}, () => {}, true, )
+        const dataExists = new ObjectHelpersFluent()
+            .testTitle("Entire data object presence")
+            .selector(data, "$")
+            .isPresent()
+            .logValue()
+            .logTestResult()
+            .logTestMessage()
+            .logNewLineSpace()
+        tests.add(dataExists);
 
-        //  transfer details
-        const branch = testData(CriteriaTest.Presence, data.caseData.transferDetails.branch, true,"bank branch name not specified", "The bank branch name must be specified");
-        testDataCallBack(branch, () => {}, () => {}, true)
+        const workflowTypePresent = new ObjectHelpersFluent()
+            .testTitle("workflowType presence")
+            .selector(data, "$.workflowType")
+            .isPresent()
+            .logValue()
+            .logTestResult()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(workflowTypePresent);
 
-        const currency = testData(CriteriaTest.Presence, data.caseData.transferDetails.currency, true,"currency not specified", "The transfer currency must be specified");
-        testDataCallBack(currency, () => {}, () => {}, true)
+        const isRtgs = new ObjectHelpersFluent()
+            .testTitle("is RTGS the type?")
+            .selector(data, "$.workflowType")
+            .isEqualTo("RTGS")
+            .logValue()
+            .logTestResult()
+            .logTestMessage()
+            .logNewLineSpace()
+        tests.add(isRtgs);
 
-        const rate = testData(CriteriaTest.GreaterThanOrEqualTo, data.caseData.transferDetails.rate, 0, "exchange rate is less than zero", "Exchange rate can not be less than zero");
-        testDataCallBack(rate, () => {}, () => {},true)
+        const isBranchPresent = new ObjectHelpersFluent()
+            .testTitle("is the branch present?")
+            .selector(data, "$.caseData.transferDetails.branch")
+            .isPresent()
+            .logValue()
+            .logTestResult()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(isBranchPresent);
 
-        const amount = testData(CriteriaTest.GreaterThan, data.caseData.transferDetails.amount,0, "amount not specified", "Transfer amount must be greater than zero(0)");
-        testDataCallBack(amount,  () => {}, () => {}, true)
+        const isCurrencyPresent = new ObjectHelpersFluent()
+            .testTitle("is the currency present")
+            .selector(data, "$.caseData.transferDetails.currency")
+            .isPresent()
+            .logValue()
+            .logTestResult()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(isCurrencyPresent);
 
-        const ugxAmount = testData(CriteriaTest.GreaterThan, data.caseData.transferDetails.ugxAmount,0,"amount in UGX not specified","Transfer amount must be specified");
-        testDataCallBack(ugxAmount,  () => {}, () => {}, true)
+        const isRatePresent = new ObjectHelpersFluent()
+            .testTitle("is rate present")
+            .selector(data, "$.caseData.transferDetails.rate")
+            .isGreaterThanOrEqualTo(0)
+            .logTestResult()
+            .logValue()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(isRatePresent)
 
-        // noinspection DuplicatedCode
-        const beneficiaryName = testData(CriteriaTest.Presence, data.caseData.transferDetails.beneficiaryName,true,"beneficiary name not specified","Beneficiary (recipient) name mus be specified");
-        testDataCallBack(beneficiaryName, () => {}, () => {}, true)
+        const isAmountPresent = new ObjectHelpersFluent()
+            .testTitle("Is amount present ( > 0 )")
+            .selector(data, "$.caseData.transferDetails.amount")
+            .isGreaterThan(0)
+            .logTestResult()
+            .logValue()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(isAmountPresent);
 
-        const beneficiaryCountry = testData(CriteriaTest.Presence, data.caseData.transferDetails.beneficiaryAddress.country, true,"beneficiary country not specified","Beneficiary (recipient) name must be specified")
-        testDataCallBack(beneficiaryCountry, () => {}, () => {})
+        const isUgxAmountPresent = new ObjectHelpersFluent()
+            .testTitle("is UGX amount present ( > 0 )")
+            .selector(data, "$.caseData.transferDetails.ugxAmount")
+            .isGreaterThan(0)
+            .logTestResult()
+            .logTestMessage()
+            .logValue()
+            .logNewLineSpace();
+        tests.add(isUgxAmountPresent);
 
-        const physicalAddress = testData(CriteriaTest.Presence, data.caseData.transferDetails.beneficiaryAddress.physicalAddress, true, "beneficiary physical address not specified","Beneficiary (recipient) physical address must be specified")
-        testDataCallBack(physicalAddress,  () => {}, () => {}, true)
+        const isBeneficiaryNamePresent = new ObjectHelpersFluent()
+            .testTitle("is recipient name present?")
+            .selector(data, "$.caseData.transferDetails.beneficiaryName")
+            .isPresent()
+            .logTestResult()
+            .logValue()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(isBeneficiaryNamePresent);
 
-        // sender details
-        const senderName = testData(CriteriaTest.Presence, data.caseData.senderDetails.name,true,"sender name not specified", "Sender name must be specified")
-        testDataCallBack(senderName,  () => {}, () => {}, true)
+        const isRecipientCountryPresent = new ObjectHelpersFluent()
+            .testTitle("is recipient country present?")
+            .selector(data, "$.caseData.transferDetails.beneficiaryAddress.country")
+            .isPresent()
+            .logTestResult().logValue().logTestMessage().logNewLineSpace();
+        tests.add(isRecipientCountryPresent);
 
-        const senderEmail = testData(CriteriaTest.Presence, data.caseData.senderDetails.email, true, "sender email email not specified","Sender name must be specified")
-        testDataCallBack(senderEmail, () => {}, () => {}, true)
+        const isRecipientPhysicalAddressPresent = new ObjectHelpersFluent()
+            .testTitle("is recipient's physical address present?")
+            .selector(data, "$.caseData.transferDetails.beneficiaryAddress.physicalAddress")
+            .isPresent()
+            .logTestResult()
+            .logValue()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(isRecipientPhysicalAddressPresent);
 
-        const senderAccountNumber = testData(CriteriaTest.Presence, data.caseData.senderDetails.accountNumber,true,"sender account number not specified","Sender account number must be specified")
-        testDataCallBack(senderAccountNumber, () => {}, () => {}, true)
+        const isSenderNamePresent = new ObjectHelpersFluent()
+            .testTitle("is sender's name present?")
+            .selector(data, "$.caseData.senderDetails.name")
+            .isPresent()
+            .logTestResult()
+            .logValue()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(isSenderNamePresent);
 
-        const senderTelephone = testData(CriteriaTest.Presence, data.caseData.senderDetails.telephone, true, "sender telephone number not be specified","Sender telephone number must be specified")
-        testDataCallBack(senderTelephone, () => {}, () => {}, true)
+        const isSenderEmailPresent = new ObjectHelpersFluent()
+            .testTitle("is sender's email present?")
+            .selector(data, "$.caseData.senderDetails.email")
+            .isPresent()
+            .logTestResult()
+            .logValue()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(isSenderEmailPresent);
 
-        const senderTown = testData(CriteriaTest.Presence, data.caseData.senderDetails.physicalAddress.town,true)
-        testDataCallBack(senderTown,  () => {}, () => {})
+        const isSenderAccountNumberPresent = new ObjectHelpersFluent()
+            .testTitle("is sender's account number present?")
+            .selector(data, "$.caseData.senderDetails.accountNumber")
+            .isPresent()
+            .logTestResult()
+            .logValue()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(isSenderAccountNumberPresent);
 
-        const senderDistrict = testData(CriteriaTest.Presence, data.caseData.senderDetails.physicalAddress.district, true, "sender district not specified", "Sender district must be specified")
-        testDataCallBack(senderDistrict,  () => {}, () => {})
+        const isSenderTelephonePresent = new ObjectHelpersFluent()
+            .testTitle("is sender's telephone present?")
+            .selector(data, "$.caseData.senderDetails.telephone")
+            .isPresent()
+            .logTestResult()
+            .logValue()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(isSenderTelephonePresent);
 
-        // bank details... beneficiary bank
-        const beneficiaryBankName = testData(CriteriaTest.Presence, data.caseData.bankDetails.beneficiaryBank.bankName, true, "beneficiary bank name not specified","Beneficiary (recipient) name must be specified")
-        testDataCallBack(beneficiaryBankName,  () => {}, () => {})
+        const isSenderTownPresent = new ObjectHelpersFluent()
+            .testTitle("is sender's town present?")
+            .selector(data, "$.caseData.senderDetails.physicalAddress.town")
+            .isPresent()
+            .logTestResult()
+            .logValue()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(isSenderTownPresent)
 
-        const beneficiaryAccountNumber = testData(CriteriaTest.Presence, data.caseData.bankDetails.beneficiaryBank.accountNumber, true,"beneficiary account number not specified","Beneficiary (recipient) account number must be specified")
-        testDataCallBack(beneficiaryAccountNumber, () => {}, () => {}, true)
+        const isSenderDistrictPresent = new ObjectHelpersFluent()
+            .testTitle("is sender's district present?")
+            .selector(data, "$.caseData.senderDetails.physicalAddress.district")
+            .isPresent()
+            .logTestResult()
+            .logValue()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(isSenderDistrictPresent);
 
-        const beneficiarySwiftCode = testData(CriteriaTest.Presence, data.caseData.bankDetails.beneficiaryBank.swiftCode,true)
-        testDataCallBack(beneficiarySwiftCode, () => {}, () => {})
+        const isRecipientBankNamePresent = new ObjectHelpersFluent()
+            .testTitle("is recipient bank name present?")
+            .selector(data, "$.caseData.bankDetails.beneficiaryBank.bankName")
+            .isPresent()
+            .logTestResult()
+            .logValue()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(isRecipientBankNamePresent);
 
-        const beneficiarySortCode = testData(CriteriaTest.Presence, data.caseData.bankDetails.beneficiaryBank.sortCode,true)
-        testDataCallBack(beneficiarySortCode, () => {}, () => {})
+        const isRecipientBankAccountPresent = new ObjectHelpersFluent()
+            .testTitle("is recipient bank account present?")
+            .selector(data, "$.caseData.bankDetails.beneficiaryBank.accountNumber")
+            .isPresent()
+            .logTestResult()
+            .logValue()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(isRecipientBankAccountPresent);
 
-        const beneficiaryAba = testData(CriteriaTest.Presence, data.caseData.bankDetails.beneficiaryBank.aba,true)
-        testDataCallBack(beneficiaryAba, () => {}, () => {})
+        const isRecipientBankSwiftCodePresent = new ObjectHelpersFluent()
+            .testTitle("is recipient bank swift code present?")
+            .selector(data, "$.caseData.bankDetails.beneficiaryBank.swiftCode")
+            .isPresent()
+            .logTestResult()
+            .logValue()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(isRecipientBankSwiftCodePresent);
 
-        const beneficiaryFedWired = testData(CriteriaTest.Presence, data.caseData.bankDetails.beneficiaryBank.fedWire)
-        testDataCallBack(beneficiaryFedWired, () => {}, () => {})
+        const isRecipientBankSortCodePresent = new ObjectHelpersFluent()
+            .testTitle("is recipient bank sort code present?")
+            .selector(data, "$.caseData.bankDetails.beneficiaryBank.sortCode")
+            .isPresent()
+            .logTestResult()
+            .logValue()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(isRecipientBankSortCodePresent);
 
-        const beneficiaryIBAN = testData(CriteriaTest.Presence, data.caseData.bankDetails.beneficiaryBank.iban)
-        testDataCallBack(beneficiaryIBAN,  () => {}, () => {})
+        const isRecipientBankAbaPresent = new ObjectHelpersFluent()
+            .testTitle("is recipient bank ABA present?")
+            .selector(data, "$.caseData.bankDetails.beneficiaryBank.aba")
+            .isPresent()
+            .logTestResult()
+            .logValue()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(isRecipientBankAbaPresent);
 
-        // bank details... correspondent bank
-        const correspondentTransferPurpose = testData(CriteriaTest.Presence, data.caseData.bankDetails.correspondingBankDetails.transferPurpose)
-        testDataCallBack(correspondentTransferPurpose, () => {}, () => {})
+        const isRecipientBankFedWirePresent = new ObjectHelpersFluent()
+            .testTitle("is recipient bank fed wire present?")
+            .selector(data, "$.caseData.bankDetails.beneficiaryBank.fedWire")
+            .isPresent()
+            .logTestResult()
+            .logValue()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(isRecipientBankFedWirePresent);
 
-        resolve(DeterminantFlag.getFlag());
+        const isRecipientBankIbanPresent = new ObjectHelpersFluent()
+            .testTitle("is recipient bank iban present?")
+            .selector(data, "$.caseData.bankDetails.beneficiaryBank.iban")
+            .isPresent()
+            .logTestResult()
+            .logValue()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(isRecipientBankIbanPresent);
+
+        const isTransferPurposePresent = new ObjectHelpersFluent()
+            .testTitle("is transfer purpose present?")
+            .selector(data, "$.caseData.bankDetails.correspondingBankDetails.transferPurpose")
+            .isPresent()
+            .logTestResult()
+            .logValue()
+            .logTestMessage()
+            .logNewLineSpace();
+        tests.add(isTransferPurposePresent);
+
+        resolve(SuccessCriteria.testRuns(tests));
     });
 
 }
