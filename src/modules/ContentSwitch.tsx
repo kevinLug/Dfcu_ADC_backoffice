@@ -30,9 +30,9 @@ const ContentSwitch = () => {
     const user = useSelector((state: IState) => state.core.user)
     const dispatch = useDispatch()
     useEffect(() => {
-        search(remoteRoutes.gatewayMetadata, {}, resp => {
-            dispatch(loadMetadata(resp))
-        })
+        // search(remoteRoutes.gatewayMetadata, {}, resp => {
+        //     dispatch(loadMetadata(resp))
+        // })
     }, [dispatch])
     if (!isSystemUser(user))
         return <Switch>
