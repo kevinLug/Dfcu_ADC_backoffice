@@ -2,18 +2,21 @@ export const AUTH_TOKEN_KEY = '__demo__dfcu__token'
 export const AUTH_USER_KEY = '__demo__dfcu__user'
 
 export const systemRoles = {
-    COMPLIANCE: 'COMPLIANCE',
+
     BACKOFFICE: 'BACKOFFICE',
-    SUPERVISOR: 'SUPERVISOR',
+
     ADMIN: 'ADMIN',
+    BM:'BM',
+    CMO:'CMO',
+    CSO:'CSO'
+
 }
-//COMPLIANCE,BACKOFFICE,SUPERVISOR or ADMIN
+//CSO,BM,CMO or ADMIN
 export const isSystemUser = (user: any): boolean => {
     const roles = [
-        systemRoles.COMPLIANCE,
         systemRoles.BACKOFFICE,
-        systemRoles.SUPERVISOR,
         systemRoles.ADMIN,
+        systemRoles.CSO
     ]
     return hasAnyRole(user, roles)
 }
@@ -56,7 +59,8 @@ export const localRoutes = {
 
 const servers: any = {
     dev: {
-        Auth: 'https://dfcu-auth-api-test.test001.laboremus.no',
+        // Auth: 'https://dfcu-auth-api-test.test001.laboremus.no',
+        Auth: 'https://localhost:44313',
         Crm: 'https://dfcu-crm-service-test.test001.laboremus.no',
         Case: 'http://localhost:6001',
         Gateway: 'https://dfcu-gateway-service-test.test001.laboremus.no',
@@ -114,8 +118,9 @@ const servers: any = {
     }
 }
 
+
 const evVar = process.env.REACT_APP_ENV || 'dev'
-const environment = evVar.trim()
+export const environment = evVar.trim()
 console.log(`############# Env : ${environment} ###############`)
 const env = servers[environment]
 const authURL = env.Auth
