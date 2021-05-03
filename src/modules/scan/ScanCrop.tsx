@@ -30,6 +30,8 @@ import TransferDetails from "./validation/TransferDetails";
 import ValidationCheckList from "./validation/ValidationCheckList";
 import {isNullOrEmpty} from "../../utils/objectHelpers";
 import {actionIWorkflowResponseMessage} from "../../data/redux/workflow-response/reducer";
+import {GifRounded} from "@material-ui/icons";
+import ObjectHelpersFluent from "../../utils/objectHelpersFluent";
 
 const ORIENTATION_TO_ANGLE: any = {
     '3': 180,
@@ -51,6 +53,12 @@ const useStyles = makeStyles((theme: Theme) =>
             border: '3px dashed gray',
             borderRadius: 5,
             marginLeft: 25
+        },
+        dragAndDropAreaAfterScan: {
+            border: '3px solid gray',
+            borderRadius: 3,
+            marginLeft: 25,
+            width:'100%'
         },
         scannerAndDetailsDiver: {
             display: 'flex'
@@ -74,7 +82,9 @@ const useStyles = makeStyles((theme: Theme) =>
             cursor: 'pointer'
         },
         imageAfterScan: {
-            width: '100%'
+            width: '100%',
+            borderLeft: '35px solid #303f4f',
+            borderRight: '35px solid #303f4f'
         },
         cropContainer: {
             position: 'relative',
@@ -184,6 +194,13 @@ const ScanCrop = () => {
             const croppedImage: any = await getCroppedImg(imageSrc, croppedAreaPixels, 0)
             console.log('cropped:', croppedImage);
             const decodedRawResult = await codeReader.decodeFromImage(undefined, croppedImage.toString())
+
+            // check if decoding succeeded
+            if (new ObjectHelpersFluent().directValue(decodedRawResult.getText()).isAbsent().getFlag()){
+                Toast.warn("Auto scan failed. ")
+                Toast.warn("Manually zoom the qr code image. ")
+            }
+
             const pairKeyValueFromDecodedRawResult = decodedRawResult.getText().split(",");
 
             // cleanup raw data
@@ -210,14 +227,16 @@ const ScanCrop = () => {
                 validateData(aCase).then((validationResult) => {
 
                     if (validationResult) {
+                        console.log(`validated`)
                         postData(access_token, aCase, (resp: any) => {
 
                             dispatch(actionIWorkflowResponseMessage(resp))
 
                             console.log(`Submitted ${aCase.workflowType}`, resp)
                             setRequestSent(true)
-
+                            Toast.success("scan complete")
                         })
+
                     }
 
                 }).catch((err) => {
@@ -285,10 +304,11 @@ const ScanCrop = () => {
 
             </Grid>
 
-            <Grid item sm={7} container alignContent={"center"} justify="center" className={classes.dragAndDropArea}>
+            <Grid item sm={7} container alignContent={"center"} justify="center"
+                  className={isNullOrEmpty(result) ? classes.dragAndDropArea : classes.dragAndDropAreaAfterScan}>
                 {imageSrc ? (
 
-                    isNullOrEmpty(result) ?
+                    new ObjectHelpersFluent().directValue(result).isAbsent().getSummary().testResult ?
 
                         // show cropper if not yet scanned
                         <React.Fragment>
@@ -339,7 +359,10 @@ const ScanCrop = () => {
                         :
 
                         // show image upon scanning
-                        <img src={imageSrc} className={classes.imageAfterScan} alt="scanned-result" />
+
+                        <Grid container item xs={12}>
+                            <img src={imageSrc} className={classes.imageAfterScan} alt="scanned-result"/>
+                        </Grid>
 
 
                 ) : (
