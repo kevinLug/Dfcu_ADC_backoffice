@@ -1,41 +1,23 @@
 import React, {useState} from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Divider from '@material-ui/core/Divider';
-import Drawer from '@material-ui/core/Drawer';
-import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import AssignmentIcon from '@material-ui/icons/Assignment';
-import AppsIcon from '@material-ui/icons/Apps';
-import PeopleIcon from '@material-ui/icons/People';
-import CropFree from '@material-ui/icons/CropFree'
-import SettingsIcon from '@material-ui/icons/Settings';
+
 import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
-import {createStyles, makeStyles, Theme, useTheme} from '@material-ui/core/styles';
-import {withRouter} from 'react-router'
+import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
+import {withRouter} from 'react-router';
 import {hasAnyRole, localRoutes, systemRoles} from "../data/constants";
 import grey from '@material-ui/core/colors/grey';
 import {BarView} from "./Profile";
 import logo from "../assets/download.png";
-import {Box, Button, Typography} from "@material-ui/core";
+import {Button} from "@material-ui/core";
 import {themeBackground} from "../theme/custom-colors";
 import Paper from "@material-ui/core/Paper";
-import Collapse from '@material-ui/core/Collapse';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
 import {useDispatch, useSelector} from "react-redux";
-import {IState} from "../data/types";
-import ModalDialog from "../utils/ModalTemplate";
-import ScanCrop from "../modules/scan/ScanCrop";
 import {startNewTransferRequest} from "../data/redux/coreActions";
 import {Dispatch} from "redux";
-import {IWorkflowState} from "../data/redux/workflows/reducer";
-import {ICoreState} from "../data/redux/coreReducer";
+import {IState} from "../data/types";
 
 const drawerWidth = 240;
 
@@ -135,27 +117,13 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-
-interface ItemProps {
-    text: string,
-    route: string,
-    Icon: any
-}
-
-interface CollapsibleItemProps {
-    text: string,
-    Icon: any,
-    items: ItemProps[]
-}
-
 function Layout(props: any) {
-    const classes = useStyles();
-    const theme = useTheme();
-    const user = useSelector((state: IState) => state.core.user)
-    // const [startNewTransferRequest, setStartNewTransferRequest] = useState<boolean>(false)
 
+    const classes = useStyles();
+    //const theme = useTheme();
+    const user = useSelector((state: IState) => state.core.user)
     const [mobileOpen, setMobileOpen] = React.useState(false);
-    const [showScanner,setShowScanner] = useState(false)
+    const [showScanner, setShowScanner] = useState(false)
 
     const dispatch: Dispatch<any> = useDispatch();
 
@@ -163,11 +131,7 @@ function Layout(props: any) {
         setMobileOpen(!mobileOpen);
     }
 
-    function addNewRequest() {
-
-    }
-
-    function startNewTransfer(){
+    function startNewTransfer() {
         setShowScanner(true)
         dispatch(startNewTransferRequest(showScanner))
     }
@@ -176,7 +140,9 @@ function Layout(props: any) {
         <div className={classes.root}>
             <CssBaseline/>
             <AppBar position="fixed" className={classes.appBar} color='default'>
+
                 <Toolbar>
+
                     <IconButton
                         aria-label="open drawer"
                         edge="start"
@@ -185,24 +151,22 @@ function Layout(props: any) {
                     >
                         <MenuIcon/>
                     </IconButton>
+
                     <div className={classes.logoHolder}>
                         <img src={logo} alt="logo" className={classes.logo}/>
                     </div>
 
-                    <div className={classes.requestButton}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={startNewTransfer}
-                        >
-                            New Transfer Request
-                        </Button>
-                    </div>
-
-                    {/*<Box className={classes.transferInitiator}>*/}
-                    {/*    <Button variant="contained" color="primary" onClick={pickImage}>NEW TRANSFER REQUEST</Button>*/}
-                    {/*</Box>*/}
-
+                    {hasAnyRole(user, [systemRoles.CSO]) ?
+                        <div className={classes.requestButton}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={startNewTransfer}
+                            >
+                                New Transfer Request
+                            </Button>
+                        </div>
+                        : ""}
 
                     <BarView textClass={classes.menuSelected}/>
                 </Toolbar>
