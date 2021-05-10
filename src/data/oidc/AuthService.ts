@@ -9,7 +9,7 @@ class AuthService {
     constructor() {
         const clientRoot = this.clientRoot
         const settings = {
-            client_id: 'dfcu:backoffice',
+            client_id: 'dfcu:backoffice:autodatacapture',
             redirect_uri: `${clientRoot}/signin-callback.html`,
             post_logout_redirect_uri: clientRoot,
             response_type: 'token id_token',
