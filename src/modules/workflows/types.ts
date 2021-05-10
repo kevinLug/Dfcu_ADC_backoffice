@@ -104,6 +104,7 @@ export enum WorkflowSubStatus {
 
   AwaitingCSOApproval = 'AwaitingCSOApproval',
   AwaitingCheckerApproval = 'AwaitingCheckerApproval',
+  AwaitingBMApproval = 'AwaitingBMApproval',
   AwaitingClearingDeptApproval = 'AwaitingClearingDeptApproval',
 
   FailedCSOApproval = 'FailedCSOApproval',
