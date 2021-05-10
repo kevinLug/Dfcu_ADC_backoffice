@@ -7,18 +7,42 @@ import {
     ObjectUtils
 } from "../utils/objectHelpers";
 import {ICase, ICaseData} from "../modules/transfers/types";
+import ObjectHelpersFluent from "../utils/objectHelpersFluent";
 
 describe("object method tests", () => {
 
+    it('is present', () => {
+        const inst = new ObjectHelpersFluent();
+        inst.selector(aCase,"$.workflowType")
+            .isPresent();
+
+        console.log(inst.getCheckRuns())
+
+        expect(inst.getSummary().testResult).toEqual(true);
+        // expect(isObject({})).toEqual(true);
+        // expect(isObject([])).toEqual(true);
+    });
+
     it('is an object', () => {
-        const isAnObject = isObject(aCase);
-        expect(isAnObject).toEqual(true);
+        const inst = new ObjectHelpersFluent();
+        inst.selector(aCase,"$.name")
+            .isAbsent();
+
+        console.log(inst.getCheckRuns())
+
+        expect(inst.isNumber().getSummary().testResult).toEqual(false);
+        expect(inst.isObject({})).toEqual(true);
+        expect(inst.isObject([])).toEqual(true);
+
     });
 
     it('is NOT an object', () => {
         const name = "Daniel Comboni";
         const isAnObject = isObject(name);
         expect(isAnObject).toEqual(false);
+        expect(isObject(null)).toEqual(false);
+        expect(isObject(undefined)).toEqual(false);
+        expect(isObject(undefined)).toEqual(false);
     });
 
     it('is null or empty', () => {
