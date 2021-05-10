@@ -11,7 +11,7 @@ import {
 import {randomInt} from "../../utils/numberHelpers";
 import uuid from "uuid";
 
-export const formatRawTransferFormValuesToJson = async (scanResult: ScanResultRaw) => {
+export const formatRawTransferFormValuesToJson = async (scanResult: ScanResultRaw, docBase64: string) => {
 
     return new Promise<ICase>((resolve, reject) => {
 
@@ -29,18 +29,18 @@ export const formatRawTransferFormValuesToJson = async (scanResult: ScanResultRa
 
         // console.log(transferDetails.branch )
 
-
         aCase.applicationDate = new Date().toDateString(); // transaction date
         aCase.workflowType = scanResult.F3 || scanResult.F4 || scanResult.F5 || scanResult.F6 || scanResult.F7 || scanResult.F8 || scanResult.F9; // transfer type
-        aCase.referenceNumber =  randomInt(100000, 500000)
+        aCase.referenceNumber = randomInt(100000, 500000)
         aCase.externalReference = uuid()
 
-        // caseData.date = scanResult.F2; // date specified by customer/applicant
 
-        /*
-        * caseData.transferDetails
-        * */
-        transferDetails.branch = scanResult.F1; // initiating branch name
+            // caseData.date = scanResult.F2; // date specified by customer/applicant
+
+            /*
+            * caseData.transferDetails
+            * */
+            transferDetails.branch = scanResult.F1; // initiating branch name
         transferDetails.currency = scanResult.X1; // currency
         transferDetails.amount = Number(scanResult.X2); // amount
         transferDetails.rate = Number(scanResult.X3); // exchange rate
@@ -115,6 +115,7 @@ export const formatRawTransferFormValuesToJson = async (scanResult: ScanResultRa
         //         region: "GKLA",
         // }
 
+        caseData.doc = new Buffer(docBase64.split(",")[1],"base64")
         aCase.caseData = caseData
 
         resolve(aCase)
