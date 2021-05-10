@@ -40,29 +40,6 @@ const fields = (data: ITransferDetails): any[] => {
     ]
 }
 
-// const ValidationView = (data: ITransferDetails) => {
-//     return (
-//         <Grid container spacing={0}>
-//             {data.map(it => (
-//                 <Grid item xs={12} key={it.label}>
-//                     <Box display="flex" pb={0}>
-//                         {
-//                             bold?
-//                                 <Box flexGrow={1}>
-//                                     <Typography variant='body1' noWrap>{it.value}</Typography>
-//                                     <Typography variant='caption'><b>{it.label}</b></Typography>
-//                                 </Box>:
-//                                 <Box flexGrow={1}>
-//                                     <Typography variant='body1' noWrap>{it.value}</Typography>
-//                                     <Typography variant='caption'>{it.label}</Typography>
-//                                 </Box>
-//                         }
-//                     </Box>
-//                 </Grid>
-//             ))}
-//         </Grid>)
-// }
-
 const Index = (props: ITemplateProps) => {
     const {action, taskName} = props
     const [open, setOpen] = useState<boolean>(false)
@@ -84,12 +61,6 @@ const Index = (props: ITemplateProps) => {
     if (!canRun) {
         return <Pending text="Pending Execution"/>
     }
-
-    // const loop = () => {
-    //     for(let i of transferDetailsLabels()){
-    //         console.log('test the map:', i)
-    //     }
-    // }
 
     return (
         <Grid container spacing={0}>

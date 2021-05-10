@@ -61,6 +61,7 @@ export const renderSubStatus = (value: WorkflowSubStatus) => {
         case WorkflowSubStatus.AwaitingSignatureUpload:
         case WorkflowSubStatus.AwaitingCSOApproval:
         case WorkflowSubStatus.AwaitingCheckerApproval:
+        case WorkflowSubStatus.AwaitingBMApproval:
         case WorkflowSubStatus.AwaitingClearingDeptApproval:
             color = warningColor
             break

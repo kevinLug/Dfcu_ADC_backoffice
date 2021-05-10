@@ -17,7 +17,7 @@ import {useSelector} from "react-redux";
 import {IState} from "../../data/types";
 import {downLoad, triggerDownLoad} from "../../utils/ajax";
 import {IList, List} from "../../utils/collections/list";
-import CheckBoxTemplate, {IPropsChecks} from "../scan/validation/Check";
+import CheckBoxTemplate, {IPropsChecks} from "../scan/validate-verify/Check";
 
 import MenuItem from "@material-ui/core/MenuItem";
 
