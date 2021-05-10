@@ -21,17 +21,19 @@ import Toast from "../../utils/Toast";
 import Grid from "@material-ui/core/Grid";
 import ExpansionCard from "../../components/ExpansionCard";
 import Dropzone from "react-dropzone";
-import SenderDetails from "./validation/SenderDetails";
+import SenderDetails from "./validate-verify/SenderDetails";
 import {Dispatch} from "redux";
 import {useDispatch} from "react-redux";
 import {actionICaseState} from "../../data/redux/transfers/reducer";
-import BeneficiaryDetails from "./validation/BeneficiaryDetails";
-import TransferDetails from "./validation/TransferDetails";
-import ValidationCheckList from "./validation/ValidationCheckList";
+import BeneficiaryDetails from "./validate-verify/BeneficiaryDetails";
+import TransferDetails from "./validate-verify/TransferDetails";
+import ValidationCheckList, {checkListCSO} from "./validate-verify/ValidationCheckList";
 import {isNullOrEmpty} from "../../utils/objectHelpers";
-import {actionIWorkflowResponseMessage} from "../../data/redux/workflow-response/reducer";
-import {GifRounded} from "@material-ui/icons";
+
 import ObjectHelpersFluent from "../../utils/objectHelpersFluent";
+import {addCheck, IPropsChecks} from "./validate-verify/Check";
+import {IList, List} from "../../utils/collections/list";
+import {actionIWorkflowResponseMessage} from "../../data/redux/workflow-response/reducer";
 
 const ORIENTATION_TO_ANGLE: any = {
     '3': 180,
@@ -41,7 +43,7 @@ const ORIENTATION_TO_ANGLE: any = {
 
 const codeReader = new BrowserQRCodeReader()
 
-const useStyles = makeStyles((theme: Theme) =>
+export const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
             flexGrow: 1,
@@ -58,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) =>
             border: '3px solid gray',
             borderRadius: 3,
             marginLeft: 25,
-            width:'100%'
+            width: '100%'
         },
         scannerAndDetailsDiver: {
             display: 'flex'
@@ -137,6 +139,8 @@ const ScanCrop = () => {
     const classes = useStyles();
 
     const [imageSrc, setImageSrc] = useState<string>("")
+    const [iScanSuccessful, setScanSuccessful] = useState(false)
+
     const [crop, setCrop] = useState({x: -261, y: 454})
     const [rotation, setRotation] = useState(0)
     const [zoom, setZoom] = useState<any>(3)
@@ -147,7 +151,6 @@ const ScanCrop = () => {
     const [requestSent, setRequestSent] = useState<boolean>(false)
     const [aCase] = useState<ICase>(ICaseDefault)
     const dispatch: Dispatch<any> = useDispatch();
-    // const selectedCase = useSelector((state: ICaseState) => state)
 
     useEffect(() => {
     }, [aCase])
@@ -192,13 +195,16 @@ const ScanCrop = () => {
         try {
 
             const croppedImage: any = await getCroppedImg(imageSrc, croppedAreaPixels, 0)
-            console.log('cropped:', croppedImage);
+
             const decodedRawResult = await codeReader.decodeFromImage(undefined, croppedImage.toString())
 
             // check if decoding succeeded
-            if (new ObjectHelpersFluent().directValue(decodedRawResult.getText()).isAbsent().getFlag()){
+            if (!new ObjectHelpersFluent().directValue(decodedRawResult.getText()).isAbsent().getFlag()) {
                 Toast.warn("Auto scan failed. ")
                 Toast.warn("Manually zoom the qr code image. ")
+            } else {
+                Toast.success("scan successful");
+                setScanSuccessful(true)
             }
 
             const pairKeyValueFromDecodedRawResult = decodedRawResult.getText().split(",");
@@ -214,20 +220,20 @@ const ScanCrop = () => {
             })
 
             const transferDetailsRaw = await getRawTransferFormValues(rawTransferFormValues);
-            const aCase = await formatRawTransferFormValuesToJson(transferDetailsRaw)
-            dispatch(actionICaseState(aCase))
+            const aCase = await formatRawTransferFormValuesToJson(transferDetailsRaw, imageSrc);
+            dispatch(actionICaseState(aCase));
 
             aCase.workflowType = "RTGS";
             const {access_token} = await login()
 
             if (aCase.workflowType !== "") {
-                console.log(aCase.workflowType)
-                console.log({access_token}, {aCase})
+                // console.log(aCase.workflowType)
+                // console.log({access_token}, {aCase})
 
                 validateData(aCase).then((validationResult) => {
 
                     if (validationResult) {
-                        console.log(`validated`)
+                        // console.log(`validated`)
                         postData(access_token, aCase, (resp: any) => {
 
                             dispatch(actionIWorkflowResponseMessage(resp))
@@ -246,6 +252,20 @@ const ScanCrop = () => {
             }
 
             setResult(decodedRawResult.getText())
+            // console.log("split: ",imageSrc.split(",")[1])
+            // console.log('buffer', new Buffer(imageSrc.split(",")[1],"base64"));
+            // console.log('buffer2', Uint8Array.from(atob(imageSrc.split(",")[1]), c => c.charCodeAt(0)));
+
+            // const arrayBuffer = Uint8Array.from(atob(imageSrc.split(",")[1]), c => c.charCodeAt(0));
+            // console.log(`array buffer: `,arrayBuffer)
+            // const blob = new Blob([arrayBuffer])
+            // const reader = new FileReader();
+            // reader.readAsDataURL(blob);
+            // reader.onload = (event: any) => {
+            //     const base64 =   event.target.result
+            //     // console.log(`unemployment:`,base64)
+            //     setImageSrcFromBinary(base64)
+            // };
 
         } catch (e) {
             console.log(e)
@@ -269,17 +289,15 @@ const ScanCrop = () => {
         }
 
         setImageSrc(imageDataUrl)
+        console.log("dropped image:", imageDataUrl)
     }
 
     if (loading) {
         return <Loading message="processing...please wait"/>
     }
 
-    // if (requestSent) {
-    //     return <Typography variant='h4'>Successfully scanned</Typography>
-    // }
+    const theCheckList = checkListCSO() as IList<IPropsChecks>
 
-    // @ts-ignore
     return (
 
         <Grid container item xs={12} className={classes.root}>
@@ -299,7 +317,8 @@ const ScanCrop = () => {
                 </Grid>
 
                 <Grid className={classes.expansion}>
-                    <ExpansionCard title="Validation Checklist" children={<ValidationCheckList/>}/>
+                    <ExpansionCard title="Validation Checklist"
+                                   children={<ValidationCheckList theCheckList={theCheckList}/>}/>
                 </Grid>
 
             </Grid>
@@ -308,7 +327,7 @@ const ScanCrop = () => {
                   className={isNullOrEmpty(result) ? classes.dragAndDropArea : classes.dragAndDropAreaAfterScan}>
                 {imageSrc ? (
 
-                    new ObjectHelpersFluent().directValue(result).isAbsent().getSummary().testResult ?
+                    !iScanSuccessful ?
 
                         // show cropper if not yet scanned
                         <React.Fragment>
@@ -346,12 +365,10 @@ const ScanCrop = () => {
 
                             </div>
                             <ImgDialog img={croppedImage} onClose={onClose}/>
-                            {/*<label>{result}</label>*/}
-                            {/*
 
-                        upon scan successful, display image instead of scanning
+                            upon scan successful, display image instead of scanning
 
-                        */}
+                            */}
 
 
                         </React.Fragment>

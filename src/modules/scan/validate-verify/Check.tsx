@@ -7,31 +7,30 @@ import {IKeyValueMap, KeyValueMap} from "../../../utils/collections/map";
 import {Dispatch} from "redux";
 import {actionICheckKeyValue} from "../../../data/redux/checks/reducer";
 import {ICheckKeyValue} from "../../transfers/types";
-import {IList} from "../../../utils/collections/list";
 
 export interface IPropsChecks {
     value: boolean;
     label: string;
     name: string;
     usePropValue?: boolean;
+
     handleCheckChange?: () => boolean
+}
+
+export const addCheck = (label: string, name: string, value: boolean = false) => {
+
+    const theCheckObject: IPropsChecks = {
+        label,
+        name,
+        value,
+    }
+    return theCheckObject;
 }
 
 export class Checks {
 
     private static checksKeyValue: IKeyValueMap<string, boolean> = new KeyValueMap<string, boolean>()
-
-    public static setChecksKeyValueWithInitialCollection(checksKeyValue: IKeyValueMap<string, boolean>): void {
-        let newChecks = new KeyValueMap<string, boolean>()
-        newChecks.putAll(checksKeyValue);
-        Checks.checksKeyValue = newChecks;
-    }
-
-    public static setChecksKeyValue(name: string, value: boolean): void {
-        let newChecks = new KeyValueMap<string, boolean>()
-        newChecks.put(name, value)
-        Checks.checksKeyValue = newChecks;
-    }
+    private static checksDisablingKeyValue: IKeyValueMap<string, boolean> = new KeyValueMap<string, boolean>()
 
     public static addChecksKeyValue(name: string, value: boolean): void {
         Checks.checksKeyValue.put(name, value);
@@ -41,43 +40,35 @@ export class Checks {
         return Checks.checksKeyValue
     }
 
-}
-
-export const initialChecks = (theCheckList: IList<IPropsChecks>, dispatch: Dispatch<any>) => {
-
-    const kv = new KeyValueMap<string, boolean>()
-
-    for (const iPropsCheck of theCheckList) {
-        kv.put(iPropsCheck.name, iPropsCheck.value)
+    public static getChecksDisablingKeyValue(): IKeyValueMap<string, boolean> {
+        return Checks.checksDisablingKeyValue
     }
-
-    const checksState: ICheckKeyValue = {
-        checks: kv
-    }
-
-    dispatch(actionICheckKeyValue(checksState))
 
 }
 
-const CheckBoxTemplate = ({value, label, name, usePropValue = false, handleCheckChange}: IPropsChecks) => {
+const CheckBoxTemplate = ({
+                              value,
+                              label,
+                              name,
+                              usePropValue = false,
 
-    // const [stateValue, setStateValue] = useState<boolean>(value)
+                          }: IPropsChecks) => {
+
     const [stateValue, setStateValue] = useState<boolean>(value)
     const [state, setState] = useState<boolean>(value)
-    // const [state, setState] = useState<boolean>(false)
 
     const [checks, setChecks] = useState<IKeyValueMap<string, boolean>>(new KeyValueMap<string, boolean>())
     const dispatch: Dispatch<any> = useDispatch()
 
     useEffect(() => {
 
-        if (!usePropValue){
+        if (!usePropValue) {
             Checks.addChecksKeyValue(name, state)
             const checksState: ICheckKeyValue = {
                 checks: Checks.getChecksKeyValue()
             }
             dispatch(actionICheckKeyValue(checksState))
-        }else {
+        } else {
             Checks.addChecksKeyValue(name, stateValue)
             const checksState: ICheckKeyValue = {
                 checks: Checks.getChecksKeyValue()
@@ -85,8 +76,9 @@ const CheckBoxTemplate = ({value, label, name, usePropValue = false, handleCheck
             dispatch(actionICheckKeyValue(checksState))
         }
 
+        // @ts-ignore
 
-    }, [state, checks, Checks.getChecksKeyValue()])
+    }, [state, checks, Checks.getChecksKeyValue(), Checks.getChecksDisablingKeyValue()])
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 
@@ -101,7 +93,9 @@ const CheckBoxTemplate = ({value, label, name, usePropValue = false, handleCheck
     };
 
     return <Grid>
-        <FormControlLabel control={<Checkbox checked={state} name={name} onChange={handleChange}/>} label={label}/>
+        <FormControlLabel
+            control={<Checkbox checked={state} name={name} onChange={handleChange}/>}
+            label={label}/>
     </Grid>
 }
 
