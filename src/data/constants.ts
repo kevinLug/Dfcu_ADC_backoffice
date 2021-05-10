@@ -4,23 +4,23 @@ export const AUTH_USER_KEY = '__demo__dfcu__user'
 export const systemRoles = {
 
     BACKOFFICE: 'BACKOFFICE',
-
-    ADMIN: 'ADMIN',
     BM:'BM',
     CMO:'CMO',
-    CSO:'CSO'
+    CSO:'CSO',
+    ADMIN: 'Admin',
 
 }
-//CSO,BM,CMO or ADMIN
+// BACKOFFICE, BM, CMO, CSO, OR Admin
 export const isSystemUser = (user: any): boolean => {
     const roles = [
         systemRoles.BACKOFFICE,
+        systemRoles.BM,
+        systemRoles.CMO,
+        systemRoles.CSO,
         systemRoles.ADMIN,
-        systemRoles.CSO
     ]
     return hasAnyRole(user, roles)
 }
-
 
 export const hasAnyRole = (user: any, roles: string[] = []): boolean => {
     const roleData = user.role;
