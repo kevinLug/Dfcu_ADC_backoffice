@@ -331,6 +331,7 @@ export interface ICaseData {
     bankDetails: IBankDetails;
     senderDetails: ISenderDetails;
     user: IUser
+    doc: any
 }
 
 export const ICaseDataDefault: ICaseData = <ICaseData>{}
@@ -341,6 +342,7 @@ export interface ICase {
     externalReference: string;
     referenceNumber: number;
     caseData: ICaseData;
+
 }
 
 export const ICaseDefault: ICase = <ICase>{
@@ -388,6 +390,7 @@ export class Case implements ICase {
     externalReference: string;
     // @ts-ignore
     workflowType: string;
+
 
 
 }
