@@ -12,12 +12,13 @@ import grey from '@material-ui/core/colors/grey';
 import {BarView} from "./Profile";
 import logo from "../assets/download.png";
 import {Button} from "@material-ui/core";
-import {themeBackground} from "../theme/custom-colors";
+import {linkColor, themeBackground} from "../theme/custom-colors";
 import Paper from "@material-ui/core/Paper";
 import {useDispatch, useSelector} from "react-redux";
 import {startNewTransferRequest} from "../data/redux/coreActions";
 import {Dispatch} from "redux";
 import {IState} from "../data/types";
+import {Link} from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -124,6 +125,7 @@ function Layout(props: any) {
     const user = useSelector((state: IState) => state.core.user)
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [showScanner, setShowScanner] = useState(false)
+    const [btnTransferName, setBtnTransferName] = useState("NEW TRANSFER REQUEST")
 
     const dispatch: Dispatch<any> = useDispatch();
 
@@ -132,8 +134,18 @@ function Layout(props: any) {
     }
 
     function startNewTransfer() {
-        setShowScanner(true)
-        dispatch(startNewTransferRequest(showScanner))
+        if (btnTransferName === "NEW TRANSFER REQUEST") {
+            setShowScanner(true)
+            dispatch(startNewTransferRequest(showScanner))
+            setBtnTransferName("⬅️BACK")
+        } else {
+            setBtnTransferName("NEW TRANSFER REQUEST")
+            window.location.reload()
+        }
+    }
+
+    function canShowRequestButton() {
+        return (hasAnyRole(user, [systemRoles.CSO]) && window.location.pathname === "/")
     }
 
     return (
@@ -156,14 +168,14 @@ function Layout(props: any) {
                         <img src={logo} alt="logo" className={classes.logo}/>
                     </div>
 
-                    {hasAnyRole(user, [systemRoles.CSO]) ?
+                    {canShowRequestButton() ?
                         <div className={classes.requestButton}>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 onClick={startNewTransfer}
                             >
-                                New Transfer Request
+                                {btnTransferName}
                             </Button>
                         </div>
                         : ""}

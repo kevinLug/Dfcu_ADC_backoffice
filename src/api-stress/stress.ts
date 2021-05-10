@@ -52,10 +52,10 @@ async function runCase(token: string, metadata: GatewayMetadata, type: RequestTy
     const data = getCaseData(type, metadata.transferCategories)
     const wfType = data.workflowType
     const productType = data.caseData.metaData.product
-    const docsList = getGatewayDocsList(wfType, productType, metadata.transferCategories)
+    // const docsList = getGatewayDocsList(wfType, productType, metadata.transferCategories)
     createJsonFile(data)
-    const zipFile = createZipFile(docsList)
-    await uploadZipAsync(token, zipFile)
+    // const zipFile = createZipFile(docsList)
+    // await uploadZipAsync(token, zipFile)
 }
 
 export enum RequestType {

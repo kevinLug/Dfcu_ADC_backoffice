@@ -85,11 +85,6 @@ const CheckBoxTemplate = ({value, label, name, usePropValue = false, handleCheck
             dispatch(actionICheckKeyValue(checksState))
         }
 
-        // console.log(checksState)
-        // console.log(checks)
-        // // for (const check of checks) {
-        // console.log(Checks.getChecksKeyValue())
-        // // }
 
     }, [state, checks, Checks.getChecksKeyValue()])
 
@@ -103,8 +98,6 @@ const CheckBoxTemplate = ({value, label, name, usePropValue = false, handleCheck
             console.log(event.target.checked)
             console.log(state)
         }
-
-        // Checks.addChecksKeyValue(name, state)
     };
 
     return <Grid>
