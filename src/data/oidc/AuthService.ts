@@ -41,6 +41,11 @@ class AuthService {
     public async logout(): Promise<void> {
         return await this.userManager.signoutRedirect();
     }
+
+    // public async session(): Promise<any> {
+    //     await this.userManager.events.
+    // }
+
 }
 
 const authService = new AuthService();
