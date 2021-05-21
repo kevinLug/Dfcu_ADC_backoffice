@@ -1,15 +1,126 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 import {ToastContainer} from "react-toastify";
 import ContentSwitch from "./modules/ContentSwitch";
 import Login from "./modules/login/LoginSimple";
 import Splash from "./modules/login/Splash";
-import {useSelector} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import {ICoreState} from "./data/redux/coreReducer";
+import {format} from "date-fns";
+import {useIdleTimer} from 'react-idle-timer'
+import {handleLogout} from "./data/redux/coreActions";
+import authService from "./data/oidc/AuthService";
+import worker_script, {ITimerDetails} from "./utils/activeTimeWorker";
 
-const App: React.FC = () => {
-    console.log("Starting App")
+let worker = new Worker(worker_script)
+const aMinute = 60000
+const App = () => {
+    console.log("Starting App...")
     const {isLoading, user}: ICoreState = useSelector((state: any) => state.core)
+
+    // periodic logout time dues to inactivity/idleness
+    // const timeout = 900000
+    const timeout = aMinute * 3600000
+    const [remaining, setRemaining] = useState(timeout)
+    const [elapsed, setElapsed] = useState(0)
+    const [lastActive, setLastActive] = useState(+new Date())
+    const [lastEvent, setLastEvent] = useState('Events Emitted on Leader')
+    const [leader, setLeader] = useState(true)
+    const dispatch = useDispatch();
+
+    const handleOnActive = () => setLastEvent('active')
+    const handleOnIdle = () => setLastEvent('idle')
+
+    const  {
+        reset,
+        pause,
+        resume,
+        getRemainingTime,
+        getLastActiveTime,
+        getElapsedTime,
+        isIdle,
+        isLeader,
+    } = useIdleTimer({
+        timeout,
+        onActive: handleOnActive,
+        onIdle: handleOnIdle,
+        crossTab: {
+            emitOnAllTabs: true
+        }
+    })
+
+    const handleReset = () => reset()
+    const handlePause = () => pause()
+    const handleResume = () => resume()
+
+    useEffect(() => {
+        // setRemaining(getRemainingTime())
+        // setLastActive(getLastActiveTime())
+        // setElapsed(getElapsedTime())
+
+        // idleTimeSetup()
+
+        // remaining, elapsed, lastActive
+    }, [])
+
+    //idleTimeSetup()
+
+    function idleTimeSetup() {
+
+        // console.log(`unlimited: `,authService.userManager.getUser())
+
+        authService.userManager.getUser().then(e => {
+            if (e !== null){
+                setInterval(() => {
+
+                    setRemaining(getRemainingTime())
+                    setLastActive(getLastActiveTime())
+                    // console.log(`last:active:`, format(lastActive, 'MM-dd-yyyy HH:MM:ss.SSS'))
+                    setElapsed(getElapsedTime())
+                    setLeader(isLeader())
+
+                    if (isIdle()) {
+                        // console.log('idle time reached...');
+                        doLogout()
+                            .then(e => {
+                                window.location.href = window.location.origin
+                            }).then(e => pause())
+
+                    }else {
+                        // worker.onmessage = (m) => {
+                        //     // console.log(`message from worker:`, m.data)
+                        //     // console.log('auth-service users: ',authService.getUser())
+                        // }
+                        const timerDetails: ITimerDetails ={
+                            remainingTime:getRemainingTime(),
+                            timeElapsed: getElapsedTime(),
+                            delayPeriod: timeout,
+                            isIdle: isIdle()
+                        }
+
+                        worker.postMessage(timerDetails)
+
+                    }
+
+                    // if ()
+
+                }, 1000)
+            }
+        })
+
+    }
+
+    async function doLogout() {
+        dispatch(handleLogout())
+        await authService.logout()
+    }
+
+    function millisToMinutesAndSeconds(millis: number) {
+        let minutes = Math.floor(millis / 60000);
+        let seconds = ((millis % 60000) / 1000).toFixed(0);
+        return minutes + ":" + (Number(seconds) < 10 ? '0' : '') + seconds;
+    }
+
     if (isLoading) {
         return <Splash/>
     } else {
