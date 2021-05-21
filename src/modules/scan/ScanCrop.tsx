@@ -5,8 +5,16 @@ import Typography from '@material-ui/core/Typography'
 import {getOrientation} from 'get-orientation/browser'
 import ImgDialog from './ImgDialog'
 import {getCroppedImg, getRotatedImage} from './canvasUtils'
-
-import {BrowserQRCodeReader} from "@zxing/library";
+import RotateRightIcon from '@material-ui/icons/RotateRight';
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import {
+    BrowserBarcodeReader,
+    BrowserCodeReader,
+    BrowserMultiFormatReader,
+    BrowserPDF417Reader,
+    BrowserQRCodeReader
+} from "@zxing/library";
+// import {BrowserCodeReader, BrowserQRCodeReader} from '@zxing/browser'
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import {ScanResultRaw} from "./types";
 import {ICase, ICaseDefault} from "../transfers/types";
@@ -34,6 +42,8 @@ import ObjectHelpersFluent from "../../utils/objectHelpersFluent";
 import {addCheck, IPropsChecks} from "./validate-verify/Check";
 import {IList, List} from "../../utils/collections/list";
 import {actionIWorkflowResponseMessage} from "../../data/redux/workflow-response/reducer";
+import Button from "@material-ui/core/Button";
+import {ZoomIn, ZoomOut, ZoomOutOutlined} from "@material-ui/icons";
 
 const ORIENTATION_TO_ANGLE: any = {
     '3': 180,
@@ -41,7 +51,11 @@ const ORIENTATION_TO_ANGLE: any = {
     '8': -90,
 }
 
-const codeReader = new BrowserQRCodeReader()
+// const codeReader = new BrowserQRCodeReader();
+const codeReader = new BrowserMultiFormatReader()
+// const codeReader = new BrowserPDF417Reader();
+
+// const codeReader = new BrowserQRCodeReader()
 
 export const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -157,6 +171,8 @@ const ScanCrop = () => {
 
     const postData = (token: string, requestData: any, callBack: (data: any) => any) => {
         console.log({requestData})
+        console.log('port:',remoteRoutes.workflows)
+
         superagent.post(remoteRoutes.workflows)
             .set('Authorization', `Bearer ${token}`)
             .send(requestData)
@@ -194,9 +210,15 @@ const ScanCrop = () => {
 
         try {
 
+            console.log(`with some:`, imageSrc)
             const croppedImage: any = await getCroppedImg(imageSrc, croppedAreaPixels, 0)
 
+            console.log(`with some:`, croppedImage)
+
+            // const decodedRawResult = await codeReader.decodeFromImageUrl(croppedImage)
+
             const decodedRawResult = await codeReader.decodeFromImage(undefined, croppedImage.toString())
+            console.log(`decoded:`, decodedRawResult)
 
             // check if decoding succeeded
             if (!new ObjectHelpersFluent().directValue(decodedRawResult.getText()).isAbsent().getFlag()) {
@@ -221,19 +243,22 @@ const ScanCrop = () => {
 
             const transferDetailsRaw = await getRawTransferFormValues(rawTransferFormValues);
             const aCase = await formatRawTransferFormValuesToJson(transferDetailsRaw, imageSrc);
+            // todo..find a way of dealing with workflow type
+            aCase.workflowType = "RTGS";
+            console.log(aCase.workflowType)
             dispatch(actionICaseState(aCase));
 
-            aCase.workflowType = "RTGS";
+
             const {access_token} = await login()
 
             if (aCase.workflowType !== "") {
-                // console.log(aCase.workflowType)
+                console.log(aCase.workflowType)
                 // console.log({access_token}, {aCase})
 
                 validateData(aCase).then((validationResult) => {
 
                     if (validationResult) {
-                        // console.log(`validated`)
+                        console.log(`validated`)
                         postData(access_token, aCase, (resp: any) => {
 
                             dispatch(actionIWorkflowResponseMessage(resp))
@@ -292,6 +317,26 @@ const ScanCrop = () => {
         console.log("dropped image:", imageDataUrl)
     }
 
+    function handleZoomIn() {
+        const prevZoom = zoom + 0.1
+        setZoom(prevZoom)
+    }
+
+    function handleZoomOut() {
+        const prevZoom = zoom - 0.1
+        setZoom(prevZoom)
+    }
+
+    function handleLeftRotation() {
+        const prevRotation = rotation - 5
+        setRotation(prevRotation)
+    }
+
+    function handleRightRotation() {
+        const prevRotation = rotation + 5
+        setRotation(prevRotation)
+    }
+
     if (loading) {
         return <Loading message="processing...please wait"/>
     }
@@ -344,31 +389,24 @@ const ScanCrop = () => {
                                     onZoomChange={setZoom}
                                 />
                             </div>
-                            <div className={classes.controls}>
-                                <div className={classes.sliderContainer}>
-                                    <Typography
-                                        variant="overline"
-                                        classes={{root: classes.sliderLabel}}
-                                    >
-                                        Zoom
-                                    </Typography>
-                                    <Slider
-                                        value={zoom}
-                                        min={1}
-                                        max={3}
-                                        step={0.1}
-                                        aria-labelledby="Zoom"
 
-                                        onChange={(e, zoom) => setZoom(zoom)}
-                                    />
-                                </div>
+                            <Button variant="contained" onClick={handleZoomOut}>
+                                Zoom out<ZoomOut />
+                            </Button>
 
-                            </div>
+                            <Button variant="contained" onClick={handleZoomIn}>
+                                Zoom in<ZoomIn />
+                            </Button>
+
+                            <Button variant="outlined" onClick={handleLeftRotation}>
+                                Rotate Left<RotateLeftIcon />
+                            </Button>
+
+                            <Button variant="outlined" onClick={handleRightRotation}>
+                                Rotate Right<RotateRightIcon />
+                            </Button>
+
                             <ImgDialog img={croppedImage} onClose={onClose}/>
-
-                            upon scan successful, display image instead of scanning
-
-                            */}
 
 
                         </React.Fragment>
