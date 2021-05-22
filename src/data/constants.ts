@@ -2,7 +2,6 @@ export const AUTH_TOKEN_KEY = '__demo__dfcu__token'
 export const AUTH_USER_KEY = '__demo__dfcu__user'
 
 export const systemRoles = {
-
     BACKOFFICE: 'BACKOFFICE',
     BM:'BM',
     CMO:'CMO',
@@ -109,17 +108,6 @@ export const remoteRoutes = {
     profile: authURL + '/api/test/profile',
     register: authURL + '/api/auth/register',
     resetPass: authURL + '/reset',
-    contacts: crmURL + '/api/contact',
-    contactSearch: crmURL + '/api/contact/search',
-    contactById: crmURL + '/api/contact/id',
-    contactsPerson: crmURL + '/api/person',
-    contactsChc: crmURL + '/api/person/chc',
-    contactsEmail: crmURL + '/api/email',
-    contactsTag: crmURL + '/api/tag',
-    contactsUrl: crmURL + '/api/url',
-    contactsPhone: crmURL + '/api/phone',
-    contactsAddress: crmURL + '/api/address',
-    contactsIdentification: crmURL + '/api/identification',
 
     workflowsDocsUpload: caseHandlingURL + '/api/documents/upload',
     workflows: caseHandlingURL + '/api/workflows',

@@ -29,19 +29,19 @@ const TagEditor = ({data, isNew, contactId, done}: IProps) => {
     const dispatch = useDispatch();
 
     function handleSubmit(values: any, actions: FormikActions<any>) {
-        const submission: ISubmission = {
-            url: remoteRoutes.contactsTag,
-            values:{...values,contactId}, actions, isNew,
-            onAjaxComplete: (data: any) => {
-                dispatch({
-                    type: isNew ? crmConstants.crmAddTag : crmConstants.crmEditTag,
-                    payload: {...data},
-                })
-                if (done)
-                    done()
-            }
-        }
-        handleSubmission(submission)
+        // const submission: ISubmission = {
+        //     url: remoteRoutes.contactsTag,
+        //     values:{...values,contactId}, actions, isNew,
+        //     onAjaxComplete: (data: any) => {
+        //         dispatch({
+        //             type: isNew ? crmConstants.crmAddTag : crmConstants.crmEditTag,
+        //             payload: {...data},
+        //         })
+        //         if (done)
+        //             done()
+        //     }
+        // }
+        // handleSubmission(submission)
     }
     return (
         <XForm

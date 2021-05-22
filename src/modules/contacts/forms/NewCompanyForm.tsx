@@ -38,57 +38,57 @@ const NewCompanyForm = ({data, done}: IProps) => {
     const dispatch = useDispatch();
 
     function handleSubmit(values: any, actions: FormikActions<any>) {
-        const toSave = {
-            category: 'Person',
-            internalContact: values.internalContact,
-            externalContact: values.externalContact,
-            company: {
-                name: values.name,
-                category: values.category,
-                dateOfPayment: values.dateOfPayment,
-                numberOfEmployees: values.numberOfEmployees
-            },
-            phones: [
-                {
-                    category: PhoneCategory.Office,
-                    isPrimary: true,
-                    value: values.phone
-                }
-            ],
-            emails: [
-                {
-                    category: EmailCategory.Work,
-                    isPrimary: true,
-                    value: values.email
-                }
-            ],
-            addresses: [],
-            identifications: [
-                {
-                    category: IdentificationCategory.Tin,
-                    isPrimary: true,
-                    value: values.tinNumber
-                }
-            ],
-            events: []
-        }
-        post(remoteRoutes.contacts, toSave,
-            (data) => {
-                Toast.info('Operation successful')
-                actions.resetForm()
-                dispatch({
-                    type: crmConstants.crmAddContact,
-                    payload: {...data},
-                })
-                if (done)
-                    done()
-            },
-            undefined,
-            () => {
-                actions.setSubmitting(false);
-
-            }
-        )
+        // const toSave = {
+        //     category: 'Person',
+        //     internalContact: values.internalContact,
+        //     externalContact: values.externalContact,
+        //     company: {
+        //         name: values.name,
+        //         category: values.category,
+        //         dateOfPayment: values.dateOfPayment,
+        //         numberOfEmployees: values.numberOfEmployees
+        //     },
+        //     phones: [
+        //         {
+        //             category: PhoneCategory.Office,
+        //             isPrimary: true,
+        //             value: values.phone
+        //         }
+        //     ],
+        //     emails: [
+        //         {
+        //             category: EmailCategory.Work,
+        //             isPrimary: true,
+        //             value: values.email
+        //         }
+        //     ],
+        //     addresses: [],
+        //     identifications: [
+        //         {
+        //             category: IdentificationCategory.Tin,
+        //             isPrimary: true,
+        //             value: values.tinNumber
+        //         }
+        //     ],
+        //     events: []
+        // }
+        // post(remoteRoutes.contacts, toSave,
+        //     (data) => {
+        //         Toast.info('Operation successful')
+        //         actions.resetForm()
+        //         dispatch({
+        //             type: crmConstants.crmAddContact,
+        //             payload: {...data},
+        //         })
+        //         if (done)
+        //             done()
+        //     },
+        //     undefined,
+        //     () => {
+        //         actions.setSubmitting(false);
+        //
+        //     }
+        // )
     }
 
     return (
