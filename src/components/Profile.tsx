@@ -95,7 +95,7 @@ export const BarView = (props: any) => {
             open={menuOpen}
             onClose={handleCloseMenu}
         >
-            <MenuItem onClick={openDialog}>Profile</MenuItem>
+            {/*<MenuItem onClick={openDialog}>Profile</MenuItem>*/}
             <MenuItem onClick={doLogout}>Logout</MenuItem>
         </Menu>
         <Dialog onClose={closeDialog} aria-labelledby="simple-dialog-title" open={dialogOpen}>
