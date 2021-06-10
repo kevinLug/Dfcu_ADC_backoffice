@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import { transferDetailsLabels} from "../../transfers/types";
+import { transferDetailsLabels} from "../../transfers/typeLabels";
 import Grid from "@material-ui/core/Grid";
 import DataLabel from "../../../components/DataLabel";
 import DataValue from "../../../components/DataValue";

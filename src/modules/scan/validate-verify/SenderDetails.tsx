@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {senderDetailsLabels} from "../../transfers/types";
+import {applicationDetailsLabels} from "../../transfers/typeLabels";
 import Grid from "@material-ui/core/Grid";
 
 import DataLabel from "../../../components/DataLabel";
@@ -11,18 +11,18 @@ import {populateLabelAndValue} from "../populateLabelAndValue";
 
 const SenderDetails = () => {
 
-    const {senderDetails}: ICaseState = useSelector((state: any) => state.transfers)
+    const {applicantDetails}: ICaseState = useSelector((state: any) => state.transfers)
 
     useEffect(() => {
-
-    }, [senderDetails])
+        console.log(`applicantDetails:`, applicantDetails)
+    }, [applicantDetails])
 
     return (
 
         <Grid container>
 
             {
-                populateLabelAndValue([],senderDetailsLabels(senderDetails),"-").map((kv, index) => {
+                populateLabelAndValue([], applicationDetailsLabels(applicantDetails), "-").map((kv, index) => {
                     return <Grid key={index} container item spacing={4} sm={12}>
                         <Grid item sm={5}>
                             <DataLabel noColon={false}>{kv.key}</DataLabel>

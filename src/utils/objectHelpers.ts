@@ -1,5 +1,7 @@
 // Warning https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name#function_names_in_classes
 // the warning is for the || portion
+import mappingRules from "../modules/scan/mappings/mappingRules.json";
+
 export const isObject = (objValue: any): boolean => (objValue && typeof objValue === 'object' && objValue.constructor === Object);
 export const isObjectInstance = (objValue: any, className?: string): boolean => objValue.constructor.name === className
 
@@ -7,7 +9,7 @@ export const checkNested = (object: any, ...rest: any) => {
 
 }
 
-export const isNullOrEmpty = (str: string): boolean => str.trim() === null || str.trim() === "";
+export const isNullOrEmpty = (str: string): boolean => str.trim() === null || str.trim() === "" || str.trim() === undefined;
 
 export enum CriteriaTest {
     //Value should be present
@@ -52,7 +54,11 @@ export interface IMessage {
     userMessageSuccess?: string;
 }
 
-const print = (message: any) => console.log(message);
+export const print = (message: any) => console.log(message);
+export const printValueObjectPrettified = (message: any, title: string = "") => {
+    const str = JSON.stringify(message, null, 2); // spacing level = 2
+    console.log(title, "\n", str);
+}
 
 const setTestResult = (criterion: CriteriaTest, resultFlag: boolean, data: any, expected?: any, devMsgFailure?: string, userMsgFailure?: string, devMsgSuccess?: string, userMessageSuccess?: string): ITestDataResult => {
     const msg: IMessage = {
@@ -124,8 +130,37 @@ export const testDataCallBack = (testResult: ITestDataResult, callBackFailure?: 
 
 }
 
-export const objectBreakDown = (obj: any) => {
+function* deepKeys(t: any, pre: any = []): Generator<any, void, unknown> {
+    if (Array.isArray(t))
+        return
+    else if (Object(t) === t)
+        for (const [k, v] of Object.entries(t))
+            yield* deepKeys(v, [...pre, k])
+    else
+        yield pre.join(".")
+}
 
+export const getDeepKeys = (obj: any) => Array.from(deepKeys(obj));
+
+export const resolveDotNotationToBracket = (path: string, obj?: object) => {
+    return path.split('.').reduce(function (prev, curr) {
+
+        // @ts-ignore
+        return prev ? prev[curr] : null
+    }, obj || window.self)
+}
+
+export const resolveDotNotationToBracketPathOnly = (path: string) => {
+    return path.split('.').reduce(function (prev, curr) {
+        console.log("yap-:",prev);
+        // @ts-ignore
+        console.log("yap:",prev[curr]);
+        // @ts-ignore
+        return prev ? prev[curr] : null
+    })
+}
+
+export const objectBreakDown = (obj: any) => {
 
     if (isObject(obj)) {
         for (let property in obj) {

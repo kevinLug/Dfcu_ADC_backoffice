@@ -62,7 +62,7 @@ export enum RequestType {
 
     ForeignRemittance = 'foreignRemittance',
     EFT = 'EFT',
-    RTGSLocal = 'RTGSLocal',
+    RTGS_LOCAL = 'RTGSLOCAL',
     RTGS = 'RTGS',
     EAPS = 'EAPS',
     REPSS = 'REPSS',

@@ -41,6 +41,12 @@ class ObjectHelpersFluent {
         this.flag = false;
     }
 
+    isIgnorable(){
+        this.summary.testResult = true;
+        console.log("ignored")
+        return this;
+    }
+
     // log(value: any,label?:string) {
     //     if (environment === 'dev') {
     //         if (!validate.isEmpty(label)){
@@ -342,7 +348,7 @@ class ObjectHelpersFluent {
 
     logValue() {
         const value = this.summary.value;
-        console.log(`The value:-`,{value})
+        console.log(`The value:-`,JSON.stringify(value,null,2))
         return this
     }
 

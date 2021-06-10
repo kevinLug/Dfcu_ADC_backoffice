@@ -15,11 +15,13 @@ import ITemplateProps from "../../ITemplateProps";
 import RemarksForm from "../../RemarksForm";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
-import {ITransferDetails, transferDetailsLabels} from "../../../../../transfers/types";
+import { transferDetailsLabels} from "../../../../../transfers/typeLabels";
+import {ITransferDetails} from "../../../../../transfers/types";
 
 interface IFormProps {
     onClose: () => any
 }
+
 
 interface IProps  {
     label:any;
@@ -31,11 +33,11 @@ const fields = (data: ITransferDetails): any[] => {
     return [
         {
             label: 'Branch',
-            value: data.branch
+            value: data.branchCode
         },
         {
             label: '',
-            value: data.branch
+            value: data.branchCode
         }
     ]
 }

@@ -104,7 +104,7 @@ const BmVerificationRtgs = ({workflow}: IProps) => {
     useEffect(() => {
 
         const aCase: ICase = {
-            applicationDate: workflow.applicationDate.toString(),
+            applicationDate: workflow.applicationDate,
             externalReference: workflow.externalReference,
             referenceNumber: Number(workflow.referenceNumber),
             workflowType: workflow.type,

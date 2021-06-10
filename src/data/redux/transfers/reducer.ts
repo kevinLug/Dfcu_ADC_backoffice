@@ -1,14 +1,21 @@
 import {
+    IApplicantDetails, IApplicantDetailsDefault,
     IBankDetails,
     IBankDetailsDefault,
     IBeneficiaryAddress,
-    IBeneficiaryAddressDefault, IBeneficiaryBank, IBeneficiaryBankDefault,
+    IBeneficiaryAddressDefault,
+    IBeneficiaryBank,
+    IBeneficiaryBankDefault,
+    IBeneficiaryDetails,
+    IBeneficiaryDetailsDefault,
     ICase,
     ICaseData,
     ICaseDataDefault,
     ICaseDefault,
     ISenderDetails,
-    ISenderDetailsDefault, ITransferDetails, ITransferDetailsDefault
+    ISenderDetailsDefault,
+    ITransferDetails,
+    ITransferDetailsDefault
 } from "../../../modules/transfers/types";
 
 export const transferConstants = {
@@ -16,22 +23,22 @@ export const transferConstants = {
 }
 
 export interface ICaseState {
-    aCase?: ICase;
-    caseData?: ICaseData;
-    senderDetails: ISenderDetails;
+    aCase: ICase;
+    caseData: ICaseData;
+    applicantDetails: IApplicantDetails;
     transferDetails: ITransferDetails;
-    beneficiaryAddress: IBeneficiaryAddress;
-    beneficiaryBank: IBeneficiaryBank;
+    // beneficiaryAddress: IBeneficiaryAddress;
+    beneficiaryDetails: IBeneficiaryDetails;
     bankDetails: IBankDetails
 }
 
 export const initialState: ICaseState = {
     aCase: ICaseDefault,
     caseData: ICaseDataDefault,
-    senderDetails: ISenderDetailsDefault,
+    applicantDetails: IApplicantDetailsDefault,
     transferDetails: ITransferDetailsDefault,
-    beneficiaryAddress: IBeneficiaryAddressDefault,
-    beneficiaryBank: IBeneficiaryBankDefault,
+    // beneficiaryAddress: IBeneficiaryAddressDefault,
+    beneficiaryDetails: IBeneficiaryDetailsDefault,
     bankDetails: IBankDetailsDefault
 }
 
@@ -44,17 +51,18 @@ export const actionICaseState = (aCase: ICase) => {
 
 export const reducer = (state = initialState, action: any): ICaseState => {
     const aCase = action.payload
+    console.log("aCase from:",aCase)
     switch (action.type) {
         case transferConstants.startScan:
             return {
                 ...state,
                 aCase: aCase,
                 caseData: aCase.caseData,
-                senderDetails: aCase.caseData.senderDetails,
+                applicantDetails: aCase.caseData.applicantDetails,
                 transferDetails: aCase.caseData.transferDetails,
-                beneficiaryAddress: aCase.caseData.transferDetails.beneficiaryAddress,
+                // beneficiaryAddress: aCase.caseData.transferDetails.beneficiaryAddress,
                 bankDetails: aCase.caseData.bankDetails,
-                beneficiaryBank: aCase.caseData.bankDetails.beneficiaryBank
+                beneficiaryDetails: aCase.caseData.beneficiaryDetails
             }
         default: {
             return state;

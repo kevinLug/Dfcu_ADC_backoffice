@@ -9,6 +9,7 @@ export const systemRoles = {
     ADMIN: 'Admin',
 
 }
+
 // BACKOFFICE, BM, CMO, CSO, OR Admin
 export const isSystemUser = (user: any): boolean => {
     const roles = [
@@ -59,6 +60,7 @@ export const localRoutes = {
 const servers: any = {
     dev: {
         Auth: 'https://dfcu-autodatacapture-auth-api-test.test001.laboremus.no',
+        // Case: 'http://localhost:6001',
         Case: 'https://dfcu-autodatacapture-casehandling-test.test001.laboremus.no',
         Notification: 'https://dfcu-notification-api-test.test001.laboremus.no',
     },
@@ -124,6 +126,4 @@ export const remoteRoutes = {
     userCustomClaims: authURL + '/api/customClaims'
 
 }
-
-
 

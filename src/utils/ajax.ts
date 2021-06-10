@@ -63,6 +63,7 @@ export const isAuthError = (err: any = {}, res: superagent.Response) => {
 
 export const handleResponse = (callBack: CallbackFunction, errorCallBack?: ErrorCallback, endCallBack?: EndCallback) => (err: any, res: superagent.Response) => {
     try {
+        console.log("res:-->>>>>",res)
         if (err || !res.ok) {
             if (errorCallBack) {
                 errorCallBack(err, res)

@@ -10,14 +10,27 @@ describe('fluent object helper test', () => {
             }, () => {
                 console.log(`just done testing selector`)
             })
+            .logTestResult()
             .getSummary()
+        // console.log(v.testResult)
+
+        new ObjectHelpersFluent()
+            .testTitle("Entire data object presence")
+            .selector(aCase, "$")
+            .isPresent()
+            .logValue()
+            .logTestResult()
+            .logTestMessage()
+            .logNewLineSpace();
+
+
         expect(v.selector).toEqual("$")
     });
 
     it('test workflowType is RTGS',  ()=> {
         new ObjectHelpersFluent()
             .selector(aCase,"$.workflowType")
-            .validateValue(CriteriaTest.EqualTo, "RTGS")
+            .validateValue(CriteriaTest.EqualTo, "RTGSLOCAL")
             // .logSummary(false)
     });
 

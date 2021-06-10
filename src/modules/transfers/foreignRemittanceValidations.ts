@@ -1,11 +1,10 @@
-
+import {ICase} from "./types";
 import ObjectHelpersFluent from "../../utils/objectHelpersFluent";
 import SuccessCriteria from "../../utils/successCriteria";
 import {List} from "../../utils/collections/list";
-import {ICase} from "./types";
 import {RequestType} from "../workflows/config";
 
-const validateRTGS = async (data: ICase): Promise<boolean> => {
+const validateForeignRemittance = async (data: ICase): Promise<boolean> => {
 
     return new Promise((resolve) => {
 
@@ -31,15 +30,15 @@ const validateRTGS = async (data: ICase): Promise<boolean> => {
             .logNewLineSpace();
         tests.add(workflowTypePresent);
 
-        const isRtgs = new ObjectHelpersFluent()
+        const isForeignRemittance = new ObjectHelpersFluent()
             .testTitle("is RTGS the type?")
             .selector(data, "$.workflowType")
-            .isEqualTo(RequestType.RTGS_LOCAL)
+            .isEqualTo(RequestType.FOREIGN_REMITTANCE)
             .logValue()
             .logTestResult()
             .logTestMessage()
             .logNewLineSpace()
-        tests.add(isRtgs);
+        tests.add(isForeignRemittance);
 
         const isBranchPresent = new ObjectHelpersFluent()
             .testTitle("is the branch present?")
@@ -256,6 +255,7 @@ const validateRTGS = async (data: ICase): Promise<boolean> => {
             .testTitle("is transfer purpose present?")
             .selector(data, "$.caseData.transferDetails.transferPurpose")
             .isPresent()
+            .isIgnorable()
             .logTestResult()
             .logValue()
             .logTestMessage()
@@ -267,4 +267,4 @@ const validateRTGS = async (data: ICase): Promise<boolean> => {
 
 }
 
-export default validateRTGS
+export default validateForeignRemittance

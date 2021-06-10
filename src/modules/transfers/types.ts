@@ -1,17 +1,9 @@
 import {IKeyValueMap, KeyValueMap} from "../../utils/collections/map";
+import {string} from "yup";
 
-interface ILabelValue {
-    label: string;
-    value: any;
-}
 
-const keyValueLabels = (labelsAndValues: ILabelValue[]) => {
-    const keyValue = new KeyValueMap<string, any>();
-    labelsAndValues.map(e => {
-        keyValue.put(e.label, e.value);
-    });
-    return keyValue;
-}
+
+
 
 export interface IBeneficiaryAddress {
     country: string;
@@ -23,153 +15,84 @@ export interface IBeneficiaryAddress {
 
 export const IBeneficiaryAddressDefault = {} as IBeneficiaryAddress
 
-export const beneficiaryAddressLabels = (data: IBeneficiaryAddress) => {
-    const labelling = data
-    const labels = [
-        {
-            label: 'Country',
-            value: labelling.country
-        },
-        {
-            label: 'Town',
-            value: labelling.town
-        },
-        {
-            label: 'Plot',
-            value: labelling.plot
-        },
-        {
-            label: 'Building',
-            value: labelling.building
-        }
-    ];
-
-    return keyValueLabels(labels);
-}
 
 export interface ITransferDetails {
-    branch: string;
-    rate: number;
-    currency: string;
-    amount: number;
-    ugxAmount: number;
-    amountInWords: string;
-    beneficiaryName: string;
-    beneficiaryAddress: IBeneficiaryAddress;
+    branchCode: string,
+    remittanceType: string,
+    currencyCode: string,
+    transactionAmount: number,
+    remittanceAmount: string,
+    exchangeRate: number,
+    amountInWords: string,
+    transferPurpose: string
+    // beneficiaryAddress: IBeneficiaryAddress;
 }
 
 export const ITransferDetailsDefault = <ITransferDetails>{
-    beneficiaryAddress: IBeneficiaryAddressDefault
+    // beneficiaryAddress: IBeneficiaryAddressDefault
 }
 
-export const transferDetailsLabels = (transferDetails: ITransferDetails) => {
-    const labelling = transferDetails
-    const labels: ILabelValue[] = [
-        {
-            label: 'Branch',
-            value: labelling.branch
-        },
-        {
-            label: 'Rate',
-            value: labelling.rate
-        },
-        {
-            label: 'Currency',
-            value: labelling.currency
-        },
-        {
-            label: 'Amount',
-            value: labelling.amount
-        },
-        {
-            label: 'UGX Amount',
-            value: labelling.ugxAmount
-        },
-        {
-            label: 'Amount in words',
-            value: labelling.amountInWords
-        },
-        {
-            label: 'Beneficiary Name',
-            value: labelling.beneficiaryName
-        },
-        // {
-        //     label: 'Beneficiary Country',
-        //     value: labelling.beneficiaryAddress.country
-        // },
-        // {
-        //     label: 'Beneficiary Town',
-        //     value: labelling.beneficiaryAddress.town
-        // },
-        // {
-        //     label: 'Beneficiary Plot',
-        //     value: labelling.beneficiaryAddress.plot
-        // },
-        // {
-        //     label: 'Beneficiary Building',
-        //     value: labelling.beneficiaryAddress.building
-        // },
-    ]
 
-    return keyValueLabels(labels);
+export interface IApplicantBank {
+    branchCode: string;
 }
 
 export interface IBeneficiaryBank {
     bankName: string;
-    accountNumber: string;
     swiftCode: string;
     sortCode: string;
     aba: string;
-    fedWire: string;
+    fedwire: string;
     ifsc: string;
     iban: string;
 }
 
-export const IBeneficiaryBankDefault: IBeneficiaryBank = <IBeneficiaryBank>{}
-
-export const beneficiaryBankLabels = (data: IBeneficiaryBank) => {
-    const labelling = data
-    const labels: ILabelValue[] = [
-        {
-            label: 'Beneficiary Bank',
-            value: labelling.bankName
-        },
-        {
-            label: 'Beneficiary A/C No.',
-            value: labelling.accountNumber
-        },
-        {
-            label: 'Beneficiary Bank Swift Code',
-            value: labelling.swiftCode
-        },
-        {
-            label: 'Beneficiary Bank Sort Code',
-            value: labelling.sortCode
-        },
-        {
-            label: 'Beneficiary Bank ABA',
-            value: labelling.aba
-        },
-        {
-            label: 'Beneficiary Fed wire',
-            value: labelling.fedWire
-        },
-        {
-            label: 'Beneficiary IFSC',
-            value: labelling.ifsc
-        },
-        {
-            label: 'Beneficiary Bank IBAN',
-            value: labelling.iban
-        },
-    ]
-    return keyValueLabels(labels);
+export interface IBeneficiaryAddress {
+    town: string;
+    countryCode: string;
+    physicalAddress: string;
 }
 
+export interface IBeneficiaryDetails {
+    fullName: string;
+    accountNumber: string;
+    address: IBeneficiaryAddress;
+}
+
+
+export const IBeneficiaryDetailsDefault: IBeneficiaryDetails = <IBeneficiaryDetails>{
+    address: IBeneficiaryAddressDefault
+}
+
+export interface IApplicantAddress {
+    plotNumber: string;
+    street: string;
+    town: string;
+    district: string;
+}
+
+export const IApplicantAddressDefault: IApplicantAddress = <IApplicantAddress>{}
+
+export interface IApplicantDetails {
+    fullName: string;
+    accountNumber: string;
+    chequeNumber: string;
+    emailAddress: string;
+    phoneNumber: string;
+    natureOfBusiness: string;
+    address: IApplicantAddress;
+}
+
+export const IApplicantDetailsDefault: IApplicantDetails = <IApplicantDetails>{
+    address: IApplicantAddressDefault
+}
+
+export const IBeneficiaryBankDefault: IBeneficiaryBank = <IBeneficiaryBank>{}
+
+
+
 export interface ICharges {
-    applicant: boolean;
-    beneficiary: boolean;
-    amount: number;
+    chargeMode: string;
 }
 
 export const IChargesDefault: ICharges = <ICharges>{}
@@ -189,50 +112,6 @@ export interface ICorrespondingBankDetails {
 
 export const ICorrespondingBankDetailsDefault: ICorrespondingBankDetails = <ICorrespondingBankDetails>{
     charges: IChargesDefault
-}
-
-export const correspondingBankDetailsLabels = () => {
-    const labelling = <ICorrespondingBankDetails>{}
-    const labels: ILabelValue[] = [
-        {
-            label: 'Correspondent Bank',
-            value: labelling.bankName
-        },
-        {
-            label: 'Correspondent Bank A/C No.',
-            value: labelling.accountNumber
-        },
-        {
-            label: 'Correspondent Bank Swift Code',
-            value: labelling.swiftCode
-        },
-        {
-            label: 'Correspondent Bank Sort Code',
-            value: labelling.sortCode
-        },
-        {
-            label: 'Correspondent Bank ABA',
-            value: labelling.aba
-        },
-        {
-            label: 'Correspondent Bank Fed wire',
-            value: labelling.fedWire
-        },
-        {
-            label: 'Correspondent Bank IFSC',
-            value: labelling.ifsc
-        },
-        {
-            label: 'Transfer purpose',
-            value: labelling.transferPurpose
-        },
-        {
-            label: 'Sender charge', // this should automatically negate the beneficiary charge or else remove one of them
-            value: labelling.charges.applicant
-        },
-
-    ]
-    return keyValueLabels(labels);
 }
 
 export interface IPhysicalAddress {
@@ -259,56 +138,19 @@ export const ISenderDetailsDefault: ISenderDetails = <ISenderDetails>{
     physicalAddress: IPhysicalAddressDefault
 }
 
-export const senderDetailsLabels = (data: ISenderDetails) => {
-    const labelling = data
-    const labels: ILabelValue[] = [
-        {
-            label: 'Name',
-            value: labelling.name
-        },
-        {
-            label: 'Email',
-            value: labelling.email
-        },
-        {
-            label: 'A/C No.',
-            value: labelling.accountNumber
-        },
-        {
-            label: 'Telephone',
-            value: labelling.telephone
-        },
-        {
-            label: 'Sender Nature of Business',
-            value: labelling.natureOfBusiness
-        },
-        {
-            label: 'Cheque No.',
-            value: labelling.chequeNumber
-        },
-        {
-            label: 'District',
-            value: labelling.physicalAddress.district
-        },
-        {
-            label: 'Town',
-            value: labelling.physicalAddress.town
-        },
-        {
-            label: 'Street',
-            value: labelling.physicalAddress.street
-        },
-        {
-            label: 'Plot No.',
-            value: labelling.physicalAddress.plotNumber
-        },
-    ];
-    return keyValueLabels(labels)
+
+export interface IApplicantBank {
+    branchCode: string;
+}
+
+export interface ICharges {
+    chargeMode: string;
 }
 
 export interface IBankDetails {
     beneficiaryBank: IBeneficiaryBank;
-    correspondingBankDetails: ICorrespondingBankDetails
+    correspondingBankDetails: ICorrespondingBankDetails;
+    applicantBank: IApplicantBank;
 }
 
 export const IBankDetailsDefault: IBankDetails = <IBankDetails>{
@@ -326,18 +168,42 @@ export interface IUser {
 
 export const IUserDefault: IUser = <IUser>{}
 
+// export interface IApplicantAddress {
+//     plotNumber: string;
+//     street: string;
+//     town: string;
+//     district: string;
+// }
+//
+// export const IApplicantAddressDefault: IApplicantAddress = <IApplicantAddress
+//
+// export interface IApplicantDetails {
+//     fullName: string;
+//     accountNumber: string;
+//     chequeNumber: string;
+//     emailAddress: string;
+//     phoneNumber: string;
+//     natureOfBusiness: string;
+//
+// }
+
 export interface ICaseData {
     transferDetails: ITransferDetails;
     bankDetails: IBankDetails;
     senderDetails: ISenderDetails;
-    user: IUser
+    beneficiaryDetails: IBeneficiaryDetails;
+    applicantDetails: IApplicantDetails;
+    charges: ICharges;
+    user: IUser;
     doc: any
 }
 
-export const ICaseDataDefault: ICaseData = <ICaseData>{}
+export const ICaseDataDefault: ICaseData = <ICaseData>{
+    applicantDetails: IApplicantDetailsDefault
+}
 
 export interface ICase {
-    applicationDate: string;
+    applicationDate: Date;
     workflowType: string;
     externalReference: string;
     referenceNumber: number;
@@ -346,7 +212,7 @@ export interface ICase {
 }
 
 export const ICaseDefault: ICase = <ICase>{
-    caseData: ICaseDataDefault
+    // caseData: ICaseDataDefault
 }
 
 export interface IWorkflowResponseMessage {
@@ -390,7 +256,6 @@ export class Case implements ICase {
     externalReference: string;
     // @ts-ignore
     workflowType: string;
-
 
 
 }

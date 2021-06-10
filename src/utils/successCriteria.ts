@@ -3,19 +3,17 @@ import ObjectHelpersFluent from "./objectHelpersFluent";
 
 
 class SuccessCriteria {
-
-    private static allShouldPass: boolean
-
     public static testRuns(tests: IList<ObjectHelpersFluent>): boolean {
         let flag = false
         for (let test of tests) {
             if (test.getSummary().testResult) {
                 flag = true
-                continue
+                console.log(`For selector:`, test.getSummary().selector)
             } else {
                 test.logTestMessage()
                 console.log(`For selector:`, test.getSummary().selector)
                 flag = false
+                console.log("process halted here...!!!")
                 break
             }
         }

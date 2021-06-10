@@ -1,6 +1,6 @@
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 import Cropper from 'react-easy-crop'
-import Slider from '@material-ui/core/Slider'
+
 import Typography from '@material-ui/core/Typography'
 import {getOrientation} from 'get-orientation/browser'
 import ImgDialog from './ImgDialog'
@@ -8,13 +8,9 @@ import {getCroppedImg, getRotatedImage} from './canvasUtils'
 import RotateRightIcon from '@material-ui/icons/RotateRight';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import {
-    BrowserBarcodeReader,
-    BrowserCodeReader,
-    BrowserMultiFormatReader,
-    BrowserPDF417Reader,
-    BrowserQRCodeReader
+    BrowserMultiFormatReader
 } from "@zxing/library";
-// import {BrowserCodeReader, BrowserQRCodeReader} from '@zxing/browser'
+
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import {ScanResultRaw} from "./types";
 import {ICase, ICaseDefault} from "../transfers/types";
@@ -36,7 +32,7 @@ import {actionICaseState} from "../../data/redux/transfers/reducer";
 import BeneficiaryDetails from "./validate-verify/BeneficiaryDetails";
 import TransferDetails from "./validate-verify/TransferDetails";
 import ValidationCheckList, {checkListCSO} from "./validate-verify/ValidationCheckList";
-import {isNullOrEmpty} from "../../utils/objectHelpers";
+import {isNullOrEmpty, printValueObjectPrettified} from "../../utils/objectHelpers";
 
 import ObjectHelpersFluent from "../../utils/objectHelpersFluent";
 import {addCheck, IPropsChecks} from "./validate-verify/Check";
@@ -44,6 +40,19 @@ import {IList, List} from "../../utils/collections/list";
 import {actionIWorkflowResponseMessage} from "../../data/redux/workflow-response/reducer";
 import Button from "@material-ui/core/Button";
 import {ZoomIn, ZoomOut, ZoomOutOutlined} from "@material-ui/icons";
+import RunMappingRules from "./mappings/runMappingRules";
+
+import worker_script_mappings from "./mappings/mappingsWorker";
+import worker_script_rgtsValidationsWorker from "../transfers/rtgsValidationsWorker";
+import {useWorker} from "@koale/useworker";
+import validateRTGS from "../transfers/rtgsValidations";
+import idbHandler from "../../data/indexed-db/indexedDbHandler";
+import {randomInt} from "../../utils/numberHelpers";
+import uuid from "uuid";
+
+
+let worker = new Worker(worker_script_mappings);
+let workerRtgsValidation = new Worker(worker_script_rgtsValidationsWorker);
 
 const ORIENTATION_TO_ANGLE: any = {
     '3': 180,
@@ -51,11 +60,8 @@ const ORIENTATION_TO_ANGLE: any = {
     '8': -90,
 }
 
-// const codeReader = new BrowserQRCodeReader();
 const codeReader = new BrowserMultiFormatReader()
-// const codeReader = new BrowserPDF417Reader();
 
-// const codeReader = new BrowserQRCodeReader()
 
 export const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -152,6 +158,9 @@ const ScanCrop = () => {
 
     const classes = useStyles();
 
+    const runMappingRules = new RunMappingRules();
+
+    const [resultObjectKeys, setResultObjectKeys] = useState<IList<string>>(new List());
     const [imageSrc, setImageSrc] = useState<string>("")
     const [iScanSuccessful, setScanSuccessful] = useState(false)
 
@@ -163,15 +172,17 @@ const ScanCrop = () => {
     const [rawTransferFormValues] = useState(new Map())
     const [loading] = useState<boolean>(false)
     const [requestSent, setRequestSent] = useState<boolean>(false)
-    const [aCase] = useState<ICase>(ICaseDefault)
+    const [aCase, setACase] = useState<ICase>(ICaseDefault)
     const dispatch: Dispatch<any> = useDispatch();
+    const [validationWorker, {status: workerStatus, kill: killWorker}] = useWorker(validateRTGS)
+    const PDF417ReadOff = useRef(null);
 
     useEffect(() => {
     }, [aCase])
 
     const postData = (token: string, requestData: any, callBack: (data: any) => any) => {
         console.log({requestData})
-        console.log('port:',remoteRoutes.workflows)
+        console.log('port:', remoteRoutes.workflows)
 
         superagent.post(remoteRoutes.workflows)
             .set('Authorization', `Bearer ${token}`)
@@ -206,19 +217,21 @@ const ScanCrop = () => {
 
     const onCropComplete = async (croppedArea: any, croppedAreaPixels: any) => {
 
-        console.log({croppedArea, croppedAreaPixels}, {crop})
+        console.log('cropping results:', {croppedArea, croppedAreaPixels}, {crop}, {zoom})
 
         try {
 
             console.log(`with some:`, imageSrc)
             const croppedImage: any = await getCroppedImg(imageSrc, croppedAreaPixels, 0)
-
             console.log(`with some:`, croppedImage)
 
             // const decodedRawResult = await codeReader.decodeFromImageUrl(croppedImage)
 
             const decodedRawResult = await codeReader.decodeFromImage(undefined, croppedImage.toString())
-            console.log(`decoded:`, decodedRawResult)
+            console.log(`decoded:`, decodedRawResult.getText())
+
+            const resultOfScan = await runMappingRules.getScanResult(decodedRawResult.getText());
+            console.log('result of scan: ', resultOfScan);
 
             // check if decoding succeeded
             if (!new ObjectHelpersFluent().directValue(decodedRawResult.getText()).isAbsent().getFlag()) {
@@ -232,7 +245,7 @@ const ScanCrop = () => {
             const pairKeyValueFromDecodedRawResult = decodedRawResult.getText().split(",");
 
             // cleanup raw data
-            pairKeyValueFromDecodedRawResult.forEach((pair) => {
+            pairKeyValueFromDecodedRawResult.map((pair) => {
                 const valueTrimmed = pair.trim();
                 const key = valueTrimmed.slice(0, 2)
                 const value = valueTrimmed.slice(3, valueTrimmed.length)
@@ -241,61 +254,100 @@ const ScanCrop = () => {
                 }
             })
 
-            const transferDetailsRaw = await getRawTransferFormValues(rawTransferFormValues);
-            const aCase = await formatRawTransferFormValuesToJson(transferDetailsRaw, imageSrc);
-            // todo..find a way of dealing with workflow type
-            aCase.workflowType = "RTGS";
-            console.log(aCase.workflowType)
-            dispatch(actionICaseState(aCase));
+            Object.assign(aCase, runMappingRules.setCase(resultOfScan));
+            // console.log('aCase:', aCase)
+            // console.log(aCase.workflowType)
 
 
             const {access_token} = await login()
 
             if (aCase.workflowType !== "") {
+
+                const userObj = {
+                    "id": "1f824a84-46b6-4e7f-b601-5d041118439d",
+                    "name": "Daniel Comboni",
+                    "phone": "256781750721",
+                    "agentCode": "2345566",
+                    "branchName": "02",
+                    "region": ""
+                }
+
                 console.log(aCase.workflowType)
-                // console.log({access_token}, {aCase})
+                console.log({aCase})
 
-                validateData(aCase).then((validationResult) => {
+                aCase.applicationDate = new Date()
+                aCase.referenceNumber = randomInt(100000, 500000)
+                aCase.externalReference = uuid()
+                aCase.caseData.user = userObj;
+                aCase.caseData.doc = new Buffer(imageSrc.split(",")[1],"base64")
 
-                    if (validationResult) {
-                        console.log(`validated`)
-                        postData(access_token, aCase, (resp: any) => {
 
-                            dispatch(actionIWorkflowResponseMessage(resp))
+                dispatch(actionICaseState(aCase));
 
-                            console.log(`Submitted ${aCase.workflowType}`, resp)
-                            setRequestSent(true)
-                            Toast.success("scan complete")
-                        })
+                const validationResult = await validateData(aCase);
 
-                    }
+                // todo...try getting use from the one the logged in
 
-                }).catch((err) => {
-                    console.log('error: - ', err)
-                    Toast.error("Processing failed");
-                });
+                console.log('idb-support: ', idbHandler.isSupported())
+                const ttt = await idbHandler.setUpDb("test_again")
+                console.log('sss:', ttt)
+                console.log('sss:', idbHandler.getDb())
+                if (validationResult) {
+                    postData(access_token, aCase, (resp: any) => {
+                        dispatch(actionIWorkflowResponseMessage(resp))
+                        Toast.success("scan complete")
+                    })
+                } else {
+                    Toast.warn("Incomplete info in scan result")
+                }
+
+                // console.log('resulting...', validationResult)
+
+                // validateData(aCase).then((validationResult) => {
+                //
+                //     if (validationResult) {
+                //         console.log(`validated`)
+                //         // postData(access_token, aCase, (resp: any) => {
+                //         //
+                //         //     dispatch(actionIWorkflowResponseMessage(resp))
+                //         //
+                //         //     console.log(`Submitted ${aCase.workflowType}`, resp)
+                //         //     setRequestSent(true)
+                //         //     Toast.success("scan complete")
+                //         // })
+                //
+                //     } else {
+                //         Toast.error("Validation failed");
+                //     }
+                //
+                // }).catch((err) => {
+                //     console.log('error: - ', err)
+                //     Toast.error("Processing failed");
+                // });
             }
 
             setResult(decodedRawResult.getText())
-            // console.log("split: ",imageSrc.split(",")[1])
-            // console.log('buffer', new Buffer(imageSrc.split(",")[1],"base64"));
-            // console.log('buffer2', Uint8Array.from(atob(imageSrc.split(",")[1]), c => c.charCodeAt(0)));
-
-            // const arrayBuffer = Uint8Array.from(atob(imageSrc.split(",")[1]), c => c.charCodeAt(0));
-            // console.log(`array buffer: `,arrayBuffer)
-            // const blob = new Blob([arrayBuffer])
-            // const reader = new FileReader();
-            // reader.readAsDataURL(blob);
-            // reader.onload = (event: any) => {
-            //     const base64 =   event.target.result
-            //     // console.log(`unemployment:`,base64)
-            //     setImageSrcFromBinary(base64)
-            // };
 
         } catch (e) {
             console.log(e)
+
+            // to pinpoint PDF417
+            if (zoom === 3) {
+                setZoom(1)
+                setCrop({x: 0, y: -58.5})
+
+                autoClickToReadPDF417()
+            }
+
+
         }
 
+    }
+
+    function autoClickToReadPDF417() {
+        // @ts-ignore
+        PDF417ReadOff.current.click()
+        console.log("auto clicking...")
     }
 
     const onClose = useCallback(() => {
@@ -387,23 +439,24 @@ const ScanCrop = () => {
                                     onRotationChange={setRotation}
                                     onCropComplete={onCropComplete}
                                     onZoomChange={setZoom}
+
                                 />
                             </div>
 
                             <Button variant="contained" onClick={handleZoomOut}>
-                                Zoom out<ZoomOut />
+                                Zoom out<ZoomOut/>
                             </Button>
 
-                            <Button variant="contained" onClick={handleZoomIn}>
-                                Zoom in<ZoomIn />
+                            <Button variant="contained" onClick={handleZoomIn} ref={PDF417ReadOff}>
+                                Zoom in<ZoomIn/>
                             </Button>
 
                             <Button variant="outlined" onClick={handleLeftRotation}>
-                                Rotate Left<RotateLeftIcon />
+                                Rotate Left<RotateLeftIcon/>
                             </Button>
 
                             <Button variant="outlined" onClick={handleRightRotation}>
-                                Rotate Right<RotateRightIcon />
+                                Rotate Right<RotateRightIcon/>
                             </Button>
 
                             <ImgDialog img={croppedImage} onClose={onClose}/>

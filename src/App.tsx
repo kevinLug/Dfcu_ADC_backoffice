@@ -20,7 +20,7 @@ const App = () => {
 
     // periodic logout time dues to inactivity/idleness
     // const timeout = 900000
-    const timeout = aMinute * 3600000
+    const timeout = aMinute * 15;
     const [remaining, setRemaining] = useState(timeout)
     const [elapsed, setElapsed] = useState(0)
     const [lastActive, setLastActive] = useState(+new Date())
@@ -58,12 +58,10 @@ const App = () => {
         // setLastActive(getLastActiveTime())
         // setElapsed(getElapsedTime())
 
-        // idleTimeSetup()
+        idleTimeSetup()
 
         // remaining, elapsed, lastActive
     }, [])
-
-    //idleTimeSetup()
 
     function idleTimeSetup() {
 
@@ -104,7 +102,7 @@ const App = () => {
 
                     // if ()
 
-                }, 1000)
+                }, aMinute * 5)
             }
         })
 
