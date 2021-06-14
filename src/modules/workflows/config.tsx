@@ -118,7 +118,7 @@ export const workflowHeadCells: XHeadCell[] = [
 
 export const workflowHeadCellsNew: XHeadCell[] = [...workflowHeadCells.filter(it => it.name !== 'metaData.assigneeName')]
 
-export const workflowTypes = ['Foreign Remittances', 'EFT', 'RTGS', 'RTGSLOCAL', 'EAPS', 'REPSS', 'Foreign Draft']
+export const workflowTypes = ['FOREIGNREMITTANCE', 'EFT', 'RTGS', 'RTGSLOCAL', 'EAPS', 'REPSS', 'Foreign Draft']
 
 export enum RequestType {
 
