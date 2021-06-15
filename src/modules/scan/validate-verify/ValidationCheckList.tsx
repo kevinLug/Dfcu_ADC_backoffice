@@ -77,7 +77,7 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
 
     const [rejectionComment, setRejectionComment] = useState('')
     const initialData: IDataProps = {
-        checks: getChecksToPopulate(check.checks),
+        checks: check.checks,
         rejectionComment: rejectionComment
     }
 
@@ -91,6 +91,8 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
     const handleCSOApproval = async () => {
 
         let data = getChecksToPopulate(check.checks);
+
+
         let caseId: string
         if (!workflowResponseMessage.caseId || workflowResponseMessage.caseId.includes("0000-0000")) {
             // @ts-ignore
@@ -121,8 +123,26 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
     const handleCSORejection = async () => {
 
         let checks = getChecksToPopulate(check.checks);
+
+        const obj = {
+            checks: checks,
+            rejectionComment: rejectionComment
+        }
+
+        const theData: IDataProps = {
+            checks: obj.checks,
+            rejectionComment: obj.rejectionComment
+        }
+
         setData({checks, rejectionComment})
-        alert(`the data:${data}`)
+
+        // @ts-ignore
+        checks["rejectionComment"] = rejectionComment;
+        // @ts-ignore
+        checks["isRejected"] = true;
+
+        alert(`the data:${JSON.stringify(checks, null, 2)}`)
+        console.log(data)
         let caseId: string
         if (!workflowResponseMessage.caseId || workflowResponseMessage.caseId.includes("0000-0000")) {
             // @ts-ignore
@@ -137,20 +157,20 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
             actionName: "cso-transfer-details-approval",
             resumeCase: true,
             nextSubStatus: "SenderDetailsCheckSuccessful",
-            data: data,
+            data: checks,
             override: false
         }
 
         console.log("manual:", manualCSORejection)
 
         // todo...uncomment
-        // post(remoteRoutes.workflowsManual, manualCSOApproval, (resp: any) => {
-        //         console.log(resp) // todo ... consider providing a message for both success and failure
-        //     }, undefined,
-        //     () => {
-        //         window.location.href = window.location.origin
-        //     }
-        // )
+        post(remoteRoutes.workflowsManual, manualCSORejection, (resp: any) => {
+                console.log(resp) // todo ... consider providing a message for both success and failure
+            }, undefined,
+            () => {
+                window.location.href = window.location.origin
+            }
+        )
     }
 
 
@@ -160,6 +180,10 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
 
     function cancelCommentDialog() {
         setShowCommentBox(false)
+    }
+
+    function setComment(e: any) {
+        setRejectionComment(e.target.value)
     }
 
     return (
@@ -189,13 +213,17 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
 
                             <Formik
 
+                                enableReinitialize
+
                                 initialValues={data}
                                 onSubmit={async values => {
                                     await new Promise(resolve => {
                                         setTimeout(resolve, 500)
-                                        alert(JSON.stringify(data, null, 2));
+                                        // console.log("sub value: ", values)
+                                        handleCSORejection()
+                                        // alert(`ale-2${JSON.stringify(data, null, 2)}:`);
                                     });
-                                    alert(JSON.stringify(data, null, 2));
+
                                 }}
                             >
                                 <Form>
@@ -203,13 +231,15 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
                                         rowsMax={8}
                                         aria-label="maximum height"
                                         placeholder="write comment here..."
+                                        onChange={setComment}
                                     />
 
                                     <Grid item sm={12} className={classes.submissionGrid}>
                                         <Box className={classes.submissionBox}>
                                             <Button variant="contained" className={classes.rejectButton}
                                                     onClick={cancelCommentDialog}>CANCEL</Button>
-                                            <Button type="submit" variant="contained" color="primary" onSubmit={handleCSORejection} >CONFIRM</Button>
+                                            <Button type="submit" variant="contained" color="primary"
+                                                    onSubmit={handleCSORejection}>CONFIRM</Button>
                                         </Box>
                                     </Grid>
                                 </Form>

@@ -1,6 +1,6 @@
 import {IKeyValueMap} from "../../utils/collections/map";
 import {IManualDecision} from "../workflows/types";
-import {isNullOrEmpty, isObject} from "../../utils/objectHelpers";
+import {isNullOrEmpty} from "../../utils/objectHelpers";
 import {IList} from "../../utils/collections/list";
 
 export const populateLabelAndValue = (exceptions: string[] = [], pairs: IKeyValueMap<string, any>, valuePlaceHolder: any) => {
