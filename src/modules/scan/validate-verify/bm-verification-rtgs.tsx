@@ -17,6 +17,7 @@ import {IState} from "../../../data/types";
 import {ErrorIcon, SuccessIcon} from "../../../components/xicons";
 import Typography from "@material-ui/core/Typography";
 import ValidationCheckList, {checkListCSO} from "./ValidationCheckList";
+import ImageUtils from "../../../utils/imageUtils";
 
 interface IProps {
     workflow: IWorkflow
@@ -115,8 +116,10 @@ const BmVerificationRtgs = ({workflow}: IProps) => {
 
         const caseData: ICaseData = workflow.caseData
 
+        console.log("journey: ", caseData.doc)
         // todo .. sprout this step (for re-usability)...also used in ScanCrop.tsx
-        const arrayBuffer = new Buffer(caseData.doc["data"])
+        const arrayBuffer = ImageUtils.base64ToArrayBuffer(caseData.doc)
+        // const arrayBuffer = new Buffer(caseData.doc)
         const blob = new Blob([arrayBuffer])
         const reader = new FileReader();
         reader.readAsDataURL(blob);

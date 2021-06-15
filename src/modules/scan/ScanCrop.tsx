@@ -27,7 +27,7 @@ import ExpansionCard from "../../components/ExpansionCard";
 import Dropzone from "react-dropzone";
 import SenderDetails from "./validate-verify/SenderDetails";
 import {Dispatch} from "redux";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {actionICaseState} from "../../data/redux/transfers/reducer";
 import BeneficiaryDetails from "./validate-verify/BeneficiaryDetails";
 import TransferDetails from "./validate-verify/TransferDetails";
@@ -49,6 +49,8 @@ import validateRTGS from "../transfers/rtgsValidations";
 import idbHandler from "../../data/indexed-db/indexedDbHandler";
 import {randomInt} from "../../utils/numberHelpers";
 import uuid from "uuid";
+import {ICoreState} from "../../data/redux/coreReducer";
+import ImageUtils from "../../utils/imageUtils";
 
 
 let worker = new Worker(worker_script_mappings);
@@ -177,6 +179,8 @@ const ScanCrop = () => {
     const [validationWorker, {status: workerStatus, kill: killWorker}] = useWorker(validateRTGS)
     const PDF417ReadOff = useRef(null);
 
+    const {user}: ICoreState = useSelector((state: any) => state.core)
+
     useEffect(() => {
     }, [aCase])
 
@@ -221,9 +225,9 @@ const ScanCrop = () => {
 
         try {
 
-            console.log(`with some:`, imageSrc)
+            // console.log(`with some-imageSrc:`, imageSrc)
             const croppedImage: any = await getCroppedImg(imageSrc, croppedAreaPixels, 0)
-            console.log(`with some:`, croppedImage)
+            // console.log(`with some-croppedImage:`, croppedImage)
 
             // const decodedRawResult = await codeReader.decodeFromImageUrl(croppedImage)
 
@@ -259,13 +263,16 @@ const ScanCrop = () => {
             // console.log(aCase.workflowType)
 
 
+
+
             const {access_token} = await login()
 
             if (aCase.workflowType !== "") {
 
                 const userObj = {
-                    "id": "1f824a84-46b6-4e7f-b601-5d041118439d",
-                    "name": "Daniel Comboni",
+                    "id": user.sub,
+                    // "id": "1f824a84-46b6-4e7f-b601-5d041118439d",
+                    "name": user.name,
                     "phone": "256781750721",
                     "agentCode": "2345566",
                     "branchName": "02",
@@ -279,8 +286,8 @@ const ScanCrop = () => {
                 aCase.referenceNumber = randomInt(100000, 500000)
                 aCase.externalReference = uuid()
                 aCase.caseData.user = userObj;
-                aCase.caseData.doc = new Buffer(imageSrc.split(",")[1],"base64")
-
+                aCase.caseData.doc = imageSrc
+                // aCase.caseData.doc = ImageUtils.base64ToArrayBuffer(imageSrc)
 
                 dispatch(actionICaseState(aCase));
 
@@ -293,6 +300,9 @@ const ScanCrop = () => {
                 console.log('sss:', ttt)
                 console.log('sss:', idbHandler.getDb())
                 if (validationResult) {
+
+                    console.log("the user: ", user)
+
                     postData(access_token, aCase, (resp: any) => {
                         dispatch(actionIWorkflowResponseMessage(resp))
                         Toast.success("scan complete")
@@ -366,7 +376,7 @@ const ScanCrop = () => {
         }
 
         setImageSrc(imageDataUrl)
-        console.log("dropped image:", imageDataUrl)
+        // console.log("dropped image:", imageDataUrl)
     }
 
     function handleZoomIn() {
