@@ -11,9 +11,9 @@ import {useDispatch, useSelector} from "react-redux";
 
 import {ICheckKeyValueState} from "../../../data/redux/checks/reducer";
 
-import {IManualDecision} from "../../workflows/types";
+import {IManualDecision, WorkflowSubStatus} from "../../workflows/types";
 
-import {remoteRoutes} from "../../../data/constants";
+import {hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
 
 import {post} from "../../../utils/ajax";
 import {getChecksToPopulate} from "../populateLabelAndValue";
@@ -22,6 +22,7 @@ import {Dispatch} from "redux";
 import EditDialog from "../../../components/EditDialog";
 import {Form, Formik, Field, FormikHelpers} from 'formik';
 import {IKeyValueMap} from "../../../utils/collections/map";
+import {IState} from "../../../data/types";
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -70,12 +71,15 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
 
     const {check}: ICheckKeyValueState = useSelector((state: any) => state.checks)
     const {workflow}: IWorkflowState = useSelector((state: any) => state.workflows)
+    const user = useSelector((state: IState) => state.core.user)
 
     const dispatch: Dispatch<any> = useDispatch();
 
     const [showCommentBox, setShowCommentBox] = useState(false)
+    const [isRejectBtnDisabled, setRejectBtnDisabled] = useState(false)
 
     const [rejectionComment, setRejectionComment] = useState('')
+    const [subStatusFound, setSubStatusFound] = useState('')
     const initialData: IDataProps = {
         checks: check.checks,
         rejectionComment: rejectionComment
@@ -86,6 +90,10 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
     useEffect(() => {
         // console.log(check.checks)
         // setData({checks: getChecksToPopulate(check.checks), rejectionComment: rejectionComment})
+
+        // @ts-ignore
+        // setSubStatusFound(workflow.subStatus)
+
     }, [dispatch, check, workflow, rejectionComment, data])
 
     const handleCSOApproval = async () => {
@@ -101,6 +109,8 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
             caseId = workflowResponseMessage.caseId
         }
 
+        // @ts-ignore
+        data["isRejected"] = false;
         const manualCSOApproval: IManualDecision = {
             caseId: caseId,
             taskName: "cso-approval", // todo ...consider making these constants
@@ -122,6 +132,8 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
 
     const handleCSORejection = async () => {
 
+        setRejectBtnDisabled(true)
+
         let checks = getChecksToPopulate(check.checks);
 
         const obj = {
@@ -141,7 +153,7 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
         // @ts-ignore
         checks["isRejected"] = true;
 
-        alert(`the data:${JSON.stringify(checks, null, 2)}`)
+        // alert(`the data:${JSON.stringify(checks, null, 2)}`)
         console.log(data)
         let caseId: string
         if (!workflowResponseMessage.caseId || workflowResponseMessage.caseId.includes("0000-0000")) {
@@ -161,7 +173,7 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
             override: false
         }
 
-        console.log("manual:", manualCSORejection)
+        // console.log("manual:", manualCSORejection)
 
         // todo...uncomment
         post(remoteRoutes.workflowsManual, manualCSORejection, (resp: any) => {
@@ -173,6 +185,14 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
         )
     }
 
+    function shouldAllowApproval() {
+        // @ts-ignore
+        setSubStatusFound(workflow.subStatus)
+
+        if (WorkflowSubStatus.AwaitingCSOApproval === subStatusFound && hasAnyRole(user, [systemRoles.CSO]))
+            return true;
+        return WorkflowSubStatus.AwaitingBMApproval === subStatusFound && hasAnyRole(user, [systemRoles.BM]);
+    }
 
     function showCommentDialog() {
         setShowCommentBox(true)
@@ -191,6 +211,7 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
         <Grid container>
             {
                 theCheckList.toArray().map((aCheck, index) => {
+                    // console.log("found: ", subStatusFound)
 
                     return <Grid key={index} item sm={12}>
                         <CheckBoxTemplate value={aCheck.value} label={aCheck.label} name={aCheck.name}/>
@@ -199,11 +220,19 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
             }
 
             <Grid item sm={12} className={classes.submissionGrid}>
-                <Box className={classes.submissionBox}>
-                    <Button variant="contained" className={classes.rejectButton}
-                            onClick={showCommentDialog}>REJECT</Button>
-                    <Button variant="contained" color="primary" onClick={handleCSOApproval}>SUBMIT REQUEST</Button>
-                </Box>
+
+                {
+                    hasAnyRole(user, [systemRoles.CSO] ) ?
+                        <Box className={classes.submissionBox}>
+                            <Button variant="contained" className={classes.rejectButton}
+                                    onClick={showCommentDialog}>REJECT</Button>
+                            <Button variant="contained" color="primary" onClick={handleCSOApproval}>SUBMIT
+                                REQUEST</Button>
+                        </Box>
+                        :
+                        ""
+                }
+
             </Grid>
 
             {
@@ -228,7 +257,9 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
                             >
                                 <Form>
                                     <TextareaAutosize
-                                        rowsMax={8}
+                                        // rowsMax={}
+                                        rowsMin={10}
+                                        cols={40}
                                         aria-label="maximum height"
                                         placeholder="write comment here..."
                                         onChange={setComment}
@@ -237,27 +268,14 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
                                     <Grid item sm={12} className={classes.submissionGrid}>
                                         <Box className={classes.submissionBox}>
                                             <Button variant="contained" className={classes.rejectButton}
-                                                    onClick={cancelCommentDialog}>CANCEL</Button>
+                                                    onClick={cancelCommentDialog}>Cancel</Button>
                                             <Button type="submit" variant="contained" color="primary"
-                                                    onSubmit={handleCSORejection}>CONFIRM</Button>
+                                                    disabled={isRejectBtnDisabled}
+                                                    onSubmit={handleCSORejection}>Confirm</Button>
                                         </Box>
                                     </Grid>
                                 </Form>
                             </Formik>
-
-                            {/*<Formik*/}
-                            {/*    initialValues={data}*/}
-                            {/*    onSubmit={async values => {*/}
-                            {/*        await new Promise(resolve => setTimeout(resolve, 500));*/}
-                            {/*        alert(JSON.stringify(values, null, 2));*/}
-                            {/*    }}*/}
-                            {/*>*/}
-                            {/*    <Form>*/}
-                            {/*        <Field name="name" type=""/>*/}
-                            {/*        <Field name="email" type="email"/>*/}
-                            {/*        <button type="submit">Submit</button>*/}
-                            {/*    </Form>*/}
-                            {/*</Formik>*/}
 
                         </Grid>
                     </EditDialog>

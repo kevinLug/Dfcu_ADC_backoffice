@@ -7,15 +7,19 @@ import {IKeyValueMap, KeyValueMap} from "../../../utils/collections/map";
 import {Dispatch} from "redux";
 import {actionICheckKeyValue} from "../../../data/redux/checks/reducer";
 import {ICheckKeyValue} from "../../transfers/types";
+import Typography from "@material-ui/core/Typography";
+import {ErrorIcon, SuccessIcon} from "../../../components/xicons";
 
 export interface IPropsChecks {
     value: boolean;
     label: string;
     name: string;
     usePropValue?: boolean;
-
-    handleCheckChange?: () => boolean
+    handleCheckChange?: () => boolean;
+    disable?: boolean
 }
+
+
 
 export const addCheck = (label: string, name: string, value: boolean = false) => {
 
@@ -51,7 +55,7 @@ const CheckBoxTemplate = ({
                               label,
                               name,
                               usePropValue = false,
-
+                              disable
                           }: IPropsChecks) => {
 
     const [stateValue, setStateValue] = useState<boolean>(value)
@@ -94,7 +98,7 @@ const CheckBoxTemplate = ({
 
     return <Grid>
         <FormControlLabel
-            control={<Checkbox checked={state} name={name} onChange={handleChange}/>}
+            control={<Checkbox checked={state} name={name} onChange={handleChange} disabled={disable}/>}
             label={label}/>
     </Grid>
 }
