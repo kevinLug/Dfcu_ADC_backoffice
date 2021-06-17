@@ -13,7 +13,7 @@ import {ICheckKeyValueState} from "../../../data/redux/checks/reducer";
 
 import {IManualDecision, WorkflowSubStatus} from "../../workflows/types";
 
-import {hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
+import {csoOrBmRolesForDev, hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
 
 import {post} from "../../../utils/ajax";
 import {getChecksToPopulate} from "../populateLabelAndValue";
@@ -185,15 +185,6 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
         )
     }
 
-    function shouldAllowApproval() {
-        // @ts-ignore
-        setSubStatusFound(workflow.subStatus)
-
-        if (WorkflowSubStatus.AwaitingCSOApproval === subStatusFound && hasAnyRole(user, [systemRoles.CSO]))
-            return true;
-        return WorkflowSubStatus.AwaitingBMApproval === subStatusFound && hasAnyRole(user, [systemRoles.BM]);
-    }
-
     function showCommentDialog() {
         setShowCommentBox(true)
     }
@@ -222,10 +213,10 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
             <Grid item sm={12} className={classes.submissionGrid}>
 
                 {
-                    hasAnyRole(user, [systemRoles.CSO] ) ?
+                    csoOrBmRolesForDev(user) ?
                         <Box className={classes.submissionBox}>
                             <Button variant="contained" className={classes.rejectButton}
-                                    onClick={showCommentDialog}>REJECT</Button>
+                                    onClick={showCommentDialog} disabled={true}>REJECT</Button>
                             <Button variant="contained" color="primary" onClick={handleCSOApproval}>SUBMIT
                                 REQUEST</Button>
                         </Box>

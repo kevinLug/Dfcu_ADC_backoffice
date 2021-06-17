@@ -99,7 +99,7 @@ export enum WorkflowSubStatus {
   OperationSucceeded = "OperationSucceeded",
 
   Pending = "Pending",
-  Verified = "Verified",
+  TransactionComplete = "TransactionComplete",
   ManualVerification = "ManualVerification",
 
   AwaitingCSOApproval = 'AwaitingCSOApproval',

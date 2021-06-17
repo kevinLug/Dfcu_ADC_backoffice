@@ -18,7 +18,7 @@ import {ErrorIcon, SuccessIcon} from "../../../components/xicons";
 import Typography from "@material-ui/core/Typography";
 import ValidationCheckList, {checkListCSO} from "./ValidationCheckList";
 import ImageUtils from "../../../utils/imageUtils";
-import {hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
+import {csoOrBmRolesForDev, remoteRoutes} from "../../../data/constants";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import {createStyles, makeStyles} from "@material-ui/core";
@@ -95,7 +95,7 @@ export const SuccessFailureDisplay = (v: IPropsChecks) => {
                 fontSize='inherit'
             />
             {v.label}
-            <sup><i>{superScript}</i></sup>
+            <sup><i><b>{superScript}</b></i></sup>
         </Typography>
 
         :
@@ -107,7 +107,7 @@ export const SuccessFailureDisplay = (v: IPropsChecks) => {
                 fontSize='inherit'
             />
             {v.label}
-            <sup><i>{superScript}</i></sup>
+            <sup><i><b>{superScript}</b></i></sup>
         </Typography>
 }
 
@@ -153,7 +153,6 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
     const [showCommentBox, setShowCommentBox] = useState(false)
     const [remark, setRemark] = useState('')
     const [spacing, setSpacing] = React.useState<GridSpacing>(2);
-
 
     const {check}: ICheckKeyValueState = useSelector((state: any) => state.checks)
     // const {workflow}: IWorkflowState = useSelector((state: any) => state.workflows)
@@ -267,12 +266,101 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
                 console.log(resp) // todo ... consider providing a message for both success and failure
             }, undefined,
             () => {
-                // todo...uncomment this
-                // window.location.href = window.location.origin
+
+                window.location.href = window.location.origin
             }
         )
     }
 
+
+    const prepareFinacleData = async () => {
+
+        let caseId: string
+        if (!workflowResponseMessage.caseId || workflowResponseMessage.caseId.includes("0000-0000")) {
+            // @ts-ignore
+            caseId = workflow.id
+        } else {
+            caseId = workflowResponseMessage.caseId
+        }
+
+        const session = {
+            userId: user.sub,
+            sessionId: user.sid,
+            caseId: caseId
+        }
+
+        const transferDetails = {
+            currencyCode: workflow.caseData.transferDetails.currencyCode,
+            transAmount: workflow.caseData.transferDetails.transactionAmount,
+            exchangeRate: workflow.caseData.transferDetails.exchangeRate,
+            remittanceMode: "SWIFT",
+            countryCode: workflow.caseData.beneficiaryDetails.address.countryCode,
+            branchCode: workflow.caseData.transferDetails.branchCode,
+            transferPurpose: workflow.caseData.transferDetails.transferPurpose,
+            chargeMode: workflow.caseData.charges.chargeMode,
+
+            swiftCode: workflow.caseData.bankDetails.beneficiaryBank.swiftCode,
+            sortCode: workflow.caseData.bankDetails.beneficiaryBank.sortCode,
+            aba: workflow.caseData.bankDetails.beneficiaryBank.aba,
+            fedwire: workflow.caseData.bankDetails.beneficiaryBank.fedwire,
+            ifsc: workflow.caseData.bankDetails.beneficiaryBank.ifsc,
+            iban: workflow.caseData.bankDetails.beneficiaryBank.iban,
+        }
+
+        const applicantDetails = {
+            fullName: workflow.caseData.applicantDetails.fullName,
+            accountNumber: workflow.caseData.applicantDetails.accountNumber,
+
+            applicantAddress: {
+                town: workflow.caseData.applicantDetails.address.town,
+                plotNumber: workflow.caseData.applicantDetails.address.plotNumber,
+                street: workflow.caseData.applicantDetails.address.street,
+                district: workflow.caseData.applicantDetails.address.district,
+            }
+        };
+
+        const beneficiaryDetails = {
+            fullName: workflow.caseData.beneficiaryDetails.fullName,
+            accountNumber: workflow.caseData.beneficiaryDetails.accountNumber,
+            beneficiaryAddress: {
+                town: workflow.caseData.beneficiaryDetails.address.town,
+                country: workflow.caseData.beneficiaryDetails.address.countryCode,
+                physicalAddress: workflow.caseData.beneficiaryDetails.address.physicalAddress
+            }
+        }
+
+        const finacleData = {
+            session: session,
+            caseId: caseId,
+            transferDetails: transferDetails,
+            applicantDetails: applicantDetails,
+            beneficiaryDetails: beneficiaryDetails
+        }
+
+        console.log("finacleData: ", finacleData)
+
+        const manualCMOApproval: IManualDecision = {
+            caseId: caseId,
+            taskName: "cmo-approval", // todo ...consider making these constants
+            actionName: "cmo-transfer-details-approval",
+            resumeCase: true,
+            nextSubStatus: "AwaitingSubmissionToFinacle",
+            data: finacleData,
+            override: false
+        }
+
+        console.log("manual-bm:", manualCMOApproval)
+
+        post(remoteRoutes.workflowsManual, manualCMOApproval, (resp: any) => {
+                console.log(resp) // todo ... consider providing a message for both success and failure
+            }, undefined,
+            () => {
+
+                window.location.href = window.location.origin
+            }
+        )
+
+    }
 
     return <Grid>
 
@@ -282,7 +370,7 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
                 return <Grid key={index} style={index % 2 ? {background: "#fcf6ea"} : {background: "#fdf9f1"}}>
                     {
 
-                        <SuccessFailureDisplay value={v.value} label={v.label} name={v.name} key={v.name} />
+                        <SuccessFailureDisplay value={v.value} label={v.label} name={v.name} key={v.name}/>
 
                     }
 
@@ -291,10 +379,12 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
                         checksReviewConfirmation().toArray().map(val => {
 
                             if ((workflow.tasks[2].actions[0].status !== ActionStatus.Pending) && val.name.startsWith(v.name)) {
-                                return <SuccessFailureDisplay value={val.value} label={val.label} name={val.name} key={v.name} />
+                                return <SuccessFailureDisplay value={val.value} label={val.label} name={val.name}
+                                                              key={v.name}/>
                             }
 
-                            if (val.name.startsWith(v.name) && hasAnyRole(user, [systemRoles.BM]))
+                            // todo...user will have to be BM
+                            if (val.name.startsWith(v.name) && csoOrBmRolesForDev(user))
                                 return <CheckBoxTemplate key={val.name} value={val.value} label="confirm"
                                                          name={val.name}/>
 
@@ -325,15 +415,32 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
 
         {
 
-            hasAnyRole(user, [systemRoles.BM]) && workflow.tasks[2].actions[0].status !== ActionStatus.Done && workflow.tasks[2].actions[0].status !== ActionStatus.Error ?
+            // todo...user role will have to be BM
+            csoOrBmRolesForDev(user) && workflow.tasks[2].actions[0].status !== ActionStatus.Done && workflow.tasks[2].actions[0].status !== ActionStatus.Error ?
                 <Grid item sm={12} className={classes.submissionGrid}>
                     <Box className={classes.submissionBox}>
                         <Button variant="contained" className={classes.rejectButton}
-                                onClick={cancelCommentDialog}>Cancel</Button>
+                                onClick={cancelCommentDialog} disabled={true} >Reject</Button>
                         <Button type="submit" variant="contained" color="primary"
                             // disabled={isRejectBtnDisabled}
                                 onClick={handleBMApproval}
                         >Submit</Button>
+                    </Box>
+                </Grid>
+                :
+                ""
+        }
+
+        {
+            workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle ?
+                <Grid item sm={12} className={classes.submissionGrid}>
+                    <Box className={classes.submissionBox}>
+                        <Button variant="contained" className={classes.rejectButton}
+                                onClick={cancelCommentDialog} disabled={true} >Reject</Button>
+                        <Button type="submit" variant="contained" color="primary"
+                            // disabled={isRejectBtnDisabled}
+                                onClick={prepareFinacleData}
+                        >Submit to Finacle</Button>
                     </Box>
                 </Grid>
                 :

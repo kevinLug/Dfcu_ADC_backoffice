@@ -32,7 +32,7 @@ export const renderStatus = (value: WorkflowStatus) => {
 export const renderSubStatus = (value: WorkflowSubStatus) => {
     let color = successColor
     switch (value) {
-        case WorkflowSubStatus.Verified:
+        case WorkflowSubStatus.TransactionComplete:
             color = successColor
             break
         case WorkflowSubStatus.UnknownError:
