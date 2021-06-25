@@ -1,5 +1,5 @@
 {
-  "name": "hermes-client",
+  "name": "autodatacapture-backoffice",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -88,6 +88,7 @@
     "eject": "react-scripts eject",
     "deploy": "msdeploy --verb sync --allowUntrusted true --source contentPath=%npm_package_config_sourcePath% --dest contentPath=%npm_package_config_destPath%,ComputerName=%npm_package_config_ComputerName%,UserName=%npm_package_config_UserName%,Password=%npm_package_config_Password%,includeAcls=False",
     "deploy-test": "msdeploy --verb sync --allowUntrusted true --source contentPath=%npm_package_config_sourcePath% --dest contentPath=%npm_package_config_destPath%,wmsvc=%npm_package_config_ComputerName%,UserName=%npm_package_config_UserName%,Password=%npm_package_config_Password%,includeAcls=False",
+    "package": "msdeploy --verb sync --source contentPath=%npm_package_config_sourcePath% --dest package=%npm_package_config_packagePath% --declareParam name='%npm_package_config_paramName%',defaultValue=%npm_package_config_paramValue%,kind=%npm_package_config_paramKind%,scope=%npm_package_config_paramScope%",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public"
   },
@@ -96,7 +97,12 @@
     "UserName": "",
     "Password": "",
     "sourcePath": "",
-    "destPath": ""
+    "destPath": "",
+    "packagePath": "",
+    "paramName": "\"IIS Web Application Name\"",
+    "paramKind": "ProviderPath",
+    "paramScope": "ContentPath",
+    "paramValue": "Default"
   },
   "eslintConfig": {
     "extends": "react-app"
