@@ -62,8 +62,8 @@ export const localRoutes = {
 const servers: any = {
     dev: {
         Auth: 'https://dfcu-autodatacapture-auth-api-test.test001.laboremus.no',
-        // Case: 'http://localhost:6001',
-        Case: 'https://dfcu-autodatacapture-casehandling-test.test001.laboremus.no',
+        Case: 'http://localhost:6001',
+        // Case: 'https://dfcu-autodatacapture-casehandling-test.test001.laboremus.no',
         Notification: 'https://dfcu-notification-api-test.test001.laboremus.no',
     },
     test: {
@@ -77,9 +77,9 @@ const servers: any = {
         Notification: 'https://dfcu-notification-api-test.test001.laboremus.no',
     },
     sit: {
-        Auth: 'https://authentication-test.onboarding.dfcugroup.com',
-        Case: 'https://casehandling-test.onboarding.dfcugroup.com/',
-        Notification: 'https://notification-test.onboarding.dfcugroup.com',
+        Auth: 'https://auth-api-test.autodatacapture.dfcugroup.com',
+        Case: 'https://casehandling-api-test.autodatacapture.dfcugroup.com',
+        Notification: 'https://notification-api-test.autodatacapture.dfcugroup.com',
     },
     uat: {
         Auth: "https://authentication-staging.onboarding.dfcugroup.com",
