@@ -99,15 +99,15 @@ export const workflowHeadCells: XHeadCell[] = [
             }
         }
     },
-    {
-        name: 'subStatus', label: 'SubStatus', render: renderSubStatus,
-        cellProps: {
-            style: {
-                width: 80,
-                whiteSpace: 'nowrap'
-            }
-        }
-    },
+    // {
+    //     name: 'subStatus', label: 'SubStatus', render: renderSubStatus,
+    //     cellProps: {
+    //         style: {
+    //             width: 80,
+    //             whiteSpace: 'nowrap'
+    //         }
+    //     }
+    // },
 
     // {
     //     name: 'metaData.assigneeName',
