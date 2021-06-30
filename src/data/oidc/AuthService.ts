@@ -9,11 +9,11 @@ class AuthService {
     constructor() {
         const clientRoot = this.clientRoot
         const settings = {
-            client_id: 'dfcu:backoffice:autodatacapture',
+            client_id: 'backoffice',
             redirect_uri: `${clientRoot}/signin-callback.html`,
             post_logout_redirect_uri: clientRoot,
             response_type: 'token id_token',
-            scope: 'openid profile offline_access roles agent_details Crm CaseHandling KycConnector Gateway IdentityServerApi',
+            scope: 'openid profile offline_access roles CaseHandling IdentityServerApi',
             authority: remoteRoutes.authServer,
             silent_redirect_uri: `${clientRoot}/silent_renew.html`,
             automaticSilentRenew: true,
