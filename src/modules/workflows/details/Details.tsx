@@ -18,6 +18,8 @@ import {fetchWorkflowAsync, IWorkflowState, startWorkflowFetch} from "../../../d
 import {renderStatus, renderSubStatus} from "../widgets";
 
 import BmVerificationRtgs from "../../scan/validate-verify/bm-verification-rtgs";
+import {IState} from "../../../data/types";
+import {printStdDatetime} from "../../../utils/dateHelpers";
 
 interface IProps extends RouteComponentProps {
 
@@ -46,11 +48,13 @@ const Details = (props: IProps) => {
     const classes = useStyles()
     const [blocker, setBlocker] = useState<boolean>(false)
     const {loading, workflow}: IWorkflowState = useSelector((state: any) => state.workflows)
+    const user = useSelector((state: IState) => state.core.user)
 
     const dispatch: Dispatch<any> = useDispatch();
     useEffect(() => {
         dispatch(startWorkflowFetch())
         dispatch(fetchWorkflowAsync(caseId))
+
         // console.log(`workflow fetched:`, workflow)
 // @ts-ignore
 //         if (workflow.tasks) {
@@ -74,6 +78,90 @@ const Details = (props: IProps) => {
     }
 
     const caseData = workflow as IWorkflow;
+    // @ts-ignore
+    const outputDataCSO = workflow.tasks[1].actions[0].outputData
+
+    const submittedByCSO = JSON.parse(outputDataCSO)["submittedBy"]
+    const runDateCSO = new Date(JSON.parse(outputDataCSO)["runDate"])
+
+    // @ts-ignore
+    const timestamp = workflow.tasks[1].actions[0].outputData["timestamp"]
+
+    function submittedOrRejectedByCSO() {
+        console.log('runDateCSO: ', runDateCSO)
+        // @ts-ignore
+        console.log("the tasks: ", workflow["tasks"])
+        let returned = {}
+        // @ts-ignore
+        const isRejectedByCSO: boolean = workflow.tasks[1].actions[0].outputData["isRejected"]
+
+        if (isRejectedByCSO) {
+
+            returned = <div style={styleUserAndDate}>&nbsp;&nbsp;Rejected by:
+                <span style={styleUserName}>{submittedByCSO}</span>{" - "}
+                <span style={styleUserName}>{printStdDatetime(runDateCSO)}</span>
+            </div>
+            // returned = <span style={styleUserName}>{caseData["caseData"]["user"]["name"]}</span>
+        } else {
+            returned = <div style={styleUserAndDate}>&nbsp;&nbsp;Submitted by:
+                <span style={styleUserName}>{submittedByCSO}</span>{" - "}
+                <span style={styleUserName}>{printStdDatetime(runDateCSO)}</span>
+            </div>
+
+        }
+        return returned;
+    }
+
+    function submittedOrRejectedByBM() {
+
+        // @ts-ignore
+        const outputDataBM = workflow.tasks[2].actions[0].outputData
+
+        let returned = {}
+        if (outputDataBM !== undefined && outputDataBM !== null) {
+
+            const approvedByBM = JSON.parse(outputDataBM)["approvedBy"]
+            const runDateBM = new Date(JSON.parse(outputDataBM)["runDate"])
+
+            console.log('runDateCSO: ', runDateCSO)
+            // @ts-ignore
+            console.log("the tasks: ", workflow["tasks"])
+
+            // @ts-ignore
+            const isRejectedByCSO: boolean = workflow.tasks[1].actions[0].outputData["isRejected"]
+
+            if (isRejectedByCSO) {
+
+                returned = <div style={styleUserAndDate}>&nbsp;&nbsp; | Rejected by:
+                    <span style={styleUserName}>{approvedByBM}</span>{" - "}
+                    <span style={styleUserName}>{printStdDatetime(runDateBM)}</span>
+                </div>
+                // returned = <span style={styleUserName}>{caseData["caseData"]["user"]["name"]}</span>
+            } else {
+                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;| Approved by:
+                    <span style={styleUserName}>{approvedByBM}</span>{" - "}
+                    <span style={styleUserName}>{printStdDatetime(runDateBM)}</span>
+                </div>
+
+            }
+
+        } else {
+            returned = ""
+        }
+
+
+        return returned;
+    }
+
+    const styleUserAndDate = {
+        marginTop: 4,
+        fontWeight: 10
+    };
+
+    const styleUserName = {
+        fontSize: 14,
+        fontWeight: 450
+    };
 
     return (
         <Navigation>
@@ -87,6 +175,15 @@ const Details = (props: IProps) => {
                             </Typography>
                             <div style={{marginTop: 4}}>&nbsp;&nbsp;{renderStatus(caseData.status)}</div>
                             <div style={{marginTop: 4}}>&nbsp;&nbsp;{renderSubStatus(caseData.subStatus)}</div>
+                            {
+                                submittedOrRejectedByCSO()
+                            }
+
+                            {
+                                submittedOrRejectedByBM()
+                            }
+
+                            {/*<div style={{marginTop: 4}}>&nbsp;&nbsp;Submitted by: {user.name} {" "} {printStdDatetime(caseData.applicationDate)}</div>*/}
                         </Flex>
                     </Grid>
                     <BmVerificationRtgs workflow={caseData}/>
