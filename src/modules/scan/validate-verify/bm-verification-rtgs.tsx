@@ -14,11 +14,10 @@ import {Dispatch} from "redux";
 import {useDispatch, useSelector} from "react-redux";
 import {useStyles} from "../ScanCrop";
 import {IState} from "../../../data/types";
-import {ErrorIcon, SuccessIcon} from "../../../components/xicons";
-import Typography from "@material-ui/core/Typography";
 import ValidationCheckList, {checkListCSO} from "./ValidationCheckList";
 import ImageUtils from "../../../utils/imageUtils";
-import {csoOrBmRolesForDev, remoteRoutes} from "../../../data/constants";
+// import {csoOrBmRolesForDev, remoteRoutes} from "../../../data/constants";
+import {hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import {createStyles, makeStyles} from "@material-ui/core";
@@ -27,6 +26,8 @@ import {getChecksToPopulate} from "../populateLabelAndValue";
 import {post} from "../../../utils/ajax";
 import {ICheckKeyValueState} from "../../../data/redux/checks/reducer";
 import {IWorkflowResponseMessageState} from "../../../data/redux/workflow-response/reducer";
+import VerificationsAlreadyDoneByCSO from "./checks-already-done-by-cso";
+import VerificationsAlreadyDoneByBM from "./checks-already-done-by-bm";
 
 interface IProps {
     workflow: IWorkflow
@@ -67,49 +68,6 @@ function bMORemarks() {
 
 }
 
-export const SuccessFailureDisplay = (v: IPropsChecks) => {
-
-    const [superScript, setSuperScript] = useState('')
-
-    useEffect(() => {
-        setSuperScriptValue()
-    })
-
-    function setSuperScriptValue() {
-        const name = v.name.toLowerCase()
-
-        if (name.includes("confirmation")) {
-            setSuperScript("BM")
-        } else {
-            setSuperScript("CSO")
-        }
-    }
-
-
-    return v.value ?
-        <Typography
-            variant='subtitle1'
-            style={{marginTop: 1}}>
-            &nbsp;
-            <SuccessIcon
-                fontSize='inherit'
-            />
-            {v.label}
-            <sup><i><b>{superScript}</b></i></sup>
-        </Typography>
-
-        :
-        <Typography
-            variant='subtitle1'
-            style={{marginTop: 1}}>
-            &nbsp;
-            <ErrorIcon
-                fontSize='inherit'
-            />
-            {v.label}
-            <sup><i><b>{superScript}</b></i></sup>
-        </Typography>
-}
 
 const useStylesInternal = makeStyles((theme: Theme) =>
     createStyles({
@@ -138,6 +96,60 @@ const useStylesInternal = makeStyles((theme: Theme) =>
         }
     })
 );
+
+//
+// const VerificationsAlreadyDoneByCSO = ({workflow}: IPropsBMO) => {
+//     const [theWorkflow] = useState(workflow)
+//     const criteria = theWorkflow.tasks[1].actions[0].outputData
+//
+//     //todo...try to sieve by action name
+//     useEffect(() => {
+//         console.log('testing: ', workflow.tasks[2].actions[0].status)
+//     }, [workflow, criteria])
+//
+//     const checksReview = (): IList<IPropsChecks> => {
+//         const criteriaObj = JSON.parse(criteria)
+//
+//         console.log("criteria:", criteriaObj)
+//         console.log("criteria-sub-status:", workflow.subStatus)
+//
+//         const theCheckList = new List<IPropsChecks>();
+//         theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate_Bm"))
+//         theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex_Bm"))
+//         theCheckList.add(addCheck("Sender's account number is correct", "isSenderAccountNumberCorrect_Bm"))
+//         theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds_Bm"))
+//         theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete_Bm"))
+//         theCheckList.add(addCheck("Recipient's physical address is complete (TTs)", "isRecipientPhysicalAddressComplete_Bm"))
+//
+//         for (let aCheck of theCheckList) {
+//
+//             const propertyName: string = aCheck.name.split("_")[0];
+//             aCheck.value = criteriaObj[propertyName]
+//             // console.log("aCheck:", aCheck)
+//         }
+//
+//         return theCheckList
+//
+//     }
+//
+//     return <Grid>
+//         {
+//
+//             checksReview().toArray().map((v, index) => {
+//                 return <Grid key={index} style={index % 2 ? {background: "#fcf6ea"} : {background: "#fdf9f1"}}>
+//                     {
+//
+//                         <SuccessFailureDisplay value={v.value} label={v.label} name={v.name} key={v.name}/>
+//
+//                     }
+//
+//                 </Grid>
+//             })
+//
+//         }
+//     </Grid>
+// }
+
 
 // todo...to be cleaned up
 const VerificationByBMO = ({workflow}: IPropsBMO) => {
@@ -196,9 +208,9 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
     const checksReviewConfirmation = (): IList<IPropsChecks> => {
         const criteriaObj = JSON.parse(criteriaBm)
 
-        console.log("bm crit:", criteriaObj)
-        console.log("bm status:", actionBmStatus)
-        console.log("cso status:", actionCSOStatus)
+        // console.log("bm crit:", criteriaObj)
+        // console.log("bm status:", actionBmStatus)
+        // console.log("cso status:", actionCSOStatus)
 
         const theCheckList = new List<IPropsChecks>();
         theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate_Bm_Confirmation"))
@@ -250,6 +262,10 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
 
         // @ts-ignore
         data["isRejected"] = false;
+        // @ts-ignore
+        data["approvedBy"] = user.name
+        // @ts-ignore
+        data["timestamp"] = new Date()
         const manualBMApproval: IManualDecision = {
             caseId: caseId,
             taskName: "bm-approval", // todo ...consider making these constants
@@ -364,38 +380,44 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
 
     return <Grid>
 
+
         {
+            // eslint-disable-next-line array-callback-return
+            checksReviewConfirmation().toArray().map((val, index) => {
 
-            checksReview().toArray().map((v, index) => {
-                return <Grid key={index} style={index % 2 ? {background: "#fcf6ea"} : {background: "#fdf9f1"}}>
-                    {
+                // if ((workflow.tasks[2].actions[0].status !== ActionStatus.Pending) && val.name.startsWith(v.name)) {
+                //     return <SuccessFailureDisplay value={val.value} label={val.label} name={val.name}
+                //                                   key={v.name}/>
+                // }
+                //
+                // // todo...user will have to be BM
+                // if (val.name.startsWith(v.name) && csoOrBmRolesForDev(user))
+                //     return <CheckBoxTemplate key={val.name} value={val.value} label="confirm"
+                //                              name={val.name}/>
 
-                        <SuccessFailureDisplay value={v.value} label={v.label} name={v.name} key={v.name}/>
-
-                    }
-
-                    {
-                        // eslint-disable-next-line array-callback-return
-                        checksReviewConfirmation().toArray().map(val => {
-
-                            if ((workflow.tasks[2].actions[0].status !== ActionStatus.Pending) && val.name.startsWith(v.name)) {
-                                return <SuccessFailureDisplay value={val.value} label={val.label} name={val.name}
-                                                              key={v.name}/>
-                            }
-
-                            // todo...user will have to be BM
-                            if (val.name.startsWith(v.name) && csoOrBmRolesForDev(user))
-                                return <CheckBoxTemplate key={val.name} value={val.value} label="confirm"
-                                                         name={val.name}/>
-
-
-                        })
-                    }
-
+                return <Grid key={index} item sm={12}>
+                    <CheckBoxTemplate value={val.value} label={val.label} name={val.name}/>
                 </Grid>
-            })
 
+
+            })
         }
+
+        {/*{*/}
+
+        {/*    checksReview().toArray().map((v, index) => {*/}
+        {/*        return <Grid key={index} style={index % 2 ? {background: "#fcf6ea"} : {background: "#fdf9f1"}}>*/}
+        {/*            {*/}
+
+        {/*                <SuccessFailureDisplay value={v.value} label={v.label} name={v.name} key={v.name}/>*/}
+
+        {/*            }*/}
+
+
+        {/*        </Grid>*/}
+        {/*    })*/}
+
+        {/*}*/}
 
         {/*<FormControl className={classes.formControl}>*/}
         {/*    <InputLabel margin="dense">Remarks</InputLabel>*/}
@@ -416,11 +438,11 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
         {
 
             // todo...user role will have to be BM
-            csoOrBmRolesForDev(user) && workflow.tasks[2].actions[0].status !== ActionStatus.Done && workflow.tasks[2].actions[0].status !== ActionStatus.Error ?
+            hasAnyRole(user, [systemRoles.BM]) && workflow.tasks[2].actions[0].status !== ActionStatus.Done && workflow.tasks[2].actions[0].status !== ActionStatus.Error ?
                 <Grid item sm={12} className={classes.submissionGrid}>
                     <Box className={classes.submissionBox}>
                         <Button variant="contained" className={classes.rejectButton}
-                                onClick={cancelCommentDialog} disabled={true} >Reject</Button>
+                                onClick={cancelCommentDialog}>Reject</Button>
                         <Button type="submit" variant="contained" color="primary"
                             // disabled={isRejectBtnDisabled}
                                 onClick={handleBMApproval}
@@ -432,11 +454,11 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
         }
 
         {
-            workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle ?
+            hasAnyRole(user, [systemRoles.CMO]) && workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle ?
                 <Grid item sm={12} className={classes.submissionGrid}>
                     <Box className={classes.submissionBox}>
                         <Button variant="contained" className={classes.rejectButton}
-                                onClick={cancelCommentDialog} disabled={true} >Reject</Button>
+                                onClick={cancelCommentDialog}>Reject</Button>
                         <Button type="submit" variant="contained" color="primary"
                             // disabled={isRejectBtnDisabled}
                                 onClick={prepareFinacleData}
@@ -486,6 +508,74 @@ const BmVerificationRtgs = ({workflow}: IProps) => {
 
     }, [dispatch, workflow])
 
+    function displayVerificationsByCSO() {
+
+        // still awaiting CSO approval
+        if (workflow.subStatus === WorkflowSubStatus.AwaitingCSOApproval && hasAnyRole(user, [systemRoles.CSO]))
+            return <Grid className={classes.expansion}>
+                <ExpansionCard title="Verification  - CSO" children={<ValidationCheckList theCheckList={theCheckList}/>}/>
+            </Grid>
+
+        // show verifications done by CSO if process awaits BM action, CMO action, or erred
+        if (workflow.subStatus.includes("BM") || workflow.subStatus.includes("Finacle") || workflow.subStatus.includes("Fail"))
+            return <Grid className={classes.expansion}>
+                <ExpansionCard title="Checklist results - CSO" children={<VerificationsAlreadyDoneByCSO workflow={workflow}/>}/>
+            </Grid>
+
+    }
+
+    function displayVerificationsByBM() {
+
+        // still awaiting CSO approval
+        if (workflow.subStatus === WorkflowSubStatus.AwaitingBMApproval && hasAnyRole(user, [systemRoles.BM]))
+            return <Grid className={classes.expansion}>
+                <ExpansionCard title="Verification list - BM" children={<VerificationByBMO workflow={workflow}/>}/>
+            </Grid>
+
+        // if (workflow.subStatus.includes(WorkflowSubStatus.AwaitingSubmissionToFinacle) || workflow.subStatus.includes(WorkflowSubStatus.FailedBMApproval))
+        //     return <Grid className={classes.expansion}>
+        //         <ExpansionCard title="Checklist results -- BM" children={<VerificationsAlreadyDoneByBM workflow={workflow}/>}/>
+        //     </Grid>
+    }
+
+    function showVerificationsToBeDoneByBM() {
+        if (workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle && hasAnyRole(user, [systemRoles.BM])) {
+            return <Grid className={classes.expansion}>
+                <ExpansionCard title="Verification list -- BM" children={<VerificationsAlreadyDoneByBM workflow={workflow}/>}/>
+            </Grid>
+        }
+    }
+
+    function showChecksFormOrChecksResults() {
+        // @ts-ignore
+        console.log("loggin....:", workflow.subStatus)
+        // @ts-ignore
+        if (workflow.subStatus !== null) {
+
+
+            // @ts-ignore
+            if (workflow.subStatus.includes("BM") || workflow.subStatus.includes("Fail")) {
+
+                // @ts-ignore
+                return <VerificationsAlreadyDoneByCSO workflow={workflow}/>
+
+            } else {
+
+                theCheckList.toArray().map((aCheck, index) => {
+                    // console.log("found: ", subStatusFound)
+
+                    return <Grid key={index} item sm={12}>
+                        <CheckBoxTemplate value={aCheck.value} label={aCheck.label} name={aCheck.name}/>
+                    </Grid>
+                })
+
+            }
+
+        }
+
+
+    }
+
     const theCheckList = checkListCSO() as IList<IPropsChecks>
 
     return (
@@ -506,21 +596,37 @@ const BmVerificationRtgs = ({workflow}: IProps) => {
                     <ExpansionCard title="Transfer Request" children={<TransferDetails/>}/>
                 </Grid>
 
-                <Grid className={classes.expansion}>
+                {/*todo... here..show the approvals of the CSO*/}
+                {
+                    // showChecksFormOrChecksResults()
+                    // workflow.subStatus !== WorkflowSubStatus.AwaitingCSOApproval ?
+                    //     <Grid className={classes.expansion}>
+                    //         <ExpansionCard title="CSO Verification Result"
+                    //                        children={<VerificationsAlreadyDoneByCSO workflow={workflow}/>}/>
+                    //     </Grid> : ""
+                }
 
-                    {
 
-                        workflow.subStatus === WorkflowSubStatus.AwaitingCSOApproval ?
+                {
 
-                            <ExpansionCard title="Verification list"
-                                           children={<ValidationCheckList theCheckList={theCheckList}/>}/>
-                            :
-                            <ExpansionCard title="Verification list"
-                                           children={<VerificationByBMO workflow={workflow}/>}/>
+                    displayVerificationsByCSO()
 
-                    }
+                }
 
-                </Grid>
+
+                {
+
+                    showVerificationsToBeDoneByBM()
+
+                }
+
+
+                {
+
+                    displayVerificationsByBM()
+
+                }
+
 
             </Grid>
 
