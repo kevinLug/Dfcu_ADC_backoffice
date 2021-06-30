@@ -13,7 +13,8 @@ import {ICheckKeyValueState} from "../../../data/redux/checks/reducer";
 
 import {IManualDecision, WorkflowSubStatus} from "../../workflows/types";
 
-import {csoOrBmRolesForDev, hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
+// import {csoOrBmRolesForDev, hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
+import {hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
 
 import {post} from "../../../utils/ajax";
 import {getChecksToPopulate} from "../populateLabelAndValue";
@@ -23,6 +24,7 @@ import EditDialog from "../../../components/EditDialog";
 import {Form, Formik, Field, FormikHelpers} from 'formik';
 import {IKeyValueMap} from "../../../utils/collections/map";
 import {IState} from "../../../data/types";
+import VerificationsAlreadyDoneByCSO from "./checks-already-done-by-cso";
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -111,6 +113,10 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
 
         // @ts-ignore
         data["isRejected"] = false;
+        // @ts-ignore
+        data["submittedBy"] = user.name
+        // @ts-ignore
+        data["timestamp"] = new Date()
         const manualCSOApproval: IManualDecision = {
             caseId: caseId,
             taskName: "cso-approval", // todo ...consider making these constants
@@ -197,26 +203,46 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
         setRejectionComment(e.target.value)
     }
 
+
+    function showChecksFormOrChecksResults() {
+        console.log("loggin...:", workflow)
+        let returned = {}
+        // @ts-ignore
+        if (workflow !== undefined && workflow !== null && (workflow.subStatus.includes("BM") || workflow.subStatus.includes("Fail"))) {
+            // @ts-ignore
+            returned = <VerificationsAlreadyDoneByCSO workflow={workflow}/>
+        } else {
+            returned = theCheckList.toArray().map((aCheck, index) => {
+                return <Grid key={index} item sm={12}>
+                    <CheckBoxTemplate value={aCheck.value} label={aCheck.label} name={aCheck.name}/>
+                </Grid>
+            })
+        }
+        return returned
+
+    }
+
     return (
 
         <Grid container>
             {
-                theCheckList.toArray().map((aCheck, index) => {
-                    // console.log("found: ", subStatusFound)
-
-                    return <Grid key={index} item sm={12}>
-                        <CheckBoxTemplate value={aCheck.value} label={aCheck.label} name={aCheck.name}/>
-                    </Grid>
-                })
+                showChecksFormOrChecksResults()
+                // theCheckList.toArray().map((aCheck, index) => {
+                //     // console.log("found: ", subStatusFound)
+                //
+                //     return <Grid key={index} item sm={12}>
+                //         <CheckBoxTemplate value={aCheck.value} label={aCheck.label} name={aCheck.name}/>
+                //     </Grid>
+                // })
             }
 
             <Grid item sm={12} className={classes.submissionGrid}>
 
                 {
-                    csoOrBmRolesForDev(user) ?
+                    hasAnyRole(user, [systemRoles.CSO]) ?
                         <Box className={classes.submissionBox}>
                             <Button variant="contained" className={classes.rejectButton}
-                                    onClick={showCommentDialog} disabled={true}>REJECT</Button>
+                                    onClick={showCommentDialog}>REJECT</Button>
                             <Button variant="contained" color="primary" onClick={handleCSOApproval}>SUBMIT
                                 REQUEST</Button>
                         </Box>

@@ -34,7 +34,7 @@ export const hasAnyRole = (user: any, roles: string[] = []): boolean => {
     }
 }
 
-export const csoOrBmRolesForDev = (user:any) => hasAnyRole(user,[systemRoles.CSO]) || hasAnyRole(user,[systemRoles.BM])
+// export const csoOrBmRolesForDev = (user:any) => hasAnyRole(user,[systemRoles.CSO]) || hasAnyRole(user,[systemRoles.BM])
 
 export const redux = {
     doLogin: 'DO_LOGIN',
