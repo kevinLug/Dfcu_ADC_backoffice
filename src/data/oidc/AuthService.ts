@@ -13,7 +13,7 @@ class AuthService {
             redirect_uri: `${clientRoot}/signin-callback.html`,
             post_logout_redirect_uri: clientRoot,
             response_type: 'token id_token',
-            scope: 'openid profile offline_access roles CaseHandling IdentityServerApi',
+            scope: 'openid profile offline_access roles CaseHandling',
             authority: remoteRoutes.authServer,
             silent_redirect_uri: `${clientRoot}/silent_renew.html`,
             automaticSilentRenew: true,
