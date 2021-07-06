@@ -1,11 +1,16 @@
+import {useSelector} from "react-redux";
+import {IState} from "./types";
+import authService from "./oidc/AuthService";
+
 export const AUTH_TOKEN_KEY = '__demo__dfcu__token'
 export const AUTH_USER_KEY = '__demo__dfcu__user'
 
 export const systemRoles = {
     BACKOFFICE: 'BACKOFFICE',
-    BM:'BM',
-    CMO:'CMO',
-    CSO:'CSO',
+    BM: 'BM',
+    BMO: 'BMO',
+    CMO: 'CMO',
+    CSO: 'CSO',
     ADMIN: 'Admin',
 
 }
@@ -15,6 +20,7 @@ export const isSystemUser = (user: any): boolean => {
     const roles = [
         systemRoles.BACKOFFICE,
         systemRoles.BM,
+        systemRoles.BMO,
         systemRoles.CMO,
         systemRoles.CSO,
         systemRoles.ADMIN,
