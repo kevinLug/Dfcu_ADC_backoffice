@@ -14,13 +14,13 @@ import {Dispatch} from "redux";
 import {useDispatch, useSelector} from "react-redux";
 import {useStyles} from "../ScanCrop";
 import {IState} from "../../../data/types";
-import ValidationCheckList, {checkListCSO} from "./ValidationCheckList";
+import ValidationCheckList, {checkListCSO, IDataProps} from "./ValidationCheckList";
 import ImageUtils from "../../../utils/imageUtils";
 // import {csoOrBmRolesForDev, remoteRoutes} from "../../../data/constants";
 import {hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
-import {createStyles, makeStyles} from "@material-ui/core";
+import {createStyles, makeStyles, TextareaAutosize} from "@material-ui/core";
 import {Theme} from "@material-ui/core/styles";
 import {getChecksToPopulate} from "../populateLabelAndValue";
 import {post} from "../../../utils/ajax";
@@ -28,6 +28,8 @@ import {ICheckKeyValueState} from "../../../data/redux/checks/reducer";
 import {IWorkflowResponseMessageState} from "../../../data/redux/workflow-response/reducer";
 import VerificationsAlreadyDoneByCSO from "./checks-already-done-by-cso";
 import VerificationsAlreadyDoneByBM from "./checks-already-done-by-bm";
+import EditDialog from "../../../components/EditDialog";
+import {Form, Formik} from "formik";
 
 interface IProps {
     workflow: IWorkflow
@@ -94,6 +96,23 @@ const useStylesInternal = makeStyles((theme: Theme) =>
         bmConfirm: {
             fontWeight: 20
         }
+    })
+);
+
+const useStylesDialog = makeStyles(() =>
+    createStyles({
+        submissionGrid: {
+            marginTop: 35
+        },
+        submissionBox: {
+            display: 'flex',
+            justifyContent: 'space-between'
+        },
+        rejectButton: {
+            backgroundColor: '#b32121',
+            color: 'white'
+        }
+
     })
 );
 
@@ -289,6 +308,47 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
     }
 
 
+    const handleBMORejection = async () => {
+
+        let data = getChecksToPopulate(check.checks);
+
+        let caseId: string
+        if (!workflowResponseMessage.caseId || workflowResponseMessage.caseId.includes("0000-0000")) {
+            // @ts-ignore
+            caseId = workflow.id
+        } else {
+            caseId = workflowResponseMessage.caseId
+        }
+
+        // @ts-ignore
+        data["isRejected"] = true;
+        // @ts-ignore
+        data["approvedBy"] = user.name
+        // @ts-ignore
+        data["timestamp"] = new Date()
+        const manualBMApproval: IManualDecision = {
+            caseId: caseId,
+            taskName: "bm-approval", // todo ...consider making these constants
+            actionName: "bm-transfer-details-approval",
+            resumeCase: true,
+            nextSubStatus: "BMApprovalSuccessful",
+            data: data,
+            override: false
+        }
+
+        console.log("manual-bm:", manualBMApproval)
+
+        post(remoteRoutes.workflowsManual, manualBMApproval, (resp: any) => {
+                console.log(resp) // todo ... consider providing a message for both success and failure
+            }, undefined,
+            () => {
+
+                window.location.href = window.location.origin
+            }
+        )
+    }
+
+
     const prepareFinacleData = async () => {
 
         let caseId: string
@@ -438,7 +498,7 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
         {
 
             // todo...user role will have to be BM
-            hasAnyRole(user, [systemRoles.BM]) && workflow.tasks[2].actions[0].status !== ActionStatus.Done && workflow.tasks[2].actions[0].status !== ActionStatus.Error ?
+            hasAnyRole(user, [systemRoles.BM, systemRoles.BMO]) && workflow.tasks[2].actions[0].status !== ActionStatus.Done && workflow.tasks[2].actions[0].status !== ActionStatus.Error ?
                 <Grid item sm={12} className={classes.submissionGrid}>
                     <Box className={classes.submissionBox}>
                         <Button variant="contained" className={classes.rejectButton}
@@ -473,12 +533,42 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
     </Grid>
 }
 
+
+const useStylesRejection = makeStyles(() =>
+    createStyles({
+        submissionGrid: {
+            marginTop: 35
+        },
+        submissionBox: {
+            display: 'flex',
+            justifyContent: 'space-between'
+        },
+        rejectButton: {
+            backgroundColor: '#b32121',
+            color: 'white'
+        }
+
+    })
+);
+
 const BmVerificationRtgs = ({workflow}: IProps) => {
+
+    const classesDialog = useStylesDialog()
+    const classesRejection = useStylesRejection()
 
     const classes = useStyles();
     const [imageSrcFromBinary, setImageSrcFromBinary] = useState<string>("")
     const user = useSelector((state: IState) => state.core.user)
     const dispatch: Dispatch<any> = useDispatch();
+    const [showCommentBox, setShowCommentBox] = useState(false)
+    const [rejectionComment, setRejectionComment] = useState('')
+    const {check}: ICheckKeyValueState = useSelector((state: any) => state.checks)
+    const [isRejectBtnDisabled, setRejectBtnDisabled] = useState(false)
+    const initialData: IDataProps = {
+        checks: check.checks,
+        rejectionComment: rejectionComment
+    }
+    const [data, setData] = useState(initialData)
 
     useEffect(() => {
 
@@ -506,7 +596,7 @@ const BmVerificationRtgs = ({workflow}: IProps) => {
             setImageSrcFromBinary(base64)
         };
 
-    }, [dispatch, workflow])
+    }, [dispatch, check, workflow, rejectionComment, data])
 
     function displayVerificationsByCSO() {
 
@@ -527,21 +617,21 @@ const BmVerificationRtgs = ({workflow}: IProps) => {
     function displayVerificationsByBM() {
 
         // still awaiting CSO approval
-        if (workflow.subStatus === WorkflowSubStatus.AwaitingBMApproval && hasAnyRole(user, [systemRoles.BM]))
+        if (workflow.subStatus === WorkflowSubStatus.AwaitingBMApproval && hasAnyRole(user, [systemRoles.BM, systemRoles.BMO]))
             return <Grid className={classes.expansion}>
-                <ExpansionCard title="Verification list - BM" children={<VerificationByBMO workflow={workflow}/>}/>
+                <ExpansionCard title="Checklist results - BMO" children={<VerificationByBMO workflow={workflow}/>}/>
             </Grid>
 
-        // if (workflow.subStatus.includes(WorkflowSubStatus.AwaitingSubmissionToFinacle) || workflow.subStatus.includes(WorkflowSubStatus.FailedBMApproval))
-        //     return <Grid className={classes.expansion}>
-        //         <ExpansionCard title="Checklist results -- BM" children={<VerificationsAlreadyDoneByBM workflow={workflow}/>}/>
-        //     </Grid>
+        if (workflow.subStatus.includes(WorkflowSubStatus.AwaitingSubmissionToFinacle) || workflow.subStatus.includes(WorkflowSubStatus.FailedBMApproval))
+            return <Grid className={classes.expansion}>
+                <ExpansionCard title="Checklist results - BM" children={<VerificationsAlreadyDoneByBM workflow={workflow}/>}/>
+            </Grid>
     }
 
     function showVerificationsToBeDoneByBM() {
-        if (workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle && hasAnyRole(user, [systemRoles.BM])) {
+        if (workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle && hasAnyRole(user, [systemRoles.BM, systemRoles.BMO])) {
             return <Grid className={classes.expansion}>
-                <ExpansionCard title="Verification list -- BM" children={<VerificationsAlreadyDoneByBM workflow={workflow}/>}/>
+                <ExpansionCard title="Verification list - BM" children={<VerificationsAlreadyDoneByBM workflow={workflow}/>}/>
             </Grid>
         }
     }
@@ -573,6 +663,19 @@ const BmVerificationRtgs = ({workflow}: IProps) => {
 
         }
 
+    }
+
+    function setComment(e: any) {
+        setRejectionComment(e.target.value)
+    }
+
+
+    function cancelCommentDialog() {
+        setShowCommentBox(false)
+    }
+
+
+    function handleBMORejection() {
 
     }
 
@@ -627,6 +730,55 @@ const BmVerificationRtgs = ({workflow}: IProps) => {
 
                 }
 
+                {
+                    showCommentBox ? <EditDialog open={true} onClose={() => {
+                        }} title="Reject with a reason (comment)" disableBackdropClick={false}>
+                            <Grid item sm={12}>
+
+                                <Formik
+
+                                    enableReinitialize
+
+                                    initialValues={data}
+                                    onSubmit={async values => {
+                                        await new Promise(resolve => {
+                                            setTimeout(resolve, 500)
+                                            // console.log("sub value: ", values)
+                                            handleBMORejection()
+                                            // alert(`ale-2${JSON.stringify(data, null, 2)}:`);
+                                        });
+
+                                    }}
+                                >
+                                    <Form>
+                                        <TextareaAutosize
+                                            // rowsMax={}
+                                            rowsMin={10}
+                                            cols={40}
+                                            aria-label="maximum height"
+                                            placeholder="write comment here..."
+                                            onChange={setComment}
+
+
+                                        />
+
+                                        <Grid item sm={12} className={classesRejection.submissionGrid}>
+                                            <Box className={classesRejection.submissionBox}>
+                                                <Button variant="contained" className={classesRejection.rejectButton}
+                                                        onClick={cancelCommentDialog}>Cancel</Button>
+                                                <Button type="submit" variant="contained" color="primary"
+                                                        disabled={isRejectBtnDisabled}
+                                                        onSubmit={handleBMORejection}>Confirm</Button>
+                                            </Box>
+                                        </Grid>
+                                    </Form>
+                                </Formik>
+
+                            </Grid>
+                        </EditDialog>
+                        :
+                        ""
+                }
 
             </Grid>
 

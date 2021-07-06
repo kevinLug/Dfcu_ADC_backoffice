@@ -1,15 +1,10 @@
 import {XHeadCell} from "../../components/table/XTableHead";
 import ApplicationLink from "../../components/links/ApplicationLink";
 import {printDateTime} from "../../utils/dateHelpers";
-import ContactLink from "../../components/links/ContactLink";
-import {getInitials, trimString} from "../../utils/stringHelpers";
 import React from "react";
-import {renderStatus, renderSubStatus} from "./widgets";
+import {renderStatus} from "./widgets";
 import {toTitleCase} from "../contacts/types";
-import {hasValue} from "../../components/inputs/inputHelpers";
-import XLink from "../../components/links/XLink";
-import UserLink from "../../components/links/UserLink";
-import {IWorkflow} from "./types";
+import {IWorkflow, WorkflowStatus} from "./types";
 
 export const wfInitialSort = 'applicationDate';
 export const workflowHeadCells: XHeadCell[] = [
@@ -90,9 +85,13 @@ export const workflowHeadCells: XHeadCell[] = [
         }
     },
 
-
     {
-        name: 'status', label: 'Status', render: (data) => renderStatus(data),
+        name: 'status', label: 'Status', render: (data) => {
+            if (data === WorkflowStatus.Open){
+                return renderStatus(WorkflowStatus.New)
+            }
+            return renderStatus(data)
+        },
         cellProps: {
             style: {
                 width: 60

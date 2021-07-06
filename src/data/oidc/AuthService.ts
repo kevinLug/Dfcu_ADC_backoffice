@@ -51,4 +51,5 @@ class AuthService {
 const authService = new AuthService();
 
 console.log(`settings: `,authService.userManager.settings)
+console.log(`getUser: `,authService.userManager.getUser())
 export default authService

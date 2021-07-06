@@ -17,6 +17,9 @@ export const renderStatus = (value: WorkflowStatus) => {
         case WorkflowStatus.Open:
             color = warningColor
             break
+        case WorkflowStatus.New:
+            color = warningColor
+            break
     }
 
     return <Chip

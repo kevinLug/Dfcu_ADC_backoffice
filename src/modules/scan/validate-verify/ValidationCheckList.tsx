@@ -25,6 +25,7 @@ import {Form, Formik, Field, FormikHelpers} from 'formik';
 import {IKeyValueMap} from "../../../utils/collections/map";
 import {IState} from "../../../data/types";
 import VerificationsAlreadyDoneByCSO from "./checks-already-done-by-cso";
+import Toast from "../../../utils/Toast";
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -48,7 +49,7 @@ interface IProps {
     caseId?: any
 }
 
-interface IDataProps {
+export interface IDataProps {
     checks: {};
     rejectionComment: string;
 }
@@ -138,8 +139,6 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
 
     const handleCSORejection = async () => {
 
-        setRejectBtnDisabled(true)
-
         let checks = getChecksToPopulate(check.checks);
 
         const obj = {
@@ -147,20 +146,15 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
             rejectionComment: rejectionComment
         }
 
-        const theData: IDataProps = {
-            checks: obj.checks,
-            rejectionComment: obj.rejectionComment
-        }
-
         setData({checks, rejectionComment})
 
         // @ts-ignore
-        checks["rejectionComment"] = rejectionComment;
+        checks["rejectionComment"] = obj.rejectionComment;
         // @ts-ignore
         checks["isRejected"] = true;
+        // @ts-ignore
+        checks["submittedBy"] = user.name
 
-        // alert(`the data:${JSON.stringify(checks, null, 2)}`)
-        console.log(data)
         let caseId: string
         if (!workflowResponseMessage.caseId || workflowResponseMessage.caseId.includes("0000-0000")) {
             // @ts-ignore
@@ -175,20 +169,34 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
             actionName: "cso-transfer-details-approval",
             resumeCase: true,
             nextSubStatus: "SenderDetailsCheckSuccessful",
-            data: checks,
+            data: {...checks, rejectionComment: obj.rejectionComment},
             override: false
         }
 
-        // console.log("manual:", manualCSORejection)
+        if (manualCSORejection.data.rejectionComment.trim().length === 0) {
+            Toast.warn("Please provide a rejection comment...");
+            return;
+        }
 
-        // todo...uncomment
-        post(remoteRoutes.workflowsManual, manualCSORejection, (resp: any) => {
-                console.log(resp) // todo ... consider providing a message for both success and failure
-            }, undefined,
-            () => {
-                window.location.href = window.location.origin
-            }
-        )
+        if (manualCSORejection.data.rejectionComment.trim().length > 0) {
+            console.log("manual-cso-rejection:", manualCSORejection);
+
+            // todo...uncomment
+            post(remoteRoutes.workflowsManual, manualCSORejection, (resp: any) => {
+                    console.log(resp) // todo ... consider providing a message for both success and failure
+                }, undefined,
+                () => {
+                    window.location.href = window.location.origin
+                }
+            )
+
+            setShowCommentBox(false)
+
+        } else {
+            Toast.warn("Please provide a rejection comment");
+        }
+
+
     }
 
     function showCommentDialog() {
@@ -203,9 +211,8 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
         setRejectionComment(e.target.value)
     }
 
-
     function showChecksFormOrChecksResults() {
-        console.log("loggin...:", workflow)
+        // console.log("loggin...:", workflow)
         let returned = {}
         // @ts-ignore
         if (workflow !== undefined && workflow !== null && (workflow.subStatus.includes("BM") || workflow.subStatus.includes("Fail"))) {
@@ -280,6 +287,8 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
                                         aria-label="maximum height"
                                         placeholder="write comment here..."
                                         onChange={setComment}
+
+
                                     />
 
                                     <Grid item sm={12} className={classes.submissionGrid}>

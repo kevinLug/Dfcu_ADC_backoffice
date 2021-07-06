@@ -6,7 +6,7 @@ import Loading from "../../../components/Loading";
 import Error from "../../../components/Error";
 import {createStyles, Grid, makeStyles, Theme} from "@material-ui/core";
 
-import {IWorkflow, trimCaseId} from "../types";
+import {IWorkflow, trimCaseId, WorkflowStatus} from "../types";
 import Typography from "@material-ui/core/Typography";
 import {Flex} from "../../../components/widgets";
 
@@ -78,47 +78,68 @@ const Details = (props: IProps) => {
     }
 
     const caseData = workflow as IWorkflow;
-    // @ts-ignore
-    const outputDataCSO = workflow.tasks[1].actions[0].outputData
 
-    const submittedByCSO = JSON.parse(outputDataCSO)["submittedBy"]
-    const runDateCSO = new Date(JSON.parse(outputDataCSO)["runDate"])
 
     // @ts-ignore
-    const timestamp = workflow.tasks[1].actions[0].outputData["timestamp"]
+    // const timestamp = workflow.tasks[1].actions[0].outputData["timestamp"]
 
     function submittedOrRejectedByCSO() {
-        console.log('runDateCSO: ', runDateCSO)
-        // @ts-ignore
-        console.log("the tasks: ", workflow["tasks"])
         let returned = {}
         // @ts-ignore
-        const isRejectedByCSO: boolean = workflow.tasks[1].actions[0].outputData["isRejected"]
+        const outputDataCSO = workflow.tasks[1].actions[0].outputData
 
-        if (isRejectedByCSO) {
+        if (outputDataCSO !== null && outputDataCSO !== undefined) {
+            console.log('outputDataCSO: ', outputDataCSO)
 
-            returned = <div style={styleUserAndDate}>&nbsp;&nbsp;Rejected by:
-                <span style={styleUserName}>{submittedByCSO}</span>{" - "}
-                <span style={styleUserName}>{printStdDatetime(runDateCSO)}</span>
-            </div>
-            // returned = <span style={styleUserName}>{caseData["caseData"]["user"]["name"]}</span>
+            const submittedByCSO = JSON.parse(outputDataCSO)["submittedBy"]
+
+            console.log('submittedByCSO: ', submittedByCSO)
+
+            const runDateCSO = new Date(JSON.parse(outputDataCSO)["runDate"])
+            console.log('runDateCSO: ', runDateCSO)
+            // @ts-ignore
+            console.log("the tasks: ", workflow["tasks"])
+
+            // @ts-ignore
+            const isRejectedByCSO: boolean = workflow.tasks[1].actions[0].outputData["isRejected"]
+
+            if (isRejectedByCSO) {
+
+                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;Rejected by:
+                    <span style={styleUserName}>{submittedByCSO}</span>{" - "}
+                    <span style={styleUserName}>{printStdDatetime(runDateCSO)}</span>
+                </div>
+                // returned = <span style={styleUserName}>{caseData["caseData"]["user"]["name"]}</span>
+            } else {
+                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;Submitted by:
+                    <span style={styleUserName}>{submittedByCSO}</span>{" - "}
+                    <span style={styleUserName}>{printStdDatetime(runDateCSO)}</span>
+                </div>
+
+            }
         } else {
-            returned = <div style={styleUserAndDate}>&nbsp;&nbsp;Submitted by:
-                <span style={styleUserName}>{submittedByCSO}</span>{" - "}
-                <span style={styleUserName}>{printStdDatetime(runDateCSO)}</span>
-            </div>
-
+            returned = ""
         }
+
+
         return returned;
     }
 
     function submittedOrRejectedByBM() {
 
+
+        let returned = {}
+
         // @ts-ignore
         const outputDataBM = workflow.tasks[2].actions[0].outputData
 
-        let returned = {}
-        if (outputDataBM !== undefined && outputDataBM !== null) {
+        if (outputDataBM !== null && outputDataBM !== undefined) {
+
+
+            const runDateCSO = new Date(JSON.parse(outputDataBM)["runDate"])
+
+
+            // if (true) {
 
             const approvedByBM = JSON.parse(outputDataBM)["approvedBy"]
             const runDateBM = new Date(JSON.parse(outputDataBM)["runDate"])
@@ -144,6 +165,7 @@ const Details = (props: IProps) => {
                 </div>
 
             }
+            // }
 
         } else {
             returned = ""
@@ -173,7 +195,8 @@ const Details = (props: IProps) => {
                             <Typography variant='h3'>
                                 Case #{trimCaseId(caseData.id)}
                             </Typography>
-                            <div style={{marginTop: 4}}>&nbsp;&nbsp;{renderStatus(caseData.status)}</div>
+                            <div
+                                style={{marginTop: 4}}>&nbsp;&nbsp;{caseData.status === WorkflowStatus.Open ? renderStatus(WorkflowStatus.New) : renderStatus(caseData.status)}</div>
                             <div style={{marginTop: 4}}>&nbsp;&nbsp;{renderSubStatus(caseData.subStatus)}</div>
                             {
                                 submittedOrRejectedByCSO()

@@ -92,6 +92,7 @@ export enum WorkflowStatus {
   Open = "Open",
   Error = "Error",
   Closed = "Closed",
+  New = "New"
 }
 
 export enum WorkflowSubStatus {
