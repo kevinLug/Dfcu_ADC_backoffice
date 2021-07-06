@@ -44,6 +44,24 @@ const useStyles = makeStyles(() =>
     })
 );
 
+
+const useStylesRejection = makeStyles(() =>
+    createStyles({
+        submissionGrid: {
+            marginTop: 35
+        },
+        submissionBox: {
+            display: 'flex',
+            justifyContent: 'space-between'
+        },
+        rejectButton: {
+            backgroundColor: '#b32121',
+            color: 'white'
+        }
+
+    })
+);
+
 interface IProps {
     theCheckList: IList<IPropsChecks>;
     caseId?: any
