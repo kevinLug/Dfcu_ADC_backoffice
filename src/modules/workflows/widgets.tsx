@@ -11,7 +11,13 @@ export const renderStatus = (value: WorkflowStatus) => {
         case WorkflowStatus.Closed:
             color = successColor
             break
+        case WorkflowStatus.Cleared:
+            color = successColor
+            break
         case WorkflowStatus.Error:
+            color = errorColor
+            break
+        case WorkflowStatus.Rejected:
             color = errorColor
             break
         case WorkflowStatus.Open:

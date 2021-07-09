@@ -87,8 +87,14 @@ export const workflowHeadCells: XHeadCell[] = [
 
     {
         name: 'status', label: 'Status', render: (data) => {
-            if (data === WorkflowStatus.Open){
+            if (data === WorkflowStatus.Open) {
                 return renderStatus(WorkflowStatus.New)
+            }
+            if (data === WorkflowStatus.Error) {
+                return renderStatus(WorkflowStatus.Rejected)
+            }
+            if (data === WorkflowStatus.Closed) {
+                return renderStatus(WorkflowStatus.Cleared)
             }
             return renderStatus(data)
         },

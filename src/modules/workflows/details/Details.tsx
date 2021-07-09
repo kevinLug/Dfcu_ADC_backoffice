@@ -103,7 +103,7 @@ const Details = (props: IProps) => {
             // @ts-ignore
             const isRejectedByCSO: boolean = workflow.tasks[1].actions[0].outputData["isRejected"]
 
-            if (isRejectedByCSO) {
+            if (caseData.status === WorkflowStatus.Error) {
 
                 returned = <div style={styleUserAndDate}>&nbsp;&nbsp;Rejected by:
                     <span style={styleUserName}>{submittedByCSO}</span>{" - "}
@@ -151,7 +151,7 @@ const Details = (props: IProps) => {
             // @ts-ignore
             const isRejectedByCSO: boolean = workflow.tasks[1].actions[0].outputData["isRejected"]
 
-            if (isRejectedByCSO) {
+            if (caseData.status === WorkflowStatus.Error) {
 
                 returned = <div style={styleUserAndDate}>&nbsp;&nbsp; | Rejected by:
                     <span style={styleUserName}>{approvedByBM}</span>{" - "}
@@ -175,6 +175,57 @@ const Details = (props: IProps) => {
         return returned;
     }
 
+    function submittedOrRejectedByCMO() {
+
+
+        let returned = {}
+
+        // @ts-ignore
+        const outputDataCMO = workflow.tasks[3].actions[0].outputData
+
+        console.log("walked:",outputDataCMO)
+
+        if (outputDataCMO !== null && outputDataCMO !== undefined) {
+
+            // const runDateCMO = new Date(JSON.parse(outputDataCMO)["runDate"])
+
+            // if (true) {
+
+            // todo...include rejected by as well
+            const clearedByCMO = JSON.parse(outputDataCMO)["session"]["username"]
+            const runDateCMO = new Date(JSON.parse(outputDataCMO)["runDate"])
+
+            console.log('runDateCSO: ', runDateCMO)
+            // @ts-ignore
+            console.log("the tasks: ", workflow["tasks"])
+
+            // @ts-ignore
+            const isRejectedByCMO: boolean = workflow.tasks[3].actions[0].outputData["isRejected"]
+
+            if (caseData.status === WorkflowStatus.Error) {
+
+                returned = <div style={styleUserAndDate}>&nbsp;&nbsp; | Rejected by:
+                    <span style={styleUserName}>{clearedByCMO}</span>{" - "}
+                    <span style={styleUserName}>{printStdDatetime(runDateCMO)}</span>
+                </div>
+                // returned = <span style={styleUserName}>{caseData["caseData"]["user"]["name"]}</span>
+            } else {
+                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;| Cleared By:
+                    <span style={styleUserName}>{clearedByCMO}</span>{" - "}
+                    <span style={styleUserName}>{printStdDatetime(runDateCMO)}</span>
+                </div>
+
+            }
+            // }
+
+        } else {
+            returned = ""
+        }
+
+
+        return returned;
+    }
+
     const styleUserAndDate = {
         marginTop: 4,
         fontWeight: 10
@@ -184,6 +235,23 @@ const Details = (props: IProps) => {
         fontSize: 14,
         fontWeight: 450
     };
+
+    function displayWorkflowStatus(){
+
+        if (caseData.status === WorkflowStatus.Open){
+            return renderStatus(WorkflowStatus.New)
+        }
+
+        if (caseData.status === WorkflowStatus.Error){
+            return renderStatus(WorkflowStatus.Rejected)
+        }
+
+        if (caseData.status === WorkflowStatus.Closed){
+            return renderStatus(WorkflowStatus.Cleared)
+        }
+
+        return renderStatus(caseData.status)
+    }
 
     return (
         <Navigation>
@@ -196,7 +264,8 @@ const Details = (props: IProps) => {
                                 Case #{trimCaseId(caseData.id)}
                             </Typography>
                             <div
-                                style={{marginTop: 4}}>&nbsp;&nbsp;{caseData.status === WorkflowStatus.Open ? renderStatus(WorkflowStatus.New) : renderStatus(caseData.status)}</div>
+                                // style={{marginTop: 4}}>&nbsp;&nbsp;{caseData.status === WorkflowStatus.Open ? renderStatus(WorkflowStatus.New) : renderStatus(caseData.status)}</div>
+                                style={{marginTop: 4}}>&nbsp;&nbsp;{displayWorkflowStatus()}</div>
                             <div style={{marginTop: 4}}>&nbsp;&nbsp;{renderSubStatus(caseData.subStatus)}</div>
                             {
                                 submittedOrRejectedByCSO()
@@ -204,6 +273,10 @@ const Details = (props: IProps) => {
 
                             {
                                 submittedOrRejectedByBM()
+                            }
+
+                            {
+                                submittedOrRejectedByCMO()
                             }
 
                             {/*<div style={{marginTop: 4}}>&nbsp;&nbsp;Submitted by: {user.name} {" "} {printStdDatetime(caseData.applicationDate)}</div>*/}
