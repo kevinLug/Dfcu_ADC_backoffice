@@ -20,7 +20,6 @@ export interface IPropsChecks {
 }
 
 
-
 export const addCheck = (label: string, name: string, value: boolean = false) => {
 
     const theCheckObject: IPropsChecks = {

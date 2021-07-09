@@ -17,7 +17,7 @@ import {IManualDecision, WorkflowSubStatus} from "../../workflows/types";
 import {hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
 
 import {post} from "../../../utils/ajax";
-import {getChecksToPopulate} from "../populateLabelAndValue";
+import {getChecksToPopulate, getDropdownSelectsToPopulate} from "../populateLabelAndValue";
 import {IWorkflowState} from "../../../data/redux/workflows/reducer";
 import {Dispatch} from "redux";
 import EditDialog from "../../../components/EditDialog";
@@ -25,7 +25,11 @@ import {Form, Formik, Field, FormikHelpers} from 'formik';
 import {IKeyValueMap} from "../../../utils/collections/map";
 import {IState} from "../../../data/types";
 import VerificationsAlreadyDoneByCSO from "./checks-already-done-by-cso";
-import Toast from "../../../utils/Toast";
+import Toast, {positions} from "../../../utils/Toast";
+import RejectionRemarks from "./rejection-remarks";
+import {CSORejectionRemarks, IRemarks} from "./rejection-remarks-values";
+import {actionISelectKeyValue, ISelectKeyValueState, reducer as selects} from "../../../data/redux/selects/reducer";
+import {ISelectKeyValueDefault} from "../../transfers/types";
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -43,7 +47,6 @@ const useStyles = makeStyles(() =>
 
     })
 );
-
 
 const useStylesRejection = makeStyles(() =>
     createStyles({
@@ -93,6 +96,7 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
     const {check}: ICheckKeyValueState = useSelector((state: any) => state.checks)
     const {workflow}: IWorkflowState = useSelector((state: any) => state.workflows)
     const user = useSelector((state: IState) => state.core.user)
+    const {select}: ISelectKeyValueState = useSelector((state: any) => state.selects)
 
     const dispatch: Dispatch<any> = useDispatch();
 
@@ -115,7 +119,7 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
         // @ts-ignore
         // setSubStatusFound(workflow.subStatus)
 
-    }, [dispatch, check, workflow, rejectionComment, data])
+    }, [dispatch, check, workflow, rejectionComment, data, select])
 
     const handleCSOApproval = async () => {
 
@@ -158,6 +162,9 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
     const handleCSORejection = async () => {
 
         let checks = getChecksToPopulate(check.checks);
+        let dropdownSelects = getDropdownSelectsToPopulate(select.selects)
+        console.log("selectsss:", dropdownSelects)
+        console.log("selectsss-2:", select)
 
         const obj = {
             checks: checks,
@@ -181,34 +188,44 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
             caseId = workflowResponseMessage.caseId
         }
 
+        // @ts-ignore
+        const comment = dropdownSelects[systemRoles.CSO]
+        console.log("cso:", comment)
+
+        if (comment === undefined || comment === null) {
+            Toast.warn("Please select a remark (rejection reason)")
+            return;
+        }
+
         const manualCSORejection: IManualDecision = {
             caseId: caseId,
             taskName: "cso-approval", // todo ...consider making these constants
             actionName: "cso-transfer-details-approval",
             resumeCase: true,
             nextSubStatus: "SenderDetailsCheckSuccessful",
-            data: {...checks, rejectionComment: obj.rejectionComment},
+            data: {...checks, rejectionComment: comment},
             override: false
-        }
-
-        if (manualCSORejection.data.rejectionComment.trim().length === 0) {
-            Toast.warn("Please provide a rejection comment...");
-            return;
         }
 
         if (manualCSORejection.data.rejectionComment.trim().length > 0) {
             console.log("manual-cso-rejection:", manualCSORejection);
 
             // todo...uncomment
-            post(remoteRoutes.workflowsManual, manualCSORejection, (resp: any) => {
-                    console.log(resp) // todo ... consider providing a message for both success and failure
-                }, undefined,
-                () => {
-                    window.location.href = window.location.origin
-                }
-            )
+            // post(remoteRoutes.workflowsManual, manualCSORejection, (resp: any) => {
+            //         console.log(resp) // todo ... consider providing a message for both success and failure
+            //     }, undefined,
+            //     () => {
+            //
+            //         // todo... place this after the the post (inside it)
+            //         dispatch(actionISelectKeyValue(ISelectKeyValueDefault))
+            //
+            //         window.location.href = window.location.origin
+            //
+            //     }
+            // )
 
             setShowCommentBox(false)
+
 
         } else {
             Toast.warn("Please provide a rejection comment");
@@ -223,10 +240,6 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
 
     function cancelCommentDialog() {
         setShowCommentBox(false)
-    }
-
-    function setComment(e: any) {
-        setRejectionComment(e.target.value)
     }
 
     function showChecksFormOrChecksResults() {
@@ -247,18 +260,13 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
 
     }
 
+    const remarks: IRemarks = CSORejectionRemarks()
+
     return (
 
         <Grid container>
             {
                 showChecksFormOrChecksResults()
-                // theCheckList.toArray().map((aCheck, index) => {
-                //     // console.log("found: ", subStatusFound)
-                //
-                //     return <Grid key={index} item sm={12}>
-                //         <CheckBoxTemplate value={aCheck.value} label={aCheck.label} name={aCheck.name}/>
-                //     </Grid>
-                // })
             }
 
             <Grid item sm={12} className={classes.submissionGrid}>
@@ -279,7 +287,7 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
 
             {
                 showCommentBox ? <EditDialog open={true} onClose={() => {
-                    }} title="Reject with a reason (comment)" disableBackdropClick={false}>
+                    }} title="Reject with a reason (select)" disableBackdropClick={false}>
                         <Grid item sm={12}>
 
                             <Formik
@@ -298,16 +306,8 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
                                 }}
                             >
                                 <Form>
-                                    <TextareaAutosize
-                                        // rowsMax={}
-                                        rowsMin={10}
-                                        cols={40}
-                                        aria-label="maximum height"
-                                        placeholder="write comment here..."
-                                        onChange={setComment}
 
-
-                                    />
+                                    <RejectionRemarks remarks={remarks.remarks} role={remarks.role}/>
 
                                     <Grid item sm={12} className={classes.submissionGrid}>
                                         <Box className={classes.submissionBox}>

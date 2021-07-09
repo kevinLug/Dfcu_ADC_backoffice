@@ -8,7 +8,7 @@ import {IWorkflowResponseMessageState} from "../../../data/redux/workflow-respon
 import {Dispatch} from "redux";
 import {IList, List} from "../../../utils/collections/list";
 import CheckBoxTemplate, {addCheck, IPropsChecks} from "./Check";
-import {getChecksToPopulate} from "../populateLabelAndValue";
+import {getChecksToPopulate, getDropdownSelectsToPopulate} from "../populateLabelAndValue";
 import {ActionStatus, IManualDecision, IWorkflow, WorkflowSubStatus} from "../../workflows/types";
 import {post} from "../../../utils/ajax";
 import {hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
@@ -20,6 +20,9 @@ import EditDialog from "../../../components/EditDialog";
 import {Form, Formik} from "formik";
 import {IDataProps} from "./ValidationCheckList";
 import Toast from "../../../utils/Toast";
+import RejectionRemarks from "./rejection-remarks";
+import {BMORejectionRemarks, CSORejectionRemarks, IRemarks} from "./rejection-remarks-values";
+import {ISelectKeyValueState} from "../../../data/redux/selects/reducer";
 
 interface IPropsBMO {
     workflow: IWorkflow
@@ -70,36 +73,36 @@ const useStylesRejection = makeStyles(() =>
     })
 );
 
-interface IRemarks {
-    reason: string;
-    requestStatus: string;
-}
+// interface IRemarks {
+//     reason: string;
+//     requestStatus: string;
+// }
 
-function addRemarkToList(list: IList<IRemarks>, reason: string, requestStatus: string) {
-    const aRemark: IRemarks = {
-        reason,
-        requestStatus
-    }
-    list.add(aRemark);
-}
+// function addRemarkToList(list: IList<IRemarks>, reason: string, requestStatus: string) {
+//     const aRemark: IRemarks = {
+//         reason,
+//         requestStatus
+//     }
+//     list.add(aRemark);
+// }
 
-function bMORemarks() {
-
-    const remarks: IList<IRemarks> = new List();
-
-    addRemarkToList(remarks, "Instruction is not signed as per mandate", "Rejected");
-
-    addRemarkToList(remarks, "Sender's account number is invalid", "Rejected");
-
-    addRemarkToList(remarks, "Sender has insufficient funds", "Rejected");
-
-    addRemarkToList(remarks, "Recipient's details are incomplete", "Rejected");
-
-    addRemarkToList(remarks, "Forex details are incorrect", "Rejected");
-
-    return remarks
-
-}
+// function bMORemarks() {
+//
+//     const remarks: IList<IRemarks> = new List();
+//
+//     addRemarkToList(remarks, "Instruction is not signed as per mandate", "Rejected");
+//
+//     addRemarkToList(remarks, "Sender's account number is invalid", "Rejected");
+//
+//     addRemarkToList(remarks, "Sender has insufficient funds", "Rejected");
+//
+//     addRemarkToList(remarks, "Recipient's details are incomplete", "Rejected");
+//
+//     addRemarkToList(remarks, "Forex details are incorrect", "Rejected");
+//
+//     return remarks
+//
+// }
 
 const VerificationByBMO = ({workflow}: IPropsBMO) => {
 
@@ -124,9 +127,10 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
 
     const {workflowResponseMessage}: IWorkflowResponseMessageState = useSelector((state: any) => state.workflowResponse)
     const [rejectionComment, setRejectionComment] = useState('')
+    const {select}: ISelectKeyValueState = useSelector((state: any) => state.selects)
 
     const dispatch: Dispatch<any> = useDispatch();
-    const [remarks] = useState(bMORemarks())
+    // const [remarks] = useState(bMORemarks())
 
     const initialData: IDataProps = {
         checks: check.checks,
@@ -168,10 +172,6 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
     const checksReviewConfirmation = (): IList<IPropsChecks> => {
         const criteriaObj = JSON.parse(criteriaBm)
 
-        // console.log("bm crit:", criteriaObj)
-        // console.log("bm status:", actionBmStatus)
-        // console.log("cso status:", actionCSOStatus)
-
         const theCheckList = new List<IPropsChecks>();
         theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate_Bm_Confirmation"))
         theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex_Bm_confirmation"))
@@ -193,28 +193,16 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
 
         }
 
-
         return theCheckList
 
     }
-
 
     function cancelCommentDialog() {
         setShowCommentBox(false)
     }
 
-
     function showCommentDialog() {
         setShowCommentBox(true)
-    }
-
-    function handleChange(event: React.ChangeEvent<{ value: any }>) {
-        console.log(`on change: `, event.target.value)
-        setRemark(event.target.value)
-    }
-
-    function setComment(e: any) {
-        setRejectionComment(e.target.value)
     }
 
     const handleBMApproval = async () => {
@@ -256,10 +244,12 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
         )
     }
 
-
     const handleBMORejection = async () => {
 
         let data = {...getChecksToPopulate(check.checks)}
+
+        let dropdownSelects = getDropdownSelectsToPopulate(select.selects)
+
         console.log("mans:", data)
         const obj = {
             checks: data,
@@ -275,6 +265,10 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
         }
 
         // @ts-ignore
+        const comment = dropdownSelects[systemRoles.BMO]
+        console.log("bmo:", comment)
+
+        // @ts-ignore
         data["isRejected"] = true;
         // @ts-ignore
         data["approvedBy"] = user.name
@@ -286,15 +280,17 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
             actionName: "bm-transfer-details-approval",
             resumeCase: true,
             nextSubStatus: "BMApprovalSuccessful",
-            data: {...data, rejectionComment: obj.rejectionComment},
+            data: {...data, rejectionComment: comment},
             override: false
         }
 
+        console.log("manual-time:", manualBMRejection)
+
         if (manualBMRejection.data.rejectionComment.trim().length === 0) {
             Toast.warn("Please provide a rejection comment...");
-            setTimeout(()=> {
+            setTimeout(() => {
                 Toast.warn("Not submitted...");
-            },2000)
+            }, 2000)
             return;
         }
         console.log("manual-bm:", manualBMRejection)
@@ -308,7 +304,6 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
             }
         )
     }
-
 
     const prepareFinacleData = async () => {
 
@@ -388,17 +383,27 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
 
         console.log("manual-bm:", manualCMOApproval)
 
-        post(remoteRoutes.workflowsManual, manualCMOApproval, (resp: any) => {
-                console.log(resp) // todo ... consider providing a message for both success and failure
-            }, undefined,
-            () => {
-
-                window.location.href = window.location.origin
-            }
-        )
+        // post(remoteRoutes.workflowsManual, manualCMOApproval, (resp: any) => {
+        //         console.log(resp) // todo ... consider providing a message for both success and failure
+        //     }, undefined,
+        //     () => {
+        //
+        //         window.location.href = window.location.origin
+        //     }
+        // )
 
     }
 
+    function tt() {
+        console.log("--->", WorkflowSubStatus.AwaitingSubmissionToFinacle)
+        console.log("--->>", workflow.subStatus)
+    }
+
+    const remarks: IRemarks = BMORejectionRemarks()
+
+    console.log("--->", WorkflowSubStatus.AwaitingSubmissionToFinacle)
+    console.log("--->>", workflow.subStatus)
+    console.log("--->>-----------------------------------------", )
 
     return <Grid>
 
@@ -425,38 +430,6 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
             })
         }
 
-        {/*{*/}
-
-        {/*    checksReview().toArray().map((v, index) => {*/}
-        {/*        return <Grid key={index} style={index % 2 ? {background: "#fcf6ea"} : {background: "#fdf9f1"}}>*/}
-        {/*            {*/}
-
-        {/*                <SuccessFailureDisplay value={v.value} label={v.label} name={v.name} key={v.name}/>*/}
-
-        {/*            }*/}
-
-
-        {/*        </Grid>*/}
-        {/*    })*/}
-
-        {/*}*/}
-
-        {/*<FormControl className={classes.formControl}>*/}
-        {/*    <InputLabel margin="dense">Remarks</InputLabel>*/}
-        {/*    <Select*/}
-        {/*        labelId="demo-simple-select-label"*/}
-        {/*        id="demo-simple-select"*/}
-        {/*        value={remark}*/}
-        {/*        onChange={handleChange}*/}
-        {/*    >*/}
-        {/*        {*/}
-        {/*            remarks.toArray().map(remark => {*/}
-        {/*                return <MenuItem key={remark.reason} value={remark.reason}>{remark.reason}</MenuItem>*/}
-        {/*            })*/}
-        {/*        }*/}
-        {/*    </Select>*/}
-        {/*</FormControl>*/}
-
         {
 
             // todo...user role will have to be BM
@@ -475,22 +448,23 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
                 ""
         }
 
-
         {
             // submit to finacle
-            hasAnyRole(user, [systemRoles.CMO]) && workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle ?
-                <Grid item sm={12} className={classes.submissionGrid}>
-                    <Box className={classes.submissionBox}>
-                        <Button variant="contained" className={classes.rejectButton}
-                                onClick={showCommentDialog}>Reject</Button>
-                        <Button type="submit" variant="contained" color="primary"
-                            // disabled={isRejectBtnDisabled}
-                                onClick={prepareFinacleData}
-                        >Submit to Finacle</Button>
-                    </Box>
-                </Grid>
-                :
-                ""
+            // hasAnyRole(user, [systemRoles.CMO])
+            // // && workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle
+            //     ?
+            //     <Grid item sm={12} className={classes.submissionGrid}>
+            //         <Box className={classes.submissionBox}>
+            //             <Button variant="contained" className={classes.rejectButton}
+            //                     onClick={showCommentDialog}>Reject</Button>
+            //             <Button type="submit" variant="contained" color="primary"
+            //                 // disabled={isRejectBtnDisabled}
+            //                     onClick={prepareFinacleData}
+            //             >Submit to Finacle</Button>
+            //         </Box>
+            //     </Grid>
+            //     :
+            //     ""
         }
 
         {
@@ -514,15 +488,8 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
                             }}
                         >
                             <Form>
-                                <TextareaAutosize
-                                    // rowsMax={}
-                                    rowsMin={10}
-                                    cols={40}
-                                    aria-label="maximum height"
-                                    placeholder="write comment here..."
-                                    onChange={setComment}
 
-                                />
+                                <RejectionRemarks remarks={remarks.remarks} role={remarks.role}/>
 
                                 <Grid item sm={12} className={classesRejection.submissionGrid}>
                                     <Box className={classesRejection.submissionBox}>

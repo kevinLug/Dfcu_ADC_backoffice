@@ -1,14 +1,14 @@
-import Grid, {GridSpacing} from "@material-ui/core/Grid";
+import Grid from "@material-ui/core/Grid";
 import ExpansionCard from "../../../components/ExpansionCard";
 import SenderDetails from "./SenderDetails";
 import BeneficiaryDetails from "./BeneficiaryDetails";
 import TransferDetails from "./TransferDetails";
 
 import React, {useEffect, useState} from "react";
-import {ActionStatus, IManualDecision, IWorkflow, WorkflowSubStatus} from "../../workflows/types";
+import {IWorkflow, WorkflowSubStatus} from "../../workflows/types";
 import {ICase, ICaseData} from "../../transfers/types";
-import {IList, List} from "../../../utils/collections/list";
-import CheckBoxTemplate, {addCheck, IPropsChecks} from "./Check";
+import {IList} from "../../../utils/collections/list";
+import CheckBoxTemplate, {IPropsChecks} from "./Check";
 import {actionICaseState} from "../../../data/redux/transfers/reducer";
 import {Dispatch} from "redux";
 import {useDispatch, useSelector} from "react-redux";
@@ -17,21 +17,14 @@ import {IState} from "../../../data/types";
 import ValidationCheckList, {checkListCSO, IDataProps} from "./ValidationCheckList";
 import ImageUtils from "../../../utils/imageUtils";
 // import {csoOrBmRolesForDev, remoteRoutes} from "../../../data/constants";
-import {hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
-import Box from "@material-ui/core/Box";
-import Button from "@material-ui/core/Button";
-import {createStyles, makeStyles, TextareaAutosize} from "@material-ui/core";
-import {Theme} from "@material-ui/core/styles";
-import {getChecksToPopulate} from "../populateLabelAndValue";
-import {post} from "../../../utils/ajax";
+import {hasAnyRole, systemRoles} from "../../../data/constants";
+import {createStyles, makeStyles} from "@material-ui/core";
 import {ICheckKeyValueState} from "../../../data/redux/checks/reducer";
-import {IWorkflowResponseMessageState} from "../../../data/redux/workflow-response/reducer";
 import VerificationsAlreadyDoneByCSO from "./checks-already-done-by-cso";
 import VerificationsAlreadyDoneByBM from "./checks-already-done-by-bm";
-import EditDialog from "../../../components/EditDialog";
-import {Form, Formik} from "formik";
-import Toast from "../../../utils/Toast";
 import VerificationByBMO from "./verification-by-bmo";
+import CmoFinacleSubmission from "./cmo-finacle-submission";
+import {IWorkflowResponseMessageState} from "../../../data/redux/workflow-response/reducer";
 
 interface IProps {
     workflow: IWorkflow
@@ -145,6 +138,7 @@ const BmVerificationRtgs = ({workflow}: IProps) => {
         rejectionComment: rejectionComment
     }
     const [data, setData] = useState(initialData)
+    const {workflowResponseMessage}: IWorkflowResponseMessageState = useSelector((state: any) => state.workflowResponse)
 
     useEffect(() => {
 
@@ -210,6 +204,14 @@ const BmVerificationRtgs = ({workflow}: IProps) => {
         //         <ExpansionCard title="Verification list - BMO" children={<VerificationsAlreadyDoneByBM workflow={workflow}/>}/>
         //     </Grid>
         // }
+    }
+
+    function displaySubmissionToFinacle(){
+        if (workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle && hasAnyRole(user,[systemRoles.CMO])){
+            return <Grid className={classes.expansion}>
+                <ExpansionCard title="Submit to Finacle - CMO" children={<CmoFinacleSubmission user={user}  workflowResponseMessage={workflowResponseMessage} workflow={workflow} />} />
+            </Grid>
+        }
     }
 
     function showChecksFormOrChecksResults() {
@@ -364,6 +366,10 @@ const BmVerificationRtgs = ({workflow}: IProps) => {
 
                     displayVerificationsByBM()
 
+                }
+
+                {
+                    displaySubmissionToFinacle()
                 }
 
 
