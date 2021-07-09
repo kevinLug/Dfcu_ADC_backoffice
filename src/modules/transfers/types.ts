@@ -2,9 +2,6 @@ import {IKeyValueMap, KeyValueMap} from "../../utils/collections/map";
 import {string} from "yup";
 
 
-
-
-
 export interface IBeneficiaryAddress {
     country: string;
     town: string;
@@ -88,7 +85,6 @@ export const IApplicantDetailsDefault: IApplicantDetails = <IApplicantDetails>{
 }
 
 export const IBeneficiaryBankDefault: IBeneficiaryBank = <IBeneficiaryBank>{}
-
 
 
 export interface ICharges {
@@ -231,6 +227,14 @@ export interface ITemplateTempProps {
     externalReference?: string;
     referenceNumber?: number;
 
+}
+
+export interface ISelectKeyValue {
+    selects: IKeyValueMap<string, any>
+}
+
+export const ISelectKeyValueDefault: ISelectKeyValue = <ISelectKeyValue>{
+    selects: new KeyValueMap<string, any>()
 }
 
 export interface ICheckKeyValue {

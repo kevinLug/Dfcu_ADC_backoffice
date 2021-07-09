@@ -36,6 +36,15 @@ export const getChecksToPopulate = (checks: IKeyValueMap<string, boolean>) => {
     return data;
 }
 
+export const getDropdownSelectsToPopulate = (checks: IKeyValueMap<string, boolean>) => {
+    let data = {}
+    checks.keyValueMapToArray().forEach(kv => {
+        // @ts-ignore
+        data[kv.key] = kv.value
+    })
+    return data;
+}
+
 export interface IManualDecisionProps {
     caseId?: string;
     taskName?: string;
