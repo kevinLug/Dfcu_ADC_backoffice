@@ -20,6 +20,7 @@ import {renderStatus, renderSubStatus} from "../widgets";
 import BmVerificationRtgs from "../../scan/validate-verify/bm-verification-rtgs";
 import {IState} from "../../../data/types";
 import {printStdDatetime} from "../../../utils/dateHelpers";
+import {ConstantLabelsAndValues} from "../../../data/constants";
 
 interface IProps extends RouteComponentProps {
 
@@ -105,13 +106,13 @@ const Details = (props: IProps) => {
 
             if (caseData.status === WorkflowStatus.Error) {
 
-                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;Rejected by:
+                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
                     <span style={styleUserName}>{submittedByCSO}</span>{" - "}
                     <span style={styleUserName}>{printStdDatetime(runDateCSO)}</span>
                 </div>
                 // returned = <span style={styleUserName}>{caseData["caseData"]["user"]["name"]}</span>
             } else {
-                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;Submitted by:
+                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.SUBMITTED_BY}
                     <span style={styleUserName}>{submittedByCSO}</span>{" - "}
                     <span style={styleUserName}>{printStdDatetime(runDateCSO)}</span>
                 </div>
@@ -153,13 +154,13 @@ const Details = (props: IProps) => {
 
             if (caseData.status === WorkflowStatus.Error) {
 
-                returned = <div style={styleUserAndDate}>&nbsp;&nbsp; | Rejected by:
+                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
                     <span style={styleUserName}>{approvedByBM}</span>{" - "}
                     <span style={styleUserName}>{printStdDatetime(runDateBM)}</span>
                 </div>
                 // returned = <span style={styleUserName}>{caseData["caseData"]["user"]["name"]}</span>
             } else {
-                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;| Approved by:
+                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.APPROVED_BY}
                     <span style={styleUserName}>{approvedByBM}</span>{" - "}
                     <span style={styleUserName}>{printStdDatetime(runDateBM)}</span>
                 </div>
@@ -204,13 +205,13 @@ const Details = (props: IProps) => {
 
             if (caseData.status === WorkflowStatus.Error) {
 
-                returned = <div style={styleUserAndDate}>&nbsp;&nbsp; | Rejected by:
+                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
                     <span style={styleUserName}>{clearedByCMO}</span>{" - "}
                     <span style={styleUserName}>{printStdDatetime(runDateCMO)}</span>
                 </div>
                 // returned = <span style={styleUserName}>{caseData["caseData"]["user"]["name"]}</span>
             } else {
-                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;| Cleared By:
+                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.CLEARED_BY}
                     <span style={styleUserName}>{clearedByCMO}</span>{" - "}
                     <span style={styleUserName}>{printStdDatetime(runDateCMO)}</span>
                 </div>
@@ -266,21 +267,24 @@ const Details = (props: IProps) => {
                             <div
                                 // style={{marginTop: 4}}>&nbsp;&nbsp;{caseData.status === WorkflowStatus.Open ? renderStatus(WorkflowStatus.New) : renderStatus(caseData.status)}</div>
                                 style={{marginTop: 4}}>&nbsp;&nbsp;{displayWorkflowStatus()}</div>
-                            <div style={{marginTop: 4}}>&nbsp;&nbsp;{renderSubStatus(caseData.subStatus)}</div>
-                            {
-                                submittedOrRejectedByCSO()
-                            }
+                            {/*<div style={{marginTop: 4}}>&nbsp;&nbsp;{renderSubStatus(caseData.subStatus)}</div>*/}
 
-                            {
-                                submittedOrRejectedByBM()
-                            }
-
-                            {
-                                submittedOrRejectedByCMO()
-                            }
 
                             {/*<div style={{marginTop: 4}}>&nbsp;&nbsp;Submitted by: {user.name} {" "} {printStdDatetime(caseData.applicationDate)}</div>*/}
                         </Flex>
+
+                        {
+                            submittedOrRejectedByCSO()
+                        }
+
+                        {
+                            submittedOrRejectedByBM()
+                        }
+
+                        {
+                            submittedOrRejectedByCMO()
+                        }
+
                     </Grid>
                     <BmVerificationRtgs workflow={caseData}/>
                 </Grid>
