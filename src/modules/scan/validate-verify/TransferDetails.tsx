@@ -7,7 +7,6 @@ import {useSelector} from "react-redux";
 import {ICaseState} from "../../../data/redux/transfers/reducer";
 import {populateLabelAndValue} from "../populateLabelAndValue";
 
-
 const TransferDetails = () => {
 
     const {transferDetails}: ICaseState = useSelector((state: any) => state.transfers)

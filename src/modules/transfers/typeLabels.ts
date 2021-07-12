@@ -86,7 +86,6 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
     return keyValueLabels(labels);
 }
 
-
 export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: IBankDetails) => {
     const labellingOne = {...dataOne}
     const labellingTwo = {...dataTwo}
@@ -144,34 +143,34 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
             label: ConstantLabelsAndValues.ACCOUNT_NO,
             value: labellingOne.accountNumber
         },
-        {
-            label: transferCodesLabel,
-            value: transferCode
-        },
-        {
-            label: ConstantLabelsAndValues.COUNTRY,
-            value: labellingOne.address.country
-        },
-        {
-            label: ConstantLabelsAndValues.COUNTRY_CODE,
-            value: labellingOne.address.countryCode
-        },
-        {
-            label: ConstantLabelsAndValues.TOWN,
-            value: labellingOne.address.town
-        },
+        // {
+        //     label: transferCodesLabel,
+        //     value: transferCode
+        // },
+        // {
+        //     label: ConstantLabelsAndValues.COUNTRY,
+        //     value: labellingOne.address.country
+        // },
+        // {
+        //     label: ConstantLabelsAndValues.COUNTRY_CODE,
+        //     value: labellingOne.address.countryCode
+        // },
+        // {
+        //     label: ConstantLabelsAndValues.TOWN,
+        //     value: labellingOne.address.town
+        // },
         // {
         //     label: 'Physical Address',
         //     value: labellingOne.address.physicalAddress
         // },
-        {
-            label: ConstantLabelsAndValues.PLOT,
-            value: labellingOne.address.plot
-        },
-        {
-            label: ConstantLabelsAndValues.BUILDING,
-            value: labellingOne.address.building
-        },
+        // {
+        //     label: ConstantLabelsAndValues.PLOT,
+        //     value: labellingOne.address.plot
+        // },
+        // {
+        //     label: ConstantLabelsAndValues.BUILDING,
+        //     value: labellingOne.address.building
+        // },
         {
             label: ConstantLabelsAndValues.PHYSICAL_ADDRESS,
             value: recipientPhysicalAddress

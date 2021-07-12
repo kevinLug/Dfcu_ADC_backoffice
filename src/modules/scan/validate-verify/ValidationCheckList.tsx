@@ -1,19 +1,18 @@
 import React, {useEffect, useState} from "react";
 import Grid from "@material-ui/core/Grid";
-import {addCheck, IPropsChecks} from "./Check";
+import {IPropsChecks} from "./Check";
 import CheckBoxTemplate from "./Check";
-import {IList, List} from "../../../utils/collections/list";
+import {IList} from "../../../utils/collections/list";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
-import {createStyles, makeStyles, TextareaAutosize} from "@material-ui/core";
+import {createStyles, makeStyles} from "@material-ui/core";
 import {IWorkflowResponseMessageState} from "../../../data/redux/workflow-response/reducer";
 import {useDispatch, useSelector} from "react-redux";
 
 import {ICheckKeyValueState} from "../../../data/redux/checks/reducer";
 
-import {IManualDecision, WorkflowSubStatus} from "../../workflows/types";
+import {IManualDecision} from "../../workflows/types";
 
-// import {csoOrBmRolesForDev, hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
 import {hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
 
 import {post} from "../../../utils/ajax";
@@ -21,15 +20,14 @@ import {getChecksToPopulate, getDropdownSelectsToPopulate} from "../populateLabe
 import {IWorkflowState} from "../../../data/redux/workflows/reducer";
 import {Dispatch} from "redux";
 import EditDialog from "../../../components/EditDialog";
-import {Form, Formik, Field, FormikHelpers} from 'formik';
-import {IKeyValueMap} from "../../../utils/collections/map";
+import {Form, Formik} from 'formik';
+
 import {IState} from "../../../data/types";
 import VerificationsAlreadyDoneByCSO from "./checks-already-done-by-cso";
-import Toast, {positions} from "../../../utils/Toast";
+import Toast from "../../../utils/Toast";
 import RejectionRemarks from "./rejection-remarks";
 import {CSORejectionRemarks, IRemarks} from "./rejection-remarks-values";
-import {actionISelectKeyValue, ISelectKeyValueState, reducer as selects} from "../../../data/redux/selects/reducer";
-import {ISelectKeyValueDefault} from "../../transfers/types";
+import {ISelectKeyValueState} from "../../../data/redux/selects/reducer";
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -48,22 +46,6 @@ const useStyles = makeStyles(() =>
     })
 );
 
-const useStylesRejection = makeStyles(() =>
-    createStyles({
-        submissionGrid: {
-            marginTop: 35
-        },
-        submissionBox: {
-            display: 'flex',
-            justifyContent: 'space-between'
-        },
-        rejectButton: {
-            backgroundColor: '#b32121',
-            color: 'white'
-        }
-
-    })
-);
 
 interface IProps {
     theCheckList: IList<IPropsChecks>;
@@ -93,10 +75,10 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
     const dispatch: Dispatch<any> = useDispatch();
 
     const [showCommentBox, setShowCommentBox] = useState(false)
-    const [isRejectBtnDisabled, setRejectBtnDisabled] = useState(false)
+    const [isRejectBtnDisabled] = useState(false)
 
-    const [rejectionComment, setRejectionComment] = useState('')
-    const [subStatusFound, setSubStatusFound] = useState('')
+    const [rejectionComment] = useState('')
+
     const initialData: IDataProps = {
         checks: check.checks,
         rejectionComment: rejectionComment
@@ -236,7 +218,7 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
 
     function showChecksFormOrChecksResults() {
         // console.log("loggin...:", workflow)
-        let returned = {}
+        let returned: {}
         // @ts-ignore
         if (workflow !== undefined && workflow !== null && (workflow.subStatus.includes("BM") || workflow.subStatus.includes("Fail"))) {
             // @ts-ignore
@@ -290,7 +272,7 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
                                 enableReinitialize
 
                                 initialValues={data}
-                                onSubmit={async values => {
+                                onSubmit={async () => {
                                     await new Promise(resolve => {
                                         setTimeout(resolve, 500)
                                         // console.log("sub value: ", values)
