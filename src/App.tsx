@@ -11,16 +11,17 @@ import {useIdleTimer} from 'react-idle-timer'
 import {handleLogout} from "./data/redux/coreActions";
 import authService from "./data/oidc/AuthService";
 import worker_script, {ITimerDetails} from "./utils/activeTimeWorker";
+import {ConstantLabelsAndValues} from "./data/constants";
 
 let worker = new Worker(worker_script)
-const aMinute = 60000
+
 const App = () => {
     console.log("Starting App...")
     const {isLoading, user}: ICoreState = useSelector((state: any) => state.core)
 
     // periodic logout time dues to inactivity/idleness
-    // const timeout = 900000
-    const timeout = aMinute * 15;
+    // 15 minutes
+    const timeout = ConstantLabelsAndValues.A_MINUTE * 15;
     const [remaining, setRemaining] = useState(timeout)
     const [elapsed, setElapsed] = useState(0)
     const [lastActive, setLastActive] = useState(+new Date())
@@ -86,7 +87,7 @@ const App = () => {
 
                     // if ()
 
-                }, aMinute * 5)
+                }, ConstantLabelsAndValues.A_MINUTE * 5)
             }
         })
 

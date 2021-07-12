@@ -185,6 +185,8 @@ export class ConstantLabelsAndValues {
     public static SUBMITTED_BY = 'Submitted by:'
     public static CLEARED_BY = 'Cleared by:'
 
+    public static A_MINUTE = 60000
+
     public static csoCheckList() {
         const theCheckList = new List<IPropsChecks>();
         theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate_Bm"))
