@@ -237,6 +237,16 @@ export const ISelectKeyValueDefault: ISelectKeyValue = <ISelectKeyValue>{
     selects: new KeyValueMap<string, any>()
 }
 
+export interface IServerPingValue {
+    isServerReachable: boolean;
+    pingResponse: any;
+}
+
+export const IServerPingValueDefault: IServerPingValue = <IServerPingValue> {
+    isServerReachable: false,
+    pingResponse: null
+}
+
 export interface ICheckKeyValue {
     checks: IKeyValueMap<string, boolean>
 }

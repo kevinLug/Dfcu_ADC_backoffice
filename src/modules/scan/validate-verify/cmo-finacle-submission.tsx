@@ -70,15 +70,15 @@ const SubmitTransferRequest = ({showCommentDialog, submitTransferRequest, isReje
     const classes = useStylesInternal()
 
     return <Grid item sm={12} className={classes.submissionGrid}>
+
         <Box className={classes.submissionBox}>
-            <Button variant="contained" className={classes.rejectButton}
-                    onClick={showCommentDialog}
-            >Reject</Button>
-            <Button type="submit" variant="contained" color="primary"
-                    disabled={isRejectBtnDisabled}
-                    onClick={submitTransferRequest}
-            >Submit to Finacle</Button>
+
+            <Button type="submit" variant="contained" color="primary" disabled={isRejectBtnDisabled} onClick={submitTransferRequest}>Post to Finacle</Button>
+
+            <Button variant="contained" className={classes.rejectButton} onClick={showCommentDialog}>Reject</Button>
+
         </Box>
+
     </Grid>
 
 }
@@ -278,13 +278,9 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
                 }} title="Reject with a reason (comment)" disableBackdropClick={false}>
                     <Grid item sm={12}>
 
-                        <Formik
-
-                            enableReinitialize
-
-                            initialValues={data}
-                            onSubmit={async values => {
+                        <Formik enableReinitialize initialValues={data} onSubmit={async values => {
                                 await new Promise(resolve => {
+
                                     setTimeout(resolve, 500)
 
                                     handleCMORejection()
@@ -298,16 +294,19 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
                                 <RejectionRemarks remarks={remarks.remarks} role={remarks.role}/>
 
                                 <Grid item sm={12} className={classes.submissionGrid}>
+
                                     <Box className={classes.submissionBox}>
-                                        <Button variant="contained" className={classes.rejectButton}
-                                                onClick={cancelCommentDialog}>Cancel</Button>
-                                        <Button type="submit" variant="contained" color="primary"
-                                                disabled={isRejectBtnDisabled}
-                                                onSubmit={handleCMORejection}>Confirm</Button>
+
+                                        <Button variant="contained" className={classes.rejectButton} onClick={cancelCommentDialog}>Cancel</Button>
+
+                                        <Button type="submit" variant="contained" color="primary" disabled={isRejectBtnDisabled} onSubmit={handleCMORejection}>Confirm</Button>
+
                                     </Box>
+
                                 </Grid>
 
                             </Form>
+
                         </Formik>
 
                     </Grid>

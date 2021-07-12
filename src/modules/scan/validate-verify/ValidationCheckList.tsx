@@ -75,18 +75,10 @@ export interface IDataProps {
     rejectionComment: string;
 }
 
-export const checkListCSO = (): IList<IPropsChecks> => {
-
-    const theCheckList = new List<IPropsChecks>();
-    theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate"))
-    theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex"))
-    theCheckList.add(addCheck("Sender's account number is correct", "isSenderAccountNumberCorrect"))
-    theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds"))
-    theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete"))
-    theCheckList.add(addCheck("Recipient's physical address is complete (TTs)", "isRecipientPhysicalAddressComplete"))
-
-    return theCheckList;
-}
+// export const checkListCSO = (): IList<IPropsChecks> => {
+//
+//     return theCheckList;
+// }
 
 const ValidationCheckList = ({theCheckList}: IProps) => {
 
@@ -273,11 +265,14 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
 
                 {
                     hasAnyRole(user, [systemRoles.CSO]) ?
+
                         <Box className={classes.submissionBox}>
-                            <Button variant="contained" className={classes.rejectButton}
-                                    onClick={showCommentDialog}>REJECT</Button>
                             <Button variant="contained" color="primary" onClick={handleCSOApproval}>SUBMIT
                                 REQUEST</Button>
+
+                            <Button variant="contained" className={classes.rejectButton}
+                                    onClick={showCommentDialog}>REJECT</Button>
+
                         </Box>
                         :
                         ""

@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {IList, List} from "../../../utils/collections/list";
-import {addCheck, IPropsChecks} from "./Check";
+import {IPropsChecks} from "./Check";
 import Grid from "@material-ui/core/Grid";
 import SuccessFailureDisplay from "./success-failure-display";
 import {IWorkflow} from "../../workflows/types";
+import {ConstantLabelsAndValues} from "../../../data/constants";
 
 
 interface IProps {
@@ -22,22 +23,16 @@ const VerificationsAlreadyDoneByCSO = ({workflow}: IProps) => {
     const checksReview = (): IList<IPropsChecks> => {
         const criteriaObj = JSON.parse(criteria)
 
-        console.log("criteria:", criteriaObj)
-        console.log("criteria-sub-status:", workflow.subStatus)
+        // console.log("criteria:", criteriaObj)
+        // console.log("criteria-sub-status:", workflow.subStatus)
 
-        const theCheckList = new List<IPropsChecks>();
-        theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate_Bm"))
-        theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex_Bm"))
-        theCheckList.add(addCheck("Sender's account number is correct", "isSenderAccountNumberCorrect_Bm"))
-        theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds_Bm"))
-        theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete_Bm"))
-        theCheckList.add(addCheck("Recipient's physical address is complete (TTs)", "isRecipientPhysicalAddressComplete_Bm"))
+        let theCheckList = ConstantLabelsAndValues.csoCheckList()
 
         for (let aCheck of theCheckList) {
 
             const propertyName: string = aCheck.name.split("_")[0];
             aCheck.value = criteriaObj[propertyName]
-            // console.log("aCheck:", aCheck)
+
         }
 
         return theCheckList

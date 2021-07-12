@@ -44,7 +44,9 @@ export const handleError = (err: any = {}, res: superagent.Response) => {
         Toast.error(res.body.message, ajaxError)
     } else {
         console.log(">>>>>",res)
+
         const message = err.message || 'Unknown error, contact admin'
+        console.log(">>>>>-2",err)
         const finalMessage = message.indexOf("offline") !== -1
             ? "Can't reach server, Check connectivity"
             : message
@@ -82,12 +84,41 @@ export const handleResponse = (callBack: CallbackFunction, errorCallBack?: Error
     }
 }
 
+export const handleResponsePing = (callBack: CallbackFunction, errorCallBack?: ErrorCallback, endCallBack?: EndCallback) => (err: any, res: superagent.Response) => {
+    try {
+        console.log("res:-->>>>>",res)
+        if (err || !res.ok) {
+            if (errorCallBack) {
+                errorCallBack(err, res)
+            } else {
+                handleError(err, res)
+            }
+        } else {
+            callBack(res)
+        }
+    } catch (e) {
+        console.error("Failed to process response", e)
+    } finally {
+        if (endCallBack) {
+            endCallBack()
+        }
+    }
+}
+
 export const get = (url: string, callBack: CallbackFunction, errorCallBack?: ErrorCallback, endCallBack?: EndCallback) => {
     superagent.get(url)
         .set('Authorization', `Bearer ${getToken()}`)
         .set('Accept', 'application/json')
         .timeout(timeout)
         .end(handleResponse(callBack, errorCallBack, endCallBack))
+}
+
+export const getPing = (url: string, callBack: CallbackFunction, errorCallBack?: ErrorCallback, endCallBack?: EndCallback) => {
+    superagent.get(url)
+        .set('Authorization', `Bearer ${getToken()}`)
+        .set('Accept', 'application/json')
+        .timeout(timeout)
+        .end(handleResponsePing(callBack, errorCallBack, endCallBack))
 }
 
 export const search = (url: string, data: any, callBack: CallbackFunction, errorCallBack?: ErrorCallback, endCallBack?: EndCallback) => {

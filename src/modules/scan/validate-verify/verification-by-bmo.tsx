@@ -11,7 +11,7 @@ import CheckBoxTemplate, {addCheck, IPropsChecks} from "./Check";
 import {getChecksToPopulate, getDropdownSelectsToPopulate} from "../populateLabelAndValue";
 import {ActionStatus, IManualDecision, IWorkflow, WorkflowSubStatus} from "../../workflows/types";
 import {post} from "../../../utils/ajax";
-import {hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
+import {ConstantLabelsAndValues, hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import {createStyles, makeStyles, TextareaAutosize} from "@material-ui/core";
@@ -143,42 +143,10 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
         console.log(workflow.tasks[2].actions[0].status)
     }, [dispatch, check, workflow, rejectionComment, data])
 
-    const checksReview = (): IList<IPropsChecks> => {
-        const criteriaObj = JSON.parse(criteria)
-
-        console.log("criteria:", criteriaObj)
-        console.log("criteria-sub-status:", workflow.subStatus)
-
-
-        const theCheckList = new List<IPropsChecks>();
-        theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate_Bm"))
-        theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex_Bm"))
-        theCheckList.add(addCheck("Sender's account number is correct", "isSenderAccountNumberCorrect_Bm"))
-        theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds_Bm"))
-        theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete_Bm"))
-        theCheckList.add(addCheck("Recipient's physical address is complete (TTs)", "isRecipientPhysicalAddressComplete_Bm"))
-
-        for (let aCheck of theCheckList) {
-
-            const propertyName: string = aCheck.name.split("_")[0];
-            aCheck.value = criteriaObj[propertyName]
-            // console.log("aCheck:", aCheck)
-        }
-
-        return theCheckList
-
-    }
-
     const checksReviewConfirmation = (): IList<IPropsChecks> => {
         const criteriaObj = JSON.parse(criteriaBm)
 
-        const theCheckList = new List<IPropsChecks>();
-        theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate_Bm_Confirmation"))
-        theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex_Bm_confirmation"))
-        theCheckList.add(addCheck("Sender's account number is correct", "isSenderAccountNumberCorrect_Bm_Confirmation"))
-        theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds_Bm_Confirmation"))
-        theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete_Bm_Confirmation"))
-        theCheckList.add(addCheck("Recipient's physical address is complete (TTs)", "isRecipientPhysicalAddressComplete_Bm_Confirmation"))
+        const theCheckList = ConstantLabelsAndValues.bomChecksReviewConfirmation()
 
         if (criteriaObj !== null && criteriaObj !== undefined) {
 
@@ -265,7 +233,7 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
         }
 
         // @ts-ignore
-        const comment = dropdownSelects[systemRoles.BMO]
+        const comment = dropdownSelects[systemRoles.BOM]
         console.log("bmo:", comment)
 
         // @ts-ignore
@@ -305,105 +273,7 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
         )
     }
 
-    const prepareFinacleData = async () => {
-
-        let caseId: string
-        if (!workflowResponseMessage.caseId || workflowResponseMessage.caseId.includes("0000-0000")) {
-            // @ts-ignore
-            caseId = workflow.id
-        } else {
-            caseId = workflowResponseMessage.caseId
-        }
-
-        const session = {
-            userId: user.sub,
-            sessionId: user.sid,
-            caseId: caseId
-        }
-
-        const transferDetails = {
-            currencyCode: workflow.caseData.transferDetails.currencyCode,
-            transAmount: workflow.caseData.transferDetails.transactionAmount,
-            exchangeRate: workflow.caseData.transferDetails.exchangeRate,
-            remittanceMode: "SWIFT",
-            countryCode: workflow.caseData.beneficiaryDetails.address.countryCode,
-            branchCode: workflow.caseData.transferDetails.branchCode,
-            transferPurpose: workflow.caseData.transferDetails.transferPurpose,
-            chargeMode: workflow.caseData.charges.chargeMode,
-
-            swiftCode: workflow.caseData.bankDetails.beneficiaryBank.swiftCode,
-            sortCode: workflow.caseData.bankDetails.beneficiaryBank.sortCode,
-            aba: workflow.caseData.bankDetails.beneficiaryBank.aba,
-            fedwire: workflow.caseData.bankDetails.beneficiaryBank.fedwire,
-            ifsc: workflow.caseData.bankDetails.beneficiaryBank.ifsc,
-            iban: workflow.caseData.bankDetails.beneficiaryBank.iban,
-        }
-
-        const applicantDetails = {
-            fullName: workflow.caseData.applicantDetails.fullName,
-            accountNumber: workflow.caseData.applicantDetails.accountNumber,
-
-            applicantAddress: {
-                town: workflow.caseData.applicantDetails.address.town,
-                plotNumber: workflow.caseData.applicantDetails.address.plotNumber,
-                street: workflow.caseData.applicantDetails.address.street,
-                district: workflow.caseData.applicantDetails.address.district,
-            }
-        };
-
-        const beneficiaryDetails = {
-            fullName: workflow.caseData.beneficiaryDetails.fullName,
-            accountNumber: workflow.caseData.beneficiaryDetails.accountNumber,
-            beneficiaryAddress: {
-                town: workflow.caseData.beneficiaryDetails.address.town,
-                country: workflow.caseData.beneficiaryDetails.address.countryCode,
-                physicalAddress: workflow.caseData.beneficiaryDetails.address.physicalAddress
-            }
-        }
-
-        const finacleData = {
-            session: session,
-            caseId: caseId,
-            transferDetails: transferDetails,
-            applicantDetails: applicantDetails,
-            beneficiaryDetails: beneficiaryDetails
-        }
-
-        console.log("finacleData: ", finacleData)
-
-        const manualCMOApproval: IManualDecision = {
-            caseId: caseId,
-            taskName: "cmo-approval", // todo ...consider making these constants
-            actionName: "cmo-transfer-details-approval",
-            resumeCase: true,
-            nextSubStatus: "AwaitingSubmissionToFinacle",
-            data: finacleData,
-            override: false
-        }
-
-        console.log("manual-bm:", manualCMOApproval)
-
-        // post(remoteRoutes.workflowsManual, manualCMOApproval, (resp: any) => {
-        //         console.log(resp) // todo ... consider providing a message for both success and failure
-        //     }, undefined,
-        //     () => {
-        //
-        //         window.location.href = window.location.origin
-        //     }
-        // )
-
-    }
-
-    function tt() {
-        console.log("--->", WorkflowSubStatus.AwaitingSubmissionToFinacle)
-        console.log("--->>", workflow.subStatus)
-    }
-
     const remarks: IRemarks = BMORejectionRemarks()
-
-    console.log("--->", WorkflowSubStatus.AwaitingSubmissionToFinacle)
-    console.log("--->>", workflow.subStatus)
-    console.log("--->>-----------------------------------------", )
 
     return <Grid>
 
@@ -433,38 +303,22 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
         {
 
             // todo...user role will have to be BM
-            hasAnyRole(user, [systemRoles.BM, systemRoles.BMO]) && workflow.tasks[2].actions[0].status !== ActionStatus.Done && workflow.tasks[2].actions[0].status !== ActionStatus.Error ?
+            hasAnyRole(user, [systemRoles.BM, systemRoles.BOM]) && workflow.tasks[2].actions[0].status !== ActionStatus.Done && workflow.tasks[2].actions[0].status !== ActionStatus.Error ?
                 <Grid item sm={12} className={classes.submissionGrid}>
                     <Box className={classes.submissionBox}>
-                        <Button variant="contained" className={classes.rejectButton}
-                                onClick={showCommentDialog}>Reject--</Button>
+
                         <Button type="submit" variant="contained" color="primary"
                             // disabled={isRejectBtnDisabled}
                                 onClick={handleBMApproval}
-                        >Submit</Button>
+                        >Approve</Button>
+
+                        <Button variant="contained" className={classes.rejectButton}
+                                onClick={showCommentDialog}>Reject</Button>
+
                     </Box>
                 </Grid>
                 :
                 ""
-        }
-
-        {
-            // submit to finacle
-            // hasAnyRole(user, [systemRoles.CMO])
-            // // && workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle
-            //     ?
-            //     <Grid item sm={12} className={classes.submissionGrid}>
-            //         <Box className={classes.submissionBox}>
-            //             <Button variant="contained" className={classes.rejectButton}
-            //                     onClick={showCommentDialog}>Reject</Button>
-            //             <Button type="submit" variant="contained" color="primary"
-            //                 // disabled={isRejectBtnDisabled}
-            //                     onClick={prepareFinacleData}
-            //             >Submit to Finacle</Button>
-            //         </Box>
-            //     </Grid>
-            //     :
-            //     ""
         }
 
         {

@@ -13,7 +13,12 @@ export const workflowHeadCells: XHeadCell[] = [
         render: (value, rec) => {
             return <ApplicationLink id={rec.id} name={rec.referenceNumber}/>
         },
-        cellProps: {style: {width: 70}}
+        cellProps: {
+            style: {
+                width: 80,
+                whiteSpace: 'nowrap'
+            }
+        },
     },
     {
         name: 'applicationDate', label: 'Application Date', render: printDateTime,
@@ -27,6 +32,12 @@ export const workflowHeadCells: XHeadCell[] = [
     {
         name: 'metaData.applicantName',
         label: 'Applicant',
+        cellProps: {
+            style: {
+                width: 80,
+                whiteSpace: 'nowrap'
+            }
+        },
         render: (data, rec) => {
             // if (hasValue(rec.caseData))
             //     console.log(`the case data: `, rec.caseData)
@@ -45,12 +56,24 @@ export const workflowHeadCells: XHeadCell[] = [
     {
         name: 'metaData.beneficiaryName',
         label: 'Beneficiary',
+        cellProps: {
+            style: {
+                width: 80,
+                whiteSpace: 'nowrap'
+            }
+        },
         render: (data, rec) => data
     },
 
     {
         name: 'metaData.beneficiaryBankName',
         label: 'Beneficiary Bank',
+        cellProps: {
+            style: {
+                width: 80,
+                whiteSpace: 'nowrap'
+            }
+        },
         render: (data, rec) => data
     },
 
@@ -59,34 +82,48 @@ export const workflowHeadCells: XHeadCell[] = [
         render: (value: string, rec: any) => `${toTitleCase(value)}`,
         cellProps: {
             style: {
-                width: 60,
+                width: 80,
                 whiteSpace: 'nowrap'
             }
-        }
+        },
     },
 
     {
         name: 'metaData.currency',
         label: 'Currency',
+        cellProps: {
+            style: {
+                width: 80,
+                whiteSpace: 'nowrap'
+            }
+        },
         render: (data, rec) => data
     },
 
 
     {
         name: 'metaData.amount', label: 'Amount',
+        cellProps: {
+            style: {
+                width: 80,
+                whiteSpace: 'nowrap'
+            }
+        },
         render: (value: string, rec: any) => {
             return `${value}  ${rec.metaData.currency}`
         },
-        cellProps: {
-            style: {
-                width: 60,
-                whiteSpace: 'nowrap'
-            }
-        }
+
     },
 
     {
-        name: 'status', label: 'Status', render: (data) => {
+        name: 'status', label: 'Status',
+        cellProps: {
+            style: {
+                width: 80,
+                whiteSpace: 'nowrap'
+            }
+        },
+        render: (data) => {
             if (data === WorkflowStatus.Open) {
                 return renderStatus(WorkflowStatus.New)
             }
@@ -98,11 +135,7 @@ export const workflowHeadCells: XHeadCell[] = [
             }
             return renderStatus(data)
         },
-        cellProps: {
-            style: {
-                width: 60
-            }
-        }
+
     },
     // {
     //     name: 'subStatus', label: 'SubStatus', render: renderSubStatus,
