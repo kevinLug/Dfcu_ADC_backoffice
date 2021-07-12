@@ -19,6 +19,7 @@ import {startNewTransferRequest} from "../data/redux/coreActions";
 import {Dispatch} from "redux";
 import {IState} from "../data/types";
 import {Link} from "react-router-dom";
+import FloatingActionButtons from "../modules/scan/FloatingIcon";
 
 const drawerWidth = 240;
 
@@ -73,6 +74,7 @@ const useStyles = makeStyles((theme: Theme) =>
             },
             overflow: 'auto'
         },
+
         logoHolder: {
             // flexGrow: 1,
         },
@@ -188,6 +190,7 @@ function Layout(props: any) {
                 <div className={classes.toolbar}/>
                 <Paper className={classes.body}>
                     {props.children}
+                    <FloatingActionButtons  />
                 </Paper>
             </main>
         </div>
