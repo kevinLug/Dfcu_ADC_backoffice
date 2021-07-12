@@ -31,7 +31,7 @@ const App = () => {
     const handleOnActive = () => setLastEvent('active')
     const handleOnIdle = () => setLastEvent('idle')
 
-    const  {
+    const {
         reset,
         pause,
         resume,
@@ -49,55 +49,39 @@ const App = () => {
         }
     })
 
-    const handleReset = () => reset()
-    const handlePause = () => pause()
-    const handleResume = () => resume()
-
     useEffect(() => {
-        // setRemaining(getRemainingTime())
-        // setLastActive(getLastActiveTime())
-        // setElapsed(getElapsedTime())
 
         idleTimeSetup()
 
         // remaining, elapsed, lastActive
     }, [])
 
+
     function idleTimeSetup() {
 
-        // console.log(`unlimited: `,authService.userManager.getUser())
-
         authService.userManager.getUser().then(e => {
-            if (e !== null){
+            if (e !== null) {
                 setInterval(() => {
 
                     setRemaining(getRemainingTime())
                     setLastActive(getLastActiveTime())
-                    // console.log(`last:active:`, format(lastActive, 'MM-dd-yyyy HH:MM:ss.SSS'))
                     setElapsed(getElapsedTime())
                     setLeader(isLeader())
 
                     if (isIdle()) {
-                        // console.log('idle time reached...');
                         doLogout()
                             .then(e => {
                                 window.location.href = window.location.origin
                             }).then(e => pause())
 
-                    }else {
-                        // worker.onmessage = (m) => {
-                        //     // console.log(`message from worker:`, m.data)
-                        //     // console.log('auth-service users: ',authService.getUser())
-                        // }
-                        const timerDetails: ITimerDetails ={
-                            remainingTime:getRemainingTime(),
+                    } else {
+                        const timerDetails: ITimerDetails = {
+                            remainingTime: getRemainingTime(),
                             timeElapsed: getElapsedTime(),
                             delayPeriod: timeout,
                             isIdle: isIdle()
                         }
-
                         worker.postMessage(timerDetails)
-
                     }
 
                     // if ()

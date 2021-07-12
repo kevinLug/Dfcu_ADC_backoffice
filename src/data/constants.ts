@@ -1,6 +1,8 @@
 import {useSelector} from "react-redux";
 import {IState} from "./types";
 import authService from "./oidc/AuthService";
+import {List} from "../utils/collections/list";
+import {addCheck, IPropsChecks} from "../modules/scan/validate-verify/Check";
 
 export const AUTH_TOKEN_KEY = '__demo__dfcu__token'
 export const AUTH_USER_KEY = '__demo__dfcu__user'
@@ -8,7 +10,7 @@ export const AUTH_USER_KEY = '__demo__dfcu__user'
 export const systemRoles = {
     BACKOFFICE: 'BACKOFFICE',
     BM: 'BM',
-    BMO: 'BMO',
+    BOM: 'BOM',
     CMO: 'CMO',
     CSO: 'CSO',
     ADMIN: 'Admin',
@@ -20,7 +22,7 @@ export const isSystemUser = (user: any): boolean => {
     const roles = [
         systemRoles.BACKOFFICE,
         systemRoles.BM,
-        systemRoles.BMO,
+        systemRoles.BOM,
         systemRoles.CMO,
         systemRoles.CSO,
         systemRoles.ADMIN,
@@ -69,8 +71,8 @@ const servers: any = {
     dev: {
         // Auth: 'https://localhost:44313',
         Auth: 'https://dfcu-autodatacapture-auth-api-test.test001.laboremus.no',
-        // Case: 'http://localhost:6001',
-        Case: 'https://dfcu-autodatacapture-casehandling-test.test001.laboremus.no',
+        Case: 'http://localhost:6001',
+        // Case: 'https://dfcu-autodatacapture-casehandling-test.test001.laboremus.no',
         Notification: 'https://dfcu-notification-api-test.test001.laboremus.no',
     },
     test: {
@@ -120,8 +122,10 @@ export const remoteRoutes = {
     register: authURL + '/api/auth/register',
     resetPass: authURL + '/reset',
 
+    workflowsRoot: caseHandlingURL,
     workflowsDocsUpload: caseHandlingURL + '/api/documents/upload',
     workflows: caseHandlingURL + '/api/workflows',
+
     workflowsCombo: caseHandlingURL + '/api/queries/combo',
     workflowsReports: caseHandlingURL + '/api/report/download',
     documentsDownload: caseHandlingURL + '/api/documents/download',
@@ -133,6 +137,123 @@ export const remoteRoutes = {
     userClaims: authURL + '/api/User/Claim',
     userMultiClaims: authURL + '/api/multipleClaims',
     userCustomClaims: authURL + '/api/customClaims'
+
+}
+
+export class ConstantLabelsAndValues {
+
+    public static DATE = 'Date'
+    public static NAME = 'Name'
+    public static FULL_NAME = 'Full name'
+    public static EMAIL = 'Email'
+    public static BANK_NAME = 'Bank name'
+    public static BENEFICIARY_BANK = 'Beneficiary Bank'
+    public static BANK = 'Bank'
+    public static TELEPHONE = 'Telephone'
+
+    public static NATURE_OF_BUSINESS = 'Nature of business'
+    public static CHEQUE_NO = 'Cheque No.'
+    public static ACCOUNT_NO = 'A/C No.'
+    public static ACCOUNT_NUMBER_FULL = 'Account number.'
+    public static COUNTRY = 'Country'
+    public static COUNTRY_CODE = 'Country code'
+    public static ADDRESS = 'Address'
+    public static PHYSICAL_ADDRESS = 'Physical address'
+    public static TOWN = 'Town'
+    public static DISTRICT = 'District'
+    public static PLOT = 'Plot'
+    public static BUILDING = 'Building'
+
+    public static REQUESTING_BRANCH = 'Requesting branch'
+    public static TRANSFER_TYPE = 'Transfer type'
+    public static CURRENCY = 'Currency'
+    public static AMOUNT = 'Amount'
+    public static AMOUNT_IN_WORDS = 'Amount in words'
+    public static RATE = 'Rate'
+    public static REMITTANCE_AMOUNT = 'Remittance amount'
+    public static PURPOSE_OF_TRANSFER = 'Purpose of  transfer'
+
+    public static SORT_CODE = 'Sort code'
+    public static SWIFT_CODE = 'Swift code'
+    public static IBAN = 'IBAN'
+    public static ABA = 'ABA'
+    public static IFSC = 'IFSC'
+    public static FED_WIRE = 'Fedwire'
+
+    public static APPROVED_BY = 'Approved by:'
+    public static REJECTED_BY = 'Rejected by:'
+    public static SUBMITTED_BY = 'Submitted by:'
+    public static CLEARED_BY = 'Cleared by:'
+
+    public static csoCheckList() {
+        const theCheckList = new List<IPropsChecks>();
+        theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate_Bm"))
+        theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex_Bm"))
+        theCheckList.add(addCheck("Sender's account number is correct", "isSenderAccountNumberCorrect_Bm"))
+        theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds_Bm"))
+        theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete_Bm"))
+        theCheckList.add(addCheck("Recipient's physical address is complete", "isRecipientPhysicalAddressComplete_Bm"))
+        return theCheckList
+    }
+
+    public static csoValidationCheckList(){
+        const theCheckList = new List<IPropsChecks>();
+        theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate"))
+        theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex"))
+        theCheckList.add(addCheck("Sender's account number is correct", "isSenderAccountNumberCorrect"))
+        theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds"))
+        theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete"))
+        theCheckList.add(addCheck("Recipient's physical address is complete", "isRecipientPhysicalAddressComplete"))
+        return theCheckList
+    }
+
+    public static bomChecksReviewConfirmation() {
+        const theCheckList = new List<IPropsChecks>();
+        theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate_Bm_Confirmation"))
+        theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex_Bm_confirmation"))
+        theCheckList.add(addCheck("Sender's account number is correct", "isSenderAccountNumberCorrect_Bm_Confirmation"))
+        theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds_Bm_Confirmation"))
+        theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete_Bm_Confirmation"))
+        theCheckList.add(addCheck("Recipient's physical address is complete", "isRecipientPhysicalAddressComplete_Bm_Confirmation"))
+        return theCheckList
+    }
+
+    public static bomRemarks() {
+        const remarks = new List<string>();
+        remarks.add("Instruction is not signed as per mandate");
+        remarks.add("Sender's account number is invalid");
+        remarks.add("Sender has insufficient funds");
+        remarks.add("The recipient's details are incomplete");
+        remarks.add("Recipient's physical address is missing");
+        remarks.add("Forex details are incorrect");
+        remarks.add("Callbacks where not done"); // todo...who is supposed to do the callbacks...guess it's CSO
+        return remarks
+    }
+
+    public static cmoRemarks() {
+        const remarks = new List<string>();
+        remarks.add("Instruction is not signed as per mandate");
+        remarks.add("Sender's account number is invalid");
+        remarks.add("Sender has insufficient funds");
+        remarks.add("The recipient's details are incomplete");
+        remarks.add("Recipient's physical address is missing");
+        remarks.add("Forex details are incorrect");
+        remarks.add("Callbacks where not done"); // todo...who is supposed to do the callbacks...guess it's CSO
+        return remarks
+    }
+
+    public static csoRemarks() {
+        const remarks = new List<string>();
+        remarks.add("Instruction is not signed as per mandate");
+        remarks.add("Sender's account number is invalid");
+        remarks.add("Sender has insufficient funds");
+        remarks.add("The recipient's details are incomplete");
+        remarks.add("Recipient's physical address is missing");
+        remarks.add("Forex details are incorrect");
+        remarks.add("Callbacks where not done"); // todo...who is supposed to do the callbacks...guess it's CSO
+        return remarks
+    }
+
 
 }
 
