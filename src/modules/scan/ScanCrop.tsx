@@ -18,7 +18,7 @@ import {formatRawTransferFormValuesToJson} from "./scanCropWorker";
 import {login} from "../../api-stress/login";
 
 import * as superagent from "superagent";
-import {remoteRoutes} from "../../data/constants";
+import {ConstantLabelsAndValues, remoteRoutes} from "../../data/constants";
 import validateData from "../validations/validations";
 import Loading from "../../components/Loading";
 import Toast from "../../utils/Toast";
@@ -31,7 +31,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {actionICaseState} from "../../data/redux/transfers/reducer";
 import BeneficiaryDetails from "./validate-verify/BeneficiaryDetails";
 import TransferDetails from "./validate-verify/TransferDetails";
-import ValidationCheckList, {checkListCSO} from "./validate-verify/ValidationCheckList";
+
 import {isNullOrEmpty, printValueObjectPrettified} from "../../utils/objectHelpers";
 
 import ObjectHelpersFluent from "../../utils/objectHelpersFluent";
@@ -51,6 +51,7 @@ import {randomInt} from "../../utils/numberHelpers";
 import uuid from "uuid";
 import {ICoreState} from "../../data/redux/coreReducer";
 import ImageUtils from "../../utils/imageUtils";
+import ValidationCheckList from "./validate-verify/ValidationCheckList";
 
 
 let worker = new Worker(worker_script_mappings);
@@ -262,9 +263,6 @@ const ScanCrop = () => {
             // console.log('aCase:', aCase)
             // console.log(aCase.workflowType)
 
-
-
-
             const {access_token} = await login()
 
             if (aCase.workflowType !== "") {
@@ -403,7 +401,7 @@ const ScanCrop = () => {
         return <Loading message="processing...please wait"/>
     }
 
-    const theCheckList = checkListCSO() as IList<IPropsChecks>
+    // const theCheckList = checkListCSO() as IList<IPropsChecks>
 
     return (
 
@@ -425,7 +423,7 @@ const ScanCrop = () => {
 
                 <Grid className={classes.expansion}>
                     <ExpansionCard title="Validation Checklist"
-                                   children={<ValidationCheckList theCheckList={theCheckList}/>}/>
+                                   children={<ValidationCheckList theCheckList={ConstantLabelsAndValues.csoValidationCheckList()}/>}/>
                 </Grid>
 
             </Grid>

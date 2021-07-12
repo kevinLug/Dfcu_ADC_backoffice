@@ -3,14 +3,16 @@ import {IManualDecision} from "../workflows/types";
 import {isNullOrEmpty} from "../../utils/objectHelpers";
 import {IList} from "../../utils/collections/list";
 
-export const populateLabelAndValue = (exceptions: string[] = [], pairs: IKeyValueMap<string, any>, valuePlaceHolder: any) => {
-
-    exceptions.forEach(e => pairs.remove(e))
+export const populateLabelAndValue = (exclusions: string[] = [], pairs: IKeyValueMap<string, any>, valuePlaceHolder: any) => {
+    console.log("yes:", pairs)
+    exclusions.forEach(e => pairs.remove(e))
 
     pairs.keyValueMapToArray().map((kv) => {
-        if (!kv.value)
+        if (kv.value === null || kv.value === undefined || kv.value === '')
             return pairs.replace(kv.key, valuePlaceHolder)
     })
+
+    console.log("the pairs found:", pairs.keyValueMapToArray())
 
     return pairs.keyValueMapToArray();
 }
