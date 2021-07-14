@@ -182,14 +182,14 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
 
         console.log("manual-bm:", manualCMOApproval)
 
-        // post(remoteRoutes.workflowsManual, manualCMOApproval, (resp: any) => {
-        //         console.log(resp) // todo ... consider providing a message for both success and failure
-        //     }, undefined,
-        //     () => {
-        //
-        //         window.location.href = window.location.origin
-        //     }
-        // )
+        post(remoteRoutes.workflowsManual, manualCMOApproval, (resp: any) => {
+                console.log(resp) // todo ... consider providing a message for both success and failure
+            }, undefined,
+            () => {
+
+                window.location.href = window.location.origin
+            }
+        )
 
     }
 
@@ -247,14 +247,14 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
         // }
         console.log("manual-bm:", manualBMRejection)
 
-        // post(remoteRoutes.workflowsManual, manualBMRejection, (resp: any) => {
-        //         console.log(resp) // todo ... consider providing a message for both success and failure
-        //     }, undefined,
-        //     () => {
-        //
-        //         window.location.href = window.location.origin
-        //     }
-        // )
+        post(remoteRoutes.workflowsManual, manualBMRejection, (resp: any) => {
+                console.log(resp) // todo ... consider providing a message for both success and failure
+            }, undefined,
+            () => {
+
+                window.location.href = window.location.origin
+            }
+        )
     }
 
     function submitTransferRequest() {

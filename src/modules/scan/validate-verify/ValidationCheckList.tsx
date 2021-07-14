@@ -27,11 +27,11 @@ import VerificationsAlreadyDoneByCSO from "./checks-already-done-by-cso";
 import Toast from "../../../utils/Toast";
 import RejectionRemarks from "./rejection-remarks";
 import {CSORejectionRemarks, IRemarks} from "./rejection-remarks-values";
-import {ISelectKeyValueState} from "../../../data/redux/selects/reducer";
+import {actionISelectKeyValue, ISelectKeyValueState} from "../../../data/redux/selects/reducer";
 import RejectionDialog from "./rejection-dialog";
 import RejectionForm from "./rejection-dialog";
 import ForexForm from "./forex-dialog";
-import {ICheckKeyValueDefault, IForex} from "../../transfers/types";
+import {ICheckKeyValueDefault, IForex, ISelectKeyValueDefault} from "../../transfers/types";
 import {actionIForexValue, IForexValueState} from "../../../data/redux/forex/reducer";
 import ObjectHelpersFluent from "../../../utils/objectHelpersFluent";
 
@@ -272,18 +272,18 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
             console.log("manual-cso-rejection:", manualCSORejection);
 
             // todo...uncomment
-            // post(remoteRoutes.workflowsManual, manualCSORejection, (resp: any) => {
-            //         console.log(resp) // todo ... consider providing a message for both success and failure
-            //     }, undefined,
-            //     () => {
-            //
-            //         // todo... place this after the the post (inside it)
-            //         dispatch(actionISelectKeyValue(ISelectKeyValueDefault))
-            //
-            //         window.location.href = window.location.origin
-            //
-            //     }
-            // )
+            post(remoteRoutes.workflowsManual, manualCSORejection, (resp: any) => {
+                    console.log(resp) // todo ... consider providing a message for both success and failure
+                }, undefined,
+                () => {
+
+                    // todo... place this after the the post (inside it)
+                    dispatch(actionISelectKeyValue(ISelectKeyValueDefault))
+
+                    window.location.href = window.location.origin
+
+                }
+            )
 
             setShowCommentBox(false)
 
