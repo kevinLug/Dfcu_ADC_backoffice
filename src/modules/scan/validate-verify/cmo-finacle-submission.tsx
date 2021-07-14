@@ -73,7 +73,7 @@ const SubmitTransferRequest = ({showCommentDialog, submitTransferRequest, isReje
 
         <Box className={classes.submissionBox}>
 
-            <Button type="submit" variant="contained" color="primary" disabled={isRejectBtnDisabled} onClick={submitTransferRequest}>Post to Finacle</Button>
+            <Button type="submit" variant="contained" color="primary" disabled={isRejectBtnDisabled} onClick={submitTransferRequest}>POST TO FINACLE</Button>
 
             <Button variant="contained" className={classes.rejectButton} onClick={showCommentDialog}>Reject</Button>
 
@@ -182,14 +182,14 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
 
         console.log("manual-bm:", manualCMOApproval)
 
-        post(remoteRoutes.workflowsManual, manualCMOApproval, (resp: any) => {
-                console.log(resp) // todo ... consider providing a message for both success and failure
-            }, undefined,
-            () => {
-
-                window.location.href = window.location.origin
-            }
-        )
+        // post(remoteRoutes.workflowsManual, manualCMOApproval, (resp: any) => {
+        //         console.log(resp) // todo ... consider providing a message for both success and failure
+        //     }, undefined,
+        //     () => {
+        //
+        //         window.location.href = window.location.origin
+        //     }
+        // )
 
     }
 
@@ -279,15 +279,15 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
                     <Grid item sm={12}>
 
                         <Formik enableReinitialize initialValues={data} onSubmit={async values => {
-                                await new Promise(resolve => {
+                            await new Promise(resolve => {
 
-                                    setTimeout(resolve, 500)
+                                setTimeout(resolve, 500)
 
-                                    handleCMORejection()
+                                handleCMORejection()
 
-                                });
+                            });
 
-                            }}
+                        }}
                         >
                             <Form>
 

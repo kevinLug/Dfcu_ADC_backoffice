@@ -191,10 +191,10 @@ const BmVerificationRtgs = ({workflow}: IProps) => {
                 <ExpansionCard title="Verification Checklist" children={<VerificationByBMO workflow={workflow}/>}/>
             </Grid>
 
-        if (workflow.subStatus.includes(WorkflowSubStatus.AwaitingSubmissionToFinacle) || workflow.subStatus.includes(WorkflowSubStatus.FailedBMApproval))
-            return <Grid className={classes.expansion}>
-                <ExpansionCard title="Verification Checklist" children={<VerificationsAlreadyDoneByBM workflow={workflow}/>}/>
-            </Grid>
+        // if (workflow.subStatus.includes(WorkflowSubStatus.AwaitingSubmissionToFinacle) || workflow.subStatus.includes(WorkflowSubStatus.FailedBMApproval))
+        //     return <Grid className={classes.expansion}>
+        //         <ExpansionCard title="Verification Checklist" children={<VerificationsAlreadyDoneByBM workflow={workflow}/>}/>
+        //     </Grid>
     }
 
     // function showVerificationsToBeDoneByBM() {
@@ -208,7 +208,7 @@ const BmVerificationRtgs = ({workflow}: IProps) => {
     function displaySubmissionToFinacle() {
         if (workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle && hasAnyRole(user, [systemRoles.CMO])) {
             return <Grid className={classes.expansion}>
-                <ExpansionCard title="Submit to Finacle - CMO"
+                <ExpansionCard title="Submit to Finacle"
                                children={<CmoFinacleSubmission user={user} workflowResponseMessage={workflowResponseMessage} workflow={workflow}/>}/>
             </Grid>
         }
