@@ -4,6 +4,7 @@ import {addCheck, IPropsChecks} from "./Check";
 import Grid from "@material-ui/core/Grid";
 import SuccessFailureDisplay from "./success-failure-display";
 import {IWorkflow} from "../../workflows/types";
+import {ConstantLabelsAndValues} from "../../../data/constants";
 
 
 interface IProps {
@@ -25,13 +26,13 @@ const VerificationsAlreadyDoneByBM = ({workflow}: IProps) => {
         console.log("criteria:", criteriaObj)
         console.log("criteria-sub-status:", workflow.subStatus)
 
-        const theCheckList = new List<IPropsChecks>();
-        theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate_Bm_Confirmation"))
-        theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex_Bm_confirmation"))
-        theCheckList.add(addCheck("Sender's account number is correct", "isSenderAccountNumberCorrect_Bm_Confirmation"))
-        theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds_Bm_Confirmation"))
-        theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete_Bm_Confirmation"))
-        theCheckList.add(addCheck("Recipient's physical address is complete (TTs)", "isRecipientPhysicalAddressComplete_Bm_Confirmation"))
+        const theCheckList = ConstantLabelsAndValues.bomChecksReviewConfirmation();
+        // theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate_Bm_Confirmation"))
+        // theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex_Bm_Confirmation"))
+        // theCheckList.add(addCheck("Sender's account number is correct", "isSenderAccountNumberCorrect_Bm_Confirmation"))
+        // theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds_Bm_Confirmation"))
+        // theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete_Bm_Confirmation"))
+        // theCheckList.add(addCheck("Recipient's physical address is complete (TTs)", "isRecipientPhysicalAddressComplete_Bm_Confirmation"))
 
         for (let aCheck of theCheckList) {
 

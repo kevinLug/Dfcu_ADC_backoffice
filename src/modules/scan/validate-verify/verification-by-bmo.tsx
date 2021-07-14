@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {IState} from "../../../data/types";
 import Grid, {GridSpacing} from "@material-ui/core/Grid";
-import {ICheckKeyValueState} from "../../../data/redux/checks/reducer";
+import {actionICheckKeyValue, ICheckKeyValueState} from "../../../data/redux/checks/reducer";
 import {IWorkflowResponseMessageState} from "../../../data/redux/workflow-response/reducer";
 import {Dispatch} from "redux";
 import {IList, List} from "../../../utils/collections/list";
@@ -23,6 +23,8 @@ import Toast from "../../../utils/Toast";
 import RejectionRemarks from "./rejection-remarks";
 import {BMORejectionRemarks, CSORejectionRemarks, IRemarks} from "./rejection-remarks-values";
 import {ISelectKeyValueState} from "../../../data/redux/selects/reducer";
+import {ICheckKeyValueDefault, IForex} from "../../transfers/types";
+import {actionIForexValue} from "../../../data/redux/forex/reducer";
 
 interface IPropsBMO {
     workflow: IWorkflow
@@ -128,7 +130,7 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
     const {workflowResponseMessage}: IWorkflowResponseMessageState = useSelector((state: any) => state.workflowResponse)
     const [rejectionComment, setRejectionComment] = useState('')
     const {select}: ISelectKeyValueState = useSelector((state: any) => state.selects)
-
+    const [showForexDetailsForm, setShowForexDetailsForm] = useState(false)
     const dispatch: Dispatch<any> = useDispatch();
     // const [remarks] = useState(bMORemarks())
 
@@ -208,6 +210,7 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
             }, undefined,
             () => {
                 window.location.href = window.location.origin
+                dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
             }
         )
     }
@@ -267,8 +270,8 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
                 console.log(resp) // todo ... consider providing a message for both success and failure
             }, undefined,
             () => {
-
                 window.location.href = window.location.origin
+                dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
             }
         )
     }

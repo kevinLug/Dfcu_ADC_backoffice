@@ -170,16 +170,16 @@ const BmVerificationRtgs = ({workflow}: IProps) => {
         // still awaiting CSO approval
         if (workflow.subStatus === WorkflowSubStatus.AwaitingCSOApproval && hasAnyRole(user, [systemRoles.CSO]))
             return <Grid className={classes.expansion}>
-                <Typography variant="h4" >Verification Checklist</Typography>
+                <Typography variant="h4">Verification Checklist</Typography>
                 <ValidationCheckList theCheckList={ConstantLabelsAndValues.csoValidationCheckList()}/>
                 {/*<ExpansionCard title="Verification  Checklist" children={<ValidationCheckList theCheckList={theCheckList}/>}/>*/}
             </Grid>
 
         // show verifications done by CSO if process awaits BM action, CMO action, or erred
-        if (workflow.subStatus.includes("BM") || workflow.subStatus.includes("Finacle") || workflow.subStatus.includes("Fail"))
-            return <Grid className={classes.expansion}>
-                <ExpansionCard title="Checklist results - CSO" children={<VerificationsAlreadyDoneByCSO workflow={workflow}/>}/>
-            </Grid>
+        // if (workflow.subStatus.includes("BM") || workflow.subStatus.includes("Finacle") || workflow.subStatus.includes("Fail"))
+        //     return <Grid className={classes.expansion}>
+        //         <ExpansionCard title="Checklist results - CSO" children={<VerificationsAlreadyDoneByCSO workflow={workflow}/>}/>
+        //     </Grid>
 
     }
 
@@ -188,12 +188,12 @@ const BmVerificationRtgs = ({workflow}: IProps) => {
         // still awaiting CSO approval
         if (workflow.subStatus === WorkflowSubStatus.AwaitingBMApproval && hasAnyRole(user, [systemRoles.BM, systemRoles.BOM]))
             return <Grid className={classes.expansion}>
-                <ExpansionCard title="Checklist results - BMO" children={<VerificationByBMO workflow={workflow}/>}/>
+                <ExpansionCard title="Verification Checklist" children={<VerificationByBMO workflow={workflow}/>}/>
             </Grid>
 
         if (workflow.subStatus.includes(WorkflowSubStatus.AwaitingSubmissionToFinacle) || workflow.subStatus.includes(WorkflowSubStatus.FailedBMApproval))
             return <Grid className={classes.expansion}>
-                <ExpansionCard title="Checklist results - BMO" children={<VerificationsAlreadyDoneByBM workflow={workflow}/>}/>
+                <ExpansionCard title="Verification Checklist" children={<VerificationsAlreadyDoneByBM workflow={workflow}/>}/>
             </Grid>
     }
 
@@ -205,10 +205,11 @@ const BmVerificationRtgs = ({workflow}: IProps) => {
     //     // }
     // }
 
-    function displaySubmissionToFinacle(){
-        if (workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle && hasAnyRole(user,[systemRoles.CMO])){
+    function displaySubmissionToFinacle() {
+        if (workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle && hasAnyRole(user, [systemRoles.CMO])) {
             return <Grid className={classes.expansion}>
-                <ExpansionCard title="Submit to Finacle - CMO" children={<CmoFinacleSubmission user={user}  workflowResponseMessage={workflowResponseMessage} workflow={workflow} />} />
+                <ExpansionCard title="Submit to Finacle - CMO"
+                               children={<CmoFinacleSubmission user={user} workflowResponseMessage={workflowResponseMessage} workflow={workflow}/>}/>
             </Grid>
         }
     }

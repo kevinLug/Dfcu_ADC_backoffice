@@ -1,7 +1,7 @@
 import {useSelector} from "react-redux";
 import {IState} from "./types";
 import authService from "./oidc/AuthService";
-import {List} from "../utils/collections/list";
+import {IList, List} from "../utils/collections/list";
 import {addCheck, IPropsChecks} from "../modules/scan/validate-verify/Check";
 
 export const AUTH_TOKEN_KEY = '__demo__dfcu__token'
@@ -154,7 +154,7 @@ export class ConstantLabelsAndValues {
     public static NATURE_OF_BUSINESS = 'Nature of business'
     public static CHEQUE_NO = 'Cheque No.'
     public static ACCOUNT_NO = 'A/C No.'
-    public static ACCOUNT_NUMBER_FULL = 'Account number.'
+    public static ACCOUNT_NUMBER_FULL = 'Account number'
     public static COUNTRY = 'Country'
     public static COUNTRY_CODE = 'Country code'
     public static ADDRESS = 'Address'
@@ -198,7 +198,7 @@ export class ConstantLabelsAndValues {
         return theCheckList
     }
 
-    public static csoValidationCheckList(){
+    public static csoValidationCheckList(): IList<IPropsChecks> {
         const theCheckList = new List<IPropsChecks>();
         theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate"))
         theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex"))
@@ -206,13 +206,14 @@ export class ConstantLabelsAndValues {
         theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds"))
         theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete"))
         theCheckList.add(addCheck("Recipient's physical address is complete", "isRecipientPhysicalAddressComplete"))
+        // theCheckList.add(addCheck("There are no discrepancies in the amounts", "isDiscrepanciesInAmounts"))
         return theCheckList
     }
 
     public static bomChecksReviewConfirmation() {
         const theCheckList = new List<IPropsChecks>();
         theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate_Bm_Confirmation"))
-        theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex_Bm_confirmation"))
+        theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex_Bm_Confirmation"))
         theCheckList.add(addCheck("Sender's account number is correct", "isSenderAccountNumberCorrect_Bm_Confirmation"))
         theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds_Bm_Confirmation"))
         theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete_Bm_Confirmation"))

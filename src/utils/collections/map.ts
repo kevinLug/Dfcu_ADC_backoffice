@@ -1,5 +1,5 @@
-import { IList } from "./list";
-import { List } from "./list";
+import {IList} from "./list";
+import {List} from "./list";
 
 export interface IKeyValueMap<K, V> extends Iterator<any> {
     put(key: K, value: V): void;
@@ -87,8 +87,9 @@ export class KeyValueMap<K, V> implements IKeyValueMap<K, V> {
     }
 
     replace(oldK: K, newV: V): V | undefined {
+
         if (this.containsKey(oldK)) {
-            this.remove(oldK);
+            // this.remove(oldK);
             this.put(oldK, newV);
         }
 
@@ -118,14 +119,20 @@ export class KeyValueMap<K, V> implements IKeyValueMap<K, V> {
     }
 
     keyValueMapToArray(): IKeyValueObject<K, V>[] {
-        return Array.from(this.pair, ([key, value]) => ({ key, value }));
+        return Array.from(this.pair, ([key, value]) => ({key, value}));
     }
 
-    *[Symbol.iterator](): Iterator<IKeyValueObject<K, V>> {
+    * [Symbol.iterator](): Iterator<IKeyValueObject<K, V>> {
         const inArrayForm = this.keyValueMapToArray();
         for (let element of inArrayForm) {
             yield element;
         }
+    }
+
+    arrayToKeyValueMap(array: IKeyValueObject<K, V>[]): IKeyValueMap<K, V> {
+        this.clear();
+        array.map((kv => this.put(kv.key, kv.value)))
+        return this;
     }
 
     // forEach(callback: (key:K,value:V, index: number) => V, thisArg?: any): void {

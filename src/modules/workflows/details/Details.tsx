@@ -6,7 +6,7 @@ import Loading from "../../../components/Loading";
 import Error from "../../../components/Error";
 import {createStyles, Grid, makeStyles, Theme} from "@material-ui/core";
 
-import {IWorkflow, trimCaseId, WorkflowStatus} from "../types";
+import {IWorkflow, trimCaseId, WorkflowStatus, WorkflowSubStatus} from "../types";
 import Typography from "@material-ui/core/Typography";
 import {Flex} from "../../../components/widgets";
 
@@ -102,9 +102,9 @@ const Details = (props: IProps) => {
             console.log("the tasks: ", workflow["tasks"])
 
             // @ts-ignore
-            const isRejectedByCSO: boolean = workflow.tasks[1].actions[0].outputData["isRejected"]
+            // const isRejectedByCSO: boolean = workflow.tasks[1].actions[0].outputData["isRejected"]
 
-            if (caseData.status === WorkflowStatus.Error) {
+            if (caseData.subStatus === WorkflowSubStatus.FailedCSOApproval) {
 
                 returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
                     <span style={styleUserName}>{submittedByCSO}</span>{" - "}
@@ -150,9 +150,9 @@ const Details = (props: IProps) => {
             console.log("the tasks: ", workflow["tasks"])
 
             // @ts-ignore
-            const isRejectedByCSO: boolean = workflow.tasks[1].actions[0].outputData["isRejected"]
+            // const isRejectedByCSO: boolean = workflow.tasks[2].actions[0].outputData["isRejected"]
 
-            if (caseData.status === WorkflowStatus.Error) {
+            if (caseData.subStatus === WorkflowSubStatus.FailedBMApproval) {
 
                 returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
                     <span style={styleUserName}>{approvedByBM}</span>{" - "}
@@ -201,7 +201,7 @@ const Details = (props: IProps) => {
             console.log("the tasks: ", workflow["tasks"])
 
             // @ts-ignore
-            const isRejectedByCMO: boolean = workflow.tasks[3].actions[0].outputData["isRejected"]
+            // const isRejectedByCMO: boolean = workflow.tasks[3].actions[0].outputData["isRejected"]
 
             if (caseData.status === WorkflowStatus.Error) {
 

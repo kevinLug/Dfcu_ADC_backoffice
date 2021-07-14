@@ -15,8 +15,8 @@ export interface IPropsChecks {
     label: string;
     name: string;
     usePropValue?: boolean;
-    handleCheckChange?: () => boolean;
-    disable?: boolean
+    handleCheckChange?: (event: React.ChangeEvent<HTMLInputElement>) => any;
+    disable?: boolean;
 }
 
 
@@ -49,13 +49,7 @@ export class Checks {
 
 }
 
-const CheckBoxTemplate = ({
-                              value,
-                              label,
-                              name,
-                              usePropValue = false,
-                              disable
-                          }: IPropsChecks) => {
+const CheckBoxTemplate = ({value, label, name, usePropValue = false, disable, handleCheckChange}: IPropsChecks) => {
 
     const [stateValue, setStateValue] = useState<boolean>(value)
     const [state, setState] = useState<boolean>(value)
@@ -92,6 +86,9 @@ const CheckBoxTemplate = ({
             setState(event.target.checked);
             console.log(event.target.checked)
             console.log(state)
+        }
+        if (handleCheckChange) {
+            handleCheckChange(event)
         }
     };
 

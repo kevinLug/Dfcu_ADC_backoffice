@@ -19,7 +19,7 @@ const BeneficiaryDetails = () => {
 
     useEffect(() => {
 
-        console.log("logging: for recipient's bank name:",bankDetails.beneficiaryBank.bankName)
+        // console.log("logging: for recipient's bank name:",bankDetails.beneficiaryBank.bankName)
 
     }, [transferDetails, bankDetails, beneficiaryDetails, aCase])
 

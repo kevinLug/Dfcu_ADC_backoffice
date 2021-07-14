@@ -4,7 +4,7 @@ import {isNullOrEmpty} from "../../utils/objectHelpers";
 import {IList} from "../../utils/collections/list";
 
 export const populateLabelAndValue = (exclusions: string[] = [], pairs: IKeyValueMap<string, any>, valuePlaceHolder: any) => {
-    console.log("yes:", pairs)
+    // console.log("yes:", pairs)
     exclusions.forEach(e => pairs.remove(e))
 
     pairs.keyValueMapToArray().map((kv) => {
@@ -12,7 +12,7 @@ export const populateLabelAndValue = (exclusions: string[] = [], pairs: IKeyValu
             return pairs.replace(kv.key, valuePlaceHolder)
     })
 
-    console.log("the pairs found:", pairs.keyValueMapToArray())
+    // console.log("the pairs found:", pairs.keyValueMapToArray())
 
     return pairs.keyValueMapToArray();
 }

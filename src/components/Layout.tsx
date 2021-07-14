@@ -20,6 +20,8 @@ import {Dispatch} from "redux";
 import {IState} from "../data/types";
 import {Link} from "react-router-dom";
 import FloatingActionButtons from "../modules/scan/FloatingIcon";
+import {actionICheckKeyValue} from "../data/redux/checks/reducer";
+import {ICheckKeyValueDefault} from "../modules/transfers/types";
 
 const drawerWidth = 240;
 
@@ -144,6 +146,7 @@ function Layout(props: any) {
             setBtnTransferName("NEW TRANSFER REQUEST")
             window.location.reload()
         }
+        dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
     }
 
     function canShowRequestButton() {
@@ -190,7 +193,7 @@ function Layout(props: any) {
                 <div className={classes.toolbar}/>
                 <Paper className={classes.body}>
                     {props.children}
-                    <FloatingActionButtons  />
+                    <FloatingActionButtons/>
                 </Paper>
             </main>
         </div>

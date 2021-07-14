@@ -62,11 +62,11 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
             label: ConstantLabelsAndValues.PURPOSE_OF_TRANSFER,
             value: labelling.transferPurpose
         }
-
-        // {
-        //     label: 'Beneficiary Country',
-        //     value: labelling.beneficiaryAddress.country
-        // },
+        ,
+        {
+            label: ConstantLabelsAndValues.COUNTRY_CODE,
+            value: labelling.currencyCode
+        },
         // {
         //     label: 'Beneficiary Town',
         //     value: labelling.beneficiaryAddress.town
@@ -81,9 +81,10 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
         // },
     ]
 
-    console.log("labels:", labels)
-
-    return keyValueLabels(labels);
+    // console.log("labels:", labels)
+    const val = keyValueLabels(labels);
+    // console.log("labels-after:", labels)
+    return val
 }
 
 export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: IBankDetails) => {
@@ -125,7 +126,7 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
     let recipientPhysicalAddress = ''
     for (const [k, v] of Object.entries(labellingOne.address)) {
         if (v !== null && v !== undefined && v !== '' && k !== 'countryCode') {
-            console.log('k:', k, v)
+            // console.log('k:', k, v)
             recipientPhysicalAddress = (v).concat(`,${recipientPhysicalAddress}`)
         }
     }
@@ -291,7 +292,7 @@ export const applicationDetailsLabels = (data: IApplicantDetails) => {
             value: labelling.fullName
         },
         {
-            label: ConstantLabelsAndValues.ACCOUNT_NO,
+            label: ConstantLabelsAndValues.ACCOUNT_NUMBER_FULL,
             value: labelling.accountNumber
         },
         {

@@ -30,7 +30,7 @@ class ObjectHelpersFluent {
     private continuationFlag: boolean = false
     private selectorPath: string
     private checksRun: IKeyValueMap<string, boolean>
-    private flag:boolean;
+    private flag: boolean;
 
     constructor() {
         indexCount += 1
@@ -41,7 +41,7 @@ class ObjectHelpersFluent {
         this.flag = false;
     }
 
-    isIgnorable(){
+    isIgnorable() {
         this.summary.testResult = true;
         console.log("ignored")
         return this;
@@ -57,16 +57,16 @@ class ObjectHelpersFluent {
     //     }
     // }
 
-    setFlag(flag: boolean){
+    setFlag(flag: boolean) {
         this.flag = flag;
         return this;
     }
 
-    getFlag(){
+    getFlag() {
         return this.flag;
     }
 
-    getCheckRuns(){
+    getCheckRuns() {
         return this.checksRun;
     }
 
@@ -88,18 +88,18 @@ class ObjectHelpersFluent {
         return this;
     }
 
-    directValue(directValue:any) {
+    directValue(directValue: any) {
         this.summary.value = directValue
         return this;
     }
 
-    private addToCheckRuns(testName:string,result:boolean){
-        if (this.checksRun.size() === 0){
-            const firstCheck = new KeyValueMap<string,boolean>();
-            firstCheck.put(testName,result);
+    private addToCheckRuns(testName: string, result: boolean) {
+        if (this.checksRun.size() === 0) {
+            const firstCheck = new KeyValueMap<string, boolean>();
+            firstCheck.put(testName, result);
             this.checksRun = firstCheck;
-        }else {
-            this.checksRun.put(testName,result);
+        } else {
+            this.checksRun.put(testName, result);
         }
     }
 
@@ -128,8 +128,8 @@ class ObjectHelpersFluent {
         return this;
     }
 
-    isObject(obj?:any) {
-        if (obj){
+    isObject(obj?: any) {
+        if (obj) {
             return validate.isObject(obj);
         }
         this.summary.testResult = validate.isObject(this.value)
@@ -197,7 +197,7 @@ class ObjectHelpersFluent {
         return this;
     }
 
-    isLessThan(greaterNumber:number){
+    isLessThan(greaterNumber: number) {
         this.summary.testResult = validate.isDefined(this.value)
 
         if (!validate.isNumber(this.summary.value)) {
@@ -211,7 +211,7 @@ class ObjectHelpersFluent {
         return this;
     }
 
-    isEqualTo(value:any){
+    isEqualTo(value: any) {
         this.summary.testResult = this.summary.value === value
         this.summary.expected = true;
         this.addToCheckRuns("IS_EQUAL_TO", this.summary.testResult)
@@ -219,7 +219,7 @@ class ObjectHelpersFluent {
         return this;
     }
 
-    isNOTEqualTo(value:any){
+    isNOTEqualTo(value: any) {
         this.summary.testResult = this.summary.value !== value
         this.summary.expected = true;
         this.addToCheckRuns("IS_EQUAL_TO", this.summary.testResult)
@@ -227,8 +227,8 @@ class ObjectHelpersFluent {
         return this;
     }
 
-    contains(containedValue:any){
-        this.summary.testResult = validate.contains(this.summary.value,containedValue)
+    contains(containedValue: any) {
+        this.summary.testResult = validate.contains(this.summary.value, containedValue)
         this.summary.expected = true;
         this.addToCheckRuns("CONTAINS", this.summary.testResult)
         this.setFlag(this.summary.testResult)
@@ -348,7 +348,7 @@ class ObjectHelpersFluent {
 
     logValue() {
         const value = this.summary.value;
-        console.log(`The value:-`,JSON.stringify(value,null,2))
+        console.log(`The value:-`, JSON.stringify(value, null, 2))
         return this
     }
 
@@ -370,9 +370,41 @@ class ObjectHelpersFluent {
         return this.value;
     }
 
-    ifCondition(){
+    ifCondition(condition: boolean) {
+        if (condition)
+            return this;
+    }
 
-        return this;
+    successCallBack(call: (data?: any) => any) {
+        if (this.summary.testResult) {
+            call()
+        }
+        return this
+    }
+
+    failureCallBack(call: (data?: any) => any) {
+        if (!this.summary.testResult) {
+            call()
+        }
+        return this
+    }
+
+    haltProcess(callBackShouldRun?: boolean, shouldHaltIfTestResultFails?: boolean, haltCallBack?: (data?: any) => any, customCondition?: boolean) {
+        if (haltCallBack && callBackShouldRun) {
+            haltCallBack()
+        }
+
+        // only used when testResult is true but you want to halt anyway
+        if (customCondition !== null && customCondition !== undefined) {
+            // eslint-disable-next-line no-throw-literal
+            throw 'process halted!'
+        } else if (shouldHaltIfTestResultFails) {
+            if (!this.summary.testResult) {
+                // eslint-disable-next-line no-throw-literal
+                throw 'process halted!'
+            }
+        }
+
     }
 
 

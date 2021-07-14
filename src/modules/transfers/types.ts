@@ -229,6 +229,16 @@ export interface ITemplateTempProps {
 
 }
 
+export interface IForex {
+    rate: any;
+    remittanceAmount: any
+}
+
+export const IForexDefault: IForex = <IForex>{
+    rate: '',
+    remittanceAmount: ''
+}
+
 export interface ISelectKeyValue {
     selects: IKeyValueMap<string, any>
 }
@@ -242,7 +252,7 @@ export interface IServerPingValue {
     pingResponse: any;
 }
 
-export const IServerPingValueDefault: IServerPingValue = <IServerPingValue> {
+export const IServerPingValueDefault: IServerPingValue = <IServerPingValue>{
     isServerReachable: false,
     pingResponse: null
 }
