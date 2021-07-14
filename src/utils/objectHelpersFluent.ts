@@ -352,6 +352,16 @@ class ObjectHelpersFluent {
         return this
     }
 
+    logDetailed() {
+        this.logValue();
+        this.logTestResult();
+        console.log(`criterion: `, this.getCheckRuns().getKeys().get(0));
+        this.logTestMessage();
+        // this.logSummary()
+        this.logNewLineSpace();
+        return this
+    }
+
     logTestResult() {
         console.log(`test result: `, this.summary.testResult)
         return this

@@ -422,7 +422,7 @@ const ScanCrop = () => {
                 </Grid>
 
                 <Grid className={classes.expansion}>
-                    <ExpansionCard title="Validation Checklist"
+                    <ExpansionCard title="Verification Checklist"
                                    children={<ValidationCheckList theCheckList={ConstantLabelsAndValues.csoValidationCheckList()}/>}/>
                 </Grid>
 
