@@ -1,5 +1,5 @@
 import {IManualDecision, IWorkflow} from "../../workflows/types";
-import {remoteRoutes, systemRoles} from "../../../data/constants";
+import {ConstantLabelsAndValues, remoteRoutes, systemRoles} from "../../../data/constants";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
@@ -19,6 +19,8 @@ import Toast from "../../../utils/Toast";
 import {post} from "../../../utils/ajax";
 import {ISelectKeyValueState} from "../../../data/redux/selects/reducer";
 import {Dispatch} from "redux";
+import ObjectHelpersFluent from "../../../utils/objectHelpersFluent";
+import {RequestType} from "../../workflows/config";
 
 
 const useStylesInternal = makeStyles((theme: Theme) =>
@@ -150,9 +152,33 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
             }
         };
 
+        let bankName = ''
+        let bankCode = ''
+        let branchCode = ''
+
+        const isTypeEftOrRtgs1 = workflow.type === RequestType.EFT || workflow.type === RequestType.RTGS_1;
+
+        if (isTypeEftOrRtgs1) {
+            // @ts-ignore
+            bankName = ConstantLabelsAndValues.mapOfRecipientBankCodeToValueOfBank().get(workflow.caseData.bankDetails.beneficiaryBank.bankName).name
+            // @ts-ignore
+            bankCode = ConstantLabelsAndValues.mapOfRecipientBankCodeToValueOfBank().get(workflow.caseData.bankDetails.beneficiaryBank.bankName).bankCode
+            // @ts-ignore
+            branchCode = ConstantLabelsAndValues.mapOfRecipientBankCodeToValueOfBank().get(workflow.caseData.bankDetails.beneficiaryBank.bankName).branchCode
+        } else {
+            bankName = workflow.caseData.bankDetails.beneficiaryBank.bankName
+            // @ts-ignore
+            bankCode = ConstantLabelsAndValues.mapOfRecipientNameToValueOfBank().get(workflow.caseData.bankDetails.beneficiaryBank.bankName).name
+            // @ts-ignore
+            branchCode = ConstantLabelsAndValues.mapOfRecipientNameToValueOfBank().get(workflow.caseData.bankDetails.beneficiaryBank.bankName).branchCode
+        }
+
         const beneficiaryDetails = {
             fullName: workflow.caseData.beneficiaryDetails.fullName,
             accountNumber: workflow.caseData.beneficiaryDetails.accountNumber,
+            bankName: bankName,
+            bankCode: bankCode,
+            branchCode: branchCode,
             beneficiaryAddress: {
                 town: workflow.caseData.beneficiaryDetails.address.town,
                 country: workflow.caseData.beneficiaryDetails.address.countryCode,
