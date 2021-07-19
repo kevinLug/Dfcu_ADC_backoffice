@@ -85,7 +85,12 @@ const ORIENTATION_TO_ANGLE: any = {
     '8': -90,
 }
 
-const RateConfirmationFileUpload = ({classes}: any) => {
+interface IRateConfirmationFileUploadProps {
+    classes: any;
+    forexDetails: IForex;
+}
+
+const RateConfirmationFileUpload = ({classes, forexDetails}: IRateConfirmationFileUploadProps) => {
     const [imageSrc, setImageSrc] = useState<string>("")
 
     async function handleDrop(files: any) {
@@ -102,6 +107,12 @@ const RateConfirmationFileUpload = ({classes}: any) => {
         // console.log("rate file:", imageDataUrl)
 
         setImageSrc(imageDataUrl)
+        const newForexDetails: IForex = {
+            rate: forexDetails.rate,
+            remittanceAmount: forexDetails.remittanceAmount,
+            doc: imageDataUrl
+        };
+        Object.assign(forexDetails, newForexDetails)
         // console.log("dropped image:", imageDataUrl)
     }
 
@@ -132,12 +143,28 @@ const RateConfirmationFileUpload = ({classes}: any) => {
     </Grid>
 }
 
+/**
+ * Internal constants to help avoid typos and uncalled-for errors
+ * */
 class InternalConstants {
+    /**
+     * FOREX RATE IS PRESENT
+     * */
     public static TITLE_FOREX_RATE_EXISTS = 'FOREX RATE IS PRESENT'
     public static TITLE_REMITTANCE_AMOUNT_EXISTS = 'REMITTANCE AMOUNT IS PRESENT'
-    public static TITLE_BOTH_REMITTANCE_AMOUNT_AND_EXIST = 'CONFIRM BOTH RATE & REMITTANCE AMOUNT EXIST'
+    /**
+     * CONFIRM BOTH RATE & REMITTANCE AMOUNT EXIST
+     * */
+    public static TITLE_BOTH_REMITTANCE_AMOUNT_AND_EXIST = 'BOTH RATE AND REMITTANCE AMOUNT CAPTURED'
+
     public static BOTH_EXIST = 'REMITTANCE AMOUNT & FOREX RATE ARE PRESENT'
+    /**
+     * selector $.rate
+     * */
     public static SELECT_RATE = "$.rate"
+    /**
+     * selector $.remittanceAmount
+     * */
     public static SELECT_REMITTANCE_AMOUNT = "$.remittanceAmount"
 }
 
@@ -147,9 +174,11 @@ const ForexForm = ({data, handleDialogCancel, handleSubmission, isSubmitBtnDisab
 
     const [rate] = useState('')
     const [remittanceAmount] = useState('')
+    const [doc] = useState('')
     const initialData: IForex = {
         rate,
-        remittanceAmount
+        remittanceAmount,
+        doc
     }
 
     const [theData, setTheData] = useState(initialData)
@@ -180,16 +209,25 @@ const ForexForm = ({data, handleDialogCancel, handleSubmission, isSubmitBtnDisab
             .failureCallBack(() => Toast.warn(`Please specify Remittance Amount`))
             .logDetailed().haltProcess(false, true);
 
-        new ObjectHelpersFluent().testTitle(InternalConstants.TITLE_BOTH_REMITTANCE_AMOUNT_AND_EXIST).directValue(rateTest.getSummary().testResult === remittanceAmountTest.getSummary().testResult).isEqualTo(true)
-            .failureCallBack(() => Toast.warn(`Either the rate or remittance amount is missing`)).successCallBack(() => {
+        new ObjectHelpersFluent().testTitle(InternalConstants.TITLE_BOTH_REMITTANCE_AMOUNT_AND_EXIST).directValue(rateTest.getSummary().testResult === remittanceAmountTest.getSummary().testResult)
+            .isEqualTo(true)
+            .failureCallBack(() => Toast.warn(`Either the rate or remittance amount is missing`))
+            .logDetailed().haltProcess(false, true)
 
-            dispatch(actionIForexValue(initialData))
-            Toast.success("Forex details capture")
-            if (handleDialogCancel) {
-                handleDialogCancel()
-            }
 
-        }).logDetailed().haltProcess(false, true)
+        new ObjectHelpersFluent().testTitle("RATE CONFIRMATION FILE").selector(theData, '$.doc')
+            .isPresent()
+            .failureCallBack(() => Toast.warn(`Confirmation file is missing`))
+            .successCallBack(() => {
+
+                dispatch(actionIForexValue(initialData))
+                Toast.success("Forex details capture")
+                // close the dialog upon completion
+                if (handleDialogCancel) {
+                    handleDialogCancel()
+                }
+
+            }).logDetailed().haltProcess(false, true)
 
     }
 
@@ -230,7 +268,7 @@ const ForexForm = ({data, handleDialogCancel, handleSubmission, isSubmitBtnDisab
                 </Grid>
 
                 <Grid>
-                    <RateConfirmationFileUpload classes={classes}/>
+                    <RateConfirmationFileUpload classes={classes} forexDetails={theData}/>
                 </Grid>
 
                 <Grid item sm={12} className={classes.submissionGrid}>

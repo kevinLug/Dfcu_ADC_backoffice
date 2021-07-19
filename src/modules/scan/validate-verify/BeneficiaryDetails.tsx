@@ -43,7 +43,7 @@ const BeneficiaryDetails = () => {
             {/*}*/}
 
             {
-                populateLabelAndValue(['Country','Plot','Building', 'Town', 'Country Code'], beneficiaryDetailsLabels(beneficiaryDetails, bankDetails), "-").map((kv, index) => {
+                populateLabelAndValue(['Country','Plot','Building', 'Town', 'Country Code'], beneficiaryDetailsLabels(beneficiaryDetails, bankDetails,aCase), "-").map((kv, index) => {
                     return <Grid key={index} container item spacing={4} sm={12}>
                         <Grid item sm={5}>
                             <DataLabel noColon={true}>{kv.key}</DataLabel>

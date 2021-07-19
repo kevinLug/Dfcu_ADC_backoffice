@@ -34,6 +34,9 @@ import ForexForm from "./forex-dialog";
 import {ICheckKeyValueDefault, IForex, ISelectKeyValueDefault} from "../../transfers/types";
 import {actionIForexValue, IForexValueState} from "../../../data/redux/forex/reducer";
 import ObjectHelpersFluent from "../../../utils/objectHelpersFluent";
+import {addDynamicProperty} from "../../../utils/objectHelpers";
+import ConfirmationDialog from "../confirmation-dialog";
+import SuccessFailureDisplay from "./success-failure-display";
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -83,6 +86,7 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
     const dispatch: Dispatch<any> = useDispatch();
 
     const [showCommentBox, setShowCommentBox] = useState(false)
+    const [showConfirmationDialog, setShowConfirmationDialog] = useState(false)
     const [isRejectBtnDisabled] = useState(false)
     const [showForexDetailsForm, setShowForexDetailsForm] = useState(false)
 
@@ -107,7 +111,23 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
 
     const handleCSOApproval = async () => {
 
-        let data = getChecksToPopulate(check.checks);
+        // let data = getChecksToPopulate(check.checks);
+
+        const dataCSOManual: any = {
+            isRejected: false,
+            submittedBy: user.name,
+            forexDetails: forexValue,
+            timestamp: new Date()
+        }
+
+        for (const v of ConstantLabelsAndValues.csoValidationCheckList()) {
+            // @ts-ignore
+            addDynamicProperty(dataCSOManual, v.name, getChecksToPopulate(check.checks)[v.name])
+            // @ts-ignore
+            // dataCSOManual[v.name] = getChecksToPopulate(check.checks)[v.name];
+        }
+
+        console.log('olimba:', dataCSOManual)
 
         let caseId: string
         if (!workflowResponseMessage.caseId || workflowResponseMessage.caseId.includes("0000-0000")) {
@@ -117,96 +137,56 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
             caseId = workflowResponseMessage.caseId
         }
 
-        // @ts-ignore
-        data["isRejected"] = false;
-        // @ts-ignore
-        data["submittedBy"] = user.name
-        // @ts-ignore
-        data["timestamp"] = new Date()
-        // @ts-ignore
-        data["forexDetails"] = forexValue
+        // // @ts-ignore
+        // dataCSOManual["isRejected"] = false;
+        // // @ts-ignore
+        // dataCSOManual["submittedBy"] = user.name
+        // // @ts-ignore
+        // dataCSOManual["timestamp"] = new Date()
+        // // @ts-ignore
+        // dataCSOManual["forexDetails"] = forexValue
         const manualCSOApproval: IManualDecision = {
             caseId: caseId,
             taskName: "cso-approval", // todo ...consider making these constants
             actionName: "cso-transfer-details-approval",
             resumeCase: true,
             nextSubStatus: "SenderDetailsCheckSuccessful",
-            data: data,
+            data: dataCSOManual,
             override: false
         }
 
         const rateExists = new ObjectHelpersFluent().testTitle("forex rate exists").selector(manualCSOApproval, "$.data.forexDetails.rate").isPresent().logValue().logTestResult().logTestMessage()
-            .successCallBack(() => {
-                console.log("succeeded...")
-            })
-            .failureCallBack(() => {
-                console.log("failure...")
-            })
             .logNewLineSpace()
             .getSummary().testResult
 
-        const remittanceAmountExists = new ObjectHelpersFluent().testTitle("forex remittance amount exists").selector(manualCSOApproval, "$.data.forexDetails.remittanceAmount").isPresent().logValue().logTestResult().logTestMessage()
-            .successCallBack(() => {
-                console.log("succeeded...")
-            }).failureCallBack(() => {
-                console.log("failure...")
-            }).logNewLineSpace().getSummary().testResult
+        const remittanceAmountExists = new ObjectHelpersFluent().testTitle("forex remittance amount exists").selector(manualCSOApproval, "$.data.forexDetails.remittanceAmount").isPresent()
+            .logValue().logTestResult().logTestMessage()
+            .logNewLineSpace().getSummary().testResult
 
         const forexTransferIsRequired = new ObjectHelpersFluent().testTitle("forex remittance amount exists").selector(manualCSOApproval, `$.data.${ConstantLabelsAndValues.csoValidationCheckList().get(1).name}`)
             .isPresent()
             .logValue().logTestResult().logTestMessage()
-            .successCallBack(() => {
-                console.log("succeeded...")
-            }).failureCallBack(() => {
-                console.log("failure...")
-            }).logNewLineSpace()
+            .logNewLineSpace()
             .getSummary().testResult
 
         const forexCheckAndValuesMatch = forexTransferIsRequired === remittanceAmountExists === rateExists
 
         const forexMatch = new ObjectHelpersFluent()
         forexMatch.testTitle("forex check meets its values (values exist if check is true)").directValue(forexCheckAndValuesMatch).isEqualTo(true).logValue().logTestResult().logTestMessage()
-            .successCallBack(() => {
-                console.log("succeeded...")
-            })
             .failureCallBack(() => {
+
                 Toast.warn(`Please set forex values OR uncheck ${ConstantLabelsAndValues.csoValidationCheckList().get(1).label}`)
-            })
-            .logNewLineSpace()
-            .haltProcess(true, true, () => {
 
-                console.log(".....", forexMatch.getSummary().testResult)
-                if (!forexMatch.getSummary().testResult) {
+                setTimeout(() => {
+                    Toast.warn("Not submitted")
+                }, 2000)
 
-                    setTimeout(() => {
-                        Toast.warn("Not submitted")
-                    }, 2000)
-
-
-                }
-
-            })
+            }).logNewLineSpace().haltProcess(false, true,)
 
         const rejectionIsFalse = new ObjectHelpersFluent()
         rejectionIsFalse.testTitle("isRejected === false").selector(manualCSOApproval, "$.data.isRejected").isEqualTo(false).logValue().logTestResult().logTestMessage()
-            .successCallBack(() => {
-                console.log("succeeded...")
-            })
-            .failureCallBack(() => {
-                console.log("failure...")
-            })
             .logNewLineSpace()
-            .haltProcess(true, true, () => {
-
-                if (!rejectionIsFalse.getSummary().testResult) {
-                    Toast.warn("Refresh the page and start over.SORRY")
-                    setTimeout(() => {
-                        Toast.warn("The submission is being considered a rejection")
-                    }, 2000)
-
-                }
-
-            })
+            .haltProcess(false, true,)
 
         console.log("losing:", manualCSOApproval)
 
@@ -218,6 +198,10 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
                 dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
             }
         )
+
+        setShowConfirmationDialog(false)
+
+        return manualCSOApproval
     }
 
     const handleCSORejection = async () => {
@@ -312,7 +296,8 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
                 setShowForexDetailsForm(false)
                 const initialData: IForex = {
                     rate: '',
-                    remittanceAmount: ''
+                    remittanceAmount: '',
+                    doc: ''
                 }
                 // reset forex global state
                 dispatch(actionIForexValue(initialData))
@@ -349,6 +334,38 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
 
     }
 
+    function cancelConfirmationDialogApproval() {
+        setShowConfirmationDialog(false)
+    }
+
+    function showConfirmationDialogApproval() {
+        setShowConfirmationDialog(true)
+    }
+
+    function showResultBeingConfirmedByCSO() {
+
+        return ConstantLabelsAndValues.csoValidationCheckList().toArray().map((v, index) => {
+            // @ts-ignore
+            const value = getChecksToPopulate(check.checks)[v.name]
+
+            return <Grid key={index} style={index % 2 ? {background: "#fcf6ea"} : {background: "#fdf9f1"}}>
+                {
+
+                    <SuccessFailureDisplay value={value} label={v.label} name={v.name} key={v.name}/>
+
+                }
+
+            </Grid>
+        })
+
+    }
+
+    function handleConfirmCSOValidation() {
+
+        return <ConfirmationDialog title="Confirm to submit or cancel" handleDialogCancel={cancelConfirmationDialogApproval} handleConfirmation={handleCSOApproval}
+                                   children={showResultBeingConfirmedByCSO()}/>
+    }
+
     const remarks: IRemarks = CSORejectionRemarks()
 
     return (
@@ -364,7 +381,7 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
                     hasAnyRole(user, [systemRoles.CSO]) ?
 
                         <Box className={classes.submissionBox}>
-                            <Button variant="contained" color="primary" onClick={handleCSOApproval}>SUBMIT
+                            <Button variant="contained" color="primary" onClick={showConfirmationDialogApproval}>SUBMIT
                                 REQUEST</Button>
 
                             <Button variant="contained" className={classes.rejectButton}
@@ -373,6 +390,11 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
                         </Box>
                         :
                         ""
+                }
+
+
+                {
+                    showConfirmationDialog ? handleConfirmCSOValidation() : ""
                 }
 
             </Grid>
