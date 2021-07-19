@@ -10,7 +10,7 @@ export interface IBeneficiaryAddress {
     physicalAddress: string
 }
 
-export const IBeneficiaryAddressDefault = {} as IBeneficiaryAddress
+export const IBeneficiaryAddressDefault:IBeneficiaryAddress  = {} as IBeneficiaryAddress
 
 
 export interface ITransferDetails {
@@ -25,8 +25,16 @@ export interface ITransferDetails {
     // beneficiaryAddress: IBeneficiaryAddress;
 }
 
-export const ITransferDetailsDefault = <ITransferDetails>{
+export const ITransferDetailsDefault: ITransferDetails = {
     // beneficiaryAddress: IBeneficiaryAddressDefault
+    branchCode: '',
+    remittanceType: '',
+    currencyCode: '',
+    transactionAmount: 0,
+    remittanceAmount: '',
+    exchangeRate: 0,
+    amountInWords: '',
+    transferPurpose: ''
 }
 
 
@@ -68,7 +76,12 @@ export interface IApplicantAddress {
     district: string;
 }
 
-export const IApplicantAddressDefault: IApplicantAddress = <IApplicantAddress>{}
+export const IApplicantAddressDefault: IApplicantAddress = {
+    plotNumber: '',
+    street: '',
+    town: '',
+    district: '',
+}
 
 export interface IApplicantDetails {
     fullName: string;
@@ -80,18 +93,32 @@ export interface IApplicantDetails {
     address: IApplicantAddress;
 }
 
-export const IApplicantDetailsDefault: IApplicantDetails = <IApplicantDetails>{
+export const IApplicantDetailsDefault: IApplicantDetails = {
+    fullName: '',
+    accountNumber: '',
+    chequeNumber: '',
+    emailAddress: '',
+    phoneNumber: '',
+    natureOfBusiness: '',
     address: IApplicantAddressDefault
 }
 
-export const IBeneficiaryBankDefault: IBeneficiaryBank = <IBeneficiaryBank>{}
+export const IBeneficiaryBankDefault: IBeneficiaryBank = {
+    bankName: '',
+    swiftCode: '',
+    sortCode: '',
+    aba: '',
+    fedwire: '',
+    ifsc: '',
+    iban: ''
+}
 
 
 export interface ICharges {
     chargeMode: string;
 }
 
-export const IChargesDefault: ICharges = <ICharges>{}
+export const IChargesDefault: ICharges = {chargeMode: ''}
 
 export interface ICorrespondingBankDetails {
     bankName: string;
@@ -106,7 +133,16 @@ export interface ICorrespondingBankDetails {
     charges: ICharges;
 }
 
-export const ICorrespondingBankDetailsDefault: ICorrespondingBankDetails = <ICorrespondingBankDetails>{
+export const ICorrespondingBankDetailsDefault: ICorrespondingBankDetails = {
+    bankName: '',
+    accountNumber: '',
+    swiftCode: '',
+    sortCode: '',
+    aba: '',
+    fedWire: '',
+    ifsc: '',
+    iban: '',
+    transferPurpose: '',
     charges: IChargesDefault
 }
 
@@ -118,7 +154,13 @@ export interface IPhysicalAddress {
     signatureOfMandate: string;
 }
 
-export const IPhysicalAddressDefault: IPhysicalAddress = <IPhysicalAddress>{}
+export const IPhysicalAddressDefault: IPhysicalAddress = {
+    plotNumber: '',
+    street: '',
+    town: '',
+    district: '',
+    signatureOfMandate: '',
+}
 
 export interface ISenderDetails {
     name: string;
@@ -131,12 +173,22 @@ export interface ISenderDetails {
 }
 
 export const ISenderDetailsDefault: ISenderDetails = <ISenderDetails>{
+    name: '',
+    email: '',
+    accountNumber: '',
+    telephone: '',
+    natureOfBusiness: '',
+    chequeNumber: '',
     physicalAddress: IPhysicalAddressDefault
 }
 
 
 export interface IApplicantBank {
     branchCode: string;
+}
+
+export const IApplicantBankDefault: IApplicantBank ={
+    branchCode:''
 }
 
 export interface ICharges {
@@ -149,8 +201,12 @@ export interface IBankDetails {
     applicantBank: IApplicantBank;
 }
 
-export const IBankDetailsDefault: IBankDetails = <IBankDetails>{
-    beneficiaryBank: IBeneficiaryBankDefault
+export const IBankDetailsDefault: IBankDetails = {
+
+    beneficiaryBank: IBeneficiaryBankDefault,
+    correspondingBankDetails:ICorrespondingBankDetailsDefault,
+    applicantBank: IApplicantBankDefault
+
 }
 
 export interface IUser {
@@ -195,7 +251,15 @@ export interface ICaseData {
 }
 
 export const ICaseDataDefault: ICaseData = <ICaseData>{
-    applicantDetails: IApplicantDetailsDefault
+    transferDetails: ITransferDetailsDefault,
+    bankDetails: IBankDetailsDefault,
+    senderDetails: ISenderDetailsDefault,
+    beneficiaryDetails: IBeneficiaryDetailsDefault,
+    applicantDetails: IApplicantDetailsDefault,
+    charges: IChargesDefault,
+    user: IUserDefault,
+    doc: '',
+    // applicantDetails: IApplicantDetailsDefault
 }
 
 export interface ICase {
@@ -208,7 +272,11 @@ export interface ICase {
 }
 
 export const ICaseDefault: ICase = <ICase>{
-    // caseData: ICaseDataDefault
+    applicationDate: new Date(),
+    workflowType: '',
+    externalReference: '',
+    referenceNumber: 0,
+    caseData: ICaseDataDefault,
 }
 
 export interface IWorkflowResponseMessage {
@@ -232,11 +300,13 @@ export interface ITemplateTempProps {
 export interface IForex {
     rate: any;
     remittanceAmount: any
+    doc: any
 }
 
 export const IForexDefault: IForex = <IForex>{
     rate: '',
-    remittanceAmount: ''
+    remittanceAmount: '',
+    doc: ''
 }
 
 export interface ISelectKeyValue {
