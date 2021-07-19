@@ -166,7 +166,6 @@ const ScanCrop = () => {
     const [resultObjectKeys, setResultObjectKeys] = useState<IList<string>>(new List());
     const [imageSrc, setImageSrc] = useState<string>("")
     const [iScanSuccessful, setScanSuccessful] = useState(false)
-    const [scanCount, setScanCount] = useState(0)
 
     const [crop, setCrop] = useState({x: -261, y: 454})
     const [rotation, setRotation] = useState(0)
@@ -221,20 +220,60 @@ const ScanCrop = () => {
         }))
     }
 
-    async function handleTransferInitiation(access_token: any) {
+    const onCropComplete = async (croppedArea: any, croppedAreaPixels: any) => {
 
-        const initiateTransfer = new ObjectHelpersFluent()
-        initiateTransfer.testTitle("transfer type exists to initiate transfer request")
-            .selector(aCase, '$.workflowType').isPresent()
-            .successCallBack(async () => {
+        console.log('cropping results:', {croppedArea, croppedAreaPixels}, {crop}, {zoom})
+
+        try {
+
+            // console.log(`with some-imageSrc:`, imageSrc)
+            const croppedImage: any = await getCroppedImg(imageSrc, croppedAreaPixels, 0)
+            // console.log(`with some-croppedImage:`, croppedImage)
+
+            // const decodedRawResult = await codeReader.decodeFromImageUrl(croppedImage)
+
+            const decodedRawResult = await codeReader.decodeFromImage(undefined, croppedImage.toString())
+            console.log(`decoded:`, decodedRawResult.getText())
+
+            const resultOfScan = await runMappingRules.getScanResult(decodedRawResult.getText());
+            console.log('result of scan: ', resultOfScan);
+
+            // check if decoding succeeded
+            if (!new ObjectHelpersFluent().directValue(decodedRawResult.getText()).isPresent().getFlag()) {
+                Toast.warn("Auto scan failed. ")
+                Toast.warn("Manually zoom the qr code image. ")
+            } else {
+                Toast.success("scan successful");
+                setScanSuccessful(true)
+            }
+
+            const pairKeyValueFromDecodedRawResult = decodedRawResult.getText().split(",");
+
+            // cleanup raw data
+            pairKeyValueFromDecodedRawResult.map((pair) => {
+                const valueTrimmed = pair.trim();
+                const key = valueTrimmed.slice(0, 2)
+                const value = valueTrimmed.slice(3, valueTrimmed.length)
+                if (valueTrimmed !== "") {
+                    rawTransferFormValues.set(key, value);
+                }
+            })
+
+            Object.assign(aCase, runMappingRules.setCase(resultOfScan));
+            // console.log('aCase:', aCase)
+            // console.log(aCase.workflowType)
+
+            const {access_token} = await login()
+
+            if (aCase.workflowType !== "") {
 
                 const userObj = {
                     "id": user.sub,
                     // "id": "1f824a84-46b6-4e7f-b601-5d041118439d",
                     "name": user.name,
-                    "phone": "",
-                    "agentCode": "",
-                    "branchName": "",
+                    "phone": "256781750721",
+                    "agentCode": "2345566",
+                    "branchName": "02",
                     "region": ""
                 }
 
@@ -258,7 +297,6 @@ const ScanCrop = () => {
                 const ttt = await idbHandler.setUpDb("test_again")
                 console.log('sss:', ttt)
                 console.log('sss:', idbHandler.getDb())
-
                 if (validationResult) {
 
                     console.log("the user: ", user)
@@ -267,69 +305,17 @@ const ScanCrop = () => {
                         dispatch(actionIWorkflowResponseMessage(resp))
                         Toast.success("scan complete")
                     })
-
                 } else {
                     Toast.warn("Incomplete info in scan result")
                 }
-
-            })
-        //
-        // if (aCase.workflowType !== "" && aCase.workflowType !== undefined && aCase.workflowType !== null) {
-        //
-        //
-        // }
-
-    }
-
-    let times = 0 // todo...find a better way to do this....useState is a bit of a mess
-
-    const onCropComplete = async (croppedArea: any, croppedAreaPixels: any) => {
-
-        console.log('cropping results:', {croppedArea, croppedAreaPixels}, {crop}, {zoom})
-
-        try {
-
-            const croppedImage: any = await getCroppedImg(imageSrc, croppedAreaPixels, 0)
-
-            const decodedRawResult = await codeReader.decodeFromImage(undefined, croppedImage.toString())
-            console.log(`decoded text:`, decodedRawResult.getText())
-
-            const resultOfScan = await runMappingRules.getScanResult(decodedRawResult.getText());
-            console.log('result of scan: ', resultOfScan);
-
-            // check if decoding succeeded
-            if (!new ObjectHelpersFluent().directValue(decodedRawResult.getText()).isAbsent().getFlag()) {
-                Toast.warn("Auto scan failed. ")
-                Toast.warn("Manually zoom the qr code image. ")
-            } else {
-
-                times = times + 1
-                console.log('times:', times)
-                new ObjectHelpersFluent().directValue(times === 1 && aCase.workflowType !== null && aCase.workflowType !== undefined)
-                    .isEqualTo(true)
-                    .successCallBack(async () => {
-
-                        setScanSuccessful(true)
-
-                        Toast.success("scan successful");
-
-                        Object.assign(aCase, runMappingRules.setCase(resultOfScan));
-
-                        //todo... find better wy to deal with this
-                        const {access_token} = await login()
-
-                        // point of submission to case-handling
-                        await handleTransferInitiation(access_token)
-
-                        setResult(decodedRawResult.getText())
-
-                    })
-
             }
+
+
+            setResult(decodedRawResult.getText())
 
         } catch (e) {
             console.log(e)
-            Toast.error("Scan failed. Move or zoom qr code")
+
             // to pinpoint PDF417
             // if (zoom === 3) {
             //     setZoom(1)
