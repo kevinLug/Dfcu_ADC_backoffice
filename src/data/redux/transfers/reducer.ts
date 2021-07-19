@@ -51,7 +51,6 @@ export const actionICaseState = (aCase: ICase) => {
 
 export const reducer = (state = initialState, action: any): ICaseState => {
     const aCase = action.payload
-    console.log("aCase from:",aCase)
     switch (action.type) {
         case transferConstants.startScan:
             return {
