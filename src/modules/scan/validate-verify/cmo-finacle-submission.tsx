@@ -124,7 +124,7 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
             currencyCode: workflow.caseData.transferDetails.currencyCode,
             transAmount: workflow.caseData.transferDetails.transactionAmount,
             exchangeRate: workflow.caseData.transferDetails.exchangeRate,
-            remittanceMode: "SWIFT",
+            remittanceMode: workflow.type,
             countryCode: workflow.caseData.beneficiaryDetails.address.countryCode,
             branchCode: workflow.caseData.transferDetails.branchCode,
             transferPurpose: workflow.caseData.transferDetails.transferPurpose,

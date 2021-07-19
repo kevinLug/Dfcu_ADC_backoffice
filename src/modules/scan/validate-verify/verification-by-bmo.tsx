@@ -177,7 +177,12 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
 
     const handleBMApproval = async () => {
 
-        let data = getChecksToPopulate(check.checks);
+        // let data = getChecksToPopulate(check.checks);
+
+        for(const v of ConstantLabelsAndValues.bomChecksReviewConfirmation()){
+            // @ts-ignore
+            data[v.name] = getChecksToPopulate(check.checks)[v.name];
+        }
 
         let caseId: string
         if (!workflowResponseMessage.caseId || workflowResponseMessage.caseId.includes("0000-0000")) {
@@ -193,6 +198,7 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
         data["approvedBy"] = user.name
         // @ts-ignore
         data["timestamp"] = new Date()
+
         const manualBMApproval: IManualDecision = {
             caseId: caseId,
             taskName: "bm-approval", // todo ...consider making these constants
