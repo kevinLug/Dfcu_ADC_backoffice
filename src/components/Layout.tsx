@@ -21,7 +21,8 @@ import {IState} from "../data/types";
 import {Link} from "react-router-dom";
 import FloatingActionButtons from "../modules/scan/FloatingIcon";
 import {actionICheckKeyValue} from "../data/redux/checks/reducer";
-import {ICheckKeyValueDefault} from "../modules/transfers/types";
+import {ICaseDefault, ICheckKeyValueDefault} from "../modules/transfers/types";
+import {actionICaseState, initialState} from "../data/redux/transfers/reducer";
 
 const drawerWidth = 240;
 
@@ -146,6 +147,7 @@ function Layout(props: any) {
             setBtnTransferName("NEW TRANSFER REQUEST")
             window.location.reload()
         }
+        dispatch(actionICaseState(ICaseDefault));
         dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
     }
 
