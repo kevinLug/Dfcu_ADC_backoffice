@@ -10,6 +10,10 @@ import {
 import {KeyValueMap} from "../../utils/collections/map";
 import {printDateTime} from "../../utils/dateHelpers";
 import {ConstantLabelsAndValues} from "../../data/constants";
+import {RequestType, workflowTypes} from "../workflows/config";
+import ObjectHelpersFluent from "../../utils/objectHelpersFluent";
+import {isNullOrEmpty} from "../../utils/objectHelpers";
+import validate from "validate.js";
 
 interface ILabelValue {
     label: string;
@@ -25,6 +29,29 @@ const keyValueLabels = (labelsAndValues: ILabelValue[]) => {
 export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: ICase) => {
     const labelling = transferDetails
 
+    // ConstantLabelsAndValues.mapOfDFCUBranchCodeToBranchLabel().get(labelling.branchCode)
+    //
+    // console.log('flag:', new ObjectHelpersFluent().directValue(labelling.branchCode).isPresent().getFlag())
+    // console.log('flag:', new ObjectHelpersFluent().directValue(labelling.branchCode).isPresent().getSummary().testResult)
+    // new ObjectHelpersFluent().directValue(labelling.branchCode).isPresent()
+    //     .logDetailed()
+    //     .successCallBack(() => {
+    //
+    //         new ObjectHelpersFluent().directValue(labelling.branchCode).isPresent()
+    //
+    //             .successCallBack(() => {
+    //
+    //                 // branchCode = ConstantLabelsAndValues.mapOfDFCUBranchCodeToBranchLabel().get(labelling.branchCode)
+    //
+    //             })
+    //
+    //
+    //     })
+    //
+    // new ObjectHelpersFluent().directValue(printDateTime(aCase.applicationDate)).isEqualTo(printDateTime(new Date())).logDetailed()
+    //     .successCallBack(() => date = '').failureCallBack(() => date = aCase.applicationDate).getSummary().testResult ? date : printDateTime(date)
+    let date: any = ''
+    let branchCode: string = ''
     const labels: ILabelValue[] = [
         {
             label: ConstantLabelsAndValues.DATE,
@@ -32,7 +59,23 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
         },
         {
             label: ConstantLabelsAndValues.REQUESTING_BRANCH,
-            value: labelling.branchCode
+            value: new ObjectHelpersFluent().directValue(labelling.branchCode).isPresent()
+
+                .successCallBack(() => {
+
+                    new ObjectHelpersFluent().directValue(labelling.branchCode).isPresent()
+
+                        .successCallBack(() => {
+
+                            // @ts-ignore
+                            branchCode = ConstantLabelsAndValues.mapOfDFCUBranchCodeToBranchLabel().get(labelling.branchCode)
+
+                        })
+
+
+                }).failureCallBack(() => {
+                    branchCode = ''
+                }).getSummary().testResult ? branchCode : branchCode
         },
         {
             label: ConstantLabelsAndValues.TRANSFER_TYPE,
@@ -52,11 +95,11 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
         },
         {
             label: ConstantLabelsAndValues.RATE,
-            value: labelling.exchangeRate
+            value: new ObjectHelpersFluent().directValue(labelling.exchangeRate).isEqualTo(0).getSummary().testResult ? '' : labelling.exchangeRate
         },
         {
             label: ConstantLabelsAndValues.REMITTANCE_AMOUNT,
-            value: labelling.transactionAmount
+            value: new ObjectHelpersFluent().directValue(labelling.transactionAmount).isEqualTo(0).getSummary().testResult ? '' : labelling.transactionAmount
         },
         {
             label: ConstantLabelsAndValues.PURPOSE_OF_TRANSFER,
@@ -67,18 +110,7 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
             label: ConstantLabelsAndValues.COUNTRY_CODE,
             value: labelling.currencyCode
         },
-        // {
-        //     label: 'Beneficiary Town',
-        //     value: labelling.beneficiaryAddress.town
-        // },
-        // {
-        //     label: 'Beneficiary Plot',
-        //     value: labelling.beneficiaryAddress.plot
-        // },
-        // {
-        //     label: 'Beneficiary Building',
-        //     value: labelling.beneficiaryAddress.building
-        // },
+
     ]
 
     // console.log("labels:", labels)
@@ -87,49 +119,49 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
     return val
 }
 
-export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: IBankDetails) => {
+export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: IBankDetails, aCase: ICase) => {
     const labellingOne = {...dataOne}
     const labellingTwo = {...dataTwo}
+    console.log('eft:', labellingTwo)
     let transferCode = ''
     let transferCodesLabel = ''
+    // console.log(labellingTwo, labellingOne)
 
-    for (const [k, v] of Object.entries(labellingTwo.beneficiaryBank)) {
+    // for (const [k, v] of Object.entries(labellingTwo.beneficiaryBank)) {
+    //
+    //     if (k !== 'bankName' && v !== null && v !== undefined && v !== '') {
+    //         transferCode = v
+    //
+    //         switch (k) {
+    //             case 'sortCode':
+    //                 transferCodesLabel = ConstantLabelsAndValues.SORT_CODE
+    //                 break
+    //             case 'swiftCode':
+    //                 transferCodesLabel = ConstantLabelsAndValues.SWIFT_CODE
+    //                 break
+    //             case 'aba':
+    //                 transferCodesLabel = ConstantLabelsAndValues.ABA
+    //                 break
+    //             case 'fedwire':
+    //                 transferCodesLabel = ConstantLabelsAndValues.FED_WIRE
+    //                 break
+    //             case 'ifsc':
+    //                 transferCodesLabel = ConstantLabelsAndValues.IFSC
+    //                 break
+    //             case 'iban':
+    //                 transferCodesLabel = ConstantLabelsAndValues.IBAN
+    //                 break
+    //
+    //         }
+    //
+    //     }
+    // }
 
-        if (k !== 'bankName' && v !== null && v !== undefined && v !== '') {
-            transferCode = v
+    let recipientPhysicalAddress = '';
 
-            switch (k) {
-                case 'sortCode':
-                    transferCodesLabel = ConstantLabelsAndValues.SORT_CODE
-                    break
-                case 'swiftCode':
-                    transferCodesLabel = ConstantLabelsAndValues.SWIFT_CODE
-                    break
-                case 'aba':
-                    transferCodesLabel = ConstantLabelsAndValues.ABA
-                    break
-                case 'fedwire':
-                    transferCodesLabel = ConstantLabelsAndValues.FED_WIRE
-                    break
-                case 'ifsc':
-                    transferCodesLabel = ConstantLabelsAndValues.IFSC
-                    break
-                case 'iban':
-                    transferCodesLabel = ConstantLabelsAndValues.IBAN
-                    break
-
-            }
-
-        }
-    }
-
-    let recipientPhysicalAddress = ''
-    for (const [k, v] of Object.entries(labellingOne.address)) {
-        if (v !== null && v !== undefined && v !== '' && k !== 'countryCode') {
-            // console.log('k:', k, v)
-            recipientPhysicalAddress = (v).concat(`,${recipientPhysicalAddress}`)
-        }
-    }
+    // @ts-ignore
+    let bankName = ''
+    let bankNameNotPresent = ''
 
     const labels = [
         {
@@ -138,7 +170,32 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
         },
         {
             label: ConstantLabelsAndValues.BANK_NAME,
-            value: labellingTwo.beneficiaryBank.bankName
+            value: new ObjectHelpersFluent().testTitle("CASE is present").directValue(aCase)
+                .isPresent()
+
+                .successCallBack(() => {
+
+                    new ObjectHelpersFluent().testTitle('transfer type is not empty..for bank name display').selector(aCase, '$.workflowType')
+                        .isPresent()
+
+                        .successCallBack(() => {
+
+                            const eftOrRtgs1 = aCase.workflowType === RequestType.EFT || aCase.workflowType === RequestType.RTGS_1
+
+                            // EFT or RTGS1 transfer type
+                            new ObjectHelpersFluent()
+                                .testTitle("transfer type equals EFT")
+                                .directValue(eftOrRtgs1).isEqualTo(true)
+
+                                .successCallBack(() => {
+                                    // @ts-ignore
+                                    bankName = ConstantLabelsAndValues.mapOfRecipientBankCodeToValueOfBank().get(labellingTwo.beneficiaryBank.bankName).name
+                                })
+                                .failureCallBack(() => bankName = labellingTwo.beneficiaryBank.bankName)
+                        })
+
+                })
+                .getSummary().testResult ? bankName : bankNameNotPresent
         },
         {
             label: ConstantLabelsAndValues.ACCOUNT_NO,
@@ -174,7 +231,35 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
         // },
         {
             label: ConstantLabelsAndValues.PHYSICAL_ADDRESS,
-            value: recipientPhysicalAddress
+
+            value: new ObjectHelpersFluent().directValue(labellingOne.address).isPresent().failureCallBack(() => recipientPhysicalAddress = '')
+
+                .successCallBack(() => {
+
+                    const map = new KeyValueMap<string, string>()
+
+                    for (const [k, v] of Object.entries(labellingOne.address)) {
+
+                        if (v !== null && v !== undefined && v !== '') {
+
+                            map.put(k, v)
+
+                        }
+
+                    }
+
+                    for (const [k, v] of Object.entries(labellingOne.address)) {
+                        if (map.containsKey(k)) {
+                            if (k === 'countryCode') {
+                                const c = ConstantLabelsAndValues.mapOfCountryCodeToCountryName().get(v)
+                                // @ts-ignore
+                                recipientPhysicalAddress = recipientPhysicalAddress.concat(c).concat(',')
+                            } else
+                                recipientPhysicalAddress = recipientPhysicalAddress.concat(v).concat(',')
+                        }
+                    }
+
+                }).failureCallBack(() => recipientPhysicalAddress = '').getSummary().testResult ? recipientPhysicalAddress : recipientPhysicalAddress
         }
     ];
 
@@ -186,7 +271,7 @@ export const beneficiaryAddressLabels = (data: IBeneficiaryAddress) => {
     const labels = [
         {
             label: ConstantLabelsAndValues.COUNTRY,
-            value: labelling.country
+            value: ConstantLabelsAndValues.mapOfCountryCodeToCountryName().get(labelling.country)
         },
         {
             label: ConstantLabelsAndValues.TOWN,
@@ -286,6 +371,17 @@ export const beneficiaryBankLabels = (data: IBeneficiaryBank) => {
 
 export const applicationDetailsLabels = (data: IApplicantDetails) => {
     const labelling = data
+
+    let physicalAddress = `${labelling.address.district},${labelling.address.town}, ${labelling.address.street}, ${labelling.address.plotNumber}`;
+
+    const physicalAddressSeparated = physicalAddress.split(",")
+
+    const filtered = physicalAddressSeparated.filter((v) => {
+        return v.trim() !== undefined && v.trim() !== 'undefined' && v.trim() !== ''
+    })
+
+    physicalAddress = filtered.join(",")
+
     const labels: ILabelValue[] = [
         {
             label: ConstantLabelsAndValues.NAME,
@@ -329,7 +425,7 @@ export const applicationDetailsLabels = (data: IApplicantDetails) => {
         // },
         {
             label: ConstantLabelsAndValues.PHYSICAL_ADDRESS,
-            value: `${labelling.address.district},${labelling.address.town}, ${labelling.address.street}, ${labelling.address.plotNumber}`
+            value: physicalAddress
         }
     ];
     return keyValueLabels(labels)
