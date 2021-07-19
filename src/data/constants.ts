@@ -277,6 +277,12 @@ export class ConstantLabelsAndValues {
         return map
     }
 
+    public static mapOfRecipientNameToValueOfBank(): IKeyValueMap<string, IRecipientBank> {
+        const map = new KeyValueMap<string, IRecipientBank>()
+        bankCodes.Banks.map((aBank: IRecipientBank) => map.put(aBank.bankCode, aBank))
+        return map
+    }
+
     public static mapOfRecipientBranchCodeToValueOfBank(): IKeyValueMap<string, IRecipientBank> {
         const map = new KeyValueMap<string, IRecipientBank>()
         bankCodes.Banks.map((aBank: IRecipientBank) => map.put(aBank.branchCode, aBank))
