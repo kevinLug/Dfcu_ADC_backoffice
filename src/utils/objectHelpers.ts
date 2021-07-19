@@ -9,7 +9,7 @@ export const checkNested = (object: any, ...rest: any) => {
 
 }
 
-export const isNullOrEmpty = (str: string): boolean => str.trim() === null || str.trim() === "" || str.trim() === undefined;
+export const isNullOrEmpty = (str: string): boolean => str.trim() === undefined || str.trim() === null || str.trim() === "";
 
 export enum CriteriaTest {
     //Value should be present
@@ -152,9 +152,9 @@ export const resolveDotNotationToBracket = (path: string, obj?: object) => {
 
 export const resolveDotNotationToBracketPathOnly = (path: string) => {
     return path.split('.').reduce(function (prev, curr) {
-        console.log("yap-:",prev);
+        console.log("yap-:", prev);
         // @ts-ignore
-        console.log("yap:",prev[curr]);
+        console.log("yap:", prev[curr]);
         // @ts-ignore
         return prev ? prev[curr] : null
     })
@@ -183,6 +183,15 @@ export const objectBreakDown = (obj: any) => {
         }
     }
 };
+
+export const addDynamicProperty = (obj: any, key: any, value: any) => {
+    Object.defineProperty(obj, key, {
+        value: value,
+        writable: true,
+        enumerable: true,
+        configurable: true
+    });
+}
 
 export class ObjectUtils<T> {
 

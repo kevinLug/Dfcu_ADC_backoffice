@@ -70,6 +70,13 @@ class ObjectHelpersFluent {
         return this.checksRun;
     }
 
+    /**
+     *
+     * @param object
+     * @param selector
+     * @param callBackBeforeSelection
+     * @param callBackAfterSelection
+     */
     selector(object: any, selector: string, callBackBeforeSelection?: (...args: any) => any, callBackAfterSelection?: (...args: any) => any) {
         this.selectorPath = selector
         if (callBackBeforeSelection) {
@@ -104,7 +111,7 @@ class ObjectHelpersFluent {
     }
 
     isPresent() {
-        this.summary.testResult = validate.isEmpty(this.value)
+        this.summary.testResult = validate.isEmpty(this.summary.value)
         this.summary.expected = true;
         this.summary.testResult ? this.summary.testResult = false : this.summary.testResult = true
         this.addToCheckRuns("IS_PRESENT", this.summary.testResult)
@@ -113,7 +120,7 @@ class ObjectHelpersFluent {
     }
 
     isAbsent() {
-        this.summary.testResult = validate.isEmpty(this.value)
+        this.summary.testResult = validate.isEmpty(this.summary.value)
         this.summary.expected = true;
         this.addToCheckRuns("IS_ABSENT", this.summary.testResult)
         this.setFlag(this.summary.testResult)
@@ -222,7 +229,7 @@ class ObjectHelpersFluent {
     isNOTEqualTo(value: any) {
         this.summary.testResult = this.summary.value !== value
         this.summary.expected = true;
-        this.addToCheckRuns("IS_EQUAL_TO", this.summary.testResult)
+        this.addToCheckRuns("IS_NOT_EQUAL_TO", this.summary.testResult)
         this.setFlag(this.summary.testResult)
         return this;
     }
@@ -354,8 +361,8 @@ class ObjectHelpersFluent {
 
     logDetailed() {
         this.logValue();
-        this.logTestResult();
         console.log(`criterion: `, this.getCheckRuns().getKeys().get(0));
+        this.logTestResult();
         this.logTestMessage();
         // this.logSummary()
         this.logNewLineSpace();
@@ -408,10 +415,13 @@ class ObjectHelpersFluent {
         if (customCondition !== null && customCondition !== undefined) {
             // eslint-disable-next-line no-throw-literal
             throw 'process halted!'
-        } else if (shouldHaltIfTestResultFails) {
-            if (!this.summary.testResult) {
-                // eslint-disable-next-line no-throw-literal
-                throw 'process halted!'
+        } else {
+            if (shouldHaltIfTestResultFails) {
+                if (!this.summary.testResult) {
+                    console.log("test result halt:", this.summary.testResult)
+                    // eslint-disable-next-line no-throw-literal
+                    throw 'process halted!'
+                }
             }
         }
 

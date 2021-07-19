@@ -5,6 +5,22 @@ import React from "react";
 import {renderStatus} from "./widgets";
 import {toTitleCase} from "../contacts/types";
 import {IWorkflow, WorkflowStatus} from "./types";
+import ObjectHelpersFluent from "../../utils/objectHelpersFluent";
+import {ConstantLabelsAndValues} from "../../data/constants";
+
+
+export enum RequestType {
+
+    FOREIGN_REMITTANCE = 'FOREIGNREMITTANCE',
+    EFT = 'EFT',
+    RTGS_1 = 'RTGS1',
+    RTGS = 'RTGS',
+    EAPS = 'EAPS',
+    REPSS = 'REPSS',
+    ForeignDraft = 'foreignDraft',
+    SWIFT = 'SWIFT'
+
+}
 
 export const wfInitialSort = 'applicationDate';
 export const workflowHeadCells: XHeadCell[] = [
@@ -74,7 +90,19 @@ export const workflowHeadCells: XHeadCell[] = [
                 whiteSpace: 'nowrap'
             }
         },
-        render: (data, rec) => data
+        render: (data, rec) => {
+            console.log('the data:', rec)
+            // let valueToDisplay = ''
+
+            // if (rec.workflowType === RequestType.EFT || rec.workflowType === RequestType.RTGS_1)
+            //     // @ts-ignore
+            //     valueToDisplay = ConstantLabelsAndValues.mapOfRecipientBankCodeToValueOfBank().get(rec.beneficiaryBank.bankName).name
+            // else
+            //     valueToDisplay = data
+
+            // @ts-ignore
+            return rec.type === RequestType.EFT || rec.type === RequestType.RTGS_1 ? ConstantLabelsAndValues.mapOfRecipientBankCodeToValueOfBank().get(data).name : data
+        }
     },
 
     {
@@ -156,19 +184,9 @@ export const workflowHeadCells: XHeadCell[] = [
 
 export const workflowHeadCellsNew: XHeadCell[] = [...workflowHeadCells.filter(it => it.name !== 'metaData.assigneeName')]
 
-export const workflowTypes = ['FOREIGNREMITTANCE', 'EFT', 'RTGS', 'RTGSLOCAL', 'EAPS', 'REPSS', 'Foreign Draft']
+export const workflowTypes = ['FOREIGNREMITTANCE', 'EFT', 'RTGS', 'RTGS1', 'EAPS', 'REPSS', 'Foreign Draft', 'SWIFT']
 
-export enum RequestType {
 
-    FOREIGN_REMITTANCE = 'FOREIGNREMITTANCE',
-    EFT = 'EFT',
-    RTGS_LOCAL = 'RTGSLOCAL',
-    RTGS = 'RTGS',
-    EAPS = 'EAPS',
-    REPSS = 'REPSS',
-    ForeignDraft = 'foreignDraft',
-
-}
 
 export const parseWorkflows = (data: IWorkflow[]) => {
     return data.map(it => {

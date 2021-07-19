@@ -81,12 +81,12 @@ describe("decision making tests", () => {
     });
 
     it('value is GreaterThan (testData method)', () => {
-        const greaterThan = testData(CriteriaTest.GreaterThan, aCase.caseData.transferDetails.rate, 2000);
+        const greaterThan = testData(CriteriaTest.GreaterThan, aCase.caseData.transferDetails.exchangeRate, 2000);
         expect(greaterThan.resultFlag).toEqual(true);
     });
 
     it('value is LessThan (testData method)', () => {
-        const lessThan = testData(CriteriaTest.LessThan, aCase.caseData.transferDetails.rate, 5000);
+        const lessThan = testData(CriteriaTest.LessThan, aCase.caseData.transferDetails.exchangeRate, 5000);
         expect(lessThan.resultFlag).toEqual(true);
     });
 
@@ -96,12 +96,12 @@ describe("decision making tests", () => {
     });
 
     it('value is LessThanOrEqualTo (testData method)', () => {
-        const lessThanOrEqualTo = testData(CriteriaTest.LessThanOrEqualTo, aCase.caseData.transferDetails.rate, 3500);
+        const lessThanOrEqualTo = testData(CriteriaTest.LessThanOrEqualTo, aCase.caseData.transferDetails.exchangeRate, 3500);
         expect(lessThanOrEqualTo.resultFlag).toEqual(true);
     });
 
     it('value is GreaterThanOrEqualTo (testData method)', () => {
-        const greaterThanOrEqualTo = testData(CriteriaTest.GreaterThanOrEqualTo, aCase.caseData.transferDetails.rate, 3500);
+        const greaterThanOrEqualTo = testData(CriteriaTest.GreaterThanOrEqualTo, aCase.caseData.transferDetails.exchangeRate, 3500);
         expect(greaterThanOrEqualTo.resultFlag).toEqual(true);
     });
 
@@ -120,7 +120,8 @@ describe('ObjectUtils class tests', () => {
         const objOne = aCase;
 
         class Case implements ICase {
-            applicationDate: string = "";
+
+            applicationDate: Date = new Date();
             caseData: ICaseData = <ICaseData>{};
             externalReference: string = "";
             referenceNumber: number = 0;
@@ -137,7 +138,7 @@ describe('ObjectUtils class tests', () => {
     it('iterate and assign object value to recipient object', () => {
 
         class Case implements ICase {
-            applicationDate: string = "";
+            applicationDate: Date = new Date();
             caseData: ICaseData = <ICaseData>{};
             externalReference: string = "";
             referenceNumber: number = 0;
