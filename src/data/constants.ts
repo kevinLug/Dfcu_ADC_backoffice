@@ -3,6 +3,10 @@ import {IState} from "./types";
 import authService from "./oidc/AuthService";
 import {IList, List} from "../utils/collections/list";
 import {addCheck, IPropsChecks} from "../modules/scan/validate-verify/Check";
+import {branches} from "../modules/settings/customClaims/region-data";
+import {IKeyValueMap, KeyValueMap} from "../utils/collections/map";
+import bankCodes from './bankCodes.json'
+import countryCodes from './countryCodes.json'
 
 export const AUTH_TOKEN_KEY = '__demo__dfcu__token'
 export const AUTH_USER_KEY = '__demo__dfcu__user'
@@ -71,8 +75,8 @@ const servers: any = {
     dev: {
         // Auth: 'https://localhost:44313',
         Auth: 'https://dfcu-autodatacapture-auth-api-test.test001.laboremus.no',
-        // Case: 'http://localhost:6001',
-        Case: 'https://dfcu-autodatacapture-casehandling-test.test001.laboremus.no',
+        Case: 'http://localhost:6001',
+        // Case: 'https://dfcu-autodatacapture-casehandling-test.test001.laboremus.no',
         Notification: 'https://dfcu-notification-api-test.test001.laboremus.no',
     },
     test: {
@@ -218,6 +222,7 @@ export class ConstantLabelsAndValues {
         theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds_Bm_Confirmation"))
         theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete_Bm_Confirmation"))
         theCheckList.add(addCheck("Recipient's physical address is complete", "isRecipientPhysicalAddressComplete_Bm_Confirmation"))
+        theCheckList.add(addCheck("Confirm that callbacks are done", "isCallbacksDone_Bm_Confirmation")) // todo...must include this
         return theCheckList
     }
 
@@ -257,6 +262,42 @@ export class ConstantLabelsAndValues {
         return remarks
     }
 
+    /**
+     * key of BRANCH CODE & value of label (BRANCH NAME)
+     */
+    public static mapOfDFCUBranchCodeToBranchLabel(): IKeyValueMap<string, string> {
+        const map = new KeyValueMap<string, string>()
+        branches.map((aBranch) => map.put(aBranch.value, aBranch.label))
+        return map
+    }
+
+    public static mapOfRecipientBankCodeToValueOfBank(): IKeyValueMap<string, IRecipientBank> {
+        const map = new KeyValueMap<string, IRecipientBank>()
+        bankCodes.Banks.map((aBank: IRecipientBank) => map.put(aBank.bankCode, aBank))
+        return map
+    }
+
+    public static mapOfRecipientBranchCodeToValueOfBank(): IKeyValueMap<string, IRecipientBank> {
+        const map = new KeyValueMap<string, IRecipientBank>()
+        bankCodes.Banks.map((aBank: IRecipientBank) => map.put(aBank.branchCode, aBank))
+        return map
+    }
+
+    public static mapOfCountryCodeToCountryName(): IKeyValueMap<string, string> {
+        const map = new KeyValueMap<string, string>()
+        countryCodes.map((aCountry) => map.put(aCountry.code, aCountry.name))
+        return map;
+    }
 
 }
 
+export interface IRecipientBank {
+    name: string;
+    bankCode: string;
+    branchCode: string;
+}
+
+export interface ICountry {
+    name: string;
+    Code: string;
+}
