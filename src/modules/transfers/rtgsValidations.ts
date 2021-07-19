@@ -32,9 +32,9 @@ const validateRTGS = async (data: ICase): Promise<boolean> => {
         tests.add(workflowTypePresent);
 
         const isRtgs = new ObjectHelpersFluent()
-            .testTitle("is RTGS the type?")
+            .testTitle("is RTGS1 the type?")
             .selector(data, "$.workflowType")
-            .isEqualTo(RequestType.RTGS_LOCAL)
+            .isEqualTo(RequestType.RTGS_1)
             .logValue()
             .logTestResult()
             .logTestMessage()
