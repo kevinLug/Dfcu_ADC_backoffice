@@ -64,7 +64,7 @@ const RejectionRemarks = ({remarks, role}: IRemarks) => {
             value={data['aRemark']}
             onChange={handleChange}
 
-            label="Rejection reason"
+            label="Reason for rejection"
             variant="outlined"
             size='small'
             options={toOptions(remarks.toArray())}
