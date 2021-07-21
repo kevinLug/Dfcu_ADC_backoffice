@@ -1,12 +1,14 @@
 import {JSONPath} from 'jsonpath-plus'
-import {CriteriaTest, IMessage, isNullOrEmpty, isObject} from "./objectHelpers";
-import * as process from "process";
-import {environment} from "../data/constants";
-import * as yup from 'yup';
+import {CriteriaTest, isNullOrEmpty, isObject} from "./objectHelpers";
+
 import validate from "validate.js";
-import {IKeyValueMap, IKeyValueObject, KeyValueMap} from "./collections/map";
+import {IKeyValueMap, KeyValueMap} from "./collections/map";
 
 export interface ITestDataSummary {
+    title?: string;
+    userFailureMessage?: string;
+    userSuccessMessage?: string;
+    ignored?: boolean;
     criterion: CriteriaTest;
     testResult: boolean;
     data: any,
@@ -17,8 +19,6 @@ export interface ITestDataSummary {
     devMessage?: string
 }
 
-
-let indexCount: number = 0
 
 class ObjectHelpersFluent {
     private data: any
@@ -32,8 +32,9 @@ class ObjectHelpersFluent {
     private checksRun: IKeyValueMap<string, boolean>
     private flag: boolean;
 
+    private static finalTestResultsFromChecksRun: IKeyValueMap<number, ITestDataSummary> = new KeyValueMap<number, ITestDataSummary>();
+
     constructor() {
-        indexCount += 1
         this.value = null
         this.data = null
         this.selectorPath = ''
@@ -41,10 +42,41 @@ class ObjectHelpersFluent {
         this.flag = false;
     }
 
+    // public static setFinalTestResultsFromChecksRun(finalTestResultsFromChecksRun: IKeyValueMap<number, ITestDataSummary>) {
+    //     ObjectHelpersFluent.finalTestResultsFromChecksRun = finalTestResultsFromChecksRun
+    // }
+
+    public static getFinalTestResultsFromChecksRun() {
+        return ObjectHelpersFluent.finalTestResultsFromChecksRun
+    }
+
+    private static addToFinalTestResultsFromChecksRun(result: ITestDataSummary) {
+        if (ObjectHelpersFluent.finalTestResultsFromChecksRun.size() === 0) {
+            const first = new KeyValueMap<number, ITestDataSummary>();
+            first.put(0, result);
+            ObjectHelpersFluent.finalTestResultsFromChecksRun = first
+        } else {
+            const index = ObjectHelpersFluent.finalTestResultsFromChecksRun.size()
+            ObjectHelpersFluent.finalTestResultsFromChecksRun.put(index, result);
+        }
+    }
+
     isIgnorable() {
         this.summary.testResult = true;
+        this.summary.ignored = true;
         console.log("ignored")
+
         return this;
+    }
+
+    addUserFailureMessage(msg: string) {
+        this.summary.userFailureMessage = msg;
+        return this
+    }
+
+    addUserSuccessMessage(msg: string) {
+        this.summary.userSuccessMessage = msg;
+        return this
     }
 
     // log(value: any,label?:string) {
@@ -116,6 +148,7 @@ class ObjectHelpersFluent {
         this.summary.testResult ? this.summary.testResult = false : this.summary.testResult = true
         this.addToCheckRuns("IS_PRESENT", this.summary.testResult)
         this.setFlag(this.summary.testResult)
+        ObjectHelpersFluent.addToFinalTestResultsFromChecksRun(this.summary)
         return this;
     }
 
@@ -124,6 +157,7 @@ class ObjectHelpersFluent {
         this.summary.expected = true;
         this.addToCheckRuns("IS_ABSENT", this.summary.testResult)
         this.setFlag(this.summary.testResult)
+        ObjectHelpersFluent.addToFinalTestResultsFromChecksRun(this.summary)
         return this;
     }
 
@@ -132,6 +166,7 @@ class ObjectHelpersFluent {
         this.summary.expected = true;
         this.addToCheckRuns("Is_NUMBER", this.summary.testResult)
         this.setFlag(this.summary.testResult)
+        ObjectHelpersFluent.addToFinalTestResultsFromChecksRun(this.summary)
         return this;
     }
 
@@ -143,6 +178,7 @@ class ObjectHelpersFluent {
         this.summary.expected = true;
         this.addToCheckRuns("IS_OBJECT", this.summary.testResult)
         this.setFlag(this.summary.testResult)
+        ObjectHelpersFluent.addToFinalTestResultsFromChecksRun(this.summary)
         return this;
     }
 
@@ -151,6 +187,7 @@ class ObjectHelpersFluent {
         this.summary.expected = true;
         this.addToCheckRuns("IS_STRING", this.summary.testResult)
         this.setFlag(this.summary.testResult)
+        ObjectHelpersFluent.addToFinalTestResultsFromChecksRun(this.summary)
         return this;
     }
 
@@ -159,6 +196,7 @@ class ObjectHelpersFluent {
         this.summary.expected = true;
         this.addToCheckRuns("IS_DEFINED", this.summary.testResult)
         this.setFlag(this.summary.testResult)
+        ObjectHelpersFluent.addToFinalTestResultsFromChecksRun(this.summary)
         return this;
     }
 
@@ -173,6 +211,7 @@ class ObjectHelpersFluent {
         this.summary.expected = true;
         this.addToCheckRuns("IS_GREATER_THAN", this.summary.testResult)
         this.setFlag(this.summary.testResult)
+        ObjectHelpersFluent.addToFinalTestResultsFromChecksRun(this.summary)
         return this;
     }
 
@@ -187,6 +226,7 @@ class ObjectHelpersFluent {
         this.summary.expected = true;
         this.addToCheckRuns("IS_GREATER_THAN_OR_EQUAL_TO", this.summary.testResult)
         this.setFlag(this.summary.testResult)
+        ObjectHelpersFluent.addToFinalTestResultsFromChecksRun(this.summary)
         return this;
     }
 
@@ -218,11 +258,13 @@ class ObjectHelpersFluent {
         return this;
     }
 
-    isEqualTo(value: any) {
-        this.summary.testResult = this.summary.value === value
-        this.summary.expected = true;
+    isEqualTo(expectedValue: any) {
+
+        this.summary.testResult =  JSON.stringify(this.summary.value) === JSON.stringify(expectedValue)
+        this.summary.expected = expectedValue;
         this.addToCheckRuns("IS_EQUAL_TO", this.summary.testResult)
         this.setFlag(this.summary.testResult)
+        ObjectHelpersFluent.addToFinalTestResultsFromChecksRun(this.summary)
         return this;
     }
 
@@ -231,6 +273,7 @@ class ObjectHelpersFluent {
         this.summary.expected = true;
         this.addToCheckRuns("IS_NOT_EQUAL_TO", this.summary.testResult)
         this.setFlag(this.summary.testResult)
+        ObjectHelpersFluent.addToFinalTestResultsFromChecksRun(this.summary)
         return this;
     }
 
@@ -239,6 +282,7 @@ class ObjectHelpersFluent {
         this.summary.expected = true;
         this.addToCheckRuns("CONTAINS", this.summary.testResult)
         this.setFlag(this.summary.testResult)
+        ObjectHelpersFluent.addToFinalTestResultsFromChecksRun(this.summary)
         return this;
     }
 
@@ -314,6 +358,7 @@ class ObjectHelpersFluent {
 
     // todo...index to show the position of the test (number of tests run) + title of the test as well
     testTitle(title: string) {
+        this.summary.title = title
         console.log(`title:--> ${title} <--`);
         return this;
     }
@@ -362,6 +407,7 @@ class ObjectHelpersFluent {
     logDetailed() {
         this.logValue();
         console.log(`criterion: `, this.getCheckRuns().getKeys().get(0));
+        console.log("Expected: ", this.summary.expected)
         this.logTestResult();
         this.logTestMessage();
         // this.logSummary()
@@ -384,7 +430,7 @@ class ObjectHelpersFluent {
     }
 
     getValue() {
-        return this.value;
+        return this.summary.value;
     }
 
     ifCondition(condition: boolean) {

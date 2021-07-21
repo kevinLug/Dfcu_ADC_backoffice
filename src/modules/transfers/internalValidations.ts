@@ -1,13 +1,13 @@
-import ObjectHelpersFluent from "../../utils/objectHelpersFluent";
-import SuccessCriteria from "../../utils/successCriteria";
-import {List} from "../../utils/collections/list";
-import {ICase} from "./types";
-import {RequestType} from "../workflows/config";
-import {ConstantLabelsAndValues} from "../../data/constants";
-import Toast from "../../utils/Toast";
+import ObjectHelpersFluent from "../../utils/objectHelpersFluent"
+import SuccessCriteria from "../../utils/successCriteria"
+import {List} from "../../utils/collections/list"
+import {ICase} from "./types"
+import {RequestType} from "../workflows/config"
+import Toast from "../../utils/Toast"
+import {ConstantLabelsAndValues} from "../../data/constants"
 import validateSharedValuesAndRules from "./sharedValidations";
 
-const validateRTGS = async (data: ICase): Promise<boolean> => {
+const validateInternal = async (data: ICase): Promise<boolean> => {
 
     return new Promise((resolve) => {
 
@@ -17,25 +17,24 @@ const validateRTGS = async (data: ICase): Promise<boolean> => {
             .testTitle("Entire data object presence")
             .selector(data, "$")
             .isPresent()
-            .addUserFailureMessage("The scan result is empty")
             .logDetailed()
-        tests.add(dataExists);
+        dataExists.failureCallBack(() => Toast.error("scan result not found")).haltProcess(false, false)
+        tests.add(dataExists)
 
         const workflowTypePresent = new ObjectHelpersFluent()
             .testTitle("workflowType presence")
             .selector(data, "$.workflowType")
             .isPresent()
-            .addUserFailureMessage("Transfer type is missing")
             .logDetailed()
-        tests.add(workflowTypePresent);
+        workflowTypePresent.failureCallBack(() => Toast.error("transfer type is missing")).haltProcess(false, false)
+        tests.add(workflowTypePresent)
 
-        const isRtgs = new ObjectHelpersFluent()
-            .testTitle("is RTGS1 the type?")
+        const isINTERNAL = new ObjectHelpersFluent()
+            .testTitle("is INTERNAL the type of transfer?")
             .selector(data, "$.workflowType")
-            .isEqualTo(RequestType.RTGS_1)
-            .addUserFailureMessage("Transfer type is missing")
-            .logDetailed();
-        tests.add(isRtgs);
+            .isEqualTo(RequestType.INTERNAL)
+            .logDetailed()
+        tests.add(isINTERNAL)
 
         const isBranchPresent = new ObjectHelpersFluent()
             .testTitle("is the branch present?")
@@ -50,7 +49,7 @@ const validateRTGS = async (data: ICase): Promise<boolean> => {
             .testTitle("is the currency present")
             .selector(data, "$.caseData.transferDetails.currencyCode")
             .isPresent()
-            .logDetailed();
+            .logDetailed()
         isCurrencyPresent.failureCallBack(() => Toast.error("Currency is missing")).haltProcess(false, false)
         tests.add(isCurrencyPresent)
 
@@ -128,11 +127,13 @@ const validateRTGS = async (data: ICase): Promise<boolean> => {
         isSenderEmailPresent.failureCallBack(() => Toast.error("Sender's email is missing"))
         tests.add(isSenderEmailPresent)
 
+
         validateSharedValuesAndRules(data, tests)
 
-        resolve(SuccessCriteria.testRuns(tests, ConstantLabelsAndValues.CASE_VALIDATION_RTGS_1))
+
+        resolve(SuccessCriteria.testRuns(tests, ConstantLabelsAndValues.CASE_VALIDATION_INTERNAL))
     })
 
 }
 
-export default validateRTGS
+export default validateInternal

@@ -1,23 +1,101 @@
-import {IList} from "./collections/list";
-import ObjectHelpersFluent from "./objectHelpersFluent";
+import {IList, List} from "./collections/list";
+import ObjectHelpersFluent, {ITestDataSummary} from "./objectHelpersFluent";
+import {IKeyValueMap, KeyValueMap} from "./collections/map";
 
 
 class SuccessCriteria {
-    public static testRuns(tests: IList<ObjectHelpersFluent>): boolean {
-        let flag = false
-        for (let test of tests) {
-            if (test.getSummary().testResult) {
-                flag = true
-                console.log(`For selector:`, test.getSummary().selector)
-            } else {
-                test.logTestMessage()
-                console.log(`For selector:`, test.getSummary().selector)
-                flag = false
-                console.log("process halted here...!!!")
-                break
+
+
+    private static successCriteriaSummaryList: IList<ITestDataSummary> = new List<ITestDataSummary>()
+    private static successCriteriaSummarySet: IKeyValueMap<string, IList<ITestDataSummary>> = new KeyValueMap<string, IList<ITestDataSummary>>()
+
+    public static getSuccessCriteriaSummaryList() {
+        return SuccessCriteria.successCriteriaSummaryList
+    }
+
+    public static getSuccessCriteriaSummarySet() {
+        return SuccessCriteria.successCriteriaSummarySet
+    }
+
+    public static resetSuccessCriteriaSummaryList() {
+        SuccessCriteria.successCriteriaSummaryList.clear()
+    }
+
+    public static resetSuccessCriteriaSummarySet() {
+        SuccessCriteria.successCriteriaSummarySet.clear()
+    }
+
+    public static getPassedTestResults(testSetName: string) {
+        const collection = new List<ITestDataSummary>()
+        const list = SuccessCriteria.successCriteriaSummarySet.get(testSetName)
+        // @ts-ignore
+        for (const listElement of list) {
+            if (listElement.testResult) {
+                collection.add(listElement)
             }
         }
-        return flag
+        return collection
+    }
+
+    public static getFailedTestResults(testSetName: string) {
+        const collection = new List<ITestDataSummary>()
+        const list = SuccessCriteria.successCriteriaSummarySet.get(testSetName)
+        // @ts-ignore
+        for (const listElement of list) {
+            if (!listElement.testResult) {
+                collection.add(listElement)
+            }
+        }
+        return collection
+    }
+
+    private static addToSuccessCriteriaSummaryList(result: ITestDataSummary) {
+        if (SuccessCriteria.successCriteriaSummaryList.size() === 0) {
+            const first = new List<ITestDataSummary>()
+            first.add(result);
+            SuccessCriteria.successCriteriaSummaryList = first;
+        } else {
+            SuccessCriteria.successCriteriaSummaryList.add(result)
+        }
+    }
+
+    private static addToSuccessCriteriaSummarySet(testSetName: string, result: IList<ITestDataSummary>) {
+        if (SuccessCriteria.successCriteriaSummarySet.size() === 0) {
+            const first = new KeyValueMap<string, IList<ITestDataSummary>>()
+            first.put(testSetName, result)
+            SuccessCriteria.successCriteriaSummarySet = first;
+        } else {
+            SuccessCriteria.successCriteriaSummarySet.put(testSetName, result)
+        }
+    }
+
+    public static testRuns(tests: IList<ObjectHelpersFluent>, testSetName: string, shouldBreakIfFalse?: boolean): boolean {
+        // let flag = false
+
+        for (let test of tests) {
+            console.log("the tests: ", test.getSummary())
+            if (test.getSummary().testResult) {
+                // flag = true
+                SuccessCriteria.addToSuccessCriteriaSummaryList(test.getSummary())
+                // console.log(`For selector:`, test.getSummary().selector)
+            } else {
+                // flag = false
+                SuccessCriteria.addToSuccessCriteriaSummaryList(test.getSummary())
+
+                if (shouldBreakIfFalse) {
+
+                    console.log("process halted here...!!!")
+                    break
+                }
+
+            }
+
+        }
+
+        SuccessCriteria.addToSuccessCriteriaSummarySet(testSetName, SuccessCriteria.successCriteriaSummaryList)
+
+        // return flag
+        return SuccessCriteria.getFailedTestResults(testSetName).size() === 0
     }
 
 }

@@ -184,7 +184,7 @@ export const objectBreakDown = (obj: any) => {
     }
 };
 
-export const addDynamicProperty = (obj: any, key: any, value: any) => {
+export const addDynamicPropertyToObject = (obj: any, key: any, value: any) => {
     Object.defineProperty(obj, key, {
         value: value,
         writable: true,

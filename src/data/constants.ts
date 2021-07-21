@@ -190,6 +190,21 @@ export class ConstantLabelsAndValues {
     public static CLEARED_BY = 'Cleared by:'
 
     public static A_MINUTE = 60000
+    public static CASE_VALIDATION_INTERNAL = 'INTERNAL'
+    public static CASE_VALIDATION_RTGS_1 = 'RTGS1'
+    public static CASE_VALIDATION_SWIFT = 'SWIFT'
+    public static CASE_VALIDATION_EFT = 'EFT'
+
+    public static caseValidationCallback(workflowType: string, func: () => any) {
+        switch (workflowType){
+            case ConstantLabelsAndValues.CASE_VALIDATION_INTERNAL:
+                func()
+                break
+            case ConstantLabelsAndValues.CASE_VALIDATION_INTERNAL:
+                func()
+                break
+        }
+    }
 
     public static csoCheckList() {
         const theCheckList = new List<IPropsChecks>();

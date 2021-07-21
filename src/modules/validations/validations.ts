@@ -1,10 +1,11 @@
 import {ICase} from "../transfers/types";
 import {RequestType} from "../workflows/config";
 import validateRTGS from "../transfers/rtgsValidations";
-import validateForeignRemittance from "../transfers/swiftValidations";
+
 import validateEft from "../transfers/eftValidations";
 import validateSwift from "../transfers/swiftValidations";
-import ObjectHelpersFluent from "../../utils/objectHelpersFluent";
+
+import validateInternal from "../transfers/internalValidations";
 
 const validateData = (data: ICase): Promise<boolean> => {
 
@@ -15,10 +16,11 @@ const validateData = (data: ICase): Promise<boolean> => {
             return validateEft(data);
         case RequestType.SWIFT:
             return validateSwift(data);
-        // case RequestType.SWIFT:
-        //     return validateSwift(data);
+        case RequestType.INTERNAL:
+            return validateInternal(data);
         default:
             return new Promise<boolean>((resolve, reject) => reject(false));
+
     }
 }
 

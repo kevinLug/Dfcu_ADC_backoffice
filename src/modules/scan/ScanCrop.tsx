@@ -13,7 +13,7 @@ import {
 
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import {ScanResultRaw} from "./types";
-import {ICase, ICaseDefault} from "../transfers/types";
+import {ICase, ICaseDefault, ICheckKeyValueDefault} from "../transfers/types";
 import {formatRawTransferFormValuesToJson} from "./scanCropWorker";
 import {login} from "../../api-stress/login";
 
@@ -51,7 +51,12 @@ import {randomInt} from "../../utils/numberHelpers";
 import uuid from "uuid";
 import {ICoreState} from "../../data/redux/coreReducer";
 import ImageUtils from "../../utils/imageUtils";
-import ValidationCheckList from "./validate-verify/ValidationCheckList";
+import CsoValidationChecklist from "./validate-verify/cso-validation-checklist";
+import {post} from "../../utils/ajax";
+import {actionICheckKeyValue} from "../../data/redux/checks/reducer";
+import SuccessCriteria from "../../utils/successCriteria";
+import SweetAlert from "../../utils/SweetAlert";
+import {KeyValueMap} from "../../utils/collections/map";
 
 
 let worker = new Worker(worker_script_mappings);
@@ -174,7 +179,7 @@ const ScanCrop = () => {
     const [result, setResult] = useState(``)
     const [rawTransferFormValues] = useState(new Map())
     const [loading] = useState<boolean>(false)
-    const [requestSent, setRequestSent] = useState<boolean>(false)
+    const [isInitiated, setInitiated] = useState<boolean>(false)
     const [aCase, setACase] = useState<ICase>(ICaseDefault)
     const dispatch: Dispatch<any> = useDispatch();
     const [validationWorker, {status: workerStatus, kill: killWorker}] = useWorker(validateRTGS)
@@ -220,6 +225,8 @@ const ScanCrop = () => {
         }))
     }
 
+    let counter = 0
+
     const onCropComplete = async (croppedArea: any, croppedAreaPixels: any) => {
 
         console.log('cropping results:', {croppedArea, croppedAreaPixels}, {crop}, {zoom})
@@ -245,6 +252,7 @@ const ScanCrop = () => {
             } else {
                 Toast.success("scan successful");
                 setScanSuccessful(true)
+                counter = counter+1
             }
 
             const pairKeyValueFromDecodedRawResult = decodedRawResult.getText().split(",");
@@ -265,15 +273,16 @@ const ScanCrop = () => {
 
             const {access_token} = await login()
 
-            if (aCase.workflowType !== "") {
+
+            // the counter is to allow sending the a Post request only once
+            if (counter === 1 && aCase.workflowType !== "") {
 
                 const userObj = {
                     "id": user.sub,
-                    // "id": "1f824a84-46b6-4e7f-b601-5d041118439d",
                     "name": user.name,
-                    "phone": "256781750721",
-                    "agentCode": "2345566",
-                    "branchName": "02",
+                    "phone": "",
+                    "agentCode": "",
+                    "branchName": "",
                     "region": ""
                 }
 
@@ -281,7 +290,7 @@ const ScanCrop = () => {
                 console.log({aCase})
 
                 aCase.applicationDate = new Date()
-                aCase.referenceNumber = randomInt(100000, 500000)
+                aCase.referenceNumber = randomInt(100000, 500000) // todo...this will have to be picked from the PDF to avoid redundancy
                 aCase.externalReference = uuid()
                 aCase.caseData.user = userObj;
                 aCase.caseData.doc = imageSrc
@@ -301,15 +310,48 @@ const ScanCrop = () => {
 
                     console.log("the user: ", user)
 
-                    postData(access_token, aCase, (resp: any) => {
-                        dispatch(actionIWorkflowResponseMessage(resp))
-                        Toast.success("scan complete")
-                    })
+                    post(remoteRoutes.workflows, aCase, (resp: any) => {
+                            console.log('resp-initiation:', resp) // todo ... consider providing a message for both success and failure
+                            dispatch(actionIWorkflowResponseMessage(resp))
+
+                            new ObjectHelpersFluent()
+                                .selector(resp, '$.caseId')
+                                .isPresent()
+                                .successCallBack(() => {
+                                    Toast.success("Initiated successfully")
+                                })
+                                .failureCallBack(() => {
+                                    Toast.warn("Something is wrong")
+                                })
+
+                        }, undefined,
+                        () => {
+
+                            console.log("results-from-tests-failed: ", SuccessCriteria.getFailedTestResults(aCase.workflowType))
+                            console.log("results-from-tests-passed: ", SuccessCriteria.getPassedTestResults(aCase.workflowType))
+                            console.log("summary: ", SuccessCriteria.getSuccessCriteriaSummarySet())
+
+                        }
+                    )
+
                 } else {
                     Toast.warn("Incomplete info in scan result")
+
+                    setTimeout(() => {
+
+                        handleScanFailureResponse(aCase.workflowType)
+                        // SweetAlert.simpleMessage('Yes')
+                        // SweetAlert.simpleHtmlHolder()
+                        Toast.error("Initiation failed")
+                        // console.log("results-from-tests-after-failure: ", ObjectHelpersFluent.getFinalTestResultsFromChecksRun())
+                        // console.log("results-from-tests: ", SuccessCriteria.getSuccessCriteriaSummarySet().get(ConstantLabelsAndValues.CASE_VALIDATION_INTERNAL))
+                        console.log("results-from-tests-failed: ", SuccessCriteria.getFailedTestResults(aCase.workflowType))
+                        console.log("results-from-tests-passed: ", SuccessCriteria.getPassedTestResults(aCase.workflowType))
+                        console.log("summary: ", SuccessCriteria.getSuccessCriteriaSummarySet())
+
+                    }, 1000)
                 }
             }
-
 
             setResult(decodedRawResult.getText())
 
@@ -326,6 +368,28 @@ const ScanCrop = () => {
 
 
         }
+
+    }
+
+    function handleScanFailureResponse(transferType: string) {
+
+        const list = SuccessCriteria.getFailedTestResults(transferType)
+        let failures = ''
+        const map = new KeyValueMap<string, string>()
+
+        for (const iTestDataSummary of list) {
+            const msg = iTestDataSummary.userFailureMessage
+            map.put(`<li style="margin-left: 0; color: #ec5e5e" >${msg}</li>`, `<li style="margin-left: 0; color: #ec5e5e" >${msg}</li>`)
+        }
+
+        for (const mapElement of map.getKeys()) {
+            failures = failures + mapElement
+        }
+
+        const openUL = `<ul style="text-align: left">`
+        const closeUL = `</ul>`
+        failures = openUL.concat(failures).concat(closeUL)
+        SweetAlert.requirementErrorMessage(failures).then((e) => SweetAlert.simpleToastMsgError("Initiation failed"))
 
     }
 
@@ -399,8 +463,10 @@ const ScanCrop = () => {
                 </Grid>
 
                 <Grid className={classes.expansion}>
-                    <ExpansionCard title="Verification Checklist"
-                                   children={<ValidationCheckList theCheckList={ConstantLabelsAndValues.csoValidationCheckList()}/>}/>
+
+                    <Typography variant="h4">Validation Checklist</Typography>
+                    <CsoValidationChecklist theCheckList={ConstantLabelsAndValues.csoValidationCheckList()}/>
+
                 </Grid>
 
             </Grid>
