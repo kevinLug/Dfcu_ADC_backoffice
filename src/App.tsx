@@ -58,9 +58,12 @@ const App = () => {
     }, [])
 
 
+
+
     function idleTimeSetup() {
 
         authService.userManager.getUser().then(e => {
+
             if (e !== null) {
                 setInterval(() => {
 
@@ -72,7 +75,9 @@ const App = () => {
                     if (isIdle()) {
                         doLogout()
                             .then(e => {
-                                window.location.href = window.location.origin
+
+                                // window.location.href = window.location.origin
+                                pause()
                             }).then(e => pause())
 
                     } else {
@@ -84,8 +89,6 @@ const App = () => {
                         }
                         worker.postMessage(timerDetails)
                     }
-
-                    // if ()
 
                 }, ConstantLabelsAndValues.A_MINUTE * 5)
             }

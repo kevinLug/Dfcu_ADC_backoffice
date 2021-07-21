@@ -34,7 +34,7 @@ import ForexForm from "./forex-dialog";
 import {ICheckKeyValueDefault, IForex, ISelectKeyValueDefault} from "../../transfers/types";
 import {actionIForexValue, IForexValueState} from "../../../data/redux/forex/reducer";
 import ObjectHelpersFluent from "../../../utils/objectHelpersFluent";
-import {addDynamicProperty} from "../../../utils/objectHelpers";
+import {addDynamicPropertyToObject} from "../../../utils/objectHelpers";
 import ConfirmationDialog from "../confirmation-dialog";
 import SuccessFailureDisplay from "./success-failure-display";
 
@@ -107,7 +107,7 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
         // @ts-ignore
         // setSubStatusFound(workflow.subStatus)
 
-    }, [dispatch, check, workflow, rejectionComment, data, select, forexValue])
+    }, [showConfirmationDialog, dispatch, check, workflow, rejectionComment, data, select, forexValue])
 
     const handleCSOApproval = async () => {
 
@@ -120,14 +120,13 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
             timestamp: new Date()
         }
 
+
         for (const v of ConstantLabelsAndValues.csoValidationCheckList()) {
             // @ts-ignore
-            addDynamicProperty(dataCSOManual, v.name, getChecksToPopulate(check.checks)[v.name])
+            addDynamicPropertyToObject(dataCSOManual, v.name, getChecksToPopulate(check.checks)[v.name])
             // @ts-ignore
             // dataCSOManual[v.name] = getChecksToPopulate(check.checks)[v.name];
         }
-
-        console.log('olimba:', dataCSOManual)
 
         let caseId: string
         if (!workflowResponseMessage.caseId || workflowResponseMessage.caseId.includes("0000-0000")) {
@@ -155,19 +154,13 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
             override: false
         }
 
-        const rateExists = new ObjectHelpersFluent().testTitle("forex rate exists").selector(manualCSOApproval, "$.data.forexDetails.rate").isPresent().logValue().logTestResult().logTestMessage()
-            .logNewLineSpace()
-            .getSummary().testResult
+        const rateExists = new ObjectHelpersFluent().testTitle("forex rate exists").selector(manualCSOApproval, "$.data.forexDetails.rate").isPresent().logDetailed().logNewLineSpace().getSummary().testResult
 
         const remittanceAmountExists = new ObjectHelpersFluent().testTitle("forex remittance amount exists").selector(manualCSOApproval, "$.data.forexDetails.remittanceAmount").isPresent()
-            .logValue().logTestResult().logTestMessage()
-            .logNewLineSpace().getSummary().testResult
+            .logDetailed().logNewLineSpace().getSummary().testResult
 
         const forexTransferIsRequired = new ObjectHelpersFluent().testTitle("forex remittance amount exists").selector(manualCSOApproval, `$.data.${ConstantLabelsAndValues.csoValidationCheckList().get(1).name}`)
-            .isPresent()
-            .logValue().logTestResult().logTestMessage()
-            .logNewLineSpace()
-            .getSummary().testResult
+            .isPresent().logDetailed().logNewLineSpace().getSummary().testResult
 
         const forexCheckAndValuesMatch = forexTransferIsRequired === remittanceAmountExists === rateExists
 
@@ -208,8 +201,6 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
 
         let checks = getChecksToPopulate(check.checks);
         let dropdownSelects = getDropdownSelectsToPopulate(select.selects)
-        console.log("selectsss:", dropdownSelects)
-        console.log("selectsss-2:", select)
 
         const obj = {
             checks: checks,
@@ -339,7 +330,33 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
     }
 
     function showConfirmationDialogApproval() {
-        setShowConfirmationDialog(true)
+
+        if (workflow === undefined || workflow === null) {
+            Toast.warn('Can not proceed without an initiation')
+            setTimeout(() => {
+                Toast.warn('Make sure the form data is complete')
+            }, 2000)
+            return
+        }
+
+        let caseId: string = ''
+        if (!workflowResponseMessage.caseId || workflowResponseMessage.caseId.includes("0000-0000")) {
+            // @ts-ignore
+            caseId = workflow.id
+        } else {
+            caseId = workflowResponseMessage.caseId
+        }
+
+
+        // @ts-ignore
+        if (caseId === undefined || caseId === null || caseId === '') {
+            Toast.warn('Can not proceed without an initiation')
+            setTimeout(() => {
+                Toast.warn('Make sure the form data is complete')
+            }, 2000)
+
+        } else
+            setShowConfirmationDialog(true)
     }
 
     function showResultBeingConfirmedByCSO() {
@@ -361,7 +378,6 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
     }
 
     function handleConfirmCSOValidation() {
-
         return <ConfirmationDialog title="Confirm to submit or cancel" handleDialogCancel={cancelConfirmationDialogApproval} handleConfirmation={handleCSOApproval}
                                    children={showResultBeingConfirmedByCSO()}/>
     }
@@ -381,24 +397,21 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
                     hasAnyRole(user, [systemRoles.CSO]) ?
 
                         <Box className={classes.submissionBox}>
-                            <Button variant="contained" color="primary" onClick={showConfirmationDialogApproval}>SUBMIT
-                                REQUEST</Button>
 
-                            <Button variant="contained" className={classes.rejectButton}
-                                    onClick={showCommentDialog}>REJECT</Button>
+                            <Button variant="contained" color="primary" onClick={showConfirmationDialogApproval}>SUBMIT REQUEST</Button>
+
+                            <Button variant="contained" className={classes.rejectButton} onClick={showCommentDialog}>REJECT</Button>
 
                         </Box>
                         :
                         ""
                 }
 
-
                 {
                     showConfirmationDialog ? handleConfirmCSOValidation() : ""
                 }
 
             </Grid>
-
 
             {
 
