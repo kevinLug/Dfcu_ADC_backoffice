@@ -52,6 +52,7 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
     //     .successCallBack(() => date = '').failureCallBack(() => date = aCase.applicationDate).getSummary().testResult ? date : printDateTime(date)
     let date: any = ''
     let branchCode: string = ''
+    let remittanceAmount = ''
     const labels: ILabelValue[] = [
         {
             label: ConstantLabelsAndValues.DATE,
@@ -87,7 +88,10 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
         },
         {
             label: ConstantLabelsAndValues.AMOUNT,
-            value: labelling.remittanceAmount
+            value: new ObjectHelpersFluent().directValue(labelling.remittanceAmount).isPresent()
+                .successCallBack(() => remittanceAmount = labelling.remittanceAmount)
+                .failureCallBack(() => remittanceAmount = labelling.transactionAmount.toString())
+                .getSummary().testResult ? remittanceAmount : remittanceAmount
         },
         {
             label: ConstantLabelsAndValues.AMOUNT_IN_WORDS,

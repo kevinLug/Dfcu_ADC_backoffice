@@ -11,7 +11,7 @@ import {CMORejectionRemarks, IRemarks} from "./rejection-remarks-values";
 import EditDialog from "../../../components/EditDialog";
 import {Form, Formik} from "formik";
 import RejectionRemarks from "./rejection-remarks";
-import {IDataProps} from "./ValidationCheckList";
+import {IDataProps} from "./cso-validation-checklist";
 import {ICheckKeyValueState} from "../../../data/redux/checks/reducer";
 import {useDispatch, useSelector} from "react-redux";
 import {getChecksToPopulate, getDropdownSelectsToPopulate} from "../populateLabelAndValue";

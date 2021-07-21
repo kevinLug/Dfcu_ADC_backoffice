@@ -18,7 +18,7 @@ import {createStyles, makeStyles, TextareaAutosize} from "@material-ui/core";
 import {Theme} from "@material-ui/core/styles";
 import EditDialog from "../../../components/EditDialog";
 import {Form, Formik} from "formik";
-import {IDataProps} from "./ValidationCheckList";
+import {IDataProps} from "./cso-validation-checklist";
 import Toast from "../../../utils/Toast";
 import RejectionRemarks from "./rejection-remarks";
 import {BMORejectionRemarks, CSORejectionRemarks, IRemarks} from "./rejection-remarks-values";

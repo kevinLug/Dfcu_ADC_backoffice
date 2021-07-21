@@ -14,14 +14,14 @@ import {Dispatch} from "redux";
 import {useDispatch, useSelector} from "react-redux";
 import {useStyles} from "../ScanCrop";
 import {IState} from "../../../data/types";
-import ValidationCheckList from "./ValidationCheckList";
+import CsoValidationChecklist from "./cso-validation-checklist";
 import ImageUtils from "../../../utils/imageUtils";
 // import {csoOrBmRolesForDev, remoteRoutes} from "../../../data/constants";
 import {ConstantLabelsAndValues, hasAnyRole, systemRoles} from "../../../data/constants";
 // import {createStyles, makeStyles} from "@material-ui/core";
 import {ICheckKeyValueState} from "../../../data/redux/checks/reducer";
 import VerificationsAlreadyDoneByCSO from "./checks-already-done-by-cso";
-import VerificationsAlreadyDoneByBM from "./checks-already-done-by-bm";
+import VerificationsAlreadyDoneByBM from "./checks-already-done-by-bom";
 import VerificationByBMO from "./verification-by-bmo";
 import CmoFinacleSubmission from "./cmo-finacle-submission";
 import {IWorkflowResponseMessageState} from "../../../data/redux/workflow-response/reducer";
@@ -118,7 +118,7 @@ interface IProps {
 //     })
 // );
 
-const BmVerificationRtgs = ({workflow}: IProps) => {
+const BomValidationChecklist = ({workflow}: IProps) => {
 
     // const classesDialog = useStylesDialog()
     // const classesRejection = useStylesRejection()
@@ -171,8 +171,8 @@ const BmVerificationRtgs = ({workflow}: IProps) => {
         if (workflow.subStatus === WorkflowSubStatus.AwaitingCSOApproval && hasAnyRole(user, [systemRoles.CSO]))
             return <Grid className={classes.expansion}>
                 <Typography variant="h4">Verification Checklist</Typography>
-                <ValidationCheckList theCheckList={ConstantLabelsAndValues.csoValidationCheckList()}/>
-                {/*<ExpansionCard title="Verification  Checklist" children={<ValidationCheckList theCheckList={theCheckList}/>}/>*/}
+                <CsoValidationChecklist theCheckList={ConstantLabelsAndValues.csoValidationCheckList()}/>
+                {/*<ExpansionCard title="Verification  Checklist" children={<CsoValidationChecklist theCheckList={theCheckList}/>}/>*/}
             </Grid>
 
         // show verifications done by CSO if process awaits BM action, CMO action, or erred
@@ -185,10 +185,10 @@ const BmVerificationRtgs = ({workflow}: IProps) => {
 
     function displayVerificationsByBM() {
 
-        // still awaiting CSO approval
         if (workflow.subStatus === WorkflowSubStatus.AwaitingBMApproval && hasAnyRole(user, [systemRoles.BM, systemRoles.BOM]))
             return <Grid className={classes.expansion}>
-                <ExpansionCard title="Verification Checklist" children={<VerificationByBMO workflow={workflow}/>}/>
+                <Typography variant="h4">Validation Checklist</Typography>
+                <VerificationByBMO workflow={workflow}/>
             </Grid>
 
         // if (workflow.subStatus.includes(WorkflowSubStatus.AwaitingSubmissionToFinacle) || workflow.subStatus.includes(WorkflowSubStatus.FailedBMApproval))
@@ -208,8 +208,8 @@ const BmVerificationRtgs = ({workflow}: IProps) => {
     function displaySubmissionToFinacle() {
         if (workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle && hasAnyRole(user, [systemRoles.CMO])) {
             return <Grid className={classes.expansion}>
-                <ExpansionCard title="Submit to Finacle"
-                               children={<CmoFinacleSubmission user={user} workflowResponseMessage={workflowResponseMessage} workflow={workflow}/>}/>
+                <Typography variant="h4">Submit to Finacle</Typography>
+                <CmoFinacleSubmission user={user} workflowResponseMessage={workflowResponseMessage} workflow={workflow}/>
             </Grid>
         }
     }
@@ -389,4 +389,4 @@ const BmVerificationRtgs = ({workflow}: IProps) => {
     )
 }
 
-export default BmVerificationRtgs
+export default BomValidationChecklist

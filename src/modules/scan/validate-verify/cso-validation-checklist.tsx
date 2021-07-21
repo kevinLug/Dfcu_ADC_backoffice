@@ -71,7 +71,7 @@ export interface IDataProps {
 //     return theCheckList;
 // }
 
-const ValidationCheckList = ({theCheckList}: IProps) => {
+const CsoValidationChecklist = ({theCheckList}: IProps) => {
 
     const classes = useStyles()
     const {workflowResponseMessage}: IWorkflowResponseMessageState = useSelector((state: any) => state.workflowResponse)
@@ -455,4 +455,4 @@ const ValidationCheckList = ({theCheckList}: IProps) => {
     )
 }
 
-export default ValidationCheckList
+export default CsoValidationChecklist
