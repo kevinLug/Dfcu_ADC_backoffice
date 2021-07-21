@@ -17,7 +17,7 @@ import {fetchWorkflowAsync, IWorkflowState, startWorkflowFetch} from "../../../d
 
 import {renderStatus, renderSubStatus} from "../widgets";
 
-import BmVerificationRtgs from "../../scan/validate-verify/bm-verification-rtgs";
+import BomValidationChecklist from "../../scan/validate-verify/bom-validation-checklist";
 import {IState} from "../../../data/types";
 import {printStdDatetime} from "../../../utils/dateHelpers";
 import {ConstantLabelsAndValues} from "../../../data/constants";
@@ -239,8 +239,16 @@ const Details = (props: IProps) => {
 
     function displayWorkflowStatus(){
 
-        if (caseData.status === WorkflowStatus.Open){
-            return renderStatus(WorkflowStatus.New)
+        if (caseData.status === WorkflowStatus.Open && caseData.subStatus === WorkflowSubStatus.AwaitingCSOApproval) {
+            return renderStatus(WorkflowStatus.Pending)
+        }
+        // awaiting BOM approval
+        if (caseData.status === WorkflowStatus.Open && caseData.subStatus === WorkflowSubStatus.AwaitingBMApproval) {
+            return renderStatus(WorkflowStatus.PendingApproval)
+        }
+        // awaiting CMO clearance
+        if (caseData.status === WorkflowStatus.Open && caseData.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle) {
+            return renderStatus(WorkflowStatus.PendingClearance)
         }
 
         if (caseData.status === WorkflowStatus.Error){
@@ -286,7 +294,7 @@ const Details = (props: IProps) => {
                         }
 
                     </Grid>
-                    <BmVerificationRtgs workflow={caseData}/>
+                    <BomValidationChecklist workflow={caseData}/>
                 </Grid>
             </div>
         </Navigation>

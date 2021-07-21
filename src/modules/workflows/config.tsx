@@ -4,8 +4,7 @@ import {printDateTime} from "../../utils/dateHelpers";
 import React from "react";
 import {renderStatus} from "./widgets";
 import {toTitleCase} from "../contacts/types";
-import {IWorkflow, WorkflowStatus} from "./types";
-import ObjectHelpersFluent from "../../utils/objectHelpersFluent";
+import {IWorkflow, WorkflowStatus, WorkflowSubStatus} from "./types";
 import {ConstantLabelsAndValues} from "../../data/constants";
 
 
@@ -92,7 +91,6 @@ export const workflowHeadCells: XHeadCell[] = [
             }
         },
         render: (data, rec) => {
-            console.log('the data:', rec)
             // let valueToDisplay = ''
 
             // if (rec.workflowType === RequestType.EFT || rec.workflowType === RequestType.RTGS_1)
@@ -152,16 +150,28 @@ export const workflowHeadCells: XHeadCell[] = [
                 whiteSpace: 'nowrap'
             }
         },
-        render: (data) => {
-            if (data === WorkflowStatus.Open) {
-                return renderStatus(WorkflowStatus.New)
+        render: (data, rec) => {
+            // awaiting submission
+            if (data === WorkflowStatus.Open && rec.subStatus === WorkflowSubStatus.AwaitingCSOApproval) {
+                return renderStatus(WorkflowStatus.Pending)
             }
+            // awaiting BOM approval
+            if (data === WorkflowStatus.Open && rec.subStatus === WorkflowSubStatus.AwaitingBMApproval) {
+                return renderStatus(WorkflowStatus.PendingApproval)
+            }
+            // awaiting CMO clearance
+            if (data === WorkflowStatus.Open && rec.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle) {
+                return renderStatus(WorkflowStatus.PendingClearance)
+            }
+            // erred
             if (data === WorkflowStatus.Error) {
                 return renderStatus(WorkflowStatus.Rejected)
             }
+            // closed (sent to finacle)
             if (data === WorkflowStatus.Closed) {
                 return renderStatus(WorkflowStatus.Cleared)
             }
+
             return renderStatus(data)
         },
 
@@ -186,7 +196,6 @@ export const workflowHeadCells: XHeadCell[] = [
 export const workflowHeadCellsNew: XHeadCell[] = [...workflowHeadCells.filter(it => it.name !== 'metaData.assigneeName')]
 
 export const workflowTypes = ['FOREIGNREMITTANCE', 'EFT', 'RTGS', 'RTGS1', 'EAPS', 'REPSS', 'Foreign Draft', 'SWIFT', 'INTERNAL']
-
 
 
 export const parseWorkflows = (data: IWorkflow[]) => {

@@ -94,7 +94,10 @@ export enum WorkflowStatus {
     Closed = "Closed",
     Cleared = "Cleared",
     New = "New",
-    Rejected = "Rejected"
+    Pending = "Pending",
+    Rejected = "Rejected",
+    PendingApproval = 'PENDING APPROVAL',
+    PendingClearance = 'PENDING CLEARANCE'
 }
 
 export enum WorkflowSubStatus {
