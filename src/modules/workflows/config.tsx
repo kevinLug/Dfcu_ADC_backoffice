@@ -18,7 +18,8 @@ export enum RequestType {
     EAPS = 'EAPS',
     REPSS = 'REPSS',
     ForeignDraft = 'foreignDraft',
-    SWIFT = 'SWIFT'
+    SWIFT = 'SWIFT',
+    INTERNAL = 'INTERNAL'
 
 }
 
@@ -107,7 +108,7 @@ export const workflowHeadCells: XHeadCell[] = [
 
     {
         name: 'type', label: 'Type',
-        render: (value: string, rec: any) => `${toTitleCase(value)}`,
+        render: (value: string, rec: any) => `${toTitleCase(value).toUpperCase()}`,
         cellProps: {
             style: {
                 width: 80,
@@ -184,7 +185,7 @@ export const workflowHeadCells: XHeadCell[] = [
 
 export const workflowHeadCellsNew: XHeadCell[] = [...workflowHeadCells.filter(it => it.name !== 'metaData.assigneeName')]
 
-export const workflowTypes = ['FOREIGNREMITTANCE', 'EFT', 'RTGS', 'RTGS1', 'EAPS', 'REPSS', 'Foreign Draft', 'SWIFT']
+export const workflowTypes = ['FOREIGNREMITTANCE', 'EFT', 'RTGS', 'RTGS1', 'EAPS', 'REPSS', 'Foreign Draft', 'SWIFT', 'INTERNAL']
 
 
 
