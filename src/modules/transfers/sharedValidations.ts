@@ -29,7 +29,7 @@ const validateSharedValuesAndRules = (data: ICase, tests: IList<ObjectHelpersFlu
         if (isSenderAccountNumberEqualTo_14.getSummary().value < isSenderAccountNumberEqualTo_14.getSummary().expected)
             isSenderAccountNumberEqualTo_14.addUserFailureMessage("Sender's account number length is below required length of 14")
 
-        Toast.error("Sender's account number is not equal to 16")
+        Toast.error("Sender's account number is not equal to 14")
 
     }).haltProcess(false, false)
     tests.add(isSenderAccountNumberEqualTo_14)
