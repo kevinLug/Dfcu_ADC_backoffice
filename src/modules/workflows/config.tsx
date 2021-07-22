@@ -153,7 +153,7 @@ export const workflowHeadCells: XHeadCell[] = [
         render: (data, rec) => {
             // awaiting submission
             if (data === WorkflowStatus.Open && rec.subStatus === WorkflowSubStatus.AwaitingCSOApproval) {
-                return renderStatus(WorkflowStatus.Pending)
+                return renderStatus(WorkflowStatus.New)
             }
             // awaiting BOM approval
             if (data === WorkflowStatus.Open && rec.subStatus === WorkflowSubStatus.AwaitingBMApproval) {
@@ -195,7 +195,7 @@ export const workflowHeadCells: XHeadCell[] = [
 
 export const workflowHeadCellsNew: XHeadCell[] = [...workflowHeadCells.filter(it => it.name !== 'metaData.assigneeName')]
 
-export const workflowTypes = ['FOREIGNREMITTANCE', 'EFT', 'RTGS', 'RTGS1', 'EAPS', 'REPSS', 'Foreign Draft', 'SWIFT', 'INTERNAL']
+export const workflowTypes = ['EFT',  'RTGS1', 'SWIFT', 'INTERNAL']
 
 
 export const parseWorkflows = (data: IWorkflow[]) => {
