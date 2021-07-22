@@ -31,17 +31,19 @@ import {actionISelectKeyValue, ISelectKeyValueState} from "../../../data/redux/s
 import RejectionDialog from "./rejection-dialog";
 import RejectionForm from "./rejection-dialog";
 import ForexForm from "./forex-dialog";
-import {ICheckKeyValueDefault, IForex, ISelectKeyValueDefault} from "../../transfers/types";
+import {ICaseDefault, ICheckKeyValueDefault, IForex, ISelectKeyValueDefault} from "../../transfers/types";
 import {actionIForexValue, IForexValueState} from "../../../data/redux/forex/reducer";
 import ObjectHelpersFluent from "../../../utils/objectHelpersFluent";
 import {addDynamicPropertyToObject} from "../../../utils/objectHelpers";
 import ConfirmationDialog from "../confirmation-dialog";
 import SuccessFailureDisplay from "./success-failure-display";
+import grey from "@material-ui/core/colors/grey";
+import {actionICaseState} from "../../../data/redux/transfers/reducer";
 
 const useStyles = makeStyles(() =>
     createStyles({
         submissionGrid: {
-            marginTop: 35
+            marginTop: 0
         },
         submissionBox: {
             display: 'flex',
@@ -359,13 +361,15 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             setShowConfirmationDialog(true)
     }
 
+    const isEven = (num: number) => num % 2 !== 0
+
     function showResultBeingConfirmedByCSO() {
 
         return ConstantLabelsAndValues.csoValidationCheckList().toArray().map((v, index) => {
             // @ts-ignore
             const value = getChecksToPopulate(check.checks)[v.name]
 
-            return <Grid key={index} style={index % 2 ? {background: "#fcf6ea"} : {background: "#fdf9f1"}}>
+            return <Grid key={index} style={{backgroundColor: isEven(index) ? 'white' : grey[50]}}>
                 {
 
                     <SuccessFailureDisplay value={value} label={v.label} name={v.name} key={v.name}/>

@@ -7,14 +7,16 @@ import {useSelector} from "react-redux";
 import {ICaseState} from "../../../data/redux/transfers/reducer";
 import {populateLabelAndValue} from "../populateLabelAndValue";
 import {ConstantLabelsAndValues} from "../../../data/constants";
+import {IForexValueState, reducer as forexDetails} from "../../../data/redux/forex/reducer";
 
 const TransferDetails = () => {
 
     const {transferDetails}: ICaseState = useSelector((state: any) => state.transfers)
     const {aCase}: ICaseState = useSelector((state: any) => state.transfers)
+    const {forexValue}: IForexValueState = useSelector((state: any) => state.forexDetails)
     useEffect(() => {
 
-    }, [transferDetails, aCase])
+    }, [transferDetails, aCase, forexValue])
 
     return (
 
@@ -23,7 +25,7 @@ const TransferDetails = () => {
             {
                 populateLabelAndValue(
                     [ConstantLabelsAndValues.COUNTRY_CODE],
-                    transferDetailsLabels(transferDetails, aCase), "-").map((kv, index) => {
+                    transferDetailsLabels(transferDetails, aCase, forexValue), "-").map((kv, index) => {
                     // console.log("vincere:", kv)
                     return <Grid key={index} container item spacing={4} sm={12}>
                         <Grid item sm={5}>

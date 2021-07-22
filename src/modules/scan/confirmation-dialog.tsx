@@ -12,11 +12,13 @@ import EditDialog from '../../components/EditDialog';
 const useStyles = makeStyles(() =>
     createStyles({
         submissionGrid: {
-            marginTop: 35
+            marginTop: 0
         },
         submissionBox: {
             display: 'flex',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            marginTop: 20,
+            marginBottom: 10
         },
         rejectButton: {
             backgroundColor: '#b32121',
@@ -69,14 +71,14 @@ const ConfirmationDialog = ({title, data, handleDialogCancel, handleConfirmation
 
             <Grid item sm={12} className={classes.submissionGrid}>
 
-                <Grid>
-                    {children}
-                </Grid>
+
+                {children}
+
 
                 <Box className={classes.submissionBox}>
 
+                    <Button type="submit" variant="contained" color="primary" onClick={handleConfirmation}>OK</Button>
                     <Button variant="contained" className={classes.rejectButton} onClick={handleDialogCancel}>Cancel</Button>
-                    <Button type="submit" variant="contained" color="primary" onClick={handleConfirmation}>Confirm</Button>
 
                 </Box>
 

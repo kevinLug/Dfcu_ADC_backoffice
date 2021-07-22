@@ -2,7 +2,7 @@ import {
     IApplicantDetails, IBankDetails,
     IBeneficiaryAddress,
     IBeneficiaryBank,
-    IBeneficiaryDetails, ICase,
+    IBeneficiaryDetails, ICase, IForex,
 
     ITransferDetails
 } from "./types";
@@ -26,7 +26,7 @@ const keyValueLabels = (labelsAndValues: ILabelValue[]) => {
     return keyValue;
 }
 
-export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: ICase) => {
+export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: ICase, forexDetails: IForex) => {
     const labelling = transferDetails
 
     // ConstantLabelsAndValues.mapOfDFCUBranchCodeToBranchLabel().get(labelling.branchCode)
@@ -50,6 +50,13 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
     //
     // new ObjectHelpersFluent().directValue(printDateTime(aCase.applicationDate)).isEqualTo(printDateTime(new Date())).logDetailed()
     //     .successCallBack(() => date = '').failureCallBack(() => date = aCase.applicationDate).getSummary().testResult ? date : printDateTime(date)
+
+    // new ObjectHelpersFluent().directValue(labelling.remittanceAmount).isPresent()
+    //     .successCallBack(() => remittanceAmount = labelling.remittanceAmount)
+    //     .failureCallBack(() => remittanceAmount = labelling.transactionAmount.toString())
+    //     .getSummary().testResult ? remittanceAmount : remittanceAmount
+
+
     let date: any = ''
     let branchCode: string = ''
     let remittanceAmount = ''
@@ -88,10 +95,7 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
         },
         {
             label: ConstantLabelsAndValues.AMOUNT,
-            value: new ObjectHelpersFluent().directValue(labelling.remittanceAmount).isPresent()
-                .successCallBack(() => remittanceAmount = labelling.remittanceAmount)
-                .failureCallBack(() => remittanceAmount = labelling.transactionAmount.toString())
-                .getSummary().testResult ? remittanceAmount : remittanceAmount
+            value: labelling.transactionAmount
         },
         {
             label: ConstantLabelsAndValues.AMOUNT_IN_WORDS,
@@ -99,11 +103,11 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
         },
         {
             label: ConstantLabelsAndValues.RATE,
-            value: new ObjectHelpersFluent().directValue(labelling.exchangeRate).isEqualTo(0).getSummary().testResult ? '' : labelling.exchangeRate
+            value: forexDetails.rate
         },
         {
             label: ConstantLabelsAndValues.REMITTANCE_AMOUNT,
-            value: new ObjectHelpersFluent().directValue(labelling.transactionAmount).isEqualTo(0).getSummary().testResult ? '' : labelling.transactionAmount
+            value: forexDetails.remittanceAmount
         },
         {
             label: ConstantLabelsAndValues.PURPOSE_OF_TRANSFER,

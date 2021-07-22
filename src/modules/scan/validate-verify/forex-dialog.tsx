@@ -8,7 +8,6 @@ import Button from "@material-ui/core/Button";
 
 import {createStyles, makeStyles} from "@material-ui/core";
 
-import TextField from "@material-ui/core/TextField";
 import {Dispatch} from "redux";
 import {useDispatch} from "react-redux";
 import {actionIForexValue} from "../../../data/redux/forex/reducer";
@@ -20,6 +19,7 @@ import {getRotatedImage} from "../canvasUtils";
 import Card from "@material-ui/core/Card";
 import ObjectHelpersFluent from "../../../utils/objectHelpersFluent";
 import Toast from "../../../utils/Toast";
+import Numbers from "../../../utils/numbers";
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -28,7 +28,8 @@ const useStyles = makeStyles(() =>
         },
         submissionBox: {
             display: 'flex',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            margin: 10
         },
         rejectButton: {
             backgroundColor: '#b32121',
@@ -56,7 +57,7 @@ const useStyles = makeStyles(() =>
         },
 
         browseFileStyle: {
-            backgroundColor: 'teal'
+            // backgroundColor: 'teal'
         }
 
     })
@@ -116,7 +117,15 @@ const RateConfirmationFileUpload = ({classes, forexDetails}: IRateConfirmationFi
         // console.log("dropped image:", imageDataUrl)
     }
 
+    function determineFileUpload() {
+        Toast.success("File upload successful")
+        return ''
+    }
+
+
     return <Grid>
+
+
         <Dropzone onDrop={handleDrop} accept="image/*">
 
             {({getRootProps, getInputProps}) => (
@@ -124,9 +133,8 @@ const RateConfirmationFileUpload = ({classes, forexDetails}: IRateConfirmationFi
                     <input {...getInputProps()} />
 
                     <Card className={classes.browseFileStyle}>
-                        <Typography className={classes.fontsUploadInstructions}>Rate confirmation file</Typography>
 
-                        <Typography>Drop your file here or click to browse</Typography>
+                        <Typography className={classes.fontsUploadInstructions}>File upload</Typography>
 
                     </Card>
 
@@ -135,11 +143,10 @@ const RateConfirmationFileUpload = ({classes, forexDetails}: IRateConfirmationFi
 
         </Dropzone>
 
-        <Grid container item xs={12}>
-            {
-                imageSrc ? <img src={imageSrc} className={classes.imageAfterScan} alt="scanned-result"/> : ""
-            }
-        </Grid>
+        {
+            imageSrc ? determineFileUpload() : ""
+        }
+
     </Grid>
 }
 
@@ -187,14 +194,24 @@ const ForexForm = ({data, handleDialogCancel, handleSubmission, isSubmitBtnDisab
 
     useEffect(() => {
 
-    }, [])
+    }, [initialData])
 
     function handleRateChange(e: ChangeEvent<HTMLInputElement>) {
+        // const unFormatted = Numbers.unFormat_En_UK_toNumber(e.target.value)
+        // const toDisplay = Numbers.format_En_UK(unFormatted)
+        // console.log("toDisplay:",toDisplay)
         initialData.rate = e.target.value
+        // console.log("rate:",unFormatted)
+        // console.log("rate:",Numbers.format_En_UK(Number(unFormatted)))
+        // e.target.value = Numbers.format_En_UK(Number(unFormatted))
+
     }
 
     function handleRemittanceAmountChange(e: ChangeEvent<HTMLInputElement>) {
+        // const unFormatted = Numbers.unFormat_En_UK_toNumber(e.target.value)
+        // const toDisplay = Numbers.format_En_UK(unFormatted)
         initialData.remittanceAmount = e.target.value
+        // e.target.value = toDisplay
     }
 
     function handleConfirmation() {
@@ -213,7 +230,6 @@ const ForexForm = ({data, handleDialogCancel, handleSubmission, isSubmitBtnDisab
             .isEqualTo(true)
             .failureCallBack(() => Toast.warn(`Either the rate or remittance amount is missing`))
             .logDetailed().haltProcess(false, true)
-
 
         new ObjectHelpersFluent().testTitle("RATE CONFIRMATION FILE").selector(theData, '$.doc')
             .isPresent()
@@ -254,29 +270,33 @@ const ForexForm = ({data, handleDialogCancel, handleSubmission, isSubmitBtnDisab
                 <Grid>
 
                     <Box className={classes.submissionBox}>
-
-                        <TextField onChange={handleRateChange} className={classes.field} label="Rate" variant="outlined"/>
-
+                        <label>Rate</label>
+                        <input type="text" onChange={handleRateChange}/>
                     </Box>
 
                     <Box className={classes.submissionBox}>
 
-                        <TextField onChange={handleRemittanceAmountChange} className={classes.field} label="Remittance amount" variant="outlined"/>
-
+                        <label>Remittance amount</label>
+                        <input type="text" onChange={handleRemittanceAmountChange}/>
                     </Box>
 
                 </Grid>
 
                 <Grid>
-                    <RateConfirmationFileUpload classes={classes} forexDetails={theData}/>
+
+                    <Box className={classes.submissionBox}>
+                        <RateConfirmationFileUpload classes={classes} forexDetails={theData}/>
+                    </Box>
+
+
                 </Grid>
 
                 <Grid item sm={12} className={classes.submissionGrid}>
 
                     <Box className={classes.submissionBox}>
 
+                        <Button type="submit" variant="contained" color="primary" disabled={isSubmitBtnDisabled} onSubmit={handleConfirmation}>OK</Button>
                         <Button variant="contained" className={classes.rejectButton} disabled={isCancelBtnDisabled} onClick={handleDialogCancel}>Cancel</Button>
-                        <Button type="submit" variant="contained" color="primary" disabled={isSubmitBtnDisabled} onSubmit={handleConfirmation}>Confirm</Button>
 
                     </Box>
                 </Grid>
