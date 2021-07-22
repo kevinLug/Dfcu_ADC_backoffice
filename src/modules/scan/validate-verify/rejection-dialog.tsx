@@ -16,12 +16,20 @@ const useStyles = makeStyles(() =>
         },
         submissionBox: {
             display: 'flex',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            marginRight:10
         },
         rejectButton: {
             backgroundColor: '#b32121',
             color: 'white'
-        }
+        },
+        hiddenBtn: {
+            display: 'none !important'
+        },
+        form:{
+            padding: 10,
+            margin: 10
+        },
 
     })
 );
@@ -40,7 +48,7 @@ const RejectionForm = ({data, remarks, handleDialogCancel, isSubmitBtnDisabled, 
 
     const classes = useStyles()
 
-    return <Grid item sm={12}>
+    return <Grid  container >
 
         <Formik
 
@@ -57,18 +65,24 @@ const RejectionForm = ({data, remarks, handleDialogCancel, isSubmitBtnDisabled, 
 
             }}
         >
-            <Form>
+            <Form className={classes.form}>
 
                 <RejectionRemarks remarks={remarks.remarks} role={remarks.role}/>
 
-                <Grid item sm={12} className={classes.submissionGrid}>
+                <Grid item sm={12} className={classes.submissionGrid} >
 
-                    <Box className={classes.submissionBox}>
+                    <Grid className={classes.submissionBox}>
 
-                        <Button variant="contained" className={classes.rejectButton} disabled={isCancelBtnDisabled} onClick={handleDialogCancel}>Cancel</Button>
-                        <Button type="submit" variant="contained" color="primary" disabled={isSubmitBtnDisabled} onSubmit={handleSubmission}>Confirm</Button>
+                        <Grid item sm={3} >
+                            <Button variant="contained" className={classes.rejectButton} disabled={isCancelBtnDisabled} onClick={handleDialogCancel}>Cancel</Button>
+                        </Grid>
 
-                    </Box>
+                        <Grid item sm={5}>
+                            <Button type="submit" variant="contained" color="primary" disabled={isSubmitBtnDisabled} onSubmit={handleSubmission}>Confirm</Button>
+                        </Grid>
+
+
+                    </Grid>
 
                 </Grid>
             </Form>
