@@ -170,7 +170,7 @@ const BomValidationChecklist = ({workflow}: IProps) => {
         // still awaiting CSO approval
         if (workflow.subStatus === WorkflowSubStatus.AwaitingCSOApproval && hasAnyRole(user, [systemRoles.CSO]))
             return <Grid className={classes.expansion}>
-                <Typography variant="h4">Verification Checklist</Typography>
+                <Typography variant="h4">Validation Checklist</Typography>
                 <CsoValidationChecklist theCheckList={ConstantLabelsAndValues.csoValidationCheckList()}/>
                 {/*<ExpansionCard title="Verification  Checklist" children={<CsoValidationChecklist theCheckList={theCheckList}/>}/>*/}
             </Grid>
