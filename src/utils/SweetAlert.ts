@@ -10,13 +10,24 @@ class SweetAlert {
         return Swal.mixin({
             toast: true,
             position: "center",
-            timer: 35000,
+            timer: 2000,
         }).fire({
             icon: "warning",
             title: msg
         })
     }
 
+    public static simpleToastMsgError_(msg: string) {
+        return Swal.mixin({
+            toast: true,
+            position: "bottom-start",
+            timer: 2000,
+        }).fire({
+            icon: "warning",
+            title: msg,
+            background: 'yellow'
+        })
+    }
 
     public static simpleHtmlHolder() {
         return Swal.fire({

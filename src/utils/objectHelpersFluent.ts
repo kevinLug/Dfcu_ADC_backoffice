@@ -3,6 +3,7 @@ import {CriteriaTest, isNullOrEmpty, isObject} from "./objectHelpers";
 
 import validate from "validate.js";
 import {IKeyValueMap, KeyValueMap} from "./collections/map";
+import {environment} from "../data/constants";
 
 export interface ITestDataSummary {
     title?: string;
@@ -260,7 +261,7 @@ class ObjectHelpersFluent {
 
     isEqualTo(expectedValue: any) {
 
-        this.summary.testResult =  JSON.stringify(this.summary.value) === JSON.stringify(expectedValue)
+        this.summary.testResult = JSON.stringify(this.summary.value) === JSON.stringify(expectedValue)
         this.summary.expected = expectedValue;
         this.addToCheckRuns("IS_EQUAL_TO", this.summary.testResult)
         this.setFlag(this.summary.testResult)
@@ -405,13 +406,16 @@ class ObjectHelpersFluent {
     }
 
     logDetailed() {
-        this.logValue();
-        console.log(`criterion: `, this.getCheckRuns().getKeys().get(0));
-        console.log("Expected: ", this.summary.expected)
-        this.logTestResult();
-        this.logTestMessage();
-        // this.logSummary()
-        this.logNewLineSpace();
+        const env = environment.toLowerCase()
+        if (env === 'dev' || env === 'development' || env === 'test') {
+            this.logValue();
+            console.log(`criterion: `, this.getCheckRuns().getKeys().get(0));
+            console.log("Expected: ", this.summary.expected)
+            this.logTestResult();
+            this.logTestMessage();
+            // this.logSummary()
+            this.logNewLineSpace();
+        }
         return this
     }
 

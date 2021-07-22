@@ -57,6 +57,7 @@ import {actionICheckKeyValue} from "../../data/redux/checks/reducer";
 import SuccessCriteria from "../../utils/successCriteria";
 import SweetAlert from "../../utils/SweetAlert";
 import {KeyValueMap} from "../../utils/collections/map";
+import {fetchWorkflowAsync, startWorkflowFetch} from "../../data/redux/workflows/reducer";
 
 
 let worker = new Worker(worker_script_mappings);
@@ -252,7 +253,7 @@ const ScanCrop = () => {
             } else {
                 Toast.success("scan successful");
                 setScanSuccessful(true)
-                counter = counter+1
+                counter = counter + 1
             }
 
             const pairKeyValueFromDecodedRawResult = decodedRawResult.getText().split(",");
@@ -314,11 +315,14 @@ const ScanCrop = () => {
                             console.log('resp-initiation:', resp) // todo ... consider providing a message for both success and failure
                             dispatch(actionIWorkflowResponseMessage(resp))
 
-                            new ObjectHelpersFluent()
-                                .selector(resp, '$.caseId')
+                            const postResp = new ObjectHelpersFluent()
+                            postResp.selector(resp, '$.caseId')
                                 .isPresent()
+                                .logDetailed()
                                 .successCallBack(() => {
                                     Toast.success("Initiated successfully")
+                                    dispatch(startWorkflowFetch())
+                                    dispatch(fetchWorkflowAsync(postResp.getSummary().value))
                                 })
                                 .failureCallBack(() => {
                                     Toast.warn("Something is wrong")
@@ -357,7 +361,8 @@ const ScanCrop = () => {
 
         } catch (e) {
             console.log(e)
-
+            // SweetAlert.simpleToastMsgError_('Not scanned, zoom or rotate QR code')
+            Toast.warn("Not scanned, zoom or rotate target area")
             // to pinpoint PDF417
             // if (zoom === 3) {
             //     setZoom(1)
