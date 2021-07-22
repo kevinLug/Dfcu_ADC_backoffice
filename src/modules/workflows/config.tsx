@@ -157,7 +157,7 @@ export const workflowHeadCells: XHeadCell[] = [
             }
             // awaiting BOM approval
             if (data === WorkflowStatus.Open && rec.subStatus === WorkflowSubStatus.AwaitingBMApproval) {
-                return renderStatus(WorkflowStatus.PendingApproval)
+                return renderStatus(WorkflowStatus.Pending)
             }
             // awaiting CMO clearance
             if (data === WorkflowStatus.Open && rec.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle) {
