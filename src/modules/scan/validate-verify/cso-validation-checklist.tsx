@@ -1,7 +1,6 @@
-import React, {ChangeEvent, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import Grid from "@material-ui/core/Grid";
-import {IPropsChecks} from "./Check";
-import CheckBoxTemplate from "./Check";
+import CheckBoxTemplate, {IPropsChecks} from "./Check";
 import {IList} from "../../../utils/collections/list";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
@@ -11,7 +10,7 @@ import {useDispatch, useSelector} from "react-redux";
 
 import {actionICheckKeyValue, ICheckKeyValueState} from "../../../data/redux/checks/reducer";
 
-import {IManualDecision} from "../../workflows/types";
+import {IManualDecision, WorkflowSubStatus} from "../../workflows/types";
 
 import {ConstantLabelsAndValues, hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
 
@@ -20,15 +19,12 @@ import {getChecksToPopulate, getDropdownSelectsToPopulate} from "../populateLabe
 import {IWorkflowState} from "../../../data/redux/workflows/reducer";
 import {Dispatch} from "redux";
 import EditDialog from "../../../components/EditDialog";
-import {Form, Formik} from 'formik';
 
 import {IState} from "../../../data/types";
 import VerificationsAlreadyDoneByCSO from "./checks-already-done-by-cso";
 import Toast from "../../../utils/Toast";
-import RejectionRemarks from "./rejection-remarks";
 import {CSORejectionRemarks, IRemarks} from "./rejection-remarks-values";
 import {actionISelectKeyValue, ISelectKeyValueState} from "../../../data/redux/selects/reducer";
-import RejectionDialog from "./rejection-dialog";
 import RejectionForm from "./rejection-dialog";
 import ForexForm from "./forex-dialog";
 import {ICaseDefault, ICheckKeyValueDefault, IForex, ISelectKeyValueDefault} from "../../transfers/types";
@@ -109,7 +105,8 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
         // @ts-ignore
         // setSubStatusFound(workflow.subStatus)
 
-    }, [showConfirmationDialog, dispatch, check, workflow, rejectionComment, data, select, forexValue])
+
+    }, [showConfirmationDialog, dispatch, check, workflow, rejectionComment, data, select, forexValue, isNewTransferRequestStarted])
 
     const handleCSOApproval = async () => {
 
@@ -314,9 +311,12 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
 
         // @ts-ignore
         if (workflow !== undefined && workflow !== null && (workflow.subStatus.includes("BM") || workflow.subStatus.includes("Fail")) && !isNewTransferRequestStarted) {
+            console.log("supposed to show results...")
             // @ts-ignore
             returned = <VerificationsAlreadyDoneByCSO workflow={workflow}/>
         } else {
+            console.log("supposed to show checks...")
+
             returned = theCheckList.toArray().map((aCheck, index) => {
                 return <Grid key={index} item sm={12}>
                     <CheckBoxTemplate value={aCheck.value} label={aCheck.label} name={aCheck.name} handleCheckChange={showForexForm}/>
@@ -349,7 +349,6 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             caseId = workflowResponseMessage.caseId
         }
 
-
         // @ts-ignore
         if (caseId === undefined || caseId === null || caseId === '') {
             Toast.warn('Can not proceed without an initiation')
@@ -357,6 +356,10 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
                 Toast.warn('Make sure the form data is complete')
             }, 2000)
 
+        }
+
+        if (workflow.subStatus !== WorkflowSubStatus.AwaitingCSOApproval) {
+            Toast.warn('Make sure the form data is complete')
         } else
             setShowConfirmationDialog(true)
     }

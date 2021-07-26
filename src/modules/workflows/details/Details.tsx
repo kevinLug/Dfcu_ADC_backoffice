@@ -81,6 +81,12 @@ const Details = (props: IProps) => {
     const caseData = workflow as IWorkflow;
 
 
+    function rejectionReasonCSO(outputData: any) {
+        if (outputData["rejectionComment"]){
+
+        }
+    }
+
     // @ts-ignore
     // const timestamp = workflow.tasks[1].actions[0].outputData["timestamp"]
 
@@ -184,7 +190,7 @@ const Details = (props: IProps) => {
         // @ts-ignore
         const outputDataCMO = workflow.tasks[3].actions[0].outputData
 
-        console.log("walked:",outputDataCMO)
+        console.log("walked:", outputDataCMO)
 
         if (outputDataCMO !== null && outputDataCMO !== undefined) {
 
@@ -237,25 +243,25 @@ const Details = (props: IProps) => {
         fontWeight: 450
     };
 
-    function displayWorkflowStatus(){
+    function displayWorkflowStatus() {
 
         if (caseData.status === WorkflowStatus.Open && caseData.subStatus === WorkflowSubStatus.AwaitingCSOApproval) {
-            return renderStatus(WorkflowStatus.Pending)
+            return renderStatus(WorkflowStatus.New)
         }
         // awaiting BOM approval
         if (caseData.status === WorkflowStatus.Open && caseData.subStatus === WorkflowSubStatus.AwaitingBMApproval) {
-            return renderStatus(WorkflowStatus.PendingApproval)
+            return renderStatus(WorkflowStatus.Pending)
         }
         // awaiting CMO clearance
         if (caseData.status === WorkflowStatus.Open && caseData.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle) {
             return renderStatus(WorkflowStatus.PendingClearance)
         }
 
-        if (caseData.status === WorkflowStatus.Error){
+        if (caseData.status === WorkflowStatus.Error) {
             return renderStatus(WorkflowStatus.Rejected)
         }
 
-        if (caseData.status === WorkflowStatus.Closed){
+        if (caseData.status === WorkflowStatus.Closed) {
             return renderStatus(WorkflowStatus.Cleared)
         }
 

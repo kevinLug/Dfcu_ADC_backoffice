@@ -40,7 +40,6 @@ const validateSharedValuesAndRules = (data: ICase, tests: IList<ObjectHelpersFlu
         .isPresent()
         .addUserFailureMessage("Sender's phone number is missing")
         .logDetailed()
-    isSenderTelephonePresent.failureCallBack(() => Toast.error("Sender's phone number is missing")).haltProcess(false, false)
     tests.add(isSenderTelephonePresent)
 
     const isSenderTownPresent = new ObjectHelpersFluent()
@@ -56,7 +55,6 @@ const validateSharedValuesAndRules = (data: ICase, tests: IList<ObjectHelpersFlu
         .selector(data, "$.caseData.applicantDetails.address.district")
         .isPresent()
         .logDetailed()
-    isSenderDistrictPresent.failureCallBack(() => Toast.error("Sender's district is missing")).haltProcess(false, false)
     tests.add(isSenderDistrictPresent)
 
     const isRecipientBankNamePresent = new ObjectHelpersFluent()
@@ -65,7 +63,6 @@ const validateSharedValuesAndRules = (data: ICase, tests: IList<ObjectHelpersFlu
         .isPresent()
         .addUserFailureMessage("Receiving bank name is missing")
         .logDetailed()
-    isRecipientBankNamePresent.failureCallBack(() => Toast.error("Recipient's bank name is missing")).haltProcess(false, false)
     tests.add(isRecipientBankNamePresent)
 
     const isRecipientBankAccountPresent = new ObjectHelpersFluent()
@@ -74,7 +71,6 @@ const validateSharedValuesAndRules = (data: ICase, tests: IList<ObjectHelpersFlu
         .isPresent()
         .addUserFailureMessage("Recipient's account number is missing")
         .logDetailed()
-    isRecipientBankAccountPresent.failureCallBack(() => Toast.error("Recipient's account number is missing")).haltProcess(false, false)
     tests.add(isRecipientBankAccountPresent)
 
     const isTransferPurposePresent = new ObjectHelpersFluent()
@@ -83,7 +79,6 @@ const validateSharedValuesAndRules = (data: ICase, tests: IList<ObjectHelpersFlu
         .isPresent()
         .addUserFailureMessage("Purpose of transfer is missing")
         .logDetailed()
-    isTransferPurposePresent.failureCallBack(() => Toast.error("Purpose of transaction is missing"))
     tests.add(isTransferPurposePresent)
 
 }

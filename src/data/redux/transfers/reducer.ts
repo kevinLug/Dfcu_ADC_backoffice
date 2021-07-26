@@ -43,6 +43,7 @@ export const initialState: ICaseState = {
 }
 
 export const actionICaseState = (aCase: ICase) => {
+    console.log("case action:....")
     return {
         type: transferConstants.startScan,
         payload: aCase

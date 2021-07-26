@@ -26,6 +26,7 @@ import VerificationByBMO from "./verification-by-bmo";
 import CmoFinacleSubmission from "./cmo-finacle-submission";
 import {IWorkflowResponseMessageState} from "../../../data/redux/workflow-response/reducer";
 import Typography from "@material-ui/core/Typography";
+import DescriptionAlerts from "./validation-check-list-place-holder";
 
 interface IProps {
     workflow: IWorkflow
@@ -151,7 +152,7 @@ const BomValidationChecklist = ({workflow}: IProps) => {
 
         const caseData: ICaseData = workflow.caseData
 
-        // todo .. sprout this step (for re-usability)...also used in ScanCrop.tsx
+        // todo .. sprout/move this step (for re-usability)...also used in ScanCrop.tsx
         const arrayBuffer = ImageUtils.base64ToArrayBuffer(caseData.doc)
         // const arrayBuffer = new Buffer(caseData.doc)
         const blob = ImageUtils.arrayBufferToBlob(arrayBuffer)
@@ -176,10 +177,12 @@ const BomValidationChecklist = ({workflow}: IProps) => {
             </Grid>
 
         // show verifications done by CSO if process awaits BM action, CMO action, or erred
-        // if (workflow.subStatus.includes("BM") || workflow.subStatus.includes("Finacle") || workflow.subStatus.includes("Fail"))
-        //     return <Grid className={classes.expansion}>
-        //         <ExpansionCard title="Checklist results - CSO" children={<VerificationsAlreadyDoneByCSO workflow={workflow}/>}/>
-        //     </Grid>
+        if (workflow.subStatus.includes("BM") || workflow.subStatus.includes("Finacle") || workflow.subStatus.includes("Fail") && hasAnyRole(user, [systemRoles.CSO])) {
+            return <Grid className={classes.expansion}>
+                <Typography variant="h4">Validation Checklist</Typography>
+                <VerificationsAlreadyDoneByCSO workflow={workflow}/>
+            </Grid>
+        }
 
     }
 
@@ -191,10 +194,13 @@ const BomValidationChecklist = ({workflow}: IProps) => {
                 <VerificationByBMO workflow={workflow}/>
             </Grid>
 
-        // if (workflow.subStatus.includes(WorkflowSubStatus.AwaitingSubmissionToFinacle) || workflow.subStatus.includes(WorkflowSubStatus.FailedBMApproval))
-        //     return <Grid className={classes.expansion}>
-        //         <ExpansionCard title="Verification Checklist" children={<VerificationsAlreadyDoneByBM workflow={workflow}/>}/>
-        //     </Grid>
+        if (workflow.subStatus.includes(WorkflowSubStatus.AwaitingSubmissionToFinacle) || workflow.subStatus.includes(WorkflowSubStatus.FailedBMApproval)
+            && hasAnyRole(user, [systemRoles.BM, systemRoles.BOM]))
+            return <Grid className={classes.expansion}>
+                <Typography variant="h4">Validation Checklist</Typography>
+
+                <VerificationsAlreadyDoneByBM workflow={workflow}/>
+            </Grid>
     }
 
     // function showVerificationsToBeDoneByBM() {

@@ -17,7 +17,7 @@ const useStyles = makeStyles(() =>
         submissionBox: {
             display: 'flex',
             justifyContent: 'space-between',
-            marginRight:10
+            marginRight: 10
         },
         rejectButton: {
             backgroundColor: '#b32121',
@@ -26,7 +26,7 @@ const useStyles = makeStyles(() =>
         hiddenBtn: {
             display: 'none !important'
         },
-        form:{
+        form: {
             padding: 10,
             margin: 10
         },
@@ -48,7 +48,7 @@ const RejectionForm = ({data, remarks, handleDialogCancel, isSubmitBtnDisabled, 
 
     const classes = useStyles()
 
-    return <Grid  container >
+    return <Grid container>
 
         <Formik
 
@@ -69,16 +69,16 @@ const RejectionForm = ({data, remarks, handleDialogCancel, isSubmitBtnDisabled, 
 
                 <RejectionRemarks remarks={remarks.remarks} role={remarks.role}/>
 
-                <Grid item sm={12} className={classes.submissionGrid} >
+                <Grid item sm={12} className={classes.submissionGrid}>
 
                     <Grid className={classes.submissionBox}>
 
-                        <Grid item sm={3} >
-                            <Button variant="contained" className={classes.rejectButton} disabled={isCancelBtnDisabled} onClick={handleDialogCancel}>Cancel</Button>
+                        <Grid item style={{margin:'10'}} sm={2} >
+                            <Button type="submit" variant="contained" color="primary" disabled={isSubmitBtnDisabled} onSubmit={handleSubmission}>OK</Button>
                         </Grid>
 
-                        <Grid item sm={5}>
-                            <Button type="submit" variant="contained" color="primary" disabled={isSubmitBtnDisabled} onSubmit={handleSubmission}>Confirm</Button>
+                        <Grid item style={{margin:'10'}} sm={5}>
+                            <Button variant="contained" className={classes.rejectButton} disabled={isCancelBtnDisabled} onClick={handleDialogCancel}>Cancel</Button>
                         </Grid>
 
 

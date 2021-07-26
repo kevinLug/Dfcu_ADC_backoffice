@@ -1,5 +1,5 @@
 import {ICase} from "./types";
-import ObjectHelpersFluent from "../../utils/objectHelpersFluent";
+import ObjectHelpersFluent, {fluentInstance} from "../../utils/objectHelpersFluent";
 import SuccessCriteria from "../../utils/successCriteria";
 import {List} from "../../utils/collections/list";
 import {RequestType} from "../workflows/config";
@@ -13,17 +13,14 @@ const validateSwift = async (data: ICase): Promise<boolean> => {
 
         const tests = new List<ObjectHelpersFluent>()
 
-        const dataExists = new ObjectHelpersFluent()
+        const dataExists = fluentInstance()
             .testTitle("Entire data object presence")
             .selector(data, "$")
             .isPresent()
-            .logValue()
-            .logTestResult()
-            .logTestMessage()
-            .logNewLineSpace()
+            .logDetailed();
         tests.add(dataExists);
 
-        const workflowTypePresent = new ObjectHelpersFluent()
+        const workflowTypePresent = fluentInstance()
             .testTitle("workflowType presence")
             .selector(data, "$.workflowType")
             .isPresent()
@@ -31,94 +28,85 @@ const validateSwift = async (data: ICase): Promise<boolean> => {
             .logDetailed()
         tests.add(workflowTypePresent);
 
-        const isSwift = new ObjectHelpersFluent()
-            .testTitle("is SWIFT the type?")
-            .selector(data, "$.workflowType")
-            .isEqualTo(RequestType.SWIFT)
-            .addUserFailureMessage("Transfer type is expected to be SWIFT but is different")
-            .logDetailed();
-        tests.add(isSwift);
+        // const isSwift = new ObjectHelpersFluent()
+        //     .testTitle("is SWIFT the type?")
+        //     .selector(data, "$.workflowType")
+        //     .isEqualTo(RequestType.SWIFT)
+        //     .addUserFailureMessage("Transfer type is expected to be SWIFT but is different")
+        //     .logDetailed();
+        // tests.add(isSwift);
 
-        const isBranchPresent = new ObjectHelpersFluent()
+        const isBranchPresent = fluentInstance()
             .testTitle("is the branch present?")
             .selector(data, "$.caseData.transferDetails.branchCode")
             .isPresent()
             .addUserFailureMessage("The bank branch is missing")
-            .logDetailed()
-        isBranchPresent.failureCallBack(() => Toast.error("Branch code is missing")).haltProcess(false, false)
+            .logDetailed();
         tests.add(isBranchPresent)
 
-        const isCurrencyPresent = new ObjectHelpersFluent()
+        const isCurrencyPresent = fluentInstance()
             .testTitle("is the currency present")
             .selector(data, "$.caseData.transferDetails.currencyCode")
             .isPresent()
-            .logDetailed()
-        isCurrencyPresent.failureCallBack(() => Toast.error("Currency is missing")).haltProcess(false, false)
+            .logDetailed();
         tests.add(isCurrencyPresent)
 
-        const isRatePresent = new ObjectHelpersFluent()
+        const isRatePresent = fluentInstance()
             .testTitle("is rate present?")
             .selector(data, "$.caseData.transferDetails.exchangeRate")
             .isGreaterThanOrEqualTo(0)
             .addUserFailureMessage("rate must be greater or equal to zero")
             // .isIgnorable()
-            .logDetailed()
-            .logDetailed()
-        isRatePresent.failureCallBack(() => Toast.error("Rate is missing"))
+            .logDetailed();
         tests.add(isRatePresent)
 
-        const isAmountPresent = new ObjectHelpersFluent()
+        const isAmountPresent = fluentInstance()
             .testTitle("Is amount present ( > 0 )")
             .selector(data, "$.caseData.transferDetails.transactionAmount")
             .isGreaterThan(0)
             .addUserFailureMessage("Transaction amount must be greater or equal to zero")
-            .logDetailed()
-        isAmountPresent.failureCallBack(() => Toast.error("Transaction amount is missing"))
+            .logDetailed();
         tests.add(isAmountPresent)
 
-        const isUgxAmountPresent = new ObjectHelpersFluent()
+        const isUgxAmountPresent = fluentInstance()
             .testTitle("is UGX amount present ( > 0 )")
             .selector(data, "$.caseData.transferDetails.transactionAmount")
             .isGreaterThan(0)
-            .logDetailed()
+            .logDetailed();
         tests.add(isUgxAmountPresent)
 
-        const isBeneficiaryNamePresent = new ObjectHelpersFluent()
+        const isBeneficiaryNamePresent = fluentInstance()
             .testTitle("is recipient name present?")
             .selector(data, "$.caseData.beneficiaryDetails.fullName")
             .isPresent()
             .addUserFailureMessage("Customer's full name is non-existent")
-            .logDetailed()
-        isBeneficiaryNamePresent.failureCallBack(() => Toast.error("Recipient name is missing")).haltProcess(false, false)
-        tests.add(isBeneficiaryNamePresent)
+            .logDetailed();
+        tests.add(isBeneficiaryNamePresent);
 
         // can be ignored
-        const isRecipientCountryPresent = new ObjectHelpersFluent()
+        const isRecipientCountryPresent = fluentInstance()
             .testTitle("is recipient country code present?")
             .selector(data, "$.caseData.beneficiaryDetails.address.countryCode")
             .isPresent()
             .addUserFailureMessage("Country of recipient is missing")
             // .isIgnorable()
-            .logDetailed()
-        isRecipientCountryPresent.failureCallBack(() => Toast.error("Country is missing"))
+            .logDetailed();
         tests.add(isRecipientCountryPresent)
 
-        const isRecipientPhysicalAddressPresent = new ObjectHelpersFluent()
+        const isRecipientPhysicalAddressPresent = fluentInstance()
             .testTitle("is recipient's physical address present?")
             .selector(data, "$.caseData.beneficiaryDetails.address.physicalAddress")
             .isPresent()
             .addUserFailureMessage("Physical address of recipient is missing")
-            .logDetailed()
-        isRecipientPhysicalAddressPresent.failureCallBack(() => Toast.error("Recipient's physical address is missing")).haltProcess(false, false)
+            .logDetailed();
         tests.add(isRecipientPhysicalAddressPresent)
 
-        const isSenderNamePresent = new ObjectHelpersFluent()
+        const isSenderNamePresent = fluentInstance()
             .testTitle("is sender's name present?")
             .selector(data, "$.caseData.applicantDetails.fullName")
             .isPresent()
             .addUserFailureMessage("Sender's full name is missing")
-            .logDetailed()
-        isSenderNamePresent.failureCallBack(() => Toast.error("Sender's full name is missing")).haltProcess(false, false)
+            .logDetailed();
         tests.add(isSenderNamePresent)
 
         const isSenderEmailPresent = new ObjectHelpersFluent()

@@ -5,6 +5,7 @@ import Grid from "@material-ui/core/Grid";
 import SuccessFailureDisplay from "./success-failure-display";
 import {IWorkflow} from "../../workflows/types";
 import {ConstantLabelsAndValues} from "../../../data/constants";
+import grey from "@material-ui/core/colors/grey";
 
 
 interface IProps {
@@ -39,11 +40,13 @@ const VerificationsAlreadyDoneByCSO = ({workflow}: IProps) => {
 
     }
 
+    const isEven = (num: number) => num % 2 !== 0
+
     return <Grid>
         {
 
             checksReview().toArray().map((v, index) => {
-                return <Grid key={index} style={index % 2 ? {background: "#fcf6ea"} : {background: "#fdf9f1"}}>
+                return <Grid key={index} style={{backgroundColor: isEven(index) ? 'white' : grey[50]}}>
                     {
 
                         <SuccessFailureDisplay value={v.value} label={v.label} name={v.name} key={v.name}/>

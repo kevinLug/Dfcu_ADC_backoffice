@@ -58,6 +58,10 @@ import SuccessCriteria from "../../utils/successCriteria";
 import SweetAlert from "../../utils/SweetAlert";
 import {KeyValueMap} from "../../utils/collections/map";
 import {fetchWorkflowAsync, startWorkflowFetch} from "../../data/redux/workflows/reducer";
+import {IState} from "../../data/types";
+import DescriptionAlerts from "./validate-verify/validation-check-list-place-holder";
+import Workflows from "../workflows/Workflows";
+import EditDialog from "../../components/EditDialog";
 
 
 let worker = new Worker(worker_script_mappings);
@@ -70,7 +74,6 @@ const ORIENTATION_TO_ANGLE: any = {
 }
 
 const codeReader = new BrowserMultiFormatReader()
-
 
 export const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -188,8 +191,11 @@ const ScanCrop = () => {
 
     const {user}: ICoreState = useSelector((state: any) => state.core)
 
+    const isNewTransferRequestStarted: boolean = useSelector((state: IState) => state.core.startNewTransferRequest)
+
     useEffect(() => {
-    }, [aCase])
+
+    }, [aCase,isNewTransferRequestStarted])
 
     const postData = (token: string, requestData: any, callBack: (data: any) => any) => {
         console.log({requestData})
@@ -396,6 +402,7 @@ const ScanCrop = () => {
         failures = openUL.concat(failures).concat(closeUL)
         SweetAlert.requirementErrorMessage(failures).then((e) => SweetAlert.simpleToastMsgError("Initiation failed"))
 
+
     }
 
     function autoClickToReadPDF417() {
@@ -451,109 +458,116 @@ const ScanCrop = () => {
 
     return (
 
-        <Grid container item xs={12} className={classes.root}>
+        <Workflows>
 
-            <Grid item sm={4}>
+            <Grid container item xs={12} className={classes.root}>
 
-                <Grid className={classes.expansion}>
-                    <ExpansionCard title="Sender" children={<SenderDetails/>}/>
+                <Grid item sm={4}>
+
+                    <Grid className={classes.expansion}>
+                        <ExpansionCard title="Sender" children={<SenderDetails/>}/>
+                    </Grid>
+
+                    <Grid className={classes.expansion}>
+                        <ExpansionCard title="Recipient" children={<BeneficiaryDetails/>}/>
+                    </Grid>
+
+                    <Grid className={classes.expansion}>
+                        <ExpansionCard title="Transfer Request" children={<TransferDetails/>}/>
+                    </Grid>
+
+                    <Grid className={classes.expansion}>
+
+                        <DescriptionAlerts />
+                        <Typography variant="h4">Validation Checklist</Typography>
+                        <CsoValidationChecklist theCheckList={ConstantLabelsAndValues.csoValidationCheckList()}/>
+
+                    </Grid>
+
                 </Grid>
 
-                <Grid className={classes.expansion}>
-                    <ExpansionCard title="Recipient" children={<BeneficiaryDetails/>}/>
-                </Grid>
+                <Grid item sm={7} container alignContent={"center"} justify="center"
+                      className={isNullOrEmpty(result) ? classes.dragAndDropArea : classes.dragAndDropAreaAfterScan}>
+                    {imageSrc ? (
 
-                <Grid className={classes.expansion}>
-                    <ExpansionCard title="Transfer Request" children={<TransferDetails/>}/>
-                </Grid>
+                        !iScanSuccessful ?
 
-                <Grid className={classes.expansion}>
+                            // show cropper if not yet scanned
+                            <React.Fragment>
+                                <div className={classes.cropContainer}>
+                                    <Cropper
+                                        image={imageSrc}
+                                        crop={crop}
+                                        rotation={rotation}
+                                        zoom={zoom}
+                                        aspect={1}
+                                        onCropChange={setCrop}
+                                        onRotationChange={setRotation}
+                                        onCropComplete={onCropComplete}
+                                        onZoomChange={setZoom}
 
-                    <Typography variant="h4">Validation Checklist</Typography>
-                    <CsoValidationChecklist theCheckList={ConstantLabelsAndValues.csoValidationCheckList()}/>
+                                    />
+                                </div>
 
+                                <Button variant="contained" onClick={handleZoomOut}>
+                                    Zoom out<ZoomOut/>
+                                </Button>
+
+                                <Button variant="contained" onClick={handleZoomIn} ref={PDF417ReadOff}>
+                                    Zoom in<ZoomIn/>
+                                </Button>
+
+                                <Button variant="outlined" onClick={handleLeftRotation}>
+                                    Rotate Left<RotateLeftIcon/>
+                                </Button>
+
+                                <Button variant="outlined" onClick={handleRightRotation}>
+                                    Rotate Right<RotateRightIcon/>
+                                </Button>
+
+                                <ImgDialog img={croppedImage} onClose={onClose}/>
+
+
+                            </React.Fragment>
+
+                            :
+
+                            // show image upon scanning
+
+                            <Grid container item xs={12}>
+                                <img src={imageSrc} className={classes.imageAfterScan} alt="scanned-result"/>
+                            </Grid>
+
+
+                    ) : (
+
+                        <Dropzone onDrop={handleDrop} accept="image/*">
+
+                            {({getRootProps, getInputProps}) => (
+                                <div {...getRootProps({className: "dropzone"})} className={classes.dropzoneClue}>
+                                    <input {...getInputProps()} />
+
+                                    <Grid>
+                                        <Typography className={classes.fontsUploadInstructions}>Upload transfer request
+                                            form</Typography>
+
+                                        <Typography>Drop your file here or click to browse</Typography>
+
+                                    </Grid>
+
+                                </div>
+                            )}
+
+                        </Dropzone>
+
+                    )}
                 </Grid>
 
             </Grid>
 
-            <Grid item sm={7} container alignContent={"center"} justify="center"
-                  className={isNullOrEmpty(result) ? classes.dragAndDropArea : classes.dragAndDropAreaAfterScan}>
-                {imageSrc ? (
-
-                    !iScanSuccessful ?
-
-                        // show cropper if not yet scanned
-                        <React.Fragment>
-                            <div className={classes.cropContainer}>
-                                <Cropper
-                                    image={imageSrc}
-                                    crop={crop}
-                                    rotation={rotation}
-                                    zoom={zoom}
-                                    aspect={1}
-                                    onCropChange={setCrop}
-                                    onRotationChange={setRotation}
-                                    onCropComplete={onCropComplete}
-                                    onZoomChange={setZoom}
-
-                                />
-                            </div>
-
-                            <Button variant="contained" onClick={handleZoomOut}>
-                                Zoom out<ZoomOut/>
-                            </Button>
-
-                            <Button variant="contained" onClick={handleZoomIn} ref={PDF417ReadOff}>
-                                Zoom in<ZoomIn/>
-                            </Button>
-
-                            <Button variant="outlined" onClick={handleLeftRotation}>
-                                Rotate Left<RotateLeftIcon/>
-                            </Button>
-
-                            <Button variant="outlined" onClick={handleRightRotation}>
-                                Rotate Right<RotateRightIcon/>
-                            </Button>
-
-                            <ImgDialog img={croppedImage} onClose={onClose}/>
+        </Workflows>
 
 
-                        </React.Fragment>
-
-                        :
-
-                        // show image upon scanning
-
-                        <Grid container item xs={12}>
-                            <img src={imageSrc} className={classes.imageAfterScan} alt="scanned-result"/>
-                        </Grid>
-
-
-                ) : (
-
-                    <Dropzone onDrop={handleDrop} accept="image/*">
-
-                        {({getRootProps, getInputProps}) => (
-                            <div {...getRootProps({className: "dropzone"})} className={classes.dropzoneClue}>
-                                <input {...getInputProps()} />
-
-                                <Grid>
-                                    <Typography className={classes.fontsUploadInstructions}>Upload transfer request
-                                        form</Typography>
-
-                                    <Typography>Drop your file here or click to browse</Typography>
-
-                                </Grid>
-
-                            </div>
-                        )}
-
-                    </Dropzone>
-
-                )}
-            </Grid>
-
-        </Grid>
 
     )
 }

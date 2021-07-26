@@ -48,96 +48,103 @@ const NegotiateTransferRequestAndList = () => {
 
 }
 
-const Workflows = () => {
+const Workflows = ({children}: any) => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
     const [loading, setLoading] = useState(false);
     const [loadingNew, setLoadingNew] = useState(false);
     const [newData, setNewData] = useState([]);
     const [data, setData] = useState([]);
-    const [openDialog,setOpenDialog] = useState(false)
+    const [openDialog, setOpenDialog] = useState(false)
     // const startNewTransferRequest = useSelector((state: IState) => state.core.startNewTransferRequest);
 
     // console.log('startNewTransferRequest', startNewTransferRequest)
     const isNewTransferRequestStarted: boolean = useSelector((state: IState) => state.core.startNewTransferRequest)
-    console.log('interrupt',isNewTransferRequestStarted);
+    console.log('interrupt', isNewTransferRequestStarted);
 
-    const [filter, setFilter] = useState<IWorkflowFilter>({
-        workflowTypes: workflowTypes,
-        showNew: false,
-        showAssigned: true
-    });
+    // const [filter, setFilter] = useState<IWorkflowFilter>({
+    //     workflowTypes: workflowTypes,
+    //     showNew: false,
+    //     showAssigned: true
+    // });
+    //
+    // useEffect(() => {
+    //     setLoadingNew(true)
+    //     const newFilter = {
+    //         workflowTypes: workflowTypes
+    //     };
+    //     search(remoteRoutes.workflows, newFilter, resp => {
+    //         setNewData(resp)
+    //     }, undefined, () => {
+    //         setLoadingNew(false)
+    //     })
+    // }, [])
 
-    useEffect(() => {
-        setLoadingNew(true)
-        const newFilter = {
-            workflowTypes: workflowTypes
-        };
-        search(remoteRoutes.workflows, newFilter, resp => {
-            setNewData(resp)
-        }, undefined, () => {
-            setLoadingNew(false)
-        })
-    }, [])
+    // function handleFilterToggle() {
+    //     setOpen(!open);
+    // }
+    //
+    // function handleFilter(f: IWorkflowFilter) {
+    //     setFilter({...filter, ...f})
+    // }
+    //
+    // function onClose() {
+    //     setOpenDialog(false)
+    // }
+    //
+    // function pickImage() {
+    //     setOpenDialog(true)
+    // }
 
-    function handleFilterToggle() {
-        setOpen(!open);
-    }
-
-    function handleFilter(f: IWorkflowFilter) {
-        setFilter({...filter, ...f})
-    }
-
-    function onClose(){
-        setOpenDialog(false)
-    }
-
-    function pickImage()  {
-        setOpenDialog(true)
-    }
+    // alert(window.location)
 
     return (
         <Navigation>
             <Grid container spacing={3}>
                 <Grid item xs={12} className={clsx(classes.content, {[classes.contentShift]: open})}>
+
+
                     <Grid container spacing={2}>
 
-                        {
-                            !isNewTransferRequestStarted?
-                                <Grid item sm={6}>
-                                    <Typography variant='h4'>All Applications</Typography>
-                                </Grid> :
+                        {children}
 
-                                <Grid item sm={6}>
-                                    <Typography variant='h4'>Validate money transfer request</Typography>
-                                </Grid>
-                        }
+                        {/*    {*/}
+                        {/*        !isNewTransferRequestStarted?*/}
+                        {/*            <Grid item sm={6}>*/}
+                        {/*                <Typography variant='h4'>All Applications</Typography>*/}
+                        {/*            </Grid> :*/}
 
-                        {
-                            !isNewTransferRequestStarted?
-                                <Grid item sm={12}>
+                        {/*            <Grid item sm={6}>*/}
+                        {/*                <Typography variant='h4'>Validate money transfer request</Typography>*/}
+                        {/*            </Grid>*/}
+                        {/*    }*/}
 
-                                    <Filter onFilter={handleFilter} loading={loading}/>
+                        {/*    {*/}
+                        {/*        !isNewTransferRequestStarted?*/}
+                        {/*            <Grid item sm={12}>*/}
 
-                                </Grid> : ""
-                        }
+                        {/*                <Filter onFilter={handleFilter} loading={loading}/>*/}
 
-                        <Grid item xs={12}>
+                        {/*            </Grid> : ""*/}
+                        {/*    }*/}
 
-                            {
-                                isNewTransferRequestStarted? <ScanCrop /> :
-                                    <XTable
-                                        loading={loadingNew}
-                                        headCells={workflowHeadCellsNew}
-                                        data={newData}
-                                        initialRowsPerPage={3}
-                                        usePagination={true}
-                                        initialSortBy={wfInitialSort}
-                                        initialOrder="desc"
-                                    />
-                            }
+                        {/*    <Grid item xs={12}>*/}
 
-                        </Grid>
+                        {/*        {*/}
+                        {/*            isNewTransferRequestStarted? <ScanCrop /> :*/}
+                        {/*                <XTable*/}
+                        {/*                    loading={loadingNew}*/}
+                        {/*                    headCells={workflowHeadCellsNew}*/}
+                        {/*                    data={newData}*/}
+                        {/*                    initialRowsPerPage={5}*/}
+                        {/*                    usePagination={true}*/}
+                        {/*                    initialSortBy={wfInitialSort}*/}
+                        {/*                    initialOrder="desc"*/}
+                        {/*                />*/}
+                        {/*        }*/}
+
+                        {/*    </Grid>*/}
+
                     </Grid>
                 </Grid>
 
