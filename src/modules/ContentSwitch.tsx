@@ -12,6 +12,7 @@ import Loading from "../components/Loading";
 import Users from "./settings/users/List"
 import Scan from './scan/Scan'
 import ScanCrop from "./scan/ScanCrop";
+import InitiateTransfer from "./scan/InitiateTransfer";
 
 const Dashboard = React.lazy(() => import("./dashboard/Dashboard"));
 const Contacts = React.lazy(() => import("./contacts/list/Contacts"));
@@ -19,6 +20,7 @@ const ContactDetails = React.lazy(() => import("./contacts/details/Details"));
 const ApplicationDetails = React.lazy(() => import( "./workflows/details/Details"));
 
 const Workflows = React.lazy(() => import("./workflows/Workflows"));
+const HomePage = React.lazy(() => import("./scan/HomePage"));
 //const Users = React.lazy(() => import("./settings/users/List"));
 const CustomClaims = React.lazy(() => import("./settings/customClaims/CustomClaimsList"));
 const CustomClaimsDetails = React.lazy(() => import("./settings/customClaims/details/Details"));
@@ -43,7 +45,8 @@ const ContentSwitch = () => {
             {
                 hasAnyRole(user, [systemRoles.ADMIN]) ?
                     <Route exact={true} path="/" component={Users}/> :
-                    <Route exact={true} path="/" component={Workflows}/>
+                    // <Route exact={true} path="/" component={Workflows}/>
+                    <Route exact={true} path="/" component={HomePage}/>
             }
             <Route path={localRoutes.contactsDetails} component={ContactDetails}/>
             <Route path={localRoutes.contacts} component={Contacts} />
@@ -52,6 +55,7 @@ const ContentSwitch = () => {
             <Route path={localRoutes.applicationsDetails} component={ApplicationDetails}/>
             <Route path={localRoutes.applications} component={Workflows}/>
             <Route path={localRoutes.usersDetails} component={UserDetails}/>
+            <Route path={localRoutes.initiateTransferRequest} component={InitiateTransfer}/>
             {
                 hasAnyRole(user, [systemRoles.ADMIN]) &&
                 <>

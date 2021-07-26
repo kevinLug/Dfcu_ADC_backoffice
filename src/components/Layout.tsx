@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import IconButton from '@material-ui/core/IconButton';
@@ -23,6 +23,8 @@ import FloatingActionButtons from "../modules/scan/FloatingIcon";
 import {actionICheckKeyValue} from "../data/redux/checks/reducer";
 import {ICaseDefault, ICheckKeyValueDefault} from "../modules/transfers/types";
 import {actionICaseState, initialState} from "../data/redux/transfers/reducer";
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import NavigationBreadCrumbs from "../modules/scan/NavigationBreadCrumbs";
 
 const drawerWidth = 240;
 
@@ -134,21 +136,35 @@ function Layout(props: any) {
 
     const dispatch: Dispatch<any> = useDispatch();
 
+    useEffect(() => {
+
+    }, [dispatch])
+
     function handleDrawerToggle() {
         setMobileOpen(!mobileOpen);
     }
 
     function startNewTransfer() {
-        if (btnTransferName === "NEW TRANSFER REQUEST") {
-            setShowScanner(true)
-            dispatch(startNewTransferRequest(showScanner))
-            setBtnTransferName("⬅️BACK")
-        } else {
-            setBtnTransferName("NEW TRANSFER REQUEST")
-            window.location.reload()
-        }
-        dispatch(actionICaseState(ICaseDefault));
-        dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
+
+        // <Link to={localRoutes.scanCrop}/>
+
+        // if (btnTransferName === "NEW TRANSFER REQUEST") {
+        //     setShowScanner(true)
+        //     dispatch(startNewTransferRequest(showScanner))
+        //     setBtnTransferName("BACK")
+        //     dispatch(actionICaseState(ICaseDefault));
+        //     dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
+        // } else {
+        //     setBtnTransferName("NEW TRANSFER REQUEST")
+        //     window.location.reload()
+        // }
+        // dispatch(actionICaseState(ICaseDefault));
+        // dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
+        //
+        //
+        // <Link style={{textDecoration: 'none', color: linkColor}} to={`${localRoutes.applications}/${id}`}>{name}</Link>
+
+
     }
 
     function canShowRequestButton() {
@@ -177,13 +193,19 @@ function Layout(props: any) {
 
                     {canShowRequestButton() ?
                         <div className={classes.requestButton}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={startNewTransfer}
-                            >
-                                {btnTransferName}
-                            </Button>
+
+                            <Link style={{textDecoration: 'none', color: linkColor}} to={localRoutes.initiateTransferRequest}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={startNewTransfer}
+                                    startIcon={btnTransferName === 'BACK' ? <ArrowBackIcon/> : undefined}
+                                >
+                                    {btnTransferName}
+                                </Button>
+                            </Link>
+
+
                         </div>
                         : ""}
 
@@ -194,6 +216,9 @@ function Layout(props: any) {
             <main className={classes.content}>
                 <div className={classes.toolbar}/>
                 <Paper className={classes.body}>
+
+                    <NavigationBreadCrumbs/>
+                    <br/>
                     {props.children}
                     <FloatingActionButtons/>
                 </Paper>

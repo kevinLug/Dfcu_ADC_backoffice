@@ -47,6 +47,7 @@
     "material-table": "^1.57.2",
     "material-ui-dropzone": "^2.4.9",
     "material-ui-image": "^3.2.2",
+    "notistack": "^1.0.9",
     "oidc-client": "^1.10.1",
     "pdf-image": "^2.0.0",
     "pdf2pic": "^2.1.4",

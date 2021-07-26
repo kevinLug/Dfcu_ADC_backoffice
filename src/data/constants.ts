@@ -63,6 +63,8 @@ export const localRoutes = {
     contacts: '/contacts',
     scan: '/scan',
     scanCrop: '/scanCrop',
+    homePage: '/',
+    initiateTransferRequest: '/initiateTransferRequest',
     contactsDetails: '/contacts/:contactId',
     settings: '/settings',
     customClaimsDetails: '/customClaims/:id',
