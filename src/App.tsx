@@ -21,7 +21,7 @@ const App = () => {
 
     // periodic logout time dues to inactivity/idleness
     // 15 minutes
-    const timeout = ConstantLabelsAndValues.A_MINUTE * 1;
+    const timeout = ConstantLabelsAndValues.A_MINUTE * 15;
     const [remaining, setRemaining] = useState(timeout)
     const [elapsed, setElapsed] = useState(0)
     const [lastActive, setLastActive] = useState(+new Date())
@@ -90,7 +90,7 @@ const App = () => {
                         worker.postMessage(timerDetails)
                     }
 
-                }, ConstantLabelsAndValues.A_MINUTE * (1/4))
+                }, ConstantLabelsAndValues.A_MINUTE * 5)
             }
         })
 
