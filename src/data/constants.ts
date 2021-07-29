@@ -188,6 +188,7 @@ export class ConstantLabelsAndValues {
 
     public static APPROVED_BY = 'Approved by:'
     public static REJECTED_BY = 'Rejected by:'
+    public static REASON_FOR_REJECTION = 'Reason for rejection:'
     public static SUBMITTED_BY = 'Submitted by:'
     public static CLEARED_BY = 'Cleared by:'
 
@@ -197,16 +198,16 @@ export class ConstantLabelsAndValues {
     public static CASE_VALIDATION_SWIFT = 'SWIFT'
     public static CASE_VALIDATION_EFT = 'EFT'
 
-    public static caseValidationCallback(workflowType: string, func: () => any) {
-        switch (workflowType){
-            case ConstantLabelsAndValues.CASE_VALIDATION_INTERNAL:
-                func()
-                break
-            case ConstantLabelsAndValues.CASE_VALIDATION_INTERNAL:
-                func()
-                break
-        }
-    }
+    // public static caseValidationCallback(workflowType: string, func: () => any) {
+    //     switch (workflowType){
+    //         case ConstantLabelsAndValues.CASE_VALIDATION_INTERNAL:
+    //             func()
+    //             break
+    //         case ConstantLabelsAndValues.CASE_VALIDATION_INTERNAL:
+    //             func()
+    //             break
+    //     }
+    // }
 
     public static csoCheckList() {
         const theCheckList = new List<IPropsChecks>();
