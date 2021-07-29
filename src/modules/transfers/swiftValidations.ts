@@ -48,6 +48,7 @@ const validateSwift = async (data: ICase): Promise<boolean> => {
             .testTitle("is the currency present")
             .selector(data, "$.caseData.transferDetails.currencyCode")
             .isPresent()
+            .addUserFailureMessage("The currency code is missing")
             .logDetailed();
         tests.add(isCurrencyPresent)
 
@@ -115,7 +116,6 @@ const validateSwift = async (data: ICase): Promise<boolean> => {
             .isPresent()
             .addUserFailureMessage("Sender's email address is missing")
             .logDetailed()
-        isSenderEmailPresent.failureCallBack(() => Toast.error("Sender's email is missing"))
         tests.add(isSenderEmailPresent)
 
         const isRecipientBankSwiftCodePresent = new ObjectHelpersFluent()
@@ -123,9 +123,8 @@ const validateSwift = async (data: ICase): Promise<boolean> => {
             .selector(data, "$.caseData.bankDetails.beneficiaryBank.swiftCode")
             .isPresent()
             .addUserFailureMessage("SWIFT code is missing")
-            .isIgnorable()
+            // .isIgnorable()
             .logDetailed()
-        isRecipientBankSwiftCodePresent.failureCallBack(() => Toast.error("Recipient's bank SWIFT code is missing"))
         tests.add(isRecipientBankSwiftCodePresent)
 
         const isRecipientBankSortCodePresent = new ObjectHelpersFluent()

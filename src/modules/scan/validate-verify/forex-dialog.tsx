@@ -13,13 +13,16 @@ import {useDispatch} from "react-redux";
 import {actionIForexValue} from "../../../data/redux/forex/reducer";
 import {IForex} from "../../transfers/types";
 import Dropzone from "react-dropzone";
-import Typography from "@material-ui/core/Typography";
 import {getOrientation} from "get-orientation/browser";
 import {getRotatedImage} from "../canvasUtils";
 import Card from "@material-ui/core/Card";
 import ObjectHelpersFluent from "../../../utils/objectHelpersFluent";
 import Toast from "../../../utils/Toast";
 import Numbers from "../../../utils/numbers";
+
+
+import NumberFormat from 'react-number-format';
+
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -30,6 +33,9 @@ const useStyles = makeStyles(() =>
             display: 'flex',
             justifyContent: 'space-between',
             margin: 10
+        },
+        label: {
+            paddingRight: 30,
         },
         rejectButton: {
             backgroundColor: '#b32121',
@@ -126,15 +132,17 @@ const RateConfirmationFileUpload = ({classes, forexDetails}: IRateConfirmationFi
     return <Grid>
 
 
-        <Dropzone onDrop={handleDrop} accept="image/*">
+        <Dropzone onDrop={handleDrop} accept="image/*" >
 
             {({getRootProps, getInputProps}) => (
                 <div {...getRootProps({className: "dropzone"})} className={classes.dropzoneClue}>
                     <input {...getInputProps()} />
 
-                    <Card className={classes.browseFileStyle}>
 
-                        <Typography className={classes.fontsUploadInstructions}>File upload</Typography>
+                    <Card className={classes.browseFileStyle}>
+                        <Button variant="contained" color="primary" >File upload</Button>
+
+                        {/*<Typography className={classes.fontsUploadInstructions}>File upload</Typography>*/}
 
                     </Card>
 
@@ -197,21 +205,17 @@ const ForexForm = ({data, handleDialogCancel, handleSubmission, isSubmitBtnDisab
     }, [initialData])
 
     function handleRateChange(e: ChangeEvent<HTMLInputElement>) {
-        // const unFormatted = Numbers.unFormat_En_UK_toNumber(e.target.value)
-        // const toDisplay = Numbers.format_En_UK(unFormatted)
-        // console.log("toDisplay:",toDisplay)
-        initialData.rate = e.target.value
-        // console.log("rate:",unFormatted)
-        // console.log("rate:",Numbers.format_En_UK(Number(unFormatted)))
-        // e.target.value = Numbers.format_En_UK(Number(unFormatted))
+
+        // set rate
+        initialData.rate = Numbers.unFormat_En_UK_toNumber(e.target.value)
 
     }
 
     function handleRemittanceAmountChange(e: ChangeEvent<HTMLInputElement>) {
-        // const unFormatted = Numbers.unFormat_En_UK_toNumber(e.target.value)
-        // const toDisplay = Numbers.format_En_UK(unFormatted)
-        initialData.remittanceAmount = e.target.value
-        // e.target.value = toDisplay
+
+        // set remittance amount
+        initialData.remittanceAmount = Numbers.unFormat_En_UK_toNumber(e.target.value)
+
     }
 
     function handleConfirmation() {
@@ -271,13 +275,15 @@ const ForexForm = ({data, handleDialogCancel, handleSubmission, isSubmitBtnDisab
 
                     <Box className={classes.submissionBox}>
                         <label>Rate</label>
-                        <input type="text" onChange={handleRateChange}/>
+                        <NumberFormat onChange={handleRateChange} thousandSeparator={true} inputMode="numeric"/>
+                        {/*<input type="text" onChange={handleRateChange}/>*/}
                     </Box>
 
                     <Box className={classes.submissionBox}>
 
-                        <label>Remittance amount</label>
-                        <input type="text" onChange={handleRemittanceAmountChange}/>
+                        <label className={classes.label} >Remittance amount</label>
+                        <NumberFormat onChange={handleRemittanceAmountChange} thousandSeparator={true} inputMode='numeric' />
+
                     </Box>
 
                 </Grid>
@@ -287,7 +293,6 @@ const ForexForm = ({data, handleDialogCancel, handleSubmission, isSubmitBtnDisab
                     <Box className={classes.submissionBox}>
                         <RateConfirmationFileUpload classes={classes} forexDetails={theData}/>
                     </Box>
-
 
                 </Grid>
 

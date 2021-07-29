@@ -14,6 +14,7 @@ import {RequestType, workflowTypes} from "../workflows/config";
 import ObjectHelpersFluent from "../../utils/objectHelpersFluent";
 import {isNullOrEmpty} from "../../utils/objectHelpers";
 import validate from "validate.js";
+import Numbers from "../../utils/numbers";
 
 interface ILabelValue {
     label: string;
@@ -95,7 +96,7 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
         },
         {
             label: ConstantLabelsAndValues.AMOUNT,
-            value: labelling.transactionAmount
+            value: Numbers.format_En_UK(labelling.transactionAmount)
         },
         {
             label: ConstantLabelsAndValues.AMOUNT_IN_WORDS,
@@ -103,11 +104,11 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
         },
         {
             label: ConstantLabelsAndValues.RATE,
-            value: forexDetails.rate
+            value: Numbers.format_En_UK(forexDetails.rate)
         },
         {
             label: ConstantLabelsAndValues.REMITTANCE_AMOUNT,
-            value: forexDetails.remittanceAmount
+            value: Numbers.format_En_UK(forexDetails.remittanceAmount)
         },
         {
             label: ConstantLabelsAndValues.PURPOSE_OF_TRANSFER,
