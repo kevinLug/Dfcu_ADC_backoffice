@@ -22,6 +22,11 @@ import Numbers from "../../../utils/numbers";
 
 
 import NumberFormat from 'react-number-format';
+import ForexDetailsFilePreview from "./forex-details-file-preview";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogActions from "@material-ui/core/DialogActions";
 
 
 const useStyles = makeStyles(() =>
@@ -99,6 +104,12 @@ interface IRateConfirmationFileUploadProps {
 
 const RateConfirmationFileUpload = ({classes, forexDetails}: IRateConfirmationFileUploadProps) => {
     const [imageSrc, setImageSrc] = useState<string>("")
+    const [theForexDetails] = useState(forexDetails)
+    const [showPreview, setShowPreview] = useState(false)
+
+    useEffect(() => {
+
+    }, [imageSrc, theForexDetails, showPreview])
 
     async function handleDrop(files: any) {
 
@@ -121,18 +132,25 @@ const RateConfirmationFileUpload = ({classes, forexDetails}: IRateConfirmationFi
         };
         Object.assign(forexDetails, newForexDetails)
         // console.log("dropped image:", imageDataUrl)
+        setShowPreview(true)
+    }
+
+    function handlePreviewClose(toFalsify: boolean) {
+        console.log("closing....without")
+        toFalsify = false
+        setShowPreview(toFalsify)
     }
 
     function determineFileUpload() {
-        Toast.success("File upload successful")
-        return ''
+
+        return showPreview ? <ForexDetailsFilePreview openDialog={true} onClose={(toFalsify) => toFalsify = false} imgBase64={imageSrc}/> :
+            ""
     }
 
 
     return <Grid>
 
-
-        <Dropzone onDrop={handleDrop} accept="image/*" >
+        <Dropzone onDrop={handleDrop} accept="image/*">
 
             {({getRootProps, getInputProps}) => (
                 <div {...getRootProps({className: "dropzone"})} className={classes.dropzoneClue}>
@@ -140,7 +158,7 @@ const RateConfirmationFileUpload = ({classes, forexDetails}: IRateConfirmationFi
 
 
                     <Card className={classes.browseFileStyle}>
-                        <Button variant="contained" color="primary" >File upload</Button>
+                        <Button variant="contained" color="primary">File upload</Button>
 
                         {/*<Typography className={classes.fontsUploadInstructions}>File upload</Typography>*/}
 
@@ -152,7 +170,7 @@ const RateConfirmationFileUpload = ({classes, forexDetails}: IRateConfirmationFi
         </Dropzone>
 
         {
-            imageSrc ? determineFileUpload() : ""
+            determineFileUpload()
         }
 
     </Grid>
@@ -195,6 +213,7 @@ const ForexForm = ({data, handleDialogCancel, handleSubmission, isSubmitBtnDisab
         remittanceAmount,
         doc
     }
+    const [showPreview, setShowPreview] = useState(false)
 
     const [theData, setTheData] = useState(initialData)
 
@@ -251,6 +270,33 @@ const ForexForm = ({data, handleDialogCancel, handleSubmission, isSubmitBtnDisab
 
     }
 
+    function handlePreviewClose() {
+        setShowPreview(false)
+    }
+
+    function viewFileOnDemand() {
+
+        setShowPreview(theData.doc !== '')
+        console.log("please open up;", showPreview)
+        return showPreview ? <div><Dialog onClose={handlePreviewClose} aria-labelledby="customized-dialog-title" open={showPreview}>
+            <DialogTitle>
+                Forex details file preview
+            </DialogTitle>
+            <DialogContent dividers>
+
+
+                <img src={theData.doc} alt="scanned-result"/>
+
+
+            </DialogContent>
+            <DialogActions>
+                <Button autoFocus onClick={handlePreviewClose} color="primary">
+                    OK
+                </Button>
+            </DialogActions>
+        </Dialog></div> : ""
+    }
+
     return <Grid item sm={12}>
 
         <Formik
@@ -281,8 +327,8 @@ const ForexForm = ({data, handleDialogCancel, handleSubmission, isSubmitBtnDisab
 
                     <Box className={classes.submissionBox}>
 
-                        <label className={classes.label} >Remittance amount</label>
-                        <NumberFormat onChange={handleRemittanceAmountChange} thousandSeparator={true} inputMode='numeric' />
+                        <label className={classes.label}>Remittance amount</label>
+                        <NumberFormat onChange={handleRemittanceAmountChange} thousandSeparator={true} inputMode='numeric'/>
 
                     </Box>
 
@@ -292,6 +338,7 @@ const ForexForm = ({data, handleDialogCancel, handleSubmission, isSubmitBtnDisab
 
                     <Box className={classes.submissionBox}>
                         <RateConfirmationFileUpload classes={classes} forexDetails={theData}/>
+                        <Button color="primary" variant='contained' type='button' onClick={viewFileOnDemand}>View file</Button>
                     </Box>
 
                 </Grid>
