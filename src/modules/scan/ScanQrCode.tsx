@@ -275,19 +275,12 @@ const ScanQrCode = () => {
                 } else {
                     Toast.warn("Incomplete info in scan result")
 
-                    // setTimeout(() => {
-
-                    // handleScanFailureResponse(aCase.workflowType)
-                    // SweetAlert.simpleMessage('Yes')
-                    // SweetAlert.simpleHtmlHolder()
                     Toast.error("Initiation failed")
-                    // console.log("results-from-tests-after-failure: ", ObjectHelpersFluent.getFinalTestResultsFromChecksRun())
-                    // console.log("results-from-tests: ", SuccessCriteria.getSuccessCriteriaSummarySet().get(ConstantLabelsAndValues.CASE_VALIDATION_INTERNAL))
+
                     console.log("results-from-tests-failed: ", SuccessCriteria.getFailedTestResults(aCase.workflowType))
                     console.log("results-from-tests-passed: ", SuccessCriteria.getPassedTestResults(aCase.workflowType))
                     console.log("summary: ", SuccessCriteria.getSuccessCriteriaSummarySet())
 
-                    let messageToShow = ''
                     const messages = SuccessCriteria.getFailedTestResults(aCase.workflowType).toArray().map((msg) => {
                         return msg.userFailureMessage
                     })
@@ -296,28 +289,6 @@ const ScanQrCode = () => {
 
                     setOpenSnackBar(true)
 
-                    // for (const failedTestResult of SuccessCriteria.getFailedTestResults(aCase.workflowType)) {
-                    //
-                    //     if (!failedTestResult.testResult) {
-                    //         // setSnackBarMessage(failedTestResult.userFailureMessage)
-                    //         // setOpenSnackBar(true)
-                    //         setSnackBarColor('error')
-                    //     }
-                    //
-                    //
-                    //     messageToShow = messageToShow + failedTestResult.userFailureMessage + " , "
-                    //
-                    // }
-                    //
-                    // fluentInstance().selector(messageToShow, '$')
-                    //     .isPresent()
-                    //     .successCallBack(() => {
-                    //         setSnackBarMessage(messageToShow)
-                    //         setOpenSnackBar(true)
-                    //         setSnackBarColor('error')
-                    //     })
-
-                    // }, 1000)
                 }
             }
 
@@ -325,51 +296,9 @@ const ScanQrCode = () => {
 
         } catch (e) {
             console.log(e)
-            // SweetAlert.simpleToastMsgError_('Not scanned, zoom or rotate QR code')
             Toast.warn("Not scanned, zoom or rotate target area")
-            // to pinpoint PDF417
-            // if (zoom === 3) {
-            //     setZoom(1)
-            //     setCrop({x: 0, y: -58.5})
-            //
-            //     autoClickToReadPDF417()
-            // }
-
-
         }
 
-    }
-
-    function alert() {
-        return <Alert severity="success">This is a success message!</Alert>
-    }
-
-    function handleScanFailureResponse(transferType: string) {
-
-        const list = SuccessCriteria.getFailedTestResults(transferType)
-        let failures = ''
-        const map = new KeyValueMap<string, string>()
-
-        for (const iTestDataSummary of list) {
-            const msg = iTestDataSummary.userFailureMessage
-            map.put(`<li style="margin-left: 0; color: #ec5e5e" >${msg}</li>`, `<li style="margin-left: 0; color: #ec5e5e" >${msg}</li>`)
-        }
-
-        for (const mapElement of map.getKeys()) {
-            failures = failures + mapElement
-        }
-
-        const openUL = `<ul style="text-align: left">`
-        const closeUL = `</ul>`
-        failures = openUL.concat(failures).concat(closeUL)
-        SweetAlert.requirementErrorMessage(failures).then((e) => SweetAlert.simpleToastMsgError("Initiation failed"))
-
-    }
-
-    function autoClickToReadPDF417() {
-        // @ts-ignore
-        PDF417ReadOff.current.click()
-        console.log("auto clicking...")
     }
 
     const onClose = useCallback(() => {
