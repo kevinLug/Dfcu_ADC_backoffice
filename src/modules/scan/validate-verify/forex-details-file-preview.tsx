@@ -58,7 +58,7 @@ const DialogActions = withStyles((theme: Theme) => ({
 
 interface IProps {
     openDialog: boolean;
-    onClose: (toFalsify: boolean) => any;
+    onClose?: (toFalsify: boolean) => any;
     imgBase64: string
 }
 
@@ -74,16 +74,13 @@ export default function ForexDetailsFilePreview({openDialog = false, onClose, im
 
         imgBase64 = ''
         setOpen(false);
-        onClose(open)
 
-        console.log("yes...we're closing...", open)
-
-    };
+    }
 
     return (
         <div>
 
-            <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
+            <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} disableBackdropClick={true} >
                 <DialogTitle id="customized-dialog-title" onClose={handleClose}>
                     Forex details file preview
                 </DialogTitle>

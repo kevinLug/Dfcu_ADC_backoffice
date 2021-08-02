@@ -22,11 +22,20 @@ import Numbers from "../../../utils/numbers";
 
 
 import NumberFormat from 'react-number-format';
-import ForexDetailsFilePreview from "./forex-details-file-preview";
+import ForexDetailsFilePreview, {DialogTitleProps} from "./forex-details-file-preview";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
+import ForexDetailFileViewOnDemand from "./ForexDetailFileViewOnDemand";
+import EditDialog from "../../../components/EditDialog";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import Modal from "@material-ui/core/Modal";
+import {Theme, withStyles} from "@material-ui/core/styles";
+import MuiDialogTitle from "@material-ui/core/DialogTitle";
+import Typography from "@material-ui/core/Typography";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
 
 
 const useStyles = makeStyles(() =>
@@ -100,9 +109,39 @@ const ORIENTATION_TO_ANGLE: any = {
 interface IRateConfirmationFileUploadProps {
     classes: any;
     forexDetails: IForex;
+    docUpdating: (doc:string) => string
 }
 
-const RateConfirmationFileUpload = ({classes, forexDetails}: IRateConfirmationFileUploadProps) => {
+const styles = (theme: Theme) =>
+    createStyles({
+        root: {
+            margin: 0,
+            padding: theme.spacing(2),
+        },
+        closeButton: {
+            position: 'absolute',
+            right: theme.spacing(1),
+            top: theme.spacing(1),
+            color: theme.palette.grey[500],
+        },
+    });
+
+const DialogTitlePreview = withStyles(styles)((props: DialogTitleProps) => {
+    const {children, classes, onClose, ...other} = props;
+    return (
+        <MuiDialogTitle disableTypography className={classes.root} {...other}>
+            <Typography variant="h6">{children}</Typography>
+            {onClose ? (
+                <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
+                    <CloseIcon/>
+                </IconButton>
+            ) : null}
+        </MuiDialogTitle>
+    );
+});
+
+
+const RateConfirmationFileUpload = ({classes, forexDetails, docUpdating}: IRateConfirmationFileUploadProps) => {
     const [imageSrc, setImageSrc] = useState<string>("")
     const [theForexDetails] = useState(forexDetails)
     const [showPreview, setShowPreview] = useState(false)
@@ -134,17 +173,35 @@ const RateConfirmationFileUpload = ({classes, forexDetails}: IRateConfirmationFi
         // console.log("dropped image:", imageDataUrl)
         setShowPreview(true)
     }
+    
 
-    function handlePreviewClose(toFalsify: boolean) {
-        console.log("closing....without")
-        toFalsify = false
-        setShowPreview(toFalsify)
-    }
 
-    function determineFileUpload() {
+    function previewFile() {
 
-        return showPreview ? <ForexDetailsFilePreview openDialog={true} onClose={(toFalsify) => toFalsify = false} imgBase64={imageSrc}/> :
-            ""
+
+        if (showPreview) {
+            theForexDetails.doc = imageSrc
+            docUpdating(imageSrc)
+        }
+
+
+        return imageSrc ? <Dialog onClose={() => setShowPreview(false)} aria-labelledby="customized-dialog-title" open={showPreview} disableBackdropClick={true}>
+            <DialogTitlePreview id="customized-dialog-title" onClose={() => setShowPreview(false)}>
+                Forex details file preview
+            </DialogTitlePreview>
+            <DialogContent dividers>
+
+                {
+                    <img src={imageSrc} alt="scanned-result"/>
+                }
+
+            </DialogContent>
+            <DialogActions>
+                <Button autoFocus onClick={() => setShowPreview(false)} color="primary">
+                    OK
+                </Button>
+            </DialogActions>
+        </Dialog> : ""
     }
 
 
@@ -170,7 +227,10 @@ const RateConfirmationFileUpload = ({classes, forexDetails}: IRateConfirmationFi
         </Dropzone>
 
         {
-            determineFileUpload()
+            previewFile()
+        }
+        {
+            // determineFileUpload()
         }
 
     </Grid>
@@ -216,12 +276,14 @@ const ForexForm = ({data, handleDialogCancel, handleSubmission, isSubmitBtnDisab
     const [showPreview, setShowPreview] = useState(false)
 
     const [theData, setTheData] = useState(initialData)
+    const [docUpdate, setDocUpdate] = useState('')
 
     const dispatch: Dispatch<any> = useDispatch()
 
+
     useEffect(() => {
 
-    }, [initialData])
+    }, [initialData, showPreview])
 
     function handleRateChange(e: ChangeEvent<HTMLInputElement>) {
 
@@ -274,27 +336,34 @@ const ForexForm = ({data, handleDialogCancel, handleSubmission, isSubmitBtnDisab
         setShowPreview(false)
     }
 
+    // function falsifyBackdropFirst() {
+    //     return <ForexDetailFileViewOnDemand shouldOpen={showPreview} imageSrc={theData.doc}/>
+    // }
+
+    function updatingDoc(doc:string){
+        theData.doc = doc
+        return doc
+    }
+
     function viewFileOnDemand() {
-
-        setShowPreview(theData.doc !== '')
-        console.log("please open up;", showPreview)
-        return showPreview ? <div><Dialog onClose={handlePreviewClose} aria-labelledby="customized-dialog-title" open={showPreview}>
-            <DialogTitle>
-                Forex details file preview
-            </DialogTitle>
-            <DialogContent dividers>
-
-
-                <img src={theData.doc} alt="scanned-result"/>
-
-
-            </DialogContent>
-            <DialogActions>
-                <Button autoFocus onClick={handlePreviewClose} color="primary">
-                    OK
-                </Button>
-            </DialogActions>
-        </Dialog></div> : ""
+        // console.log('updating doc:', theData.doc)
+        // return theData.doc ? <Dialog onClose={() => } aria-labelledby="customized-dialog-title" open={showPreview} disableBackdropClick={true}>
+        //     <DialogTitlePreview id="customized-dialog-title" onClose={() => setShowPreview(false)}>
+        //         Forex details file preview
+        //     </DialogTitlePreview>
+        //     <DialogContent dividers>
+        //
+        //         {
+        //             <img src={theData.doc} alt="scanned-result"/>
+        //         }
+        //
+        //     </DialogContent>
+        //     <DialogActions>
+        //         <Button autoFocus onClick={() => setShowPreview(false)} color="primary">
+        //             OK
+        //         </Button>
+        //     </DialogActions>
+        // </Dialog> : ""
     }
 
     return <Grid item sm={12}>
@@ -337,8 +406,8 @@ const ForexForm = ({data, handleDialogCancel, handleSubmission, isSubmitBtnDisab
                 <Grid>
 
                     <Box className={classes.submissionBox}>
-                        <RateConfirmationFileUpload classes={classes} forexDetails={theData}/>
-                        <Button color="primary" variant='contained' type='button' onClick={viewFileOnDemand}>View file</Button>
+                        <RateConfirmationFileUpload classes={classes} forexDetails={theData} docUpdating={updatingDoc} />
+                        {/*<Button color="primary" variant='contained' type='button' onClick={viewFileOnDemand}>View file</Button>*/}
                     </Box>
 
                 </Grid>
