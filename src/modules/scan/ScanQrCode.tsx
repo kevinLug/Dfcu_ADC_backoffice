@@ -11,7 +11,7 @@ import Dropzone from "react-dropzone";
 import Typography from "@material-ui/core/Typography";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import {getCroppedImg, getRotatedImage} from "./canvasUtils";
-import ObjectHelpersFluent, {fluentInstance} from "../../utils/objectHelpersFluent";
+import ObjectHelpersFluent from "../../utils/objectHelpersFluent";
 import Toast from "../../utils/Toast";
 import {login} from "../../api-stress/login";
 import {randomInt} from "../../utils/numberHelpers";
@@ -19,23 +19,19 @@ import uuid from "uuid";
 import {actionICaseState} from "../../data/redux/transfers/reducer";
 import validateData from "../validations/validations";
 import idbHandler from "../../data/indexed-db/indexedDbHandler";
-import {post} from "../../utils/ajax";
-import {remoteRoutes} from "../../data/constants";
-import {actionIWorkflowResponseMessage} from "../../data/redux/workflow-response/reducer";
-import {fetchWorkflowAsync, startWorkflowFetch} from "../../data/redux/workflows/reducer";
 import SuccessCriteria from "../../utils/successCriteria";
 import {BrowserMultiFormatReader} from "@zxing/library";
 import RunMappingRules from "./mappings/runMappingRules";
-import {ICase, ICaseDefault} from "../transfers/types";
-import {KeyValueMap} from "../../utils/collections/map";
-import SweetAlert from "../../utils/SweetAlert";
+import {ICase, ICaseDefault, ITimestampRun} from "../transfers/types";
 import {getOrientation} from "get-orientation/browser";
 import {Dispatch} from "redux";
 import {useDispatch, useSelector} from "react-redux";
 import {ICoreState} from "../../data/redux/coreReducer";
-import {Alert} from "@material-ui/lab";
-import PositionedSnackbar, {SeverityColor} from "./PositionedSnackbar";
 import AlertDialogForMessages from "./AlertDialog";
+import {post} from "../../utils/ajax";
+import {remoteRoutes} from "../../data/constants";
+import {actionIWorkflowResponseMessage} from "../../data/redux/workflow-response/reducer";
+import {fetchWorkflowAsync, startWorkflowFetch} from "../../data/redux/workflows/reducer";
 
 
 const useTyleScanQrCode = makeStyles((theme: Theme) =>
@@ -229,6 +225,20 @@ const ScanQrCode = () => {
                 aCase.externalReference = uuid()
                 aCase.caseData.user = userObj;
                 aCase.caseData.doc = imageSrc
+
+
+                const newDate = aCase.applicationDate
+                aCase.caseData.timestampRun = {
+                    csoInitiationDateTime: newDate,
+                    csoSubmissionDateTime: newDate,
+                    bmoApprovalDateTime: newDate,
+                    cmoClearanceDateTime: newDate
+                };
+
+                // set csoInitiationDateTime
+                console.log('timestamp:', aCase.caseData.timestampRun)
+                console.log('timestamp:', aCase)
+
                 // aCase.caseData.doc = ImageUtils.base64ToArrayBuffer(imageSrc)
 
                 dispatch(actionICaseState(aCase));
@@ -244,6 +254,7 @@ const ScanQrCode = () => {
                 if (validationResult) {
 
                     console.log("the user: ", user)
+                    console.log("the case: ", aCase)
 
                     post(remoteRoutes.workflows, aCase, (resp: any) => {
                             console.log('resp-initiation:', resp) // todo ... consider providing a message for both success and failure

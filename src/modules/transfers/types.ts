@@ -239,6 +239,22 @@ export const IUserDefault: IUser = <IUser>{}
 //
 // }
 
+export interface ITimestampRun {
+
+    csoInitiationDateTime: Date
+    csoSubmissionDateTime: Date;
+    bmoApprovalDateTime: Date;
+    cmoClearanceDateTime: Date
+
+}
+
+export const ITimestampRunDefault : ITimestampRun = {
+    csoInitiationDateTime: new Date(),
+    csoSubmissionDateTime: new Date(),
+    bmoApprovalDateTime: new Date(),
+    cmoClearanceDateTime: new Date()
+}
+
 export interface ICaseData {
     transferDetails: ITransferDetails;
     bankDetails: IBankDetails;
@@ -247,7 +263,8 @@ export interface ICaseData {
     applicantDetails: IApplicantDetails;
     charges: ICharges;
     user: IUser;
-    doc: any
+    doc: any,
+    timestampRun: ITimestampRun
 }
 
 export const ICaseDataDefault: ICaseData = <ICaseData>{
@@ -259,6 +276,7 @@ export const ICaseDataDefault: ICaseData = <ICaseData>{
     charges: IChargesDefault,
     user: IUserDefault,
     doc: '',
+    timestampRun: ITimestampRunDefault
     // applicantDetails: IApplicantDetailsDefault
 }
 

@@ -37,7 +37,42 @@ export const workflowHeadCells: XHeadCell[] = [
         },
     },
     {
-        name: 'applicationDate', label: 'Application Date', render: printDateTime,
+        name: 'applicationDate', label: 'Application Date', render:(data,rec) =>{
+
+            // awaiting CSO submission
+            if (rec.subStatus === WorkflowSubStatus.AwaitingCSOApproval) {
+                return printDateTime(data)
+            }
+
+            // todo...consider rejection timestamp
+
+            // failed CSO submission
+            if (rec.subStatus === WorkflowSubStatus.FailedCSOApproval){
+                return printDateTime(rec.metaData.csoSubmissionDateTime)
+            }
+
+            // awaiting BOM approval
+            if (rec.subStatus === WorkflowSubStatus.AwaitingBMApproval){
+                return printDateTime(rec.metaData.csoSubmissionDateTime)
+            }
+
+            // failed BOM approval
+            if (rec.subStatus === WorkflowSubStatus.FailedBMApproval) {
+                return printDateTime(rec.metaData.bmoApprovalDateTime)
+            }
+
+            // awaiting CMO clearance
+            if (rec.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle) {
+                return printDateTime(rec.metaData.cmoClearanceDateTime)
+            }
+
+            // failed CMO submission
+            if (rec.subStatus === WorkflowSubStatus.FailedClearingDeptApproval){
+                return printDateTime(rec.metaData.cmoClearanceDateTime)
+            }
+
+
+        } ,
         cellProps: {
             style: {
                 width: 80,
@@ -55,6 +90,7 @@ export const workflowHeadCells: XHeadCell[] = [
             }
         },
         render: (data, rec) => {
+            console.log('record back:', rec)
             // if (hasValue(rec.caseData))
             //     console.log(`the case data: `, rec.caseData)
             // return <ContactLink

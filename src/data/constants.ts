@@ -7,6 +7,7 @@ import {branches} from "../modules/settings/customClaims/region-data";
 import {IKeyValueMap, KeyValueMap} from "../utils/collections/map";
 import bankCodes from './bankCodes.json'
 import countryCodes from './countryCodes.json'
+import {IManualDecision} from "../modules/workflows/types";
 
 export const AUTH_TOKEN_KEY = '__demo__dfcu__token'
 export const AUTH_USER_KEY = '__demo__dfcu__user'
@@ -311,6 +312,26 @@ export class ConstantLabelsAndValues {
         const map = new KeyValueMap<string, string>()
         countryCodes.map((aCountry) => map.put(aCountry.code, aCountry.name))
         return map;
+    }
+
+    public static csoSubmissionDateTimeData(caseId: string){
+        const currentTimestamp = new Date()
+
+        const csoSubmissionDateTimeData = {
+            csoSubmissionDateTime: currentTimestamp
+        }
+
+        const currentTimestampManual: IManualDecision = {
+            caseId: caseId,
+            taskName: "cso-approval", // todo ...consider making these constants
+            actionName: "update-csoSubmissionDateTime-trigger",
+            resumeCase: true,
+            nextSubStatus: "csoSubmissionDateTimeSuccessful",
+            data: csoSubmissionDateTimeData,
+            override: false
+        }
+
+        return currentTimestampManual
     }
 
 }

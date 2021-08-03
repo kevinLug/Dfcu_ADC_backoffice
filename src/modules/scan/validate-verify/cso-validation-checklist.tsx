@@ -14,7 +14,7 @@ import {IManualDecision, WorkflowSubStatus} from "../../workflows/types";
 
 import {ConstantLabelsAndValues, hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
 
-import {post} from "../../../utils/ajax";
+import {post, put} from "../../../utils/ajax";
 import {getChecksToPopulate, getDropdownSelectsToPopulate} from "../populateLabelAndValue";
 import {IWorkflowState} from "../../../data/redux/workflows/reducer";
 import {Dispatch} from "redux";
@@ -29,7 +29,7 @@ import RejectionForm from "./rejection-dialog";
 import ForexForm from "./forex-dialog";
 import {ICaseDefault, ICheckKeyValueDefault, IForex, ISelectKeyValueDefault} from "../../transfers/types";
 import {actionIForexValue, IForexValueState} from "../../../data/redux/forex/reducer";
-import ObjectHelpersFluent from "../../../utils/objectHelpersFluent";
+import ObjectHelpersFluent, {fluentInstance} from "../../../utils/objectHelpersFluent";
 import {addDynamicPropertyToObject} from "../../../utils/objectHelpers";
 import ConfirmationDialog from "../confirmation-dialog";
 import SuccessFailureDisplay from "./success-failure-display";
@@ -153,12 +153,12 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             override: false
         }
 
-        const rateExists = new ObjectHelpersFluent().testTitle("forex rate exists").selector(manualCSOApproval, "$.data.forexDetails.rate").isPresent().logDetailed().logNewLineSpace().getSummary().testResult
+        const rateExists = fluentInstance().testTitle("forex rate exists").selector(manualCSOApproval, "$.data.forexDetails.rate").isPresent().logDetailed().logNewLineSpace().getSummary().testResult
 
-        const remittanceAmountExists = new ObjectHelpersFluent().testTitle("forex remittance amount exists").selector(manualCSOApproval, "$.data.forexDetails.remittanceAmount").isPresent()
+        const remittanceAmountExists =  fluentInstance().testTitle("forex remittance amount exists").selector(manualCSOApproval, "$.data.forexDetails.remittanceAmount").isPresent()
             .logDetailed().logNewLineSpace().getSummary().testResult
 
-        const forexTransferIsRequired = new ObjectHelpersFluent().testTitle("forex remittance amount exists").selector(manualCSOApproval, `$.data.${ConstantLabelsAndValues.csoValidationCheckList().get(1).name}`)
+        const forexTransferIsRequired = fluentInstance().testTitle("forex remittance amount exists").selector(manualCSOApproval, `$.data.${ConstantLabelsAndValues.csoValidationCheckList().get(1).name}`)
             .isPresent().logDetailed().logNewLineSpace().getSummary().testResult
 
         const forexCheckAndValuesMatch = forexTransferIsRequired === remittanceAmountExists === rateExists
@@ -180,16 +180,22 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             .logNewLineSpace()
             .haltProcess(false, true,)
 
-        console.log("losing:", manualCSOApproval)
+        // setup CSO submission time first
+        post(remoteRoutes.workflowsManual, ConstantLabelsAndValues.csoSubmissionDateTimeData(caseId), (resp:any) => {
 
-        post(remoteRoutes.workflowsManual, manualCSOApproval, (resp: any) => {
-                console.log(resp) // todo ... consider providing a message for both success and failure
-            }, undefined,
-            () => {
-                window.location.href = window.location.origin
-                dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
-            }
-        )
+            // Then post the actual submission
+            post(remoteRoutes.workflowsManual, manualCSOApproval, (resp: any) => {
+                    console.log(resp) // todo ... consider providing a message for both success and failure
+                }, undefined,
+                () => {
+                    window.location.href = window.location.origin
+                    dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
+                }
+            )
+
+        }, undefined, () =>{
+
+        })
 
         setShowConfirmationDialog(false)
 
@@ -245,22 +251,28 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
         if (manualCSORejection.data.rejectionComment.trim().length > 0) {
             console.log("manual-cso-rejection:", manualCSORejection);
 
-            // todo...uncomment
-            post(remoteRoutes.workflowsManual, manualCSORejection, (resp: any) => {
-                    console.log(resp) // todo ... consider providing a message for both success and failure
-                }, undefined,
-                () => {
+            // setup CSO rejection time first
+            post(remoteRoutes.workflowsManual, ConstantLabelsAndValues.csoSubmissionDateTimeData(caseId), (resp:any) => {
 
-                    // todo... place this after the the post (inside it)
-                    dispatch(actionISelectKeyValue(ISelectKeyValueDefault))
+                // Then post the actual rejection
+                post(remoteRoutes.workflowsManual, manualCSORejection, (resp: any) => {
+                        console.log(resp) // todo ... consider providing a message for both success and failure
+                    }, undefined,
+                    () => {
 
-                    window.location.href = window.location.origin
+                        // todo... place this after the the post (inside it)
+                        dispatch(actionISelectKeyValue(ISelectKeyValueDefault))
 
-                }
-            )
+                        window.location.href = window.location.origin
+
+                    }
+                )
+
+            }, undefined, () =>{
+
+            })
 
             setShowCommentBox(false)
-
 
         } else {
             Toast.warn("Please provide a rejection comment");
