@@ -122,7 +122,7 @@ const InitiateTransfer = () => {
 
 
     function showSnackBarMessage() {
-        return openSnackBar ? <PositionedSnackbar message={snackBarMessage} shouldOpen={openSnackBar} severity={snackBarColor} /> : ""
+        return openSnackBar ? <PositionedSnackbar message={snackBarMessage} shouldOpen={openSnackBar} severity={snackBarColor}/> : ""
     }
 
     return <Workflows>
@@ -153,24 +153,11 @@ const InitiateTransfer = () => {
                     <ExpansionCard title="Transfer Request" children={<TransferDetails/>}/>
                 </Grid>
 
-                {
-                    fluentInstance().selector(aCase, "$.workflowType").isPresent().getSummary().testResult ?
+                <Grid className={classes.expansion}>
 
-                        <Grid className={classes.expansion}>
+                    <DescriptionAlerts/>
 
-                            <Typography variant="h4">Validation Checklist</Typography>
-                            <CsoValidationChecklist theCheckList={ConstantLabelsAndValues.csoValidationCheckList()}/>
-
-                        </Grid>
-
-                        :
-
-                        <Grid className={classes.expansion}>
-
-                            <DescriptionAlerts/>
-
-                        </Grid>
-                }
+                </Grid>
 
 
             </Grid>

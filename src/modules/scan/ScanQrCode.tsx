@@ -29,7 +29,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {ICoreState} from "../../data/redux/coreReducer";
 import AlertDialogForMessages from "./AlertDialog";
 import {post} from "../../utils/ajax";
-import {remoteRoutes} from "../../data/constants";
+import {localRoutes, remoteRoutes} from "../../data/constants";
 import {actionIWorkflowResponseMessage} from "../../data/redux/workflow-response/reducer";
 import {fetchWorkflowAsync, startWorkflowFetch} from "../../data/redux/workflows/reducer";
 
@@ -268,6 +268,8 @@ const ScanQrCode = () => {
                                     Toast.success("Initiated successfully")
                                     dispatch(startWorkflowFetch())
                                     dispatch(fetchWorkflowAsync(postResp.getSummary().value))
+                                    // refresh to show details of new case initiated
+                                    window.location.href = `${localRoutes.applications}/${resp.caseId}`
                                 })
                                 .failureCallBack(() => {
                                     Toast.warn("Something is wrong")
@@ -275,6 +277,10 @@ const ScanQrCode = () => {
 
                         }, undefined,
                         () => {
+
+                            // pick caseId of initiated case
+
+                            // refresh page based on the caseId
 
                             console.log("results-from-tests-failed: ", SuccessCriteria.getFailedTestResults(aCase.workflowType))
                             console.log("results-from-tests-passed: ", SuccessCriteria.getPassedTestResults(aCase.workflowType))
