@@ -27,7 +27,7 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
-import ForexDetailFileViewOnDemand from "./ForexDetailFileViewOnDemand";
+
 import EditDialog from "../../../components/EditDialog";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import Modal from "@material-ui/core/Modal";
@@ -173,7 +173,7 @@ const RateConfirmationFileUpload = ({classes, forexDetails, docUpdating}: IRateC
         // console.log("dropped image:", imageDataUrl)
         setShowPreview(true)
     }
-    
+
 
 
     function previewFile() {
