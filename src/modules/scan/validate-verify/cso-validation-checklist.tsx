@@ -180,22 +180,24 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             .logNewLineSpace()
             .haltProcess(false, true,)
 
-        // setup CSO submission time first
-        post(remoteRoutes.workflowsManual, ConstantLabelsAndValues.csoSubmissionDateTimeData(caseId), (resp:any) => {
+        post(remoteRoutes.workflowsManual, manualCSOApproval, (resp: any) => {
+                console.log(resp) // todo ... consider providing a message for both success and failure
+            }, undefined,
+            () => {
+                window.location.href = window.location.origin
+                dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
+            }
+        )
 
-            // Then post the actual submission
-            post(remoteRoutes.workflowsManual, manualCSOApproval, (resp: any) => {
-                    console.log(resp) // todo ... consider providing a message for both success and failure
-                }, undefined,
-                () => {
-                    window.location.href = window.location.origin
-                    dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
-                }
-            )
-
-        }, undefined, () =>{
-
-        })
+        // // setup CSO submission time first
+        // post(remoteRoutes.workflowsManual, ConstantLabelsAndValues.csoSubmissionDateTimeData(caseId), (resp:any) => {
+        //
+        //     // Then post the actual submission
+        //
+        //
+        // }, undefined, () =>{
+        //
+        // })
 
         setShowConfirmationDialog(false)
 
@@ -251,26 +253,29 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
         if (manualCSORejection.data.rejectionComment.trim().length > 0) {
             console.log("manual-cso-rejection:", manualCSORejection);
 
-            // setup CSO rejection time first
-            post(remoteRoutes.workflowsManual, ConstantLabelsAndValues.csoSubmissionDateTimeData(caseId), (resp:any) => {
 
-                // Then post the actual rejection
-                post(remoteRoutes.workflowsManual, manualCSORejection, (resp: any) => {
-                        console.log(resp) // todo ... consider providing a message for both success and failure
-                    }, undefined,
-                    () => {
+            // Then post the actual rejection
+            post(remoteRoutes.workflowsManual, manualCSORejection, (resp: any) => {
+                    console.log(resp) // todo ... consider providing a message for both success and failure
+                }, undefined,
+                () => {
 
-                        // todo... place this after the the post (inside it)
-                        dispatch(actionISelectKeyValue(ISelectKeyValueDefault))
+                    // todo... place this after the the post (inside it)
+                    dispatch(actionISelectKeyValue(ISelectKeyValueDefault))
 
-                        window.location.href = window.location.origin
+                    window.location.href = window.location.origin
 
-                    }
-                )
+                }
+            )
 
-            }, undefined, () =>{
-
-            })
+            // // setup CSO rejection time first
+            // post(remoteRoutes.workflowsManual, ConstantLabelsAndValues.csoSubmissionDateTimeData(caseId), (resp:any) => {
+            //
+            //
+            //
+            // }, undefined, () =>{
+            //
+            // })
 
             setShowCommentBox(false)
 
