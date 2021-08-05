@@ -9,6 +9,7 @@ import {useDispatch} from "react-redux";
 import {ISelectKeyValue} from "../../transfers/types";
 import {KeyValueMap} from "../../../utils/collections/map";
 import {actionISelectKeyValue} from "../../../data/redux/selects/reducer";
+import {ConstantLabelsAndValues} from "../../../data/constants";
 
 
 // export class Selects {
@@ -64,7 +65,7 @@ const RejectionRemarks = ({remarks, role}: IRemarks) => {
             value={data['aRemark']}
             onChange={handleChange}
 
-            label="Reason for rejection"
+            label={ConstantLabelsAndValues.REASON_FOR_REJECTION}
             variant="outlined"
             size='small'
             options={toOptions(remarks.toArray())}

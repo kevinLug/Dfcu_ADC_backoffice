@@ -21,6 +21,8 @@ import BomValidationChecklist from "../../scan/validate-verify/bom-validation-ch
 import {IState} from "../../../data/types";
 import {printStdDatetime} from "../../../utils/dateHelpers";
 import {ConstantLabelsAndValues} from "../../../data/constants";
+import {IList} from "../../../utils/collections/list";
+import {IPropsChecks} from "../../scan/validate-verify/Check";
 
 interface IProps extends RouteComponentProps {
 
@@ -80,43 +82,46 @@ const Details = (props: IProps) => {
 
     const caseData = workflow as IWorkflow;
 
-
-    function rejectionReasonCSO(outputData: any) {
-        if (outputData["rejectionComment"]){
-
-        }
-    }
-
     // @ts-ignore
     // const timestamp = workflow.tasks[1].actions[0].outputData["timestamp"]
 
     function submittedOrRejectedByCSO() {
-        let returned = {}
+        let returned: any
         // @ts-ignore
         const outputDataCSO = workflow.tasks[1].actions[0].outputData
 
+        // @ts-ignore
+        console.log("action:", workflow.tasks[1].actions[0])
+
         if (outputDataCSO !== null && outputDataCSO !== undefined) {
-            console.log('outputDataCSO: ', outputDataCSO)
 
-            const submittedByCSO = JSON.parse(outputDataCSO)["submittedBy"]
+            const parsedOutputDataCSO = JSON.parse(outputDataCSO)
+            console.log('parsed:',parsedOutputDataCSO)
+            const submittedByCSO = parsedOutputDataCSO["submittedBy"]
+            const runDateCSO = new Date(parsedOutputDataCSO["runDate"])
 
-            console.log('submittedByCSO: ', submittedByCSO)
-
-            const runDateCSO = new Date(JSON.parse(outputDataCSO)["runDate"])
-            console.log('runDateCSO: ', runDateCSO)
-            // @ts-ignore
-            console.log("the tasks: ", workflow["tasks"])
+            let rejectionComment = ''
 
             // @ts-ignore
-            // const isRejectedByCSO: boolean = workflow.tasks[1].actions[0].outputData["isRejected"]
+            if (parsedOutputDataCSO['rejectionComment'] !== undefined && parsedOutputDataCSO['rejectionComment'] !== null && parsedOutputDataCSO['rejectionComment'] !== '') {
+                // @ts-ignore
+                rejectionComment = parsedOutputDataCSO['rejectionComment']
+            } else {
+
+                // @ts-ignore
+                rejectionComment = workflow.tasks[1].actions[0].statusMessage
+
+            }
 
             if (caseData.subStatus === WorkflowSubStatus.FailedCSOApproval) {
 
                 returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
                     <span style={styleUserName}>{submittedByCSO}</span>{" - "}
                     <span style={styleUserName}>{printStdDatetime(runDateCSO)}</span>
+                    <br/>&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
+                    <span style={styleUserName}>{rejectionComment}</span>
                 </div>
-                // returned = <span style={styleUserName}>{caseData["caseData"]["user"]["name"]}</span>
+
             } else {
                 returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.SUBMITTED_BY}
                     <span style={styleUserName}>{submittedByCSO}</span>{" - "}
