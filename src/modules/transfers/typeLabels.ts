@@ -11,7 +11,7 @@ import {KeyValueMap} from "../../utils/collections/map";
 import {printDateTime} from "../../utils/dateHelpers";
 import {ConstantLabelsAndValues} from "../../data/constants";
 import {RequestType, workflowTypes} from "../workflows/config";
-import ObjectHelpersFluent from "../../utils/objectHelpersFluent";
+import ObjectHelpersFluent, {fluentInstance} from "../../utils/objectHelpersFluent";
 import {isNullOrEmpty} from "../../utils/objectHelpers";
 import validate from "validate.js";
 import Numbers from "../../utils/numbers";
@@ -131,46 +131,56 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
 export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: IBankDetails, aCase: ICase) => {
     const labellingOne = {...dataOne}
     const labellingTwo = {...dataTwo}
-    console.log('eft:', labellingTwo)
-    let transferCode = ''
-    let transferCodesLabel = ''
-    // console.log(labellingTwo, labellingOne)
-
-    // for (const [k, v] of Object.entries(labellingTwo.beneficiaryBank)) {
-    //
-    //     if (k !== 'bankName' && v !== null && v !== undefined && v !== '') {
-    //         transferCode = v
-    //
-    //         switch (k) {
-    //             case 'sortCode':
-    //                 transferCodesLabel = ConstantLabelsAndValues.SORT_CODE
-    //                 break
-    //             case 'swiftCode':
-    //                 transferCodesLabel = ConstantLabelsAndValues.SWIFT_CODE
-    //                 break
-    //             case 'aba':
-    //                 transferCodesLabel = ConstantLabelsAndValues.ABA
-    //                 break
-    //             case 'fedwire':
-    //                 transferCodesLabel = ConstantLabelsAndValues.FED_WIRE
-    //                 break
-    //             case 'ifsc':
-    //                 transferCodesLabel = ConstantLabelsAndValues.IFSC
-    //                 break
-    //             case 'iban':
-    //                 transferCodesLabel = ConstantLabelsAndValues.IBAN
-    //                 break
-    //
-    //         }
-    //
-    //     }
-    // }
 
     let recipientPhysicalAddress = '';
 
     // @ts-ignore
     let bankName = ''
     let bankNameNotPresent = ''
+
+    interface ITransferCode {
+        code: string;
+        label: string;
+    }
+
+    const transferCodesAndLabels: any[] = []
+    const addCodeAndLabel = (label: string, value: string) => {
+        // transferCodesAndLabels.concat(...[{label, value}])
+        transferCodesAndLabels.push({label, value})
+    }
+    // if transfer code is not empty, display it
+    // add swift code
+
+    function allTransferCodes(): any[] {
+        fluentInstance().testTitle('getting transfer code')
+            .selector(aCase, '$.workflowType')
+            .isEqualTo(ConstantLabelsAndValues.CASE_VALIDATION_SWIFT)
+            .successCallBack(() => {
+
+                console.log('situation...')
+                if (!isNullOrEmpty(labellingTwo.beneficiaryBank.swiftCode))
+                    addCodeAndLabel(ConstantLabelsAndValues.SWIFT_CODE, labellingTwo.beneficiaryBank.swiftCode);
+                // add iban
+                if (!isNullOrEmpty(labellingTwo.beneficiaryBank.iban))
+                    addCodeAndLabel(ConstantLabelsAndValues.IBAN, labellingTwo.beneficiaryBank.iban);
+                // add aba
+                if (!isNullOrEmpty(labellingTwo.beneficiaryBank.aba))
+                    addCodeAndLabel(ConstantLabelsAndValues.ABA, labellingTwo.beneficiaryBank.aba);
+                // add ifsc
+                if (!isNullOrEmpty(labellingTwo.beneficiaryBank.ifsc))
+                    addCodeAndLabel(ConstantLabelsAndValues.IFSC, labellingTwo.beneficiaryBank.ifsc);
+                // add fed wire
+                if (!isNullOrEmpty(labellingTwo.beneficiaryBank.fedwire))
+                    addCodeAndLabel(ConstantLabelsAndValues.FED_WIRE, labellingTwo.beneficiaryBank.fedwire);
+                // add sort code
+                if (!isNullOrEmpty(labellingTwo.beneficiaryBank.sortCode))
+                    addCodeAndLabel(ConstantLabelsAndValues.IBAN, labellingTwo.beneficiaryBank.sortCode);
+
+            })
+        console.log('the code: ', transferCodesAndLabels)
+        return transferCodesAndLabels
+    }
+
 
     const labels = [
         {
@@ -184,7 +194,7 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
 
                 .successCallBack(() => {
 
-                    new ObjectHelpersFluent().testTitle('transfer type is not empty..for bank name display').selector(aCase, '$.workflowType')
+                    fluentInstance().testTitle('transfer type is not empty..for bank name display').selector(aCase, '$.workflowType')
                         .isPresent()
 
                         .successCallBack(() => {
@@ -192,8 +202,8 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
                             const eftOrRtgs1 = aCase.workflowType === RequestType.EFT || aCase.workflowType === RequestType.RTGS_1
 
                             // EFT or RTGS1 transfer type
-                            new ObjectHelpersFluent()
-                                .testTitle("transfer type equals EFT")
+                            fluentInstance()
+                                .testTitle("transfer type equals EFT or RTGS_1")
                                 .directValue(eftOrRtgs1).isEqualTo(true)
 
                                 .successCallBack(() => {
@@ -210,38 +220,13 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
             label: ConstantLabelsAndValues.ACCOUNT_NO,
             value: labellingOne.accountNumber
         },
-        // {
-        //     label: transferCodesLabel,
-        //     value: transferCode
-        // },
-        // {
-        //     label: ConstantLabelsAndValues.COUNTRY,
-        //     value: labellingOne.address.country
-        // },
-        // {
-        //     label: ConstantLabelsAndValues.COUNTRY_CODE,
-        //     value: labellingOne.address.countryCode
-        // },
-        // {
-        //     label: ConstantLabelsAndValues.TOWN,
-        //     value: labellingOne.address.town
-        // },
-        // {
-        //     label: 'Physical Address',
-        //     value: labellingOne.address.physicalAddress
-        // },
-        // {
-        //     label: ConstantLabelsAndValues.PLOT,
-        //     value: labellingOne.address.plot
-        // },
-        // {
-        //     label: ConstantLabelsAndValues.BUILDING,
-        //     value: labellingOne.address.building
-        // },
+
+        ...allTransferCodes(),
+
         {
             label: ConstantLabelsAndValues.PHYSICAL_ADDRESS,
 
-            value: new ObjectHelpersFluent().directValue(labellingOne.address).isPresent().failureCallBack(() => recipientPhysicalAddress = '')
+            value: fluentInstance().directValue(labellingOne.address).isPresent().failureCallBack(() => recipientPhysicalAddress = '')
 
                 .successCallBack(() => {
 
@@ -269,8 +254,36 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
                     }
 
                 }).failureCallBack(() => recipientPhysicalAddress = '').getSummary().testResult ? recipientPhysicalAddress : recipientPhysicalAddress
-        }
+        },
+        {
+            label: ConstantLabelsAndValues.COUNTRY,
+            value: labellingOne.address.country
+        },
+        {
+            label: ConstantLabelsAndValues.COUNTRY_CODE,
+            value: labellingOne.address.countryCode
+        },
+        {
+            label: ConstantLabelsAndValues.TOWN,
+            value: labellingOne.address.town
+        },
+        {
+            label: ConstantLabelsAndValues.PLOT,
+            value: labellingOne.address.plot
+        },
+        {
+            label: ConstantLabelsAndValues.BUILDING,
+            value: labellingOne.address.building
+        },
+
     ];
+
+    // if transfer type is foreign
+    // first add codes then add physical address
+    // labels.concat(transferCodesAndLabels)
+
+    // add physical address
+
 
     return keyValueLabels(labels);
 }
