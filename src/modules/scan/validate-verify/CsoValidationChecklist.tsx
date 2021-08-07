@@ -14,7 +14,7 @@ import {IManualDecision, WorkflowSubStatus} from "../../workflows/types";
 
 import {ConstantLabelsAndValues, hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
 
-import {post, put} from "../../../utils/ajax";
+import {post} from "../../../utils/ajax";
 import {getChecksToPopulate, getDropdownSelectsToPopulate} from "../populateLabelAndValue";
 import {IWorkflowState} from "../../../data/redux/workflows/reducer";
 import {Dispatch} from "redux";
@@ -27,14 +27,13 @@ import {CSORejectionRemarks, IRemarks} from "./rejection-remarks-values";
 import {actionISelectKeyValue, ISelectKeyValueState} from "../../../data/redux/selects/reducer";
 import RejectionForm from "./rejection-dialog";
 import ForexForm from "./forex-dialog";
-import {ICaseDefault, ICheckKeyValueDefault, IForex, ISelectKeyValueDefault} from "../../transfers/types";
+import {ICheckKeyValueDefault, IForex, ISelectKeyValueDefault} from "../../transfers/types";
 import {actionIForexValue, IForexValueState} from "../../../data/redux/forex/reducer";
-import ObjectHelpersFluent, {fluentInstance} from "../../../utils/objectHelpersFluent";
+import ObjectHelpersFluent, {fluentValidationInstance} from "../../../utils/objectHelpersFluent";
 import {addDynamicPropertyToObject} from "../../../utils/objectHelpers";
 import ConfirmationDialog from "../confirmation-dialog";
 import SuccessFailureDisplay from "./success-failure-display";
 import grey from "@material-ui/core/colors/grey";
-import {actionICaseState} from "../../../data/redux/transfers/reducer";
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -53,7 +52,6 @@ const useStyles = makeStyles(() =>
     })
 );
 
-
 interface IProps {
     theCheckList: IList<IPropsChecks>;
     caseId?: any
@@ -63,11 +61,6 @@ export interface IDataProps {
     checks: {};
     rejectionComment: string;
 }
-
-// export const checkListCSO = (): IList<IPropsChecks> => {
-//
-//     return theCheckList;
-// }
 
 const CsoValidationChecklist = ({theCheckList}: IProps) => {
 
@@ -96,21 +89,13 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
     }
 
     const [data, setData] = useState(initialData)
-    const [dataForexDetails, setDataForexDetails] = useState({})
+    const [dataForexDetails] = useState({})
 
     useEffect(() => {
-        // console.log(check.checks)
-        // setData({checks: getChecksToPopulate(check.checks), rejectionComment: rejectionComment})
-
-        // @ts-ignore
-        // setSubStatusFound(workflow.subStatus)
-
 
     }, [showConfirmationDialog, dispatch, check, workflow, rejectionComment, data, select, forexValue, isNewTransferRequestStarted])
 
     const handleCSOApproval = async () => {
-
-        // let data = getChecksToPopulate(check.checks);
 
         const dataCSOManual: any = {
             isRejected: false,
@@ -119,12 +104,11 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             timestamp: new Date()
         }
 
-
+        // provide check values as part of the object to be sent
         for (const v of ConstantLabelsAndValues.csoValidationCheckList()) {
             // @ts-ignore
             addDynamicPropertyToObject(dataCSOManual, v.name, getChecksToPopulate(check.checks)[v.name])
-            // @ts-ignore
-            // dataCSOManual[v.name] = getChecksToPopulate(check.checks)[v.name];
+
         }
 
         let caseId: string
@@ -135,14 +119,6 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             caseId = workflowResponseMessage.caseId
         }
 
-        // // @ts-ignore
-        // dataCSOManual["isRejected"] = false;
-        // // @ts-ignore
-        // dataCSOManual["submittedBy"] = user.name
-        // // @ts-ignore
-        // dataCSOManual["timestamp"] = new Date()
-        // // @ts-ignore
-        // dataCSOManual["forexDetails"] = forexValue
         const manualCSOApproval: IManualDecision = {
             caseId: caseId,
             taskName: "cso-approval", // todo ...consider making these constants
@@ -153,12 +129,12 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             override: false
         }
 
-        const rateExists = fluentInstance().testTitle("forex rate exists").selector(manualCSOApproval, "$.data.forexDetails.rate").isPresent().logDetailed().logNewLineSpace().getSummary().testResult
+        const rateExists = fluentValidationInstance().testTitle("forex rate exists").selector(manualCSOApproval, "$.data.forexDetails.rate").isPresent().logDetailed().logNewLineSpace().getSummary().testResult
 
-        const remittanceAmountExists =  fluentInstance().testTitle("forex remittance amount exists").selector(manualCSOApproval, "$.data.forexDetails.remittanceAmount").isPresent()
+        const remittanceAmountExists =  fluentValidationInstance().testTitle("forex remittance amount exists").selector(manualCSOApproval, "$.data.forexDetails.remittanceAmount").isPresent()
             .logDetailed().logNewLineSpace().getSummary().testResult
 
-        const forexTransferIsRequired = fluentInstance().testTitle("forex remittance amount exists").selector(manualCSOApproval, `$.data.${ConstantLabelsAndValues.csoValidationCheckList().get(1).name}`)
+        const forexTransferIsRequired = fluentValidationInstance().testTitle("forex remittance amount exists").selector(manualCSOApproval, `$.data.${ConstantLabelsAndValues.csoValidationCheckList().get(1).name}`)
             .isPresent().logDetailed().logNewLineSpace().getSummary().testResult
 
         const forexCheckAndValuesMatch = forexTransferIsRequired === remittanceAmountExists === rateExists
@@ -358,7 +334,7 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             return
         }
 
-        let caseId: string = ''
+        let caseId: string
         if (!workflowResponseMessage.caseId || workflowResponseMessage.caseId.includes("0000-0000")) {
             // @ts-ignore
             caseId = workflow.id

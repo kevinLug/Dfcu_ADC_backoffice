@@ -16,16 +16,12 @@ const VerificationsAlreadyDoneByCSO = ({workflow}: IProps) => {
     const [theWorkflow] = useState(workflow)
     const criteria = theWorkflow.tasks[1].actions[0].outputData
 
-    //todo...try to sieve by action name
     useEffect(() => {
-        console.log('testing: ', workflow.tasks[2].actions)
     }, [workflow, criteria])
 
     const checksReview = (): IList<IPropsChecks> => {
-        const criteriaObj = JSON.parse(criteria)
 
-        // console.log("criteria:", criteriaObj)
-        // console.log("criteria-sub-status:", workflow.subStatus)
+        const criteriaObj = JSON.parse(criteria)
 
         let theCheckList = ConstantLabelsAndValues.csoCheckList()
 
