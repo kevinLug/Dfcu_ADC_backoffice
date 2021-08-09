@@ -305,7 +305,7 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             returned = theCheckList.toArray().map((aCheck, index) => {
 
                 // @ts-ignore
-                return ConstantLabelsAndValues.disableForexDetailsCheck(workflow,aCheck, ConstantLabelsAndValues.csoValidationCheckList(), index) ?
+                return ConstantLabelsAndValues.disableForexDetailsCheck(workflow,aCheck, ConstantLabelsAndValues.csoValidationCheckList(), 1) ?
                     <Grid key={index} item sm={12}>
                         <CheckBoxTemplate value={aCheck.value} label={aCheck.label} name={aCheck.name} handleCheckChange={showForexForm} disable={true}/>
                     </Grid>
