@@ -95,7 +95,7 @@ const AllValidations = ({workflow}: IProps) => {
 
     function displayVerificationsByBM() {
 
-        if (workflow.subStatus === WorkflowSubStatus.FailedCSOApproval) {
+        if (workflow.subStatus === WorkflowSubStatus.FailedCSOApproval && hasAnyRole(user, [systemRoles.BOM,systemRoles.BM])) {
             return <Grid className={classes.expansion}>
 
                 {/*Validations already done by CSO*/}
