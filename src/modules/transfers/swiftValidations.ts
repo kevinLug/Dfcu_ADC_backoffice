@@ -1,5 +1,5 @@
 import {ICase} from "./types";
-import ObjectHelpersFluent, {fluentInstance} from "../../utils/objectHelpersFluent";
+import ObjectHelpersFluent, {fluentValidationInstance} from "../../utils/objectHelpersFluent";
 import SuccessCriteria from "../../utils/successCriteria";
 import {List} from "../../utils/collections/list";
 import {RequestType} from "../workflows/config";
@@ -13,14 +13,14 @@ const validateSwift = async (data: ICase): Promise<boolean> => {
 
         const tests = new List<ObjectHelpersFluent>()
 
-        const dataExists = fluentInstance()
+        const dataExists = fluentValidationInstance()
             .testTitle("Entire data object presence")
             .selector(data, "$")
             .isPresent()
             .logDetailed();
         tests.add(dataExists);
 
-        const workflowTypePresent = fluentInstance()
+        const workflowTypePresent = fluentValidationInstance()
             .testTitle("workflowType presence")
             .selector(data, "$.workflowType")
             .isPresent()
@@ -36,7 +36,7 @@ const validateSwift = async (data: ICase): Promise<boolean> => {
         //     .logDetailed();
         // tests.add(isSwift);
 
-        const isBranchPresent = fluentInstance()
+        const isBranchPresent = fluentValidationInstance()
             .testTitle("is the branch present?")
             .selector(data, "$.caseData.transferDetails.branchCode")
             .isPresent()
@@ -44,7 +44,7 @@ const validateSwift = async (data: ICase): Promise<boolean> => {
             .logDetailed();
         tests.add(isBranchPresent)
 
-        const isCurrencyPresent = fluentInstance()
+        const isCurrencyPresent = fluentValidationInstance()
             .testTitle("is the currency present")
             .selector(data, "$.caseData.transferDetails.currencyCode")
             .isPresent()
@@ -52,7 +52,7 @@ const validateSwift = async (data: ICase): Promise<boolean> => {
             .logDetailed();
         tests.add(isCurrencyPresent)
 
-        const isRatePresent = fluentInstance()
+        const isRatePresent = fluentValidationInstance()
             .testTitle("is rate present?")
             .selector(data, "$.caseData.transferDetails.exchangeRate")
             .isGreaterThanOrEqualTo(0)
@@ -61,7 +61,7 @@ const validateSwift = async (data: ICase): Promise<boolean> => {
             .logDetailed();
         tests.add(isRatePresent)
 
-        const isAmountPresent = fluentInstance()
+        const isAmountPresent = fluentValidationInstance()
             .testTitle("Is amount present ( > 0 )")
             .selector(data, "$.caseData.transferDetails.transactionAmount")
             .isGreaterThan(0)
@@ -69,14 +69,14 @@ const validateSwift = async (data: ICase): Promise<boolean> => {
             .logDetailed();
         tests.add(isAmountPresent)
 
-        const isUgxAmountPresent = fluentInstance()
+        const isUgxAmountPresent = fluentValidationInstance()
             .testTitle("is UGX amount present ( > 0 )")
             .selector(data, "$.caseData.transferDetails.transactionAmount")
             .isGreaterThan(0)
             .logDetailed();
         tests.add(isUgxAmountPresent)
 
-        const isBeneficiaryNamePresent = fluentInstance()
+        const isBeneficiaryNamePresent = fluentValidationInstance()
             .testTitle("is recipient name present?")
             .selector(data, "$.caseData.beneficiaryDetails.fullName")
             .isPresent()
@@ -85,7 +85,7 @@ const validateSwift = async (data: ICase): Promise<boolean> => {
         tests.add(isBeneficiaryNamePresent);
 
         // can be ignored
-        const isRecipientCountryPresent = fluentInstance()
+        const isRecipientCountryPresent = fluentValidationInstance()
             .testTitle("is recipient country code present?")
             .selector(data, "$.caseData.beneficiaryDetails.address.countryCode")
             .isPresent()
@@ -94,7 +94,7 @@ const validateSwift = async (data: ICase): Promise<boolean> => {
             .logDetailed();
         tests.add(isRecipientCountryPresent)
 
-        const isRecipientPhysicalAddressPresent = fluentInstance()
+        const isRecipientPhysicalAddressPresent = fluentValidationInstance()
             .testTitle("is recipient's physical address present?")
             .selector(data, "$.caseData.beneficiaryDetails.address.physicalAddress")
             .isPresent()
@@ -102,7 +102,7 @@ const validateSwift = async (data: ICase): Promise<boolean> => {
             .logDetailed();
         tests.add(isRecipientPhysicalAddressPresent)
 
-        const isSenderNamePresent = fluentInstance()
+        const isSenderNamePresent = fluentValidationInstance()
             .testTitle("is sender's name present?")
             .selector(data, "$.caseData.applicantDetails.fullName")
             .isPresent()

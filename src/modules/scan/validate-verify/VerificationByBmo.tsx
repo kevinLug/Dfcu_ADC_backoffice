@@ -11,20 +11,25 @@ import CheckBoxTemplate, {addCheck, IPropsChecks} from "./Check";
 import {getChecksToPopulate, getDropdownSelectsToPopulate} from "../populateLabelAndValue";
 import {ActionStatus, IManualDecision, IWorkflow, WorkflowSubStatus} from "../../workflows/types";
 import {post} from "../../../utils/ajax";
-import {ConstantLabelsAndValues, hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
+import {ConstantLabelsAndValues, hasAnyRole, localRoutes, remoteRoutes, systemRoles} from "../../../data/constants";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import {createStyles, makeStyles, TextareaAutosize} from "@material-ui/core";
 import {Theme} from "@material-ui/core/styles";
 import EditDialog from "../../../components/EditDialog";
 import {Form, Formik} from "formik";
-import {IDataProps} from "./cso-validation-checklist";
+import {IDataProps} from "./CsoValidationChecklist";
 import Toast from "../../../utils/Toast";
-import RejectionRemarks from "./rejection-remarks";
-import {BMORejectionRemarks, CSORejectionRemarks, IRemarks} from "./rejection-remarks-values";
+import RejectionRemarks from "./RejectionRemarks";
+import {BMORejectionRemarks, CSORejectionRemarks, IRemarks} from "./RejectionRemarksValues";
 import {ISelectKeyValueState} from "../../../data/redux/selects/reducer";
 import {ICheckKeyValueDefault, IForex} from "../../transfers/types";
 import {actionIForexValue} from "../../../data/redux/forex/reducer";
+import {fluentValidationInstance} from "../../../utils/objectHelpersFluent";
+import {addDynamicPropertyToObject, isNullOrEmpty, isNullOrUndefined} from "../../../utils/objectHelpers";
+import grey from "@material-ui/core/colors/grey";
+import SuccessFailureDisplay from "./SuccessFailureDisplay";
+import ConfirmationDialog from "../confirmation-dialog";
 
 interface IPropsBMO {
     workflow: IWorkflow
@@ -75,38 +80,7 @@ const useStylesRejection = makeStyles(() =>
     })
 );
 
-// interface IRemarks {
-//     reason: string;
-//     requestStatus: string;
-// }
-
-// function addRemarkToList(list: IList<IRemarks>, reason: string, requestStatus: string) {
-//     const aRemark: IRemarks = {
-//         reason,
-//         requestStatus
-//     }
-//     list.add(aRemark);
-// }
-
-// function bMORemarks() {
-//
-//     const remarks: IList<IRemarks> = new List();
-//
-//     addRemarkToList(remarks, "Instruction is not signed as per mandate", "Rejected");
-//
-//     addRemarkToList(remarks, "Sender's account number is invalid", "Rejected");
-//
-//     addRemarkToList(remarks, "Sender has insufficient funds", "Rejected");
-//
-//     addRemarkToList(remarks, "Recipient's details are incomplete", "Rejected");
-//
-//     addRemarkToList(remarks, "Forex details are incorrect", "Rejected");
-//
-//     return remarks
-//
-// }
-
-const VerificationByBMO = ({workflow}: IPropsBMO) => {
+const VerificationByBmo = ({workflow}: IPropsBMO) => {
 
     const classesRejection = useStylesRejection()
     const [isRejectBtnDisabled, setRejectBtnDisabled] = useState(false)
@@ -123,7 +97,7 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
     const [showCommentBox, setShowCommentBox] = useState(false)
     const [remark, setRemark] = useState('')
     const [spacing, setSpacing] = React.useState<GridSpacing>(2);
-
+    const [showConfirmationDialog, setShowConfirmationDialog] = useState(false)
     const {check}: ICheckKeyValueState = useSelector((state: any) => state.checks)
     // const {workflow}: IWorkflowState = useSelector((state: any) => state.workflows)
 
@@ -154,11 +128,10 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
 
             for (let aCheck of theCheckList) {
 
-                console.log('a-check:', aCheck)
                 // const propertyName: string = aCheck.name.split("_")[0];
                 const propertyName: string = aCheck.name;
                 aCheck.value = criteriaObj[propertyName]
-                // console.log("aCheck:", aCheck)
+
             }
 
         }
@@ -175,17 +148,15 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
         setShowCommentBox(true)
     }
 
-    const handleBMApproval = async () => {
+    const handleBomApproval = async () => {
 
-        // let data = getChecksToPopulate(check.checks);
-
-        for(const v of ConstantLabelsAndValues.bomChecksReviewConfirmation()){
+        for (const v of ConstantLabelsAndValues.bomChecksReviewConfirmation()) {
             // @ts-ignore
             data[v.name] = getChecksToPopulate(check.checks)[v.name];
         }
 
         let caseId: string
-        if (!workflowResponseMessage.caseId || workflowResponseMessage.caseId.includes("0000-0000")) {
+        if (isNullOrEmpty(workflowResponseMessage.caseId) || workflowResponseMessage.caseId.includes("0000-0000")) {
             // @ts-ignore
             caseId = workflow.id
         } else {
@@ -193,11 +164,18 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
         }
 
         // @ts-ignore
-        data["isRejected"] = false;
+        // data["isRejected"] = false;
+        addDynamicPropertyToObject(data, 'isRejected', false)
+
         // @ts-ignore
-        data["approvedBy"] = user.name
+        // data["approvedBy"] = user.name
+        addDynamicPropertyToObject(data, 'approvedBy', user.name)
+
         // @ts-ignore
-        data["timestamp"] = new Date()
+        // data["timestamp"] = new Date()
+        addDynamicPropertyToObject(data, 'timestamp', new Date())
+
+        delete data.checks
 
         const manualBMApproval: IManualDecision = {
             caseId: caseId,
@@ -215,11 +193,75 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
                 console.log(resp) // todo ... consider providing a message for both success and failure
             }, undefined,
             () => {
-                window.location.href = window.location.origin
+                window.location.href = `${localRoutes.applications}/${caseId}`
                 dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
             }
         )
     }
+
+    const isEven = (num: number) => num % 2 !== 0
+
+    function showResultBeingConfirmedByBom() {
+
+        return ConstantLabelsAndValues.bomChecksReviewConfirmation().toArray().map((v, index) => {
+            // @ts-ignore
+            const value = getChecksToPopulate(check.checks)[v.name]
+
+            return <Grid key={index} style={{backgroundColor: isEven(index) ? 'white' : grey[50]}}>
+                {
+                    workflow.type !== ConstantLabelsAndValues.CASE_VALIDATION_SWIFT && v.label === ConstantLabelsAndValues.bomChecksReviewConfirmation().get(1).label && !v.value ?
+
+                        <SuccessFailureDisplay key={v.name} value={value} label={v.label} name={v.name} showSuperScript={false} showWarning={true}/>
+                        :
+                        <SuccessFailureDisplay value={value} label={v.label} name={v.name} key={v.name}/>
+
+                }
+
+            </Grid>
+        })
+
+    }
+
+    function showConfirmationDialogApprovalBom() {
+
+        if (isNullOrUndefined(workflow)) {
+            Toast.warn('workflow is undefined')
+            setTimeout(() => {
+                Toast.warn('Reload page or try again')
+            }, 2000)
+            return
+        }
+
+        let caseId: string
+        if (isNullOrEmpty(workflowResponseMessage.caseId) || workflowResponseMessage.caseId.includes("0000-0000")) {
+            // @ts-ignore
+            caseId = workflow.id
+        } else {
+            caseId = workflowResponseMessage.caseId
+        }
+
+        // @ts-ignore
+        if (isNullOrEmpty(caseId) || isNullOrUndefined(caseId)) {
+            Toast.warn('The case is not being picked or something is wrong ')
+            setTimeout(() => {
+                Toast.warn('Reload page or try again')
+            }, 2000)
+
+        } else
+            setShowConfirmationDialog(true)
+
+
+    }
+
+    function cancelConfirmationDialogApproval() {
+        setShowConfirmationDialog(false)
+    }
+
+    function handleConfirmBOMVerification() {
+        return <ConfirmationDialog title="Confirm to approve or cancel" handleDialogCancel={cancelConfirmationDialogApproval} handleConfirmation={handleBomApproval}
+                                   children={showResultBeingConfirmedByBom()}/>
+    }
+
 
     const handleBMORejection = async () => {
 
@@ -227,12 +269,12 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
 
         let dropdownSelects = getDropdownSelectsToPopulate(select.selects)
 
-        console.log("mans:", data)
+
         const obj = {
             checks: data,
             rejectionComment: rejectionComment
         }
-        console.log("mans-2:", obj)
+
         let caseId: string
         if (!workflowResponseMessage.caseId || workflowResponseMessage.caseId.includes("0000-0000")) {
             // @ts-ignore
@@ -249,8 +291,7 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
         data["isRejected"] = true;
         // @ts-ignore
         data["approvedBy"] = user.name
-        // @ts-ignore
-        // data["timestamp"] = new Date()
+
         const manualBMRejection: IManualDecision = {
             caseId: caseId,
             taskName: "bm-approval", // todo ...consider making these constants
@@ -261,9 +302,7 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
             override: false
         }
 
-        console.log("manual-time:", manualBMRejection)
-
-        if (manualBMRejection.data.rejectionComment.trim().length === 0) {
+        if (isNullOrEmpty(manualBMRejection.data.rejectionComment) || isNullOrUndefined(manualBMRejection.data.rejectionComment)) {
             Toast.warn("Please provide a rejection comment...");
             setTimeout(() => {
                 Toast.warn("Not submitted...");
@@ -276,7 +315,7 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
                 console.log(resp) // todo ... consider providing a message for both success and failure
             }, undefined,
             () => {
-                window.location.href = window.location.origin
+                window.location.href = `${localRoutes.applications}/${caseId}`
                 dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
             }
         )
@@ -286,26 +325,20 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
 
     return <Grid>
 
-
         {
             // eslint-disable-next-line array-callback-return
             checksReviewConfirmation().toArray().map((val, index) => {
+                // @ts-ignore
+                return ConstantLabelsAndValues.disableForexDetailsCheck(workflow, val, checksReviewConfirmation(), 1) ?
+                    <Grid key={index} item sm={12}>
+                        <CheckBoxTemplate value={val.value} label={val.label} name={val.name} disable={true}/>
 
-                // if ((workflow.tasks[2].actions[0].status !== ActionStatus.Pending) && val.name.startsWith(v.name)) {
-                //     return <SuccessFailureDisplay value={val.value} label={val.label} name={val.name}
-                //                                   key={v.name}/>
-                // }
-                //
-                // // todo...user will have to be BM
-                // if (val.name.startsWith(v.name) && csoOrBmRolesForDev(user))
-                //     return <CheckBoxTemplate key={val.name} value={val.value} label="confirm"
-                //                              name={val.name}/>
+                    </Grid>
+                    :
+                    <Grid key={index} item sm={12}>
+                        <CheckBoxTemplate value={val.value} label={val.label} name={val.name} />
 
-                return <Grid key={index} item sm={12}>
-                    <CheckBoxTemplate value={val.value} label={val.label} name={val.name}/>
-                </Grid>
-
-
+                    </Grid>
             })
         }
 
@@ -316,19 +349,20 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
                 <Grid item sm={12} className={classes.submissionGrid}>
                     <Box className={classes.submissionBox}>
 
-                        <Button type="submit" variant="contained" color="primary"
-                            // disabled={isRejectBtnDisabled}
-                                onClick={handleBMApproval}
-                        >Approve</Button>
+                        <Button type="submit" variant="contained" color="primary" onClick={showConfirmationDialogApprovalBom}>Approve</Button>
 
-                        <Button variant="contained" className={classes.rejectButton}
-                                onClick={showCommentDialog}>Reject</Button>
+                        <Button variant="contained" className={classes.rejectButton} onClick={showCommentDialog}>Reject</Button>
 
                     </Box>
                 </Grid>
                 :
                 ""
         }
+
+        {
+            showConfirmationDialog ? handleConfirmBOMVerification() : ""
+        }
+
 
         {
             showCommentBox ? <EditDialog open={true} onClose={() => {
@@ -340,12 +374,12 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
                             enableReinitialize
 
                             initialValues={data}
-                            onSubmit={async values => {
+                            onSubmit={async function (values) {
                                 await new Promise(resolve => {
                                     setTimeout(resolve, 500)
-                                    // console.log("sub value: ", values)
+
                                     handleBMORejection()
-                                    // alert(`ale-2${JSON.stringify(data, null, 2)}:`);
+
                                 });
 
                             }}
@@ -375,4 +409,4 @@ const VerificationByBMO = ({workflow}: IPropsBMO) => {
     </Grid>
 }
 
-export default VerificationByBMO
+export default VerificationByBmo

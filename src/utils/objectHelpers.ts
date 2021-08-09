@@ -1,7 +1,6 @@
 // Warning https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name#function_names_in_classes
 // the warning is for the || portion
-import mappingRules from "../modules/scan/mappings/mappingRules.json";
-import validate from "validate.js";
+
 
 export const isObject = (objValue: any): boolean => (objValue && typeof objValue === 'object' && objValue.constructor === Object);
 export const isObjectInstance = (objValue: any, className?: string): boolean => objValue.constructor.name === className
@@ -10,7 +9,8 @@ export const checkNested = (object: any, ...rest: any) => {
 
 }
 
-export const isNullOrEmpty = (str: string): boolean => !validate.isString(str) || str.trim() === undefined || str.trim() === null || str.trim() === "";
+export const isNullOrEmpty = (str: string): boolean => str === undefined || str === null || str.trim() === "";
+export const isNullOrUndefined = (value:any): boolean => value === null || value === undefined;
 
 export enum CriteriaTest {
     //Value should be present

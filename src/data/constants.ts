@@ -7,7 +7,7 @@ import {branches} from "../modules/settings/customClaims/region-data";
 import {IKeyValueMap, KeyValueMap} from "../utils/collections/map";
 import bankCodes from './bankCodes.json'
 import countryCodes from './countryCodes.json'
-import {IManualDecision} from "../modules/workflows/types";
+import {IManualDecision, IWorkflow} from "../modules/workflows/types";
 
 export const AUTH_TOKEN_KEY = '__demo__dfcu__token'
 export const AUTH_USER_KEY = '__demo__dfcu__user'
@@ -314,7 +314,7 @@ export class ConstantLabelsAndValues {
         return map;
     }
 
-    public static csoSubmissionDateTimeData(caseId: string){
+    public static csoSubmissionDateTimeData(caseId: string) {
         const currentTimestamp = new Date()
 
         const csoSubmissionDateTimeData = {
@@ -333,6 +333,12 @@ export class ConstantLabelsAndValues {
 
         return currentTimestampManual
     }
+
+    public static disableForexDetailsCheck(workflow: IWorkflow, aCheck: IPropsChecks, checks: IList<IPropsChecks>, index: number) {
+
+        return workflow.type !== ConstantLabelsAndValues.CASE_VALIDATION_SWIFT && aCheck.label === checks.get(index).label;
+    }
+
 
 }
 

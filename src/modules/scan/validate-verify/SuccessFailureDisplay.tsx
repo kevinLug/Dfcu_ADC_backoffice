@@ -2,9 +2,17 @@
 import {IPropsChecks} from "./Check";
 import React, {useEffect, useState} from "react";
 import Typography from "@material-ui/core/Typography";
-import {ErrorIcon, SuccessIcon} from "../../../components/xicons";
+import {ErrorIcon, SuccessIcon, WarningIcon} from "../../../components/xicons";
 
-const SuccessFailureDisplay = (v: IPropsChecks, showSuperScript = false) => {
+interface IProps {
+    value: boolean;
+    label: string;
+    name: string;
+    showSuperScript?: boolean;
+    showWarning?:boolean
+}
+
+const SuccessFailureDisplay = ({value, label, name, showSuperScript, showWarning}: IProps) => {
 
     const [superScript, setSuperScript] = useState('')
 
@@ -13,7 +21,7 @@ const SuccessFailureDisplay = (v: IPropsChecks, showSuperScript = false) => {
     })
 
     function setSuperScriptValue() {
-        const name = v.name.toLowerCase()
+        const na = name.toLowerCase()
 
         if (!showSuperScript) {
             setSuperScript("")
@@ -29,7 +37,23 @@ const SuccessFailureDisplay = (v: IPropsChecks, showSuperScript = false) => {
     }
 
 
-    return v.value ?
+    return showWarning ?
+
+
+        <Typography
+            variant='subtitle1'
+            style={{marginTop: 1}}>
+            &nbsp;
+            <WarningIcon
+                fontSize='inherit'
+            />
+            {label}
+            <sup><i><b>{superScript}</b></i></sup>
+        </Typography>
+
+        :
+
+        value ?
         <Typography
             variant='subtitle1'
             style={{marginTop: 1}}>
@@ -37,7 +61,7 @@ const SuccessFailureDisplay = (v: IPropsChecks, showSuperScript = false) => {
             <SuccessIcon
                 fontSize='inherit'
             />
-            {v.label}
+            {label}
             <sup><i><b>{superScript}</b></i></sup>
         </Typography>
 
@@ -49,7 +73,7 @@ const SuccessFailureDisplay = (v: IPropsChecks, showSuperScript = false) => {
             <ErrorIcon
                 fontSize='inherit'
             />
-            {v.label}
+            {label}
             <sup><i><b>{superScript}</b></i></sup>
         </Typography>
 }

@@ -22,7 +22,7 @@ import Numbers from "../../../utils/numbers";
 
 
 import NumberFormat from 'react-number-format';
-import ForexDetailsFilePreview, {DialogTitleProps} from "./forex-details-file-preview";
+import ForexDetailsFilePreview, {DialogTitleProps} from "./ForexDetailsFilePreview";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";

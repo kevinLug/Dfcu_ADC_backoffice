@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect} from 'react'
 import Workflows from "../workflows/Workflows";
 import Grid from "@material-ui/core/Grid";
 
@@ -9,21 +9,19 @@ import BeneficiaryDetails from "./validate-verify/BeneficiaryDetails";
 import TransferDetails from "./validate-verify/TransferDetails";
 import DescriptionAlerts from "./validate-verify/validation-check-list-place-holder";
 import Typography from "@material-ui/core/Typography";
-import CsoValidationChecklist from "./validate-verify/cso-validation-checklist";
-import {ConstantLabelsAndValues} from "../../data/constants";
+
 import ScanQrCode from "./ScanQrCode";
 import {ICaseState} from "../../data/redux/transfers/reducer";
 import {useSelector} from "react-redux";
-import {fluentInstance} from "../../utils/objectHelpersFluent";
-import PositionedSnackbar from "./PositionedSnackbar";
 
 export const useStylesInitiateTransfer = makeStyles((theme: Theme) =>
     createStyles({
+
         root: {
             flexGrow: 1,
         },
         expansion: {
-            padding: 5
+            padding: 5,
         },
         dragAndDropArea: {
             border: '3px dashed gray',
@@ -112,32 +110,18 @@ const InitiateTransfer = () => {
     const classes = useStylesInitiateTransfer();
 
     const {aCase}: ICaseState = useSelector((state: any) => state.transfers)
-    const [openSnackBar, setOpenSnackBar] = useState(false)
-    const [snackBarMessage, setSnackBarMessage] = useState<any>()
-    const [snackBarColor, setSnackBarColor] = useState<any>()
 
     useEffect(() => {
 
-    }, [aCase, snackBarMessage, openSnackBar, snackBarColor])
-
-
-    function showSnackBarMessage() {
-        return openSnackBar ? <PositionedSnackbar message={snackBarMessage} shouldOpen={openSnackBar} severity={snackBarColor}/> : ""
-    }
+    }, [aCase])
 
     return <Workflows>
-
-
-        {
-            showSnackBarMessage()
-        }
 
         <Grid item sm={6}>
             <Typography variant='h4'>Validate money transfer request</Typography>
         </Grid>
 
         <Grid container item xs={12} className={classes.root}>
-
 
             <Grid item sm={4}>
 

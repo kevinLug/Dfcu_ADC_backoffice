@@ -10,10 +10,10 @@ import {
 import {KeyValueMap} from "../../utils/collections/map";
 import {printDateTime} from "../../utils/dateHelpers";
 import {ConstantLabelsAndValues} from "../../data/constants";
-import {RequestType, workflowTypes} from "../workflows/config";
-import ObjectHelpersFluent, {fluentInstance} from "../../utils/objectHelpersFluent";
+import {RequestType} from "../workflows/config";
+import ObjectHelpersFluent, {fluentValidationInstance} from "../../utils/objectHelpersFluent";
 import {isNullOrEmpty} from "../../utils/objectHelpers";
-import validate from "validate.js";
+
 import Numbers from "../../utils/numbers";
 
 interface ILabelValue {
@@ -30,37 +30,8 @@ const keyValueLabels = (labelsAndValues: ILabelValue[]) => {
 export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: ICase, forexDetails: IForex) => {
     const labelling = transferDetails
 
-    // ConstantLabelsAndValues.mapOfDFCUBranchCodeToBranchLabel().get(labelling.branchCode)
-    //
-    // console.log('flag:', new ObjectHelpersFluent().directValue(labelling.branchCode).isPresent().getFlag())
-    // console.log('flag:', new ObjectHelpersFluent().directValue(labelling.branchCode).isPresent().getSummary().testResult)
-    // new ObjectHelpersFluent().directValue(labelling.branchCode).isPresent()
-    //     .logDetailed()
-    //     .successCallBack(() => {
-    //
-    //         new ObjectHelpersFluent().directValue(labelling.branchCode).isPresent()
-    //
-    //             .successCallBack(() => {
-    //
-    //                 // branchCode = ConstantLabelsAndValues.mapOfDFCUBranchCodeToBranchLabel().get(labelling.branchCode)
-    //
-    //             })
-    //
-    //
-    //     })
-    //
-    // new ObjectHelpersFluent().directValue(printDateTime(aCase.applicationDate)).isEqualTo(printDateTime(new Date())).logDetailed()
-    //     .successCallBack(() => date = '').failureCallBack(() => date = aCase.applicationDate).getSummary().testResult ? date : printDateTime(date)
-
-    // new ObjectHelpersFluent().directValue(labelling.remittanceAmount).isPresent()
-    //     .successCallBack(() => remittanceAmount = labelling.remittanceAmount)
-    //     .failureCallBack(() => remittanceAmount = labelling.transactionAmount.toString())
-    //     .getSummary().testResult ? remittanceAmount : remittanceAmount
-
-
-    let date: any = ''
     let branchCode: string = ''
-    let remittanceAmount = ''
+
     const labels: ILabelValue[] = [
         {
             label: ConstantLabelsAndValues.DATE,
@@ -122,10 +93,7 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
 
     ]
 
-    // console.log("labels:", labels)
-    const val = keyValueLabels(labels);
-    // console.log("labels-after:", labels)
-    return val
+    return keyValueLabels(labels);
 }
 
 export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: IBankDetails, aCase: ICase) => {
@@ -138,21 +106,13 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
     let bankName = ''
     let bankNameNotPresent = ''
 
-    interface ITransferCode {
-        code: string;
-        label: string;
-    }
-
     const transferCodesAndLabels: any[] = []
     const addCodeAndLabel = (label: string, value: string) => {
-        // transferCodesAndLabels.concat(...[{label, value}])
         transferCodesAndLabels.push({label, value})
     }
-    // if transfer code is not empty, display it
-    // add swift code
 
     function allTransferCodes(): any[] {
-        fluentInstance().testTitle('getting transfer code')
+        fluentValidationInstance().testTitle('getting transfer code')
             .selector(aCase, '$.workflowType')
             .isEqualTo(ConstantLabelsAndValues.CASE_VALIDATION_SWIFT)
             .successCallBack(() => {
@@ -194,7 +154,7 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
 
                 .successCallBack(() => {
 
-                    fluentInstance().testTitle('transfer type is not empty..for bank name display').selector(aCase, '$.workflowType')
+                    fluentValidationInstance().testTitle('transfer type is not empty..for bank name display').selector(aCase, '$.workflowType')
                         .isPresent()
 
                         .successCallBack(() => {
@@ -202,7 +162,7 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
                             const eftOrRtgs1 = aCase.workflowType === RequestType.EFT || aCase.workflowType === RequestType.RTGS_1
 
                             // EFT or RTGS1 transfer type
-                            fluentInstance()
+                            fluentValidationInstance()
                                 .testTitle("transfer type equals EFT or RTGS_1")
                                 .directValue(eftOrRtgs1).isEqualTo(true)
 
@@ -226,7 +186,7 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
         {
             label: ConstantLabelsAndValues.PHYSICAL_ADDRESS,
 
-            value: fluentInstance().directValue(labellingOne.address).isPresent().failureCallBack(() => recipientPhysicalAddress = '')
+            value: fluentValidationInstance().directValue(labellingOne.address).isPresent().failureCallBack(() => recipientPhysicalAddress = '')
 
                 .successCallBack(() => {
 

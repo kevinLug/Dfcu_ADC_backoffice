@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import Grid from "@material-ui/core/Grid";
 import PSelectInput from "../../../components/plain-inputs/PSelectInput";
 import {toOptions} from "../../../components/inputs/inputHelpers";
-import {IRemarks} from "./rejection-remarks-values";
+import {IRemarks} from "./RejectionRemarksValues";
 
 import {Dispatch} from "redux";
 import {useDispatch} from "react-redux";

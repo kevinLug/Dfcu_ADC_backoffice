@@ -480,7 +480,7 @@ class ObjectHelpersFluent {
 
 }
 
-export const fluentInstance = () => new ObjectHelpersFluent()
+export const fluentValidationInstance = () => new ObjectHelpersFluent()
 
 export default ObjectHelpersFluent
 

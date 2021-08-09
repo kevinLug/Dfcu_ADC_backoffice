@@ -17,7 +17,7 @@ import {fetchWorkflowAsync, IWorkflowState, startWorkflowFetch} from "../../../d
 
 import {renderStatus, renderSubStatus} from "../widgets";
 
-import BomValidationChecklist from "../../scan/validate-verify/bom-validation-checklist";
+import AllValidations from "../../scan/validate-verify/AllValidations";
 import {IState} from "../../../data/types";
 import {printStdDatetime} from "../../../utils/dateHelpers";
 import {ConstantLabelsAndValues} from "../../../data/constants";
@@ -96,7 +96,7 @@ const Details = (props: IProps) => {
         if (outputDataCSO !== null && outputDataCSO !== undefined) {
 
             const parsedOutputDataCSO = JSON.parse(outputDataCSO)
-            console.log('parsed:',parsedOutputDataCSO)
+            console.log('parsed:', parsedOutputDataCSO)
             const submittedByCSO = parsedOutputDataCSO["submittedBy"]
             const runDateCSO = new Date(parsedOutputDataCSO["runDate"])
 
@@ -139,42 +139,57 @@ const Details = (props: IProps) => {
 
     function submittedOrRejectedByBM() {
 
-
-        let returned = {}
+        let returned: {}
 
         // @ts-ignore
         const outputDataBM = workflow.tasks[2].actions[0].outputData
-
+        // @ts-ignore
+        const parsedOutputDataBM = JSON.parse(workflow.tasks[2].actions[0].outputData)
+        console.log('parsed output BM:', parsedOutputDataBM)
         if (outputDataBM !== null && outputDataBM !== undefined) {
 
-
-            const runDateCSO = new Date(JSON.parse(outputDataBM)["runDate"])
-
+            // const runDateCSO = new Date(JSON.parse(outputDataBM)["runDate"])
 
             // if (true) {
 
             const approvedByBM = JSON.parse(outputDataBM)["approvedBy"]
             const runDateBM = new Date(JSON.parse(outputDataBM)["runDate"])
 
-            console.log('runDateCSO: ', runDateCSO)
-            // @ts-ignore
-            console.log("the tasks: ", workflow["tasks"])
+            let rejectionComment = ''
 
-            // @ts-ignore
-            // const isRejectedByCSO: boolean = workflow.tasks[2].actions[0].outputData["isRejected"]
+            if (parsedOutputDataBM['rejectionComment'] !== undefined && parsedOutputDataBM['rejectionComment'] !== null && parsedOutputDataBM['rejectionComment'] !== '') {
+                // @ts-ignore
+                rejectionComment = parsedOutputDataBM['rejectionComment']
+            } else {
+                // @ts-ignore
+                rejectionComment = workflow.tasks[2].actions[0].statusMessage
+            }
 
             if (caseData.subStatus === WorkflowSubStatus.FailedBMApproval) {
 
                 returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
                     <span style={styleUserName}>{approvedByBM}</span>{" - "}
                     <span style={styleUserName}>{printStdDatetime(runDateBM)}</span>
+                    <br/>&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
+                    <span style={styleUserName}>{rejectionComment}</span>
                 </div>
+
+                // returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
+                //     <span style={styleUserName}>{approvedByBM}</span>{" - "}
+                //     <span style={styleUserName}>{printStdDatetime(runDateBM)}</span>
+                // </div>
                 // returned = <span style={styleUserName}>{caseData["caseData"]["user"]["name"]}</span>
             } else {
+
                 returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.APPROVED_BY}
                     <span style={styleUserName}>{approvedByBM}</span>{" - "}
                     <span style={styleUserName}>{printStdDatetime(runDateBM)}</span>
                 </div>
+
+                // returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.APPROVED_BY}
+                //     <span style={styleUserName}>{approvedByBM}</span>{" - "}
+                //     <span style={styleUserName}>{printStdDatetime(runDateBM)}</span>
+                // </div>
 
             }
             // }
@@ -182,7 +197,6 @@ const Details = (props: IProps) => {
         } else {
             returned = ""
         }
-
 
         return returned;
     }
@@ -305,7 +319,7 @@ const Details = (props: IProps) => {
                         }
 
                     </Grid>
-                    <BomValidationChecklist workflow={caseData}/>
+                    <AllValidations workflow={caseData}/>
                 </Grid>
             </div>
         </Navigation>

@@ -2,10 +2,10 @@ import React from 'react'
 import EditDialog from "../../../components/EditDialog";
 import Grid from "@material-ui/core/Grid";
 import {Form, Formik} from "formik";
-import RejectionRemarks from "./rejection-remarks";
+import RejectionRemarks from "./RejectionRemarks";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
-import {IRemarks} from "./rejection-remarks-values";
+import {IRemarks} from "./RejectionRemarksValues";
 import {createStyles, makeStyles} from "@material-ui/core";
 
 

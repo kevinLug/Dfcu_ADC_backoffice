@@ -51,7 +51,7 @@ import {randomInt} from "../../utils/numberHelpers";
 import uuid from "uuid";
 import {ICoreState} from "../../data/redux/coreReducer";
 import ImageUtils from "../../utils/imageUtils";
-import CsoValidationChecklist from "./validate-verify/cso-validation-checklist";
+import CsoValidationChecklist from "./validate-verify/CsoValidationChecklist";
 import {post} from "../../utils/ajax";
 import {actionICheckKeyValue} from "../../data/redux/checks/reducer";
 import SuccessCriteria from "../../utils/successCriteria";

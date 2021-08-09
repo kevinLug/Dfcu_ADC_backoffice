@@ -14,127 +14,35 @@ import {Dispatch} from "redux";
 import {useDispatch, useSelector} from "react-redux";
 import {useStyles} from "../ScanCrop";
 import {IState} from "../../../data/types";
-import CsoValidationChecklist from "./cso-validation-checklist";
+import CsoValidationChecklist from "./CsoValidationChecklist";
 import ImageUtils from "../../../utils/imageUtils";
 // import {csoOrBmRolesForDev, remoteRoutes} from "../../../data/constants";
 import {ConstantLabelsAndValues, hasAnyRole, systemRoles} from "../../../data/constants";
 // import {createStyles, makeStyles} from "@material-ui/core";
 import {ICheckKeyValueState} from "../../../data/redux/checks/reducer";
-import VerificationsAlreadyDoneByCSO from "./checks-already-done-by-cso";
-import VerificationsAlreadyDoneByBM from "./checks-already-done-by-bom";
-import VerificationByBMO from "./verification-by-bmo";
-import CmoFinacleSubmission from "./cmo-finacle-submission";
+import VerificationsAlreadyDoneByCSO from "./ChecksAlreadyDoneByCso";
+import VerificationsAlreadyDoneByBM from "./ChecksAlreadyDoneByBom";
+import VerificationByBmo from "./VerificationByBmo";
+import CmoFinacleSubmission from "./CmoFinacleSubmission";
 import {IWorkflowResponseMessageState} from "../../../data/redux/workflow-response/reducer";
 import Typography from "@material-ui/core/Typography";
+
+import Divider from "@material-ui/core/Divider";
 
 interface IProps {
     workflow: IWorkflow
 }
 
-// const useStylesDialog = makeStyles(() =>
-//     createStyles({
-//         submissionGrid: {
-//             marginTop: 35
-//         },
-//         submissionBox: {
-//             display: 'flex',
-//             justifyContent: 'space-between'
-//         },
-//         rejectButton: {
-//             backgroundColor: '#b32121',
-//             color: 'white'
-//         }
-//
-//     })
-// );
-
-//
-// const VerificationsAlreadyDoneByCSO = ({workflow}: IPropsBMO) => {
-//     const [theWorkflow] = useState(workflow)
-//     const criteria = theWorkflow.tasks[1].actions[0].outputData
-//
-//     //todo...try to sieve by action name
-//     useEffect(() => {
-//         console.log('testing: ', workflow.tasks[2].actions[0].status)
-//     }, [workflow, criteria])
-//
-//     const checksReview = (): IList<IPropsChecks> => {
-//         const criteriaObj = JSON.parse(criteria)
-//
-//         console.log("criteria:", criteriaObj)
-//         console.log("criteria-sub-status:", workflow.subStatus)
-//
-//         const theCheckList = new List<IPropsChecks>();
-//         theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate_Bm"))
-//         theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex_Bm"))
-//         theCheckList.add(addCheck("Sender's account number is correct", "isSenderAccountNumberCorrect_Bm"))
-//         theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds_Bm"))
-//         theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete_Bm"))
-//         theCheckList.add(addCheck("Recipient's physical address is complete (TTs)", "isRecipientPhysicalAddressComplete_Bm"))
-//
-//         for (let aCheck of theCheckList) {
-//
-//             const propertyName: string = aCheck.name.split("_")[0];
-//             aCheck.value = criteriaObj[propertyName]
-//             // console.log("aCheck:", aCheck)
-//         }
-//
-//         return theCheckList
-//
-//     }
-//
-//     return <Grid>
-//         {
-//
-//             checksReview().toArray().map((v, index) => {
-//                 return <Grid key={index} style={index % 2 ? {background: "#fcf6ea"} : {background: "#fdf9f1"}}>
-//                     {
-//
-//                         <SuccessFailureDisplay value={v.value} label={v.label} name={v.name} key={v.name}/>
-//
-//                     }
-//
-//                 </Grid>
-//             })
-//
-//         }
-//     </Grid>
-// }
-
-// const useStylesRejection = makeStyles(() =>
-//     createStyles({
-//         submissionGrid: {
-//             marginTop: 35
-//         },
-//         submissionBox: {
-//             display: 'flex',
-//             justifyContent: 'space-between'
-//         },
-//         rejectButton: {
-//             backgroundColor: '#b32121',
-//             color: 'white'
-//         }
-//
-//     })
-// );
-
-const BomValidationChecklist = ({workflow}: IProps) => {
-
-    // const classesDialog = useStylesDialog()
-    // const classesRejection = useStylesRejection()
+const AllValidations = ({workflow}: IProps) => {
 
     const classes = useStyles();
     const [imageSrcFromBinary, setImageSrcFromBinary] = useState<string>("")
     const user = useSelector((state: IState) => state.core.user)
     const dispatch: Dispatch<any> = useDispatch();
 
-    // const [rejectionComment, setRejectionComment] = useState('')
+
     const {check}: ICheckKeyValueState = useSelector((state: any) => state.checks)
-    // const initialData: IDataProps = {
-    //     checks: check.checks,
-    //     rejectionComment: rejectionComment
-    // }
-    // const [data] = useState(initialData)
+
     const {workflowResponseMessage}: IWorkflowResponseMessageState = useSelector((state: any) => state.workflowResponse)
 
     useEffect(() => {
@@ -187,18 +95,40 @@ const BomValidationChecklist = ({workflow}: IProps) => {
 
     function displayVerificationsByBM() {
 
+        if (workflow.subStatus === WorkflowSubStatus.FailedCSOApproval) {
+            return <Grid className={classes.expansion}>
+
+                {/*Validations already done by CSO*/}
+                <Typography variant="h4">CSO - Validation Checklist</Typography>
+                <VerificationsAlreadyDoneByCSO workflow={workflow}/>
+
+            </Grid>
+        }
+
         if (workflow.subStatus === WorkflowSubStatus.AwaitingBMApproval && hasAnyRole(user, [systemRoles.BM, systemRoles.BOM]))
             return <Grid className={classes.expansion}>
+
+                {/*Validations already done by CSO*/}
+                <Typography variant="h4">CSO - Validation Checklist</Typography>
+                <VerificationsAlreadyDoneByCSO workflow={workflow}/>
+
+                <Divider style={{padding:5}} light={true} orientation='horizontal' variant="middle"/>
+
                 <Typography variant="h4">Validation Checklist</Typography>
-                <VerificationByBMO workflow={workflow}/>
+                <VerificationByBmo workflow={workflow}/>
             </Grid>
 
         if ((workflow.subStatus.includes(WorkflowSubStatus.AwaitingSubmissionToFinacle) || workflow.subStatus.includes(WorkflowSubStatus.FailedBMApproval))
             && hasAnyRole(user, [systemRoles.BM, systemRoles.BOM]))
             return <Grid className={classes.expansion}>
-                <Typography variant="h4">Validation Checklist</Typography>
 
+                {/*Validations already done by CSO*/}
+                <Typography variant="h4">CSO - Validation Checklist</Typography>
+                <VerificationsAlreadyDoneByCSO workflow={workflow}/>
+
+                <Typography variant="h4">Validation Checklist</Typography>
                 <VerificationsAlreadyDoneByBM workflow={workflow}/>
+
             </Grid>
     }
 
@@ -344,16 +274,6 @@ const BomValidationChecklist = ({workflow}: IProps) => {
                     <ExpansionCard title="Transfer Request" children={<TransferDetails/>}/>
                 </Grid>
 
-                {/*todo... here..show the approvals of the CSO*/}
-                {
-                    // showChecksFormOrChecksResults()
-                    // workflow.subStatus !== WorkflowSubStatus.AwaitingCSOApproval ?
-                    //     <Grid className={classes.expansion}>
-                    //         <ExpansionCard title="CSO Verification Result"
-                    //                        children={<VerificationsAlreadyDoneByCSO workflow={workflow}/>}/>
-                    //     </Grid> : ""
-                }
-
 
                 {
 
@@ -394,4 +314,4 @@ const BomValidationChecklist = ({workflow}: IProps) => {
     )
 }
 
-export default BomValidationChecklist
+export default AllValidations

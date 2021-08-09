@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {IList, List} from "../../../utils/collections/list";
 import {addCheck, IPropsChecks} from "./Check";
 import Grid from "@material-ui/core/Grid";
-import SuccessFailureDisplay from "./success-failure-display";
+import SuccessFailureDisplay from "./SuccessFailureDisplay";
 import {IWorkflow} from "../../workflows/types";
 import {ConstantLabelsAndValues} from "../../../data/constants";
 import grey from "@material-ui/core/colors/grey";
@@ -48,7 +48,7 @@ const VerificationsAlreadyDoneByBM = ({workflow}: IProps) => {
     }
 
     const isEven = (num: number) => num % 2 !== 0
-    
+
     return <Grid>
         {
 
@@ -56,7 +56,11 @@ const VerificationsAlreadyDoneByBM = ({workflow}: IProps) => {
                 return <Grid key={index} style={{backgroundColor: isEven(index) ? 'white' : grey[50]}}>
                     {
 
-                        <SuccessFailureDisplay value={v.value} label={v.label} name={v.name} key={v.name}/>
+                        workflow.type !== ConstantLabelsAndValues.CASE_VALIDATION_SWIFT && v.label === ConstantLabelsAndValues.bomChecksReviewConfirmation().get(1).label && !v.value ?
+
+                            <SuccessFailureDisplay key={v.name} value={v.value} label={v.label} name={v.name} showSuperScript={false} showWarning={true}/>
+                            :
+                            <SuccessFailureDisplay value={v.value} label={v.label} name={v.name} key={v.name}/>
 
                     }
 

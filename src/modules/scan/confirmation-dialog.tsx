@@ -49,31 +49,9 @@ const ConfirmationDialog = ({title, data, handleDialogCancel, handleConfirmation
                        title={title}>
         <Grid item sm={12}>
 
-            {/*<Formik*/}
-
-            {/*    enableReinitialize*/}
-
-            {/*    initialValues={data}*/}
-
-            {/*    onSubmit={async () => {*/}
-
-            {/*        await new Promise(resolve => {*/}
-
-            {/*            setTimeout(resolve, 500)*/}
-
-            {/*            handleConfirmation()*/}
-
-            {/*        });*/}
-
-            {/*    }}*/}
-            {/*>*/}
-            {/*    <Form>*/}
-
             <Grid item sm={12} className={classes.submissionGrid}>
 
-
                 {children}
-
 
                 <Box className={classes.submissionBox}>
 
@@ -83,8 +61,7 @@ const ConfirmationDialog = ({title, data, handleDialogCancel, handleConfirmation
                 </Box>
 
             </Grid>
-            {/*        </Form>*/}
-            {/*    </Formik>*/}
+
 
         </Grid>
     </EditDialog>
