@@ -307,50 +307,6 @@ export const beneficiaryBankLabels = (data: IBeneficiaryBank) => {
     return keyValueLabels(labels);
 }
 
-// export const correspondingBankDetailsLabels = () => {
-//     const labelling = <ICorrespondingBankDetails>{}
-//     const labels: ILabelValue[] = [
-//         {
-//             label: 'Correspondent Bank',
-//             value: labelling.bankName
-//         },
-//         {
-//             label: 'Correspondent Bank A/C No.',
-//             value: labelling.accountNumber
-//         },
-//         {
-//             label: 'Correspondent Bank Swift Code',
-//             value: labelling.swiftCode
-//         },
-//         {
-//             label: 'Correspondent Bank Sort Code',
-//             value: labelling.sortCode
-//         },
-//         {
-//             label: 'Correspondent Bank ABA',
-//             value: labelling.aba
-//         },
-//         {
-//             label: 'Correspondent Bank Fed wire',
-//             value: labelling.fedWire
-//         },
-//         {
-//             label: 'Correspondent Bank IFSC',
-//             value: labelling.ifsc
-//         },
-//         {
-//             label: 'Transfer purpose',
-//             value: labelling.transferPurpose
-//         },
-//         // {
-//         //     label: 'Sender charge', // this should automatically negate the beneficiary charge or else remove one of them
-//         //     value: labelling.charges.applicant
-//         // },
-//
-//     ]
-//     return keyValueLabels(labels);
-// }
-
 export const applicationDetailsLabels = (data: IApplicantDetails) => {
     const labelling = data
 
@@ -389,22 +345,7 @@ export const applicationDetailsLabels = (data: IApplicantDetails) => {
             label: ConstantLabelsAndValues.CHEQUE_NO,
             value: labelling.chequeNumber
         },
-        // {
-        //     label: 'District',
-        //     value: labelling.address.district
-        // },
-        // {
-        //     label: 'Town',
-        //     value: labelling.address.town
-        // },
-        // {
-        //     label: 'Street',
-        //     value: labelling.address.street
-        // },
-        // {
-        //     label: 'Plot No.',
-        //     value: labelling.address.plotNumber
-        // },
+
         {
             label: ConstantLabelsAndValues.PHYSICAL_ADDRESS,
             value: physicalAddress

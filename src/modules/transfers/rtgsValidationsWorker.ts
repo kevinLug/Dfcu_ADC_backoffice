@@ -1,9 +1,8 @@
-import {ITimerDetails, ITimerDetailsMessage} from "../../utils/activeTimeWorker";
+
 import {List} from "../../utils/collections/list";
 import ObjectHelpersFluent from "../../utils/objectHelpersFluent";
-import validate from "validate.js";
+
 import {testY} from "./rgtsValidationsWorkerDelegation";
-// importScripts('foo.js');
 
 
 const rgtsValidationsWorker = () => {

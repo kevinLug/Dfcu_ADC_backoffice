@@ -2,7 +2,7 @@ import {ICase} from "./types";
 import ObjectHelpersFluent, {fluentValidationInstance} from "../../utils/objectHelpersFluent";
 import SuccessCriteria from "../../utils/successCriteria";
 import {List} from "../../utils/collections/list";
-import {RequestType} from "../workflows/config";
+
 import {ConstantLabelsAndValues} from "../../data/constants";
 import Toast from "../../utils/Toast";
 import validateSharedValuesAndRules from "./sharedValidations";
@@ -27,14 +27,6 @@ const validateSwift = async (data: ICase): Promise<boolean> => {
             .addUserFailureMessage("Transfer type is missing")
             .logDetailed()
         tests.add(workflowTypePresent);
-
-        // const isSwift = new ObjectHelpersFluent()
-        //     .testTitle("is SWIFT the type?")
-        //     .selector(data, "$.workflowType")
-        //     .isEqualTo(RequestType.SWIFT)
-        //     .addUserFailureMessage("Transfer type is expected to be SWIFT but is different")
-        //     .logDetailed();
-        // tests.add(isSwift);
 
         const isBranchPresent = fluentValidationInstance()
             .testTitle("is the branch present?")

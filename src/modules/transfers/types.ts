@@ -1,6 +1,4 @@
 import {IKeyValueMap, KeyValueMap} from "../../utils/collections/map";
-import {string} from "yup";
-
 
 export interface IBeneficiaryAddress {
     country: string;

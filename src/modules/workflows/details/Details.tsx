@@ -15,14 +15,14 @@ import {Dispatch} from "redux";
 import {useDispatch, useSelector} from "react-redux";
 import {fetchWorkflowAsync, IWorkflowState, startWorkflowFetch} from "../../../data/redux/workflows/reducer";
 
-import {renderStatus, renderSubStatus} from "../widgets";
+import {renderStatus} from "../widgets";
 
 import AllValidations from "../../scan/validate-verify/AllValidations";
-import {IState} from "../../../data/types";
+
 import {printStdDatetime} from "../../../utils/dateHelpers";
 import {ConstantLabelsAndValues} from "../../../data/constants";
-import {IList} from "../../../utils/collections/list";
-import {IPropsChecks} from "../../scan/validate-verify/Check";
+
+import {isNullOrEmpty, isNullOrUndefined} from "../../../utils/objectHelpers";
 
 interface IProps extends RouteComponentProps {
 
@@ -51,20 +51,12 @@ const Details = (props: IProps) => {
     const classes = useStyles()
     const [blocker, setBlocker] = useState<boolean>(false)
     const {loading, workflow}: IWorkflowState = useSelector((state: any) => state.workflows)
-    const user = useSelector((state: IState) => state.core.user)
+    // const user = useSelector((state: IState) => state.core.user)
 
     const dispatch: Dispatch<any> = useDispatch();
     useEffect(() => {
         dispatch(startWorkflowFetch())
         dispatch(fetchWorkflowAsync(caseId))
-
-        // console.log(`workflow fetched:`, workflow)
-// @ts-ignore
-//         if (workflow.tasks) {
-// @ts-ignore
-//             console.log(`pinnacle:`, workflow.tasks)
-
-        // }
     }, [caseId, dispatch])
 
     if (loading)
@@ -82,9 +74,6 @@ const Details = (props: IProps) => {
 
     const caseData = workflow as IWorkflow;
 
-    // @ts-ignore
-    // const timestamp = workflow.tasks[1].actions[0].outputData["timestamp"]
-
     function submittedOrRejectedByCSO() {
         let returned: any
         // @ts-ignore
@@ -93,18 +82,17 @@ const Details = (props: IProps) => {
         // @ts-ignore
         console.log("action:", workflow.tasks[1].actions[0])
 
-        if (outputDataCSO !== null && outputDataCSO !== undefined) {
-
+        if (!isNullOrUndefined(outputDataCSO)) {
             const parsedOutputDataCSO = JSON.parse(outputDataCSO)
             console.log('parsed:', parsedOutputDataCSO)
             const submittedByCSO = parsedOutputDataCSO["submittedBy"]
             const runDateCSO = new Date(parsedOutputDataCSO["runDate"])
 
-            let rejectionComment = ''
+            let rejectionComment: string
 
             // @ts-ignore
-            if (parsedOutputDataCSO['rejectionComment'] !== undefined && parsedOutputDataCSO['rejectionComment'] !== null && parsedOutputDataCSO['rejectionComment'] !== '') {
-                // @ts-ignore
+            if (!isNullOrEmpty(parsedOutputDataCSO['rejectionComment']) && !isNullOrUndefined(parsedOutputDataCSO['rejectionComment'])) {
+
                 rejectionComment = parsedOutputDataCSO['rejectionComment']
             } else {
 
@@ -148,17 +136,13 @@ const Details = (props: IProps) => {
         console.log('parsed output BM:', parsedOutputDataBM)
         if (outputDataBM !== null && outputDataBM !== undefined) {
 
-            // const runDateCSO = new Date(JSON.parse(outputDataBM)["runDate"])
-
-            // if (true) {
-
             const approvedByBM = JSON.parse(outputDataBM)["approvedBy"]
             const runDateBM = new Date(JSON.parse(outputDataBM)["runDate"])
 
-            let rejectionComment = ''
+            let rejectionComment: string
 
-            if (parsedOutputDataBM['rejectionComment'] !== undefined && parsedOutputDataBM['rejectionComment'] !== null && parsedOutputDataBM['rejectionComment'] !== '') {
-                // @ts-ignore
+            if (!isNullOrUndefined(parsedOutputDataBM['rejectionComment'])  && !isNullOrEmpty(parsedOutputDataBM['rejectionComment'])) {
+
                 rejectionComment = parsedOutputDataBM['rejectionComment']
             } else {
                 // @ts-ignore
@@ -174,11 +158,6 @@ const Details = (props: IProps) => {
                     <span style={styleUserName}>{rejectionComment}</span>
                 </div>
 
-                // returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
-                //     <span style={styleUserName}>{approvedByBM}</span>{" - "}
-                //     <span style={styleUserName}>{printStdDatetime(runDateBM)}</span>
-                // </div>
-                // returned = <span style={styleUserName}>{caseData["caseData"]["user"]["name"]}</span>
             } else {
 
                 returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.APPROVED_BY}
@@ -186,13 +165,7 @@ const Details = (props: IProps) => {
                     <span style={styleUserName}>{printStdDatetime(runDateBM)}</span>
                 </div>
 
-                // returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.APPROVED_BY}
-                //     <span style={styleUserName}>{approvedByBM}</span>{" - "}
-                //     <span style={styleUserName}>{printStdDatetime(runDateBM)}</span>
-                // </div>
-
             }
-            // }
 
         } else {
             returned = ""
@@ -203,8 +176,7 @@ const Details = (props: IProps) => {
 
     function submittedOrRejectedByCMO() {
 
-
-        let returned = {}
+        let returned: {}
 
         // @ts-ignore
         const outputDataCMO = workflow.tasks[3].actions[0].outputData
@@ -212,10 +184,6 @@ const Details = (props: IProps) => {
         console.log("walked:", outputDataCMO)
 
         if (outputDataCMO !== null && outputDataCMO !== undefined) {
-
-            // const runDateCMO = new Date(JSON.parse(outputDataCMO)["runDate"])
-
-            // if (true) {
 
             // todo...include rejected by as well
             const clearedByCMO = JSON.parse(outputDataCMO)["session"]["username"]
@@ -225,24 +193,21 @@ const Details = (props: IProps) => {
             // @ts-ignore
             console.log("the tasks: ", workflow["tasks"])
 
-            // @ts-ignore
-            // const isRejectedByCMO: boolean = workflow.tasks[3].actions[0].outputData["isRejected"]
-
             if (caseData.status === WorkflowStatus.Error) {
 
                 returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
                     <span style={styleUserName}>{clearedByCMO}</span>{" - "}
                     <span style={styleUserName}>{printStdDatetime(runDateCMO)}</span>
                 </div>
-                // returned = <span style={styleUserName}>{caseData["caseData"]["user"]["name"]}</span>
+
             } else {
+
                 returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.CLEARED_BY}
                     <span style={styleUserName}>{clearedByCMO}</span>{" - "}
                     <span style={styleUserName}>{printStdDatetime(runDateCMO)}</span>
                 </div>
 
             }
-            // }
 
         } else {
             returned = ""
@@ -298,12 +263,9 @@ const Details = (props: IProps) => {
                                 Case #{trimCaseId(caseData.id)}
                             </Typography>
                             <div
-                                // style={{marginTop: 4}}>&nbsp;&nbsp;{caseData.status === WorkflowStatus.Open ? renderStatus(WorkflowStatus.New) : renderStatus(caseData.status)}</div>
+
                                 style={{marginTop: 4}}>&nbsp;&nbsp;{displayWorkflowStatus()}</div>
-                            {/*<div style={{marginTop: 4}}>&nbsp;&nbsp;{renderSubStatus(caseData.subStatus)}</div>*/}
 
-
-                            {/*<div style={{marginTop: 4}}>&nbsp;&nbsp;Submitted by: {user.name} {" "} {printStdDatetime(caseData.applicationDate)}</div>*/}
                         </Flex>
 
                         {
