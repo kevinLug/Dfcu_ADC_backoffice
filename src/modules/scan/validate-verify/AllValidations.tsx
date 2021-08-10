@@ -7,8 +7,7 @@ import TransferDetails from "./TransferDetails";
 import React, {useEffect, useState} from "react";
 import {IWorkflow, WorkflowSubStatus} from "../../workflows/types";
 import {ICase, ICaseData} from "../../transfers/types";
-// import {IList} from "../../../utils/collections/list";
-// import {IPropsChecks} from "./Check";
+
 import {actionICaseState} from "../../../data/redux/transfers/reducer";
 import {Dispatch} from "redux";
 import {useDispatch, useSelector} from "react-redux";
@@ -16,9 +15,9 @@ import {useStyles} from "../ScanCrop";
 import {IState} from "../../../data/types";
 import CsoValidationChecklist from "./CsoValidationChecklist";
 import ImageUtils from "../../../utils/imageUtils";
-// import {csoOrBmRolesForDev, remoteRoutes} from "../../../data/constants";
+
 import {ConstantLabelsAndValues, hasAnyRole, systemRoles} from "../../../data/constants";
-// import {createStyles, makeStyles} from "@material-ui/core";
+
 import {ICheckKeyValueState} from "../../../data/redux/checks/reducer";
 import VerificationsAlreadyDoneByCSO from "./ChecksAlreadyDoneByCso";
 import VerificationsAlreadyDoneByBM from "./ChecksAlreadyDoneByBom";
@@ -40,7 +39,6 @@ const AllValidations = ({workflow}: IProps) => {
     const user = useSelector((state: IState) => state.core.user)
     const dispatch: Dispatch<any> = useDispatch();
 
-
     const {check}: ICheckKeyValueState = useSelector((state: any) => state.checks)
 
     const {workflowResponseMessage}: IWorkflowResponseMessageState = useSelector((state: any) => state.workflowResponse)
@@ -61,9 +59,9 @@ const AllValidations = ({workflow}: IProps) => {
 
         // todo .. sprout/move this step (for re-usability)...also used in ScanCrop.tsx
         const arrayBuffer = ImageUtils.base64ToArrayBuffer(caseData.doc)
-        // const arrayBuffer = new Buffer(caseData.doc)
+
         const blob = ImageUtils.arrayBufferToBlob(arrayBuffer)
-        // const blob = new Blob([arrayBuffer])
+
         const reader = new FileReader();
         reader.readAsDataURL(blob);
         reader.onload = (event: any) => {
@@ -80,7 +78,6 @@ const AllValidations = ({workflow}: IProps) => {
             return <Grid className={classes.expansion}>
                 <Typography variant="h4">Validation Checklist</Typography>
                 <CsoValidationChecklist theCheckList={ConstantLabelsAndValues.csoValidationCheckList()}/>
-                {/*<ExpansionCard title="Verification  Checklist" children={<CsoValidationChecklist theCheckList={theCheckList}/>}/>*/}
             </Grid>
 
         // show verifications done by CSO if process awaits BM action, CMO action, or erred
@@ -97,18 +94,13 @@ const AllValidations = ({workflow}: IProps) => {
 
         if (workflow.subStatus === WorkflowSubStatus.FailedCSOApproval && hasAnyRole(user, [systemRoles.BOM,systemRoles.BM])) {
             return <Grid className={classes.expansion}>
-
-                {/*Validations already done by CSO*/}
                 <Typography variant="h4">CSO - Validation Checklist</Typography>
                 <VerificationsAlreadyDoneByCSO workflow={workflow}/>
-
             </Grid>
         }
 
         if (workflow.subStatus === WorkflowSubStatus.AwaitingBMApproval && hasAnyRole(user, [systemRoles.BM, systemRoles.BOM]))
             return <Grid className={classes.expansion}>
-
-                {/*Validations already done by CSO*/}
                 <Typography variant="h4">CSO - Validation Checklist</Typography>
                 <VerificationsAlreadyDoneByCSO workflow={workflow}/>
 
@@ -122,7 +114,6 @@ const AllValidations = ({workflow}: IProps) => {
             && hasAnyRole(user, [systemRoles.BM, systemRoles.BOM]))
             return <Grid className={classes.expansion}>
 
-                {/*Validations already done by CSO*/}
                 <Typography variant="h4">CSO - Validation Checklist</Typography>
                 <VerificationsAlreadyDoneByCSO workflow={workflow}/>
 
@@ -132,14 +123,6 @@ const AllValidations = ({workflow}: IProps) => {
             </Grid>
     }
 
-    // function showVerificationsToBeDoneByBM() {
-    //     // if (workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle && hasAnyRole(user, [systemRoles.BM, systemRoles.BMO])) {
-    //     //     return <Grid className={classes.expansion}>
-    //     //         <ExpansionCard title="Verification list - BMO" children={<VerificationsAlreadyDoneByBM workflow={workflow}/>}/>
-    //     //     </Grid>
-    //     // }
-    // }
-
     function displaySubmissionToFinacle() {
         if (workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle && hasAnyRole(user, [systemRoles.CMO])) {
             return <Grid className={classes.expansion}>
@@ -148,113 +131,6 @@ const AllValidations = ({workflow}: IProps) => {
             </Grid>
         }
     }
-
-    // function showChecksFormOrChecksResults() {
-    //     // @ts-ignore
-    //     console.log("loggin....:", workflow.subStatus)
-    //     // @ts-ignore
-    //     if (workflow.subStatus !== null) {
-    //
-    //
-    //         // @ts-ignore
-    //         if (workflow.subStatus.includes("BM") || workflow.subStatus.includes("Fail")) {
-    //
-    //             // @ts-ignore
-    //             return <VerificationsAlreadyDoneByCSO workflow={workflow}/>
-    //
-    //         } else {
-    //
-    //             theCheckList.toArray().map((aCheck, index) => {
-    //                 // console.log("found: ", subStatusFound)
-    //
-    //                 return <Grid key={index} item sm={12}>
-    //                     <CheckBoxTemplate value={aCheck.value} label={aCheck.label} name={aCheck.name}/>
-    //                 </Grid>
-    //             })
-    //
-    //         }
-    //
-    //     }
-    //
-    // }
-    //
-    // function setComment(e: any) {
-    //     setRejectionComment(e.target.value)
-    // }
-    //
-    //
-    // function cancelCommentDialog() {
-    //     setShowCommentBox(false)
-    // }
-    //
-    //
-    // function handleBMORejection() {
-    //     // let checks = getChecksToPopulate(check.checks);
-    //     //
-    //     // const obj = {
-    //     //     checks: checks,
-    //     //     rejectionComment: rejectionComment
-    //     // }
-    //     //
-    //     // setData({checks, rejectionComment})
-    //     //
-    //     // // @ts-ignore
-    //     // checks["rejectionComment"] = obj.rejectionComment;
-    //     // // @ts-ignore
-    //     // checks["isRejected"] = true;
-    //     // // @ts-ignore
-    //     // checks["submittedBy"] = user.name
-    //     //
-    //     // let caseId: string
-    //     // if (!workflowResponseMessage.caseId || workflowResponseMessage.caseId.includes("0000-0000")) {
-    //     //     // @ts-ignore
-    //     //     caseId = workflow.id
-    //     // } else {
-    //     //     caseId = workflowResponseMessage.caseId
-    //     // }
-    //     //
-    //     // const manualCSORejection: IManualDecision = {
-    //     //     caseId: caseId,
-    //     //     taskName: "cso-approval", // todo ...consider making these constants
-    //     //     actionName: "cso-transfer-details-approval",
-    //     //     resumeCase: true,
-    //     //     nextSubStatus: "SenderDetailsCheckSuccessful",
-    //     //     data: {...checks, rejectionComment: obj.rejectionComment},
-    //     //     override: false
-    //     // }
-    //     //
-    //     // if (manualCSORejection.data.rejectionComment.trim().length === 0) {
-    //     //     Toast.warn("Please provide a rejection comment...");
-    //     //     return;
-    //     // }
-    //     //
-    //     // if (manualCSORejection.data.rejectionComment.trim().length > 0) {
-    //     //     console.log("manual-cso-rejection:", manualCSORejection);
-    //     //
-    //     //     // todo...uncomment
-    //     //     // post(remoteRoutes.workflowsManual, manualCSORejection, (resp: any) => {
-    //     //     //         console.log(resp) // todo ... consider providing a message for both success and failure
-    //     //     //     }, undefined,
-    //     //     //     () => {
-    //     //     //         window.location.href = window.location.origin
-    //     //     //     }
-    //     //     // )
-    //     //
-    //     //     setShowCommentBox(false)
-    //     //
-    //     // } else {
-    //     //     Toast.warn("Please provide a rejection comment");
-    //     // }
-    //     //
-    //
-    // }
-    //
-    //
-    // function showCommentDialog() {
-    //     setShowCommentBox(true)
-    // }
-
-    // const theCheckList = checkListCSO() as IList<IPropsChecks>
 
     return (
 
@@ -274,29 +150,17 @@ const AllValidations = ({workflow}: IProps) => {
                     <ExpansionCard title="Transfer Request" children={<TransferDetails/>}/>
                 </Grid>
 
-
                 {
-
                     displayVerificationsByCSO()
-
                 }
 
                 {
-
-                    // showVerificationsToBeDoneByBM()
-
-                }
-
-                {
-
                     displayVerificationsByBM()
-
                 }
 
                 {
                     displaySubmissionToFinacle()
                 }
-
 
             </Grid>
 

@@ -56,7 +56,7 @@ const VerificationsAlreadyDoneByBM = ({workflow}: IProps) => {
                 return <Grid key={index} style={{backgroundColor: isEven(index) ? 'white' : grey[50]}}>
                     {
 
-                        workflow.type !== ConstantLabelsAndValues.CASE_VALIDATION_SWIFT && v.label === ConstantLabelsAndValues.bomChecksReviewConfirmation().get(1).label && !v.value ?
+                        ConstantLabelsAndValues.forexDetailsIgnored(v, checksReview(), 1) ?
 
                             <SuccessFailureDisplay key={v.name} value={v.value} label={v.label} name={v.name} showSuperScript={false} showWarning={true}/>
                             :

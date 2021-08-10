@@ -328,14 +328,14 @@ const VerificationByBmo = ({workflow}: IPropsBMO) => {
         {
             // eslint-disable-next-line array-callback-return
             checksReviewConfirmation().toArray().map((val, index) => {
+                // ConstantLabelsAndValues.disableForexDetailsCheck(workflow, val, checksReviewConfirmation(), 1) ?
+                //     <Grid key={index} item sm={12}>
+                //         <CheckBoxTemplate value={val.value} label={val.label} name={val.name} disable={true}/>
+                //
+                //     </Grid>
+                //     :
                 // @ts-ignore
-                return ConstantLabelsAndValues.disableForexDetailsCheck(workflow, val, checksReviewConfirmation(), 1) ?
-                    <Grid key={index} item sm={12}>
-                        <CheckBoxTemplate value={val.value} label={val.label} name={val.name} disable={true}/>
-
-                    </Grid>
-                    :
-                    <Grid key={index} item sm={12}>
+                return <Grid key={index} item sm={12}>
                         <CheckBoxTemplate value={val.value} label={val.label} name={val.name} />
 
                     </Grid>

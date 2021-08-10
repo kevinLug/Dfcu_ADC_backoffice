@@ -20,6 +20,7 @@ export interface ITestDataSummary {
     devMessage?: string
 }
 
+const env = environment.toLowerCase()
 
 class ObjectHelpersFluent {
     private data: any
@@ -360,7 +361,10 @@ class ObjectHelpersFluent {
     // todo...index to show the position of the test (number of tests run) + title of the test as well
     testTitle(title: string) {
         this.summary.title = title
-        console.log(`title:--> ${title} <--`);
+        if (env === 'dev' || env === 'development' || env === 'test') {
+            console.log(`title:--> ${title} <--`);
+        }
+
         return this;
     }
 
@@ -375,11 +379,16 @@ class ObjectHelpersFluent {
             if (this.summary.testResult) {
                 // @ts-ignore
                 this.summary.devMessage = ">>>PASSED<<<"
-                console.log(`summary: ${this.summary}`)
+                if (env === 'dev' || env === 'development' || env === 'test') {
+                    console.log(`summary: ${this.summary}`)
+                }
             } else {
                 // @ts-ignore
                 this.summary.devMessage = ">>>FAILED<<<"
-                console.log(`summary: ${this.summary}`)
+                if (env === 'dev' || env === 'development' || env === 'test') {
+                    console.log(`summary: ${this.summary}`)
+                }
+
             }
 
         }
@@ -406,7 +415,7 @@ class ObjectHelpersFluent {
     }
 
     logDetailed() {
-        const env = environment.toLowerCase()
+
         if (env === 'dev' || env === 'development' || env === 'test') {
             this.logValue();
             console.log(`criterion: `, this.getCheckRuns().getKeys().get(0));

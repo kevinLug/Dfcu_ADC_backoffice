@@ -1,13 +1,11 @@
-import {useSelector} from "react-redux";
-import {IState} from "./types";
-import authService from "./oidc/AuthService";
+
 import {IList, List} from "../utils/collections/list";
 import {addCheck, IPropsChecks} from "../modules/scan/validate-verify/Check";
 import {branches} from "../modules/settings/customClaims/region-data";
 import {IKeyValueMap, KeyValueMap} from "../utils/collections/map";
 import bankCodes from './bankCodes.json'
 import countryCodes from './countryCodes.json'
-import {IManualDecision, IWorkflow} from "../modules/workflows/types";
+import {IManualDecision} from "../modules/workflows/types";
 
 export const AUTH_TOKEN_KEY = '__demo__dfcu__token'
 export const AUTH_USER_KEY = '__demo__dfcu__user'
@@ -115,7 +113,7 @@ export const environment = evVar.trim()
 console.log(`############# Env : ${environment} ###############`)
 const env = servers[environment]
 const authURL = env.Auth
-const crmURL = env.Crm
+
 const caseHandlingURL = env.Case
 const gatewayURL = env.Gateway
 // const notificationURL = env.Notification
@@ -151,7 +149,7 @@ export class ConstantLabelsAndValues {
 
     public static DATE = 'Date'
     public static NAME = 'Name'
-    public static FULL_NAME = 'Full name'
+    // public static FULL_NAME = 'Full name'
     public static EMAIL = 'Email'
     public static BANK_NAME = 'Bank name'
     public static BENEFICIARY_BANK = 'Beneficiary Bank'
@@ -164,10 +162,10 @@ export class ConstantLabelsAndValues {
     public static ACCOUNT_NUMBER_FULL = 'Account number'
     public static COUNTRY = 'Country'
     public static COUNTRY_CODE = 'Country code'
-    public static ADDRESS = 'Address'
+    // public static ADDRESS = 'Address'
     public static PHYSICAL_ADDRESS = 'Physical address'
     public static TOWN = 'Town'
-    public static DISTRICT = 'District'
+    // public static DISTRICT = 'District'
     public static PLOT = 'Plot'
     public static BUILDING = 'Building'
 
@@ -302,11 +300,11 @@ export class ConstantLabelsAndValues {
         return map
     }
 
-    public static mapOfRecipientBranchCodeToValueOfBank(): IKeyValueMap<string, IRecipientBank> {
-        const map = new KeyValueMap<string, IRecipientBank>()
-        bankCodes.Banks.map((aBank: IRecipientBank) => map.put(aBank.branchCode, aBank))
-        return map
-    }
+    // public static mapOfRecipientBranchCodeToValueOfBank(): IKeyValueMap<string, IRecipientBank> {
+    //     const map = new KeyValueMap<string, IRecipientBank>()
+    //     bankCodes.Banks.map((aBank: IRecipientBank) => map.put(aBank.branchCode, aBank))
+    //     return map
+    // }
 
     public static mapOfCountryCodeToCountryName(): IKeyValueMap<string, string> {
         const map = new KeyValueMap<string, string>()
@@ -334,10 +332,14 @@ export class ConstantLabelsAndValues {
         return currentTimestampManual
     }
 
-    public static disableForexDetailsCheck(workflow: IWorkflow, aCheck: IPropsChecks, checks: IList<IPropsChecks>, index: number) {
-
-        return workflow.type !== ConstantLabelsAndValues.CASE_VALIDATION_SWIFT && aCheck.label === checks.get(index).label;
+    public static forexDetailsIgnored(aCheck: IPropsChecks, checks: IList<IPropsChecks>, index: number){
+        return aCheck.label === checks.get(index).label && !aCheck.value
     }
+    //
+    // public static disableForexDetailsCheck(workflow: IWorkflow, aCheck: IPropsChecks, checks: IList<IPropsChecks>, index: number) {
+    //
+    //     return workflow.type !== ConstantLabelsAndValues.CASE_VALIDATION_SWIFT && aCheck.label === checks.get(index).label;
+    // }
 
 
 }
@@ -346,9 +348,4 @@ export interface IRecipientBank {
     name: string;
     bankCode: string;
     branchCode: string;
-}
-
-export interface ICountry {
-    name: string;
-    Code: string;
 }

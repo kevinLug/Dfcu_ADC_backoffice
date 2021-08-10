@@ -29,7 +29,7 @@ import RejectionForm from "./RejectionDialog";
 import ForexForm from "./ForexDialog";
 import {ICheckKeyValueDefault, IForex, ISelectKeyValueDefault} from "../../transfers/types";
 import {actionIForexValue, IForexValueState} from "../../../data/redux/forex/reducer";
-import ObjectHelpersFluent, {fluentValidationInstance} from "../../../utils/objectHelpersFluent";
+import  {fluentValidationInstance} from "../../../utils/objectHelpersFluent";
 import {addDynamicPropertyToObject, isNullOrEmpty, isNullOrUndefined} from "../../../utils/objectHelpers";
 import ConfirmationDialog from "../confirmation-dialog";
 import SuccessFailureDisplay from "./SuccessFailureDisplay";
@@ -129,18 +129,36 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             override: false
         }
 
-        const rateExists = fluentValidationInstance().testTitle("forex rate exists").selector(manualCSOApproval, "$.data.forexDetails.rate").isPresent().logDetailed().logNewLineSpace().getSummary().testResult
+        const rateExists = fluentValidationInstance()
+            .testTitle("forex rate exists")
+            .selector(manualCSOApproval, "$.data.forexDetails.rate")
+            .isPresent()
+            .logDetailed()
+            .getSummary()
+            .testResult
 
-        const remittanceAmountExists = fluentValidationInstance().testTitle("forex remittance amount exists").selector(manualCSOApproval, "$.data.forexDetails.remittanceAmount").isPresent()
-            .logDetailed().logNewLineSpace().getSummary().testResult
+        const remittanceAmountExists = fluentValidationInstance()
+            .testTitle("forex remittance amount exists")
+            .selector(manualCSOApproval, "$.data.forexDetails.remittanceAmount")
+            .isPresent()
+            .logDetailed()
+            .getSummary()
+            .testResult
 
-        const forexTransferIsRequired = fluentValidationInstance().testTitle("forex remittance amount exists").selector(manualCSOApproval, `$.data.${ConstantLabelsAndValues.csoValidationCheckList().get(1).name}`)
-            .isPresent().logDetailed().logNewLineSpace().getSummary().testResult
+        const forexTransferIsRequired = fluentValidationInstance()
+            .testTitle("forex remittance amount exists")
+            .selector(manualCSOApproval, `$.data.${ConstantLabelsAndValues.csoValidationCheckList().get(1).name}`)
+            .isPresent()
+            .logDetailed()
+            .getSummary().testResult
 
         const forexCheckAndValuesMatch = forexTransferIsRequired === remittanceAmountExists === rateExists
 
-        const forexMatch = new ObjectHelpersFluent()
-        forexMatch.testTitle("forex check meets its values (values exist if check is true)").directValue(forexCheckAndValuesMatch).isEqualTo(true).logValue().logTestResult().logTestMessage()
+        const forexMatch = fluentValidationInstance()
+        forexMatch.testTitle("forex check meets its values (values exist if check is true)")
+            .directValue(forexCheckAndValuesMatch)
+            .isEqualTo(true)
+            .logDetailed()
             .failureCallBack(() => {
 
                 Toast.warn(`Please set forex values OR uncheck ${ConstantLabelsAndValues.csoValidationCheckList().get(1).label}`)
@@ -149,31 +167,25 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
                     Toast.warn("Not submitted")
                 }, 2000)
 
-            }).logNewLineSpace().haltProcess(false, true,)
+            })
+            .haltProcess(false, true,)
 
-        const rejectionIsFalse = new ObjectHelpersFluent()
-        rejectionIsFalse.testTitle("isRejected === false").selector(manualCSOApproval, "$.data.isRejected").isEqualTo(false).logValue().logTestResult().logTestMessage()
-            .logNewLineSpace()
+        const rejectionIsFalse = fluentValidationInstance()
+        rejectionIsFalse
+            .testTitle("isRejected === false")
+            .selector(manualCSOApproval, "$.data.isRejected")
+            .isEqualTo(false)
+            .logDetailed()
             .haltProcess(false, true,)
 
         post(remoteRoutes.workflowsManual, manualCSOApproval, (resp: any) => {
-                console.log(resp) // todo ... consider providing a message for both success and failure
+
             }, undefined,
             () => {
                 window.location.href = window.location.origin
                 dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
             }
         )
-
-        // // setup CSO submission time first
-        // post(remoteRoutes.workflowsManual, ConstantLabelsAndValues.csoSubmissionDateTimeData(caseId), (resp:any) => {
-        //
-        //     // Then post the actual submission
-        //
-        //
-        // }, undefined, () =>{
-        //
-        // })
 
         setShowConfirmationDialog(false)
 
@@ -209,7 +221,7 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
 
         // @ts-ignore
         const comment = dropdownSelects[systemRoles.CSO]
-        console.log("cso:", comment)
+
 
         if (comment === undefined || comment === null) {
             Toast.warn("Please select a remark (rejection reason)")
@@ -235,7 +247,7 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
         }
 
         post(remoteRoutes.workflowsManual, manualCSORejection, (resp: any) => {
-                console.log(resp) // todo ... consider providing a message for both success and failure
+
             }, undefined,
             () => {
 
@@ -285,34 +297,22 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
 
     }
 
-    function disableForexDetailsCheck(aCheck: IPropsChecks, checks: IList<IPropsChecks>, index:number) {
-        // @ts-ignore
-        return workflow.type !== ConstantLabelsAndValues.CASE_VALIDATION_SWIFT && aCheck.label === ConstantLabelsAndValues.csoValidationCheckList().get(1).label;
-    }
-
     function showChecksFormOrChecksResults() {
-        // console.log("loggin...:", workflow)
+
         let returned: {}
 
         // @ts-ignore
-        if (workflow !== undefined && workflow !== null && (workflow.subStatus.includes("BM") || workflow.subStatus.includes("Fail")) && !isNewTransferRequestStarted) {
-            console.log("supposed to show results...")
+        if (!isNullOrUndefined(workflow) && (workflow.subStatus.includes("BM") || workflow.subStatus.includes("Fail")) && !isNewTransferRequestStarted) {
+
             // @ts-ignore
             returned = <VerificationsAlreadyDoneByCSO workflow={workflow}/>
         } else {
-            console.log("supposed to show checks...")
 
             returned = theCheckList.toArray().map((aCheck, index) => {
-
                 // @ts-ignore
-                return ConstantLabelsAndValues.disableForexDetailsCheck(workflow,aCheck, ConstantLabelsAndValues.csoValidationCheckList(), 1) ?
-                    <Grid key={index} item sm={12}>
-                        <CheckBoxTemplate value={aCheck.value} label={aCheck.label} name={aCheck.name} handleCheckChange={showForexForm} disable={true}/>
-                    </Grid>
-                    :
-                    <Grid key={index} item sm={12}>
-                        <CheckBoxTemplate value={aCheck.value} label={aCheck.label} name={aCheck.name} handleCheckChange={showForexForm}/>
-                    </Grid>
+                return <Grid key={index} item sm={12}>
+                    <CheckBoxTemplate value={aCheck.value} label={aCheck.label} name={aCheck.name} handleCheckChange={showForexForm}/>
+                </Grid>
             })
         }
         return returned
@@ -325,7 +325,7 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
 
     function showConfirmationDialogApproval() {
 
-        if (workflow === undefined || workflow === null) {
+        if (isNullOrUndefined(workflow)) {
             Toast.warn('Can not proceed without an initiation')
             setTimeout(() => {
                 Toast.warn('Make sure the form data is complete')
@@ -334,7 +334,7 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
         }
 
         let caseId: string
-        if (!workflowResponseMessage.caseId || workflowResponseMessage.caseId.includes("0000-0000")) {
+        if (isNullOrEmpty(workflowResponseMessage.caseId) || workflowResponseMessage.caseId.includes("0000-0000")) {
             // @ts-ignore
             caseId = workflow.id
         } else {
@@ -342,7 +342,7 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
         }
 
         // @ts-ignore
-        if (caseId === undefined || caseId === null || caseId === '') {
+        if (isNullOrUndefined(caseId) || isNullOrEmpty(caseId)) {
             Toast.warn('Can not proceed without an initiation')
             setTimeout(() => {
                 Toast.warn('Make sure the form data is complete')
@@ -350,6 +350,7 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
 
         }
 
+        // @ts-ignore
         if (workflow.subStatus !== WorkflowSubStatus.AwaitingCSOApproval) {
             Toast.warn('Make sure the form data is complete')
         } else
@@ -363,17 +364,15 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
         return ConstantLabelsAndValues.csoValidationCheckList().toArray().map((v, index) => {
             // @ts-ignore
             const value = getChecksToPopulate(check.checks)[v.name]
-            // @ts-ignore
-            const flag = workflow.type !== ConstantLabelsAndValues.CASE_VALIDATION_SWIFT && v.label === ConstantLabelsAndValues.csoValidationCheckList().get(1).label && !v.value
+
             return <Grid key={index} style={{backgroundColor: isEven(index) ? 'white' : grey[50]}}>
                 {
 
-                    flag ?
+                    ConstantLabelsAndValues.forexDetailsIgnored(v, ConstantLabelsAndValues.csoValidationCheckList(), 1) ?
 
                         <SuccessFailureDisplay key={v.name} value={value} label={v.label} name={v.name} showSuperScript={false} showWarning={true}/>
                         :
                         <SuccessFailureDisplay value={value} label={v.label} name={v.name} key={v.name}/>
-                    // <SuccessFailureDisplay value={value} label={v.label} name={v.name} key={v.name}/>
 
                 }
 
@@ -430,7 +429,7 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
                                              children={<RejectionForm data={data} handleDialogCancel={cancelCommentDialog} handleSubmission={handleCSORejection}
                                                                       isCancelBtnDisabled={false}
                                                                       isSubmitBtnDisabled={isRejectBtnDisabled} remarks={remarks}/>}
-                        // children={<Button>cam</Button>}
+
                     />
 
                     :
