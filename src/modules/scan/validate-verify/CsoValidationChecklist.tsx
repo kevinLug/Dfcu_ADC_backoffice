@@ -178,12 +178,12 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             .logDetailed()
             .haltProcess(false, true,)
 
-        post(remoteRoutes.workflowsManual, manualCSOApproval, (resp: any) => {
-
-            }, undefined,
-            () => {
+        post(remoteRoutes.workflowsManual, manualCSOApproval, () => {
                 window.location.href = window.location.origin
                 dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
+            }, undefined,
+            () => {
+
             }
         )
 
@@ -246,14 +246,14 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             return;
         }
 
-        post(remoteRoutes.workflowsManual, manualCSORejection, (resp: any) => {
-
-            }, undefined,
-            () => {
-
+        post(remoteRoutes.workflowsManual, manualCSORejection, () => {
                 // todo... place this after the the post (inside it)
                 dispatch(actionISelectKeyValue(ISelectKeyValueDefault))
                 window.location.href = window.location.origin
+            }, undefined,
+            () => {
+
+
             }
         )
 
@@ -361,9 +361,11 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
 
     function showResultBeingConfirmedByCSO() {
 
+
         return ConstantLabelsAndValues.csoValidationCheckList().toArray().map((v, index) => {
             // @ts-ignore
             const value = getChecksToPopulate(check.checks)[v.name]
+            v.value = value
 
             return <Grid key={index} style={{backgroundColor: isEven(index) ? 'white' : grey[50]}}>
                 {

@@ -30,7 +30,8 @@ export const renderStatus = (value: WorkflowStatus) => {
             color = warningColor
             break
         case WorkflowStatus.PendingClearance:
-            color = warningColor
+            color = successColor
+            break
         case WorkflowStatus.Pending:
             color = warningColor
     }

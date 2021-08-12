@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {IList, List} from "../../../utils/collections/list";
-import {addCheck, IPropsChecks} from "./Check";
+import {IList} from "../../../utils/collections/list";
+import {IPropsChecks} from "./Check";
 import Grid from "@material-ui/core/Grid";
 import SuccessFailureDisplay from "./SuccessFailureDisplay";
 import {IWorkflow} from "../../workflows/types";
@@ -24,23 +24,12 @@ const VerificationsAlreadyDoneByBM = ({workflow}: IProps) => {
     const checksReview = (): IList<IPropsChecks> => {
         const criteriaObj = JSON.parse(criteria)
 
-        console.log("criteria:", criteriaObj)
-        console.log("criteria-sub-status:", workflow.subStatus)
-
         const theCheckList = ConstantLabelsAndValues.bomChecksReviewConfirmation();
-        // theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate_Bm_Confirmation"))
-        // theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex_Bm_Confirmation"))
-        // theCheckList.add(addCheck("Sender's account number is correct", "isSenderAccountNumberCorrect_Bm_Confirmation"))
-        // theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds_Bm_Confirmation"))
-        // theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete_Bm_Confirmation"))
-        // theCheckList.add(addCheck("Recipient's physical address is complete (TTs)", "isRecipientPhysicalAddressComplete_Bm_Confirmation"))
 
         for (let aCheck of theCheckList) {
 
-            const propertyName: string = aCheck.name.split("_")[0];
+            // const propertyName: string = aCheck.name.split("_")[0];
             aCheck.value = criteriaObj[aCheck.name]
-            // aCheck.value = criteriaObj[propertyName]
-            // console.log("aCheck:", aCheck)
         }
 
         return theCheckList
@@ -53,6 +42,7 @@ const VerificationsAlreadyDoneByBM = ({workflow}: IProps) => {
         {
 
             checksReview().toArray().map((v, index) => {
+
                 return <Grid key={index} style={{backgroundColor: isEven(index) ? 'white' : grey[50]}}>
                     {
 

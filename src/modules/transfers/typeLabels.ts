@@ -238,13 +238,6 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
 
     ];
 
-    // if transfer type is foreign
-    // first add codes then add physical address
-    // labels.concat(transferCodesAndLabels)
-
-    // add physical address
-
-
     return keyValueLabels(labels);
 }
 

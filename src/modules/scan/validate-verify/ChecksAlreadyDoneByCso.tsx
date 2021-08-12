@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {IList, List} from "../../../utils/collections/list";
+import {IList} from "../../../utils/collections/list";
 import {IPropsChecks} from "./Check";
 import Grid from "@material-ui/core/Grid";
 import SuccessFailureDisplay from "./SuccessFailureDisplay";

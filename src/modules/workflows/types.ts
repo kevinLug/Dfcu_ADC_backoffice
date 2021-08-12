@@ -23,6 +23,9 @@ export interface IWorkflowFilter {
     subStatuses?: string[];
     workflowTypes?: string[];
     include?: IWorkflowInclude;
+
+    applicantName?: string
+
 }
 
 export interface IAction extends BaseModel {
@@ -97,7 +100,7 @@ export enum WorkflowStatus {
     Pending = "Pending",
     Rejected = "Rejected",
     PendingApproval = 'Pending Approval',
-    PendingClearance = 'Pending Clearance'
+    PendingClearance = 'Approved'
 }
 
 export enum WorkflowSubStatus {

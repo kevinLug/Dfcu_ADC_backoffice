@@ -33,7 +33,6 @@ import {localRoutes, remoteRoutes} from "../../data/constants";
 import {actionIWorkflowResponseMessage} from "../../data/redux/workflow-response/reducer";
 import {fetchWorkflowAsync, startWorkflowFetch} from "../../data/redux/workflows/reducer";
 
-
 const useTyleScanQrCode = makeStyles((theme: Theme) =>
     createStyles({
         root: {

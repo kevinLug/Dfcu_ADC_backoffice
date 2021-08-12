@@ -134,7 +134,7 @@ const InitiateTransfer = () => {
                 </Grid>
 
                 <Grid className={classes.expansion}>
-                    <ExpansionCard title="Transfer Request" children={<TransferDetails/>}/>
+                    <ExpansionCard title="Transfer Request" children={<TransferDetails />}/>
                 </Grid>
 
                 <Grid className={classes.expansion}>

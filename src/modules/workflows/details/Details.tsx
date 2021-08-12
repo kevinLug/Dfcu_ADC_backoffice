@@ -23,6 +23,7 @@ import {printStdDatetime} from "../../../utils/dateHelpers";
 import {ConstantLabelsAndValues} from "../../../data/constants";
 
 import {isNullOrEmpty, isNullOrUndefined} from "../../../utils/objectHelpers";
+import {IForexValueState} from "../../../data/redux/forex/reducer";
 
 interface IProps extends RouteComponentProps {
 
@@ -52,12 +53,13 @@ const Details = (props: IProps) => {
     const [blocker, setBlocker] = useState<boolean>(false)
     const {loading, workflow}: IWorkflowState = useSelector((state: any) => state.workflows)
     // const user = useSelector((state: IState) => state.core.user)
+    const {forexValue}: IForexValueState = useSelector((state: any) => state.forexDetails)
 
     const dispatch: Dispatch<any> = useDispatch();
     useEffect(() => {
         dispatch(startWorkflowFetch())
         dispatch(fetchWorkflowAsync(caseId))
-    }, [caseId, dispatch])
+    }, [caseId, dispatch, forexValue])
 
     if (loading)
         return <Navigation>
@@ -79,12 +81,9 @@ const Details = (props: IProps) => {
         // @ts-ignore
         const outputDataCSO = workflow.tasks[1].actions[0].outputData
 
-        // @ts-ignore
-        console.log("action:", workflow.tasks[1].actions[0])
-
         if (!isNullOrUndefined(outputDataCSO)) {
             const parsedOutputDataCSO = JSON.parse(outputDataCSO)
-            console.log('parsed:', parsedOutputDataCSO)
+
             const submittedByCSO = parsedOutputDataCSO["submittedBy"]
             const runDateCSO = new Date(parsedOutputDataCSO["runDate"])
 
@@ -133,7 +132,7 @@ const Details = (props: IProps) => {
         const outputDataBM = workflow.tasks[2].actions[0].outputData
         // @ts-ignore
         const parsedOutputDataBM = JSON.parse(workflow.tasks[2].actions[0].outputData)
-        console.log('parsed output BM:', parsedOutputDataBM)
+
         if (outputDataBM !== null && outputDataBM !== undefined) {
 
             const approvedByBM = JSON.parse(outputDataBM)["approvedBy"]
@@ -141,7 +140,7 @@ const Details = (props: IProps) => {
 
             let rejectionComment: string
 
-            if (!isNullOrUndefined(parsedOutputDataBM['rejectionComment'])  && !isNullOrEmpty(parsedOutputDataBM['rejectionComment'])) {
+            if (!isNullOrUndefined(parsedOutputDataBM['rejectionComment']) && !isNullOrEmpty(parsedOutputDataBM['rejectionComment'])) {
 
                 rejectionComment = parsedOutputDataBM['rejectionComment']
             } else {
@@ -181,17 +180,13 @@ const Details = (props: IProps) => {
         // @ts-ignore
         const outputDataCMO = workflow.tasks[3].actions[0].outputData
 
-        console.log("walked:", outputDataCMO)
-
         if (outputDataCMO !== null && outputDataCMO !== undefined) {
 
             // todo...include rejected by as well
             const clearedByCMO = JSON.parse(outputDataCMO)["session"]["username"]
             const runDateCMO = new Date(JSON.parse(outputDataCMO)["runDate"])
 
-            console.log('runDateCSO: ', runDateCMO)
-            // @ts-ignore
-            console.log("the tasks: ", workflow["tasks"])
+
 
             if (caseData.status === WorkflowStatus.Error) {
 
