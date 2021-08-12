@@ -177,8 +177,21 @@ const Details = (props: IProps) => {
 
         let returned: {}
 
+        // first consider a rejection from the CMO
+
+        let rejectionComment = ''
         // @ts-ignore
-        const outputDataCMO = workflow.tasks[3].actions[0].outputData
+        if (workflow.subStatus === WorkflowSubStatus.SendingToFinacleFailed) {
+            // @ts-ignore
+            const inputDataCMO = workflow.tasks[3].actions[0].outputData
+
+            rejectionComment = JSON.parse(inputDataCMO)['rejectionComment']
+        }
+
+        //Then consider a success
+
+        // @ts-ignore
+        const outputDataCMO = workflow.tasks[3].actions[1].inputData
 
         if (outputDataCMO !== null && outputDataCMO !== undefined) {
 
@@ -186,13 +199,14 @@ const Details = (props: IProps) => {
             const clearedByCMO = JSON.parse(outputDataCMO)["session"]["username"]
             const runDateCMO = new Date(JSON.parse(outputDataCMO)["runDate"])
 
-
-
             if (caseData.status === WorkflowStatus.Error) {
 
+                // @ts-ignore
                 returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
                     <span style={styleUserName}>{clearedByCMO}</span>{" - "}
                     <span style={styleUserName}>{printStdDatetime(runDateCMO)}</span>
+                    <br/>&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
+                    <span style={styleUserName}>{rejectionComment}</span>
                 </div>
 
             } else {

@@ -15,12 +15,12 @@ import {IDataProps} from "./CsoValidationChecklist";
 import {ICheckKeyValueState} from "../../../data/redux/checks/reducer";
 import {useDispatch, useSelector} from "react-redux";
 import {getChecksToPopulate, getDropdownSelectsToPopulate} from "../populateLabelAndValue";
-import Toast from "../../../utils/Toast";
 import {post} from "../../../utils/ajax";
 import {ISelectKeyValueState} from "../../../data/redux/selects/reducer";
 import {Dispatch} from "redux";
-import ObjectHelpersFluent from "../../../utils/objectHelpersFluent";
 import {RequestType} from "../../workflows/config";
+import {addDynamicPropertyToObject, isNullOrEmpty, isNullOrUndefined} from "../../../utils/objectHelpers";
+import Toast from "../../../utils/Toast";
 
 
 const useStylesInternal = makeStyles((theme: Theme) =>
@@ -152,25 +152,29 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
             }
         };
 
-        let bankName = ''
-        let bankCode = ''
-        let branchCode = ''
+        let bankName: string
+        let bankCode: string
+        let branchCode: string
 
         const isTypeEftOrRtgs1 = workflow.type === RequestType.EFT || workflow.type === RequestType.RTGS_1;
 
         if (isTypeEftOrRtgs1) {
+
+            const recipientBank = ConstantLabelsAndValues.mapOfRecipientBankCodeToValueOfBank().get(workflow.caseData.bankDetails.beneficiaryBank.bankName)
             // @ts-ignore
-            bankName = ConstantLabelsAndValues.mapOfRecipientBankCodeToValueOfBank().get(workflow.caseData.bankDetails.beneficiaryBank.bankName).name
+            bankName = recipientBank.name
             // @ts-ignore
-            bankCode = ConstantLabelsAndValues.mapOfRecipientBankCodeToValueOfBank().get(workflow.caseData.bankDetails.beneficiaryBank.bankName).bankCode
+            bankCode = recipientBank.bankCode
             // @ts-ignore
-            branchCode = ConstantLabelsAndValues.mapOfRecipientBankCodeToValueOfBank().get(workflow.caseData.bankDetails.beneficiaryBank.bankName).branchCode
+            branchCode = recipientBank.branchCode
+
         } else {
             bankName = workflow.caseData.bankDetails.beneficiaryBank.bankName
+            const recipientBank = ConstantLabelsAndValues.mapOfRecipientNameToValueOfBank().get(workflow.caseData.bankDetails.beneficiaryBank.bankName)
             // @ts-ignore
-            bankCode = ConstantLabelsAndValues.mapOfRecipientNameToValueOfBank().get(workflow.caseData.bankDetails.beneficiaryBank.bankName).name
+            bankCode = recipientBank.name
             // @ts-ignore
-            branchCode = ConstantLabelsAndValues.mapOfRecipientNameToValueOfBank().get(workflow.caseData.bankDetails.beneficiaryBank.bankName).branchCode
+            branchCode = recipientBank.branchCode
         }
 
         const beneficiaryDetails = {
@@ -210,10 +214,10 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
 
         post(remoteRoutes.workflowsManual, manualCMOApproval, (resp: any) => {
                 console.log(resp) // todo ... consider providing a message for both success and failure
+                window.location.href = window.location.origin
             }, undefined,
             () => {
 
-                window.location.href = window.location.origin
             }
         )
 
@@ -246,13 +250,24 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
         const comment = dropdownSelects[systemRoles.CMO]
         console.log("bmo:", comment)
 
-        // @ts-ignore
-        data["isRejected"] = true;
-        // @ts-ignore
-        data["clearedBy"] = user.name
-        // @ts-ignore
-        // data["timestamp"] = new Date()
-        const manualBMRejection: IManualDecision = {
+        if (isNullOrUndefined(comment) || isNullOrEmpty(comment)) {
+            Toast.warn('Please select a reason')
+            return
+        }
+
+        addDynamicPropertyToObject(data, 'isRejected', true)
+        addDynamicPropertyToObject(data, 'clearedBy', user.name)
+
+        const session = {
+            userId: user.sub,
+            sessionId: user.sid,
+            caseId: caseId,
+            username: user.name
+        }
+
+        addDynamicPropertyToObject(data,'session', session)
+
+        const manualCMORejection: IManualDecision = {
             caseId: caseId,
             taskName: "cmo-approval", // todo ...consider making these constants
             actionName: "cmo-transfer-details-approval",
@@ -262,19 +277,13 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
             override: false
         }
 
-        console.log("manual-time:", manualBMRejection)
+        console.log("manual-time:", manualCMORejection)
 
-        // if (manualBMRejection.data.rejectionComment.trim().length === 0) {
-        //     Toast.warn("Please provide a rejection comment...");
-        //     setTimeout(() => {
-        //         Toast.warn("Not submitted...");
-        //     }, 2000)
-        //     return;
-        // }
-        console.log("manual-bm:", manualBMRejection)
+        console.log("manual-bm:", manualCMORejection)
 
-        post(remoteRoutes.workflowsManual, manualBMRejection, (resp: any) => {
+        post(remoteRoutes.workflowsManual, manualCMORejection, (resp: any) => {
                 console.log(resp) // todo ... consider providing a message for both success and failure
+                window.location.href = window.location.origin
             }, undefined,
             () => {
 
@@ -323,9 +332,9 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
 
                                     <Box className={classes.submissionBox}>
 
-                                        <Button variant="contained" className={classes.rejectButton} onClick={cancelCommentDialog}>Cancel</Button>
+                                        <Button type="submit" variant="contained" color="primary" disabled={isRejectBtnDisabled} onSubmit={handleCMORejection}>OK</Button>
 
-                                        <Button type="submit" variant="contained" color="primary" disabled={isRejectBtnDisabled} onSubmit={handleCMORejection}>Confirm</Button>
+                                        <Button variant="contained" className={classes.rejectButton} onClick={cancelCommentDialog}>Cancel</Button>
 
                                     </Box>
 

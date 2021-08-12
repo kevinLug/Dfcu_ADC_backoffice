@@ -120,7 +120,10 @@ export enum WorkflowSubStatus {
     FailedCSOApproval = 'FailedCSOApproval',
     FailedBMApproval = 'FailedBMApproval',
     FailedCheckerApproval = 'FailedCheckerApproval',
+    SendingToFinacleFailed = 'SendingToFinacleFailed',
+    SentToFinacle = 'SentToFinacle',
     FailedClearingDeptApproval = ' FailedClearingDeptApproval',
+
 
     ContactCreationFailed = "ContactCreationFailed",
     CaseUpdateFailed = "CaseUpdateFailed",
