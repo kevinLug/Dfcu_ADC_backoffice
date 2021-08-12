@@ -103,14 +103,14 @@ const Filter = ({onFilter, loading}: IProps) => {
 
     const classes = useStyles();
 
-    const metaData = useSelector((state: IState) => state.core.metadata)
-    const accountCategories: IOption[] = uniqBy(flatMap(metaData.transferCategories, it => it.accounts.map(({
-                                                                                                                code,
-                                                                                                                name
-                                                                                                            }) => ({
-        label: name,
-        value: code
-    }))), "value")
+    // const metaData = useSelector((state: IState) => state.core.metadata)
+    // const accountCategories: IOption[] = uniqBy(flatMap(metaData.transferCategories, it => it.accounts.map(({
+    //                                                                                                             code,
+    //                                                                                                             name
+    //                                                                                                         }) => ({
+    //     label: name,
+    //     value: code
+    // }))), "value")
 
     const [data, setData] = useState<IWorkflowFilter>({
         from: null,
@@ -139,9 +139,8 @@ const Filter = ({onFilter, loading}: IProps) => {
 
     useEffect(() => {
 
-        console.log(check.checks)
     }, [check])
-
+    console.log('filtered:', data)
     const ids = ['status-grid', 'subStatus-grid', 'refNumber-grid', 'from-grid', 'to-grid']
     const labels = ['Status', 'Sub Status', 'Ref. Number', 'From Date', 'To Date']
 
@@ -218,8 +217,8 @@ const Filter = ({onFilter, loading}: IProps) => {
                         {variant: "outlined", size: "small"}
                     }
                     filter={{
-                        'IdField': 'MetaData.ApplicantName',
-                        'DisplayField': 'MetaData.ApplicantName',
+                        'IdField': 'MetaData.applicantName',
+                        'DisplayField': 'MetaData.applicantName',
                     }}
                 />
             </Grid>

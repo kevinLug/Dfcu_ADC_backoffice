@@ -47,11 +47,11 @@ const DocsUpdater = ({open, onClose, gatewayDocuments, workflow}: IProps) => {
 
     function handleSubmit() {
         if (files === null) {
-            Toast.info("Please select a file")
+            Toast.info("Please selects a file")
             return
         }
         if (docType === null || hasNoValue(docType)) {
-            Toast.info("Please select a document type")
+            Toast.info("Please selects a document type")
             return
         }
         setLoading(true)

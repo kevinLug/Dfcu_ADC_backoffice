@@ -52,6 +52,7 @@ export function PRemoteSelect(props: IProps) {
         search(props.remote, {...props.filter, query},
             resp => {
                 const data = resp.map(props.parser)
+                console.log("searched: ", data)
                 setOptions(data)
             },
             undefined,

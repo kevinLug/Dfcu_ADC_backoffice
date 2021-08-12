@@ -77,7 +77,7 @@ const servers: any = {
         // Auth: 'https://localhost:44313',
         Auth: 'https://dfcu-autodatacapture-auth-api-test.test001.laboremus.no',
         // Case: 'http://localhost:6001',
-        Case: 'https://dfcu-autodatacapture-casehandling-test.test001.laboremus.no',
+        Case: 'https://dfcu-autodataca/pture-casehandling-test.test001.laboremus.no',
         Notification: 'https://dfcu-notification-api-test.test001.laboremus.no',
     },
     test: {
