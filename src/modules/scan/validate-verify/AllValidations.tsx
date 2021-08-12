@@ -73,7 +73,6 @@ const AllValidations = ({workflow}: IProps) => {
             setImageSrcFromBinary(base64)
         };
 
-
         // !isNullOrUndefined(forexDetailsFound) && !isNullOrEmpty(forexDetailsFound.rate.toString())
 
         if (
@@ -81,6 +80,7 @@ const AllValidations = ({workflow}: IProps) => {
             workflow.subStatus === WorkflowSubStatus.FailedCSOApproval ||
             workflow.subStatus === WorkflowSubStatus.FailedBMApproval ||
             workflow.subStatus === WorkflowSubStatus.AwaitingClearingDeptApproval ||
+            workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle ||
             workflow.status === WorkflowStatus.Closed
         ) {
 
