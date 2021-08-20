@@ -146,25 +146,6 @@ function Layout(props: any) {
 
     function startNewTransfer() {
 
-        // <Link to={localRoutes.scanCrop}/>
-
-        // if (btnTransferName === "NEW TRANSFER REQUEST") {
-        //     setShowScanner(true)
-        //     dispatch(startNewTransferRequest(showScanner))
-        //     setBtnTransferName("BACK")
-        //     dispatch(actionICaseState(ICaseDefault));
-        //     dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
-        // } else {
-        //     setBtnTransferName("NEW TRANSFER REQUEST")
-        //     window.location.reload()
-        // }
-        // dispatch(actionICaseState(ICaseDefault));
-        // dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
-        //
-        //
-        // <Link style={{textDecoration: 'none', color: linkColor}} to={`${localRoutes.applications}/${id}`}>{name}</Link>
-
-
     }
 
     function canShowRequestButton() {
@@ -198,6 +179,9 @@ function Layout(props: any) {
                                 <Button
                                     variant="contained"
                                     color="primary"
+
+                                    id='new-request-btn'
+
                                     onClick={startNewTransfer}
                                     startIcon={btnTransferName === 'BACK' ? <ArrowBackIcon/> : undefined}
                                 >

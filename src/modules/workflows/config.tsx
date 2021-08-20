@@ -129,6 +129,8 @@ export const workflowHeadCells: XHeadCell[] = [
             }
         },
         render: (data, rec) => {
+            console.log('ttttt-data:', data)
+            console.log('ttttt-rec:', rec)
             // let valueToDisplay = ''
 
             // if (rec.workflowType === RequestType.EFT || rec.workflowType === RequestType.RTGS_1)

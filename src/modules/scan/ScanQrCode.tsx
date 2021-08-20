@@ -11,7 +11,7 @@ import Dropzone from "react-dropzone";
 import Typography from "@material-ui/core/Typography";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import {getCroppedImg, getRotatedImage} from "./canvasUtils";
-import ObjectHelpersFluent from "../../utils/objectHelpersFluent";
+import ObjectHelpersFluent, {fluentValidationInstance} from "../../utils/objectHelpersFluent";
 import Toast from "../../utils/Toast";
 import {login} from "../../api-stress/login";
 import {randomInt} from "../../utils/numberHelpers";
@@ -250,62 +250,57 @@ const ScanQrCode = () => {
                 const ttt = await idbHandler.setUpDb("test_again")
                 console.log('sss:', ttt)
                 console.log('sss:', idbHandler.getDb())
-                if (validationResult) {
+
+                if (!validationResult){
+                        const messages = SuccessCriteria.getFailedTestResults(aCase.workflowType).toArray().map((msg) => {
+                            return msg.userFailureMessage
+                        })
+                        // @ts-ignore
+                        setInfoMessages(messages)
+
+                        setOpenSnackBar(true)
+                    Toast.warn("Did not initiate transfer request")
+                }else {
 
                     console.log("the user: ", user)
-                    console.log("the case: ", aCase)
+                        console.log("the case: ", aCase)
 
-                    post(remoteRoutes.workflows, aCase, (resp: any) => {
-                            console.log('resp-initiation:', resp) // todo ... consider providing a message for both success and failure
-                            dispatch(actionIWorkflowResponseMessage(resp))
+                        post(remoteRoutes.workflows, aCase, (resp: any) => {
+                                console.log('resp-initiation:', resp) // todo ... consider providing a message for both success and failure
+                                dispatch(actionIWorkflowResponseMessage(resp))
 
-                            const postResp = new ObjectHelpersFluent()
-                            postResp.selector(resp, '$.caseId')
-                                .isPresent()
-                                .logDetailed()
-                                .successCallBack(() => {
-                                    Toast.success("Initiated successfully")
-                                    dispatch(startWorkflowFetch())
-                                    dispatch(fetchWorkflowAsync(postResp.getSummary().value))
-                                    // refresh to show details of new case initiated
-                                    window.location.href = `${localRoutes.applications}/${resp.caseId}`
-                                })
-                                .failureCallBack(() => {
-                                    Toast.warn("Something is wrong")
-                                })
+                                const postResp = fluentValidationInstance()
+                                postResp.selector(resp, '$.caseId')
+                                    .isPresent()
+                                    .logDetailed()
+                                    .successCallBack(() => {
+                                        Toast.success("Initiated successfully")
+                                        dispatch(startWorkflowFetch())
+                                        dispatch(fetchWorkflowAsync(postResp.getSummary().value))
+                                        // refresh to show details of new case initiated
+                                        window.location.href = `${localRoutes.applications}/${resp.caseId}`
+                                    })
+                                    .failureCallBack(() => {
+                                        Toast.warn("Something is wrong")
+                                    })
 
-                        }, undefined,
-                        () => {
+                            }, undefined,
+                            () => {
 
-                            // pick caseId of initiated case
+                                // pick caseId of initiated case
 
-                            // refresh page based on the caseId
+                                // refresh page based on the caseId
 
-                            console.log("results-from-tests-failed: ", SuccessCriteria.getFailedTestResults(aCase.workflowType))
-                            console.log("results-from-tests-passed: ", SuccessCriteria.getPassedTestResults(aCase.workflowType))
-                            console.log("summary: ", SuccessCriteria.getSuccessCriteriaSummarySet())
+                                // console.log("results-from-tests-failed: ", SuccessCriteria.getFailedTestResults(aCase.workflowType))
+                                // console.log("results-from-tests-passed: ", SuccessCriteria.getPassedTestResults(aCase.workflowType))
+                                // console.log("summary: ", SuccessCriteria.getSuccessCriteriaSummarySet())
 
-                        }
-                    )
+                            }
+                        )
 
-                } else {
-                    Toast.warn("Incomplete info in scan result")
-
-                    Toast.error("Initiation failed")
-
-                    console.log("results-from-tests-failed: ", SuccessCriteria.getFailedTestResults(aCase.workflowType))
-                    console.log("results-from-tests-passed: ", SuccessCriteria.getPassedTestResults(aCase.workflowType))
-                    console.log("summary: ", SuccessCriteria.getSuccessCriteriaSummarySet())
-
-                    const messages = SuccessCriteria.getFailedTestResults(aCase.workflowType).toArray().map((msg) => {
-                        return msg.userFailureMessage
-                    })
-                    // @ts-ignore
-                    setInfoMessages(messages)
-
-                    setOpenSnackBar(true)
 
                 }
+
             }
 
             setResult(decodedRawResult.getText())

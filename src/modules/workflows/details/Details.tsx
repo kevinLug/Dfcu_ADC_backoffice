@@ -196,7 +196,8 @@ const Details = (props: IProps) => {
         if (outputDataCMO !== null && outputDataCMO !== undefined) {
 
             // todo...include rejected by as well
-            const clearedByCMO = JSON.parse(outputDataCMO)["session"]["username"]
+            const clearedByCMO = JSON.parse(outputDataCMO)["clearedBy"]
+            // const clearedByCMO = JSON.parse(outputDataCMO)["session"]["username"]
             const runDateCMO = new Date(JSON.parse(outputDataCMO)["runDate"])
 
             if (caseData.status === WorkflowStatus.Error) {

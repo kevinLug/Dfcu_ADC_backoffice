@@ -12,7 +12,7 @@ import {printDateTime} from "../../utils/dateHelpers";
 import {ConstantLabelsAndValues} from "../../data/constants";
 import {RequestType} from "../workflows/config";
 import ObjectHelpersFluent, {fluentValidationInstance} from "../../utils/objectHelpersFluent";
-import {isNullOrEmpty} from "../../utils/objectHelpers";
+import {isNullOrEmpty, isNullOrUndefined} from "../../utils/objectHelpers";
 
 import Numbers from "../../utils/numbers";
 
@@ -96,6 +96,11 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
     return keyValueLabels(labels);
 }
 
+const removeLastComma = (s: string) => {
+    //s.lastIndexOf(',')
+    return s.substr(0, s.length -1)
+}
+
 export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: IBankDetails, aCase: ICase) => {
     const labellingOne = {...dataOne}
     const labellingTwo = {...dataTwo}
@@ -137,7 +142,7 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
                     addCodeAndLabel(ConstantLabelsAndValues.IBAN, labellingTwo.beneficiaryBank.sortCode);
 
             })
-        console.log('the code: ', transferCodesAndLabels)
+        // console.log('the code: ', transferCodesAndLabels)
         return transferCodesAndLabels
     }
 
@@ -149,14 +154,16 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
         },
         {
             label: ConstantLabelsAndValues.BANK_NAME,
-            value: new ObjectHelpersFluent().testTitle("CASE is present").directValue(aCase)
+            value: fluentValidationInstance()
+                .testTitle("CASE is present")
+                .selector(aCase,'$')
                 .isPresent()
-
                 .successCallBack(() => {
 
-                    fluentValidationInstance().testTitle('transfer type is not empty..for bank name display').selector(aCase, '$.workflowType')
+                    fluentValidationInstance()
+                        .testTitle('transfer type is not empty..for bank name display')
+                        .selector(aCase, '$.workflowType')
                         .isPresent()
-
                         .successCallBack(() => {
 
                             const eftOrRtgs1 = aCase.workflowType === RequestType.EFT || aCase.workflowType === RequestType.RTGS_1
@@ -164,13 +171,22 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
                             // EFT or RTGS1 transfer type
                             fluentValidationInstance()
                                 .testTitle("transfer type equals EFT or RTGS_1")
-                                .directValue(eftOrRtgs1).isEqualTo(true)
-
+                                .directValue(eftOrRtgs1)
+                                .isEqualTo(true)
                                 .successCallBack(() => {
-                                    // @ts-ignore
-                                    bankName = ConstantLabelsAndValues.mapOfRecipientBankCodeToValueOfBank().get(labellingTwo.beneficiaryBank.bankName).name
+                                    console.log(labellingTwo.beneficiaryBank,labellingTwo.beneficiaryBank.bankName)
+                                    if (!isNullOrUndefined(labellingTwo.beneficiaryBank.bankName) && !isNullOrEmpty(labellingTwo.beneficiaryBank.bankName)){
+                                        // @ts-ignore
+                                        bankName = ConstantLabelsAndValues.mapOfRecipientBankCodeToValueOfBank().get(labellingTwo.beneficiaryBank.bankName).name
+                                    }
+
                                 })
-                                .failureCallBack(() => bankName = labellingTwo.beneficiaryBank.bankName)
+                                .failureCallBack(() => {
+                                    if (!isNullOrUndefined(labellingTwo.beneficiaryBank.bankName) && !isNullOrEmpty(labellingTwo.beneficiaryBank.bankName)){
+                                        bankName = labellingTwo.beneficiaryBank.bankName
+                                    }
+
+                                })
                         })
 
                 })
@@ -213,7 +229,7 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
                         }
                     }
 
-                }).failureCallBack(() => recipientPhysicalAddress = '').getSummary().testResult ? recipientPhysicalAddress : recipientPhysicalAddress
+                }).failureCallBack(() => recipientPhysicalAddress = '').getSummary().testResult ? removeLastComma(recipientPhysicalAddress) : recipientPhysicalAddress
         },
         {
             label: ConstantLabelsAndValues.COUNTRY,
@@ -240,6 +256,7 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
 
     return keyValueLabels(labels);
 }
+
 
 export const beneficiaryAddressLabels = (data: IBeneficiaryAddress) => {
     const labelling = data

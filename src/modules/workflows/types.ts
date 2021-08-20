@@ -11,7 +11,7 @@ export interface IWorkflowFilter {
     referenceNumber?: string;
     externalReference?: string;
     userId?: string;
-    applicant?: string;
+    //applicant?: string;
     assignee?: string;
     showNew?: boolean;
     showAssigned?: boolean;
@@ -26,6 +26,23 @@ export interface IWorkflowFilter {
 
     applicantName?: string
 
+}
+
+export interface IWorkflowFilterResult {
+    id?: string;
+    referenceNumber?: string;
+    externalReference?: string;
+    userId?: string;
+    applicant?: string;
+    assignee?: string;
+    statuses?: string[];
+    from?: Date | null;
+    to?: Date | null;
+    subStatuses?: string[];
+    workflowTypes?: string[];
+    include?: IWorkflowInclude;
+
+    applicantName?: string
 }
 
 export interface IAction extends BaseModel {

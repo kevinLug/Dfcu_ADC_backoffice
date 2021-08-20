@@ -61,7 +61,6 @@ const validateEft = async (data: ICase): Promise<boolean> => {
             .addUserFailureMessage("rate must be greater or equal to zero")
             // .isIgnorable()
             .logDetailed()
-            .logDetailed()
         isRatePresent.failureCallBack(() => Toast.error("Rate is missing"))
         tests.add(isRatePresent)
 
@@ -125,7 +124,7 @@ const validateEft = async (data: ICase): Promise<boolean> => {
             .isPresent()
             .addUserFailureMessage("Sender's email address is missing")
             .logDetailed()
-        isSenderEmailPresent.failureCallBack(() => Toast.error("Sender's email is missing"))
+        isSenderEmailPresent.failureCallBack(() => {})
         tests.add(isSenderEmailPresent)
 
         validateSharedValuesAndRules(data, tests)

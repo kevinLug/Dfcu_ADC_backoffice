@@ -29,6 +29,8 @@ import IconButton from "@material-ui/core/IconButton";
 
 import {ICheckKeyValueState} from "../../data/redux/checks/reducer";
 import {MoreHoriz} from "@material-ui/icons";
+import {IKeyValueMap, KeyValueMap} from "../../utils/collections/map";
+import {ObjectUtils} from "../../utils/objectHelpers";
 
 
 const StyledMenu = withStyles({
@@ -65,21 +67,42 @@ const StyledMenuItem = withStyles((theme) => ({
 interface IProps {
     onFilter: (data: any) => any
     loading: boolean
+    setFilteredData?: (dataFiltered: any) => any
+
+    setSearchIsHappening?: (flag: boolean) => any
 }
 
-// const useStyles = makeStyles((theme: Theme) =>
-//     createStyles({
-//         button: {
-//             display: 'block',
-//             marginTop: theme.spacing(2),
-//         },
-//         formControl: {
-//             // margin: theme.spacing(1),
-//             // minWidth: 120,
-//             width: '100%'
-//         },
-//     }),
-// );
+interface IFilterResult {
+    result: IList<any>[]
+}
+
+export class FilterResult {
+
+    private static result: IKeyValueMap<string, IWorkflowFilter> = new KeyValueMap<string, IWorkflowFilter>();
+
+    static setResult(result: any[]): void {
+
+        if (result.length > 0) {
+
+            FilterResult.result.clear();
+
+            result.map((e) => {
+                const demandedData = e["demandedData"]
+                const parsed = new Object(demandedData)
+                console.log('demandedData', JSON.stringify(parsed))
+
+                // @ts-ignore
+                FilterResult.result.put(Object.values(parsed)[0], parsed);
+            })
+        }
+
+    }
+
+    static getResult() {
+        return FilterResult.result;
+    }
+
+}
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -99,32 +122,30 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 
-const Filter = ({onFilter, loading}: IProps) => {
+const Filter = ({onFilter, loading, setFilteredData, setSearchIsHappening}: IProps) => {
 
     const classes = useStyles();
 
-    // const metaData = useSelector((state: IState) => state.core.metadata)
-    // const accountCategories: IOption[] = uniqBy(flatMap(metaData.transferCategories, it => it.accounts.map(({
-    //                                                                                                             code,
-    //                                                                                                             name
-    //                                                                                                         }) => ({
-    //     label: name,
-    //     value: code
-    // }))), "value")
-
     const [data, setData] = useState<IWorkflowFilter>({
-        from: null,
-        to: null,
-        statuses: [],
-        subStatuses: [],
-        workflowTypes: [],
-        applicant: '',
-        assignee: '',
-        product: '',
-        referenceNumber: '',
-        idNumber: '',
-        userId: ''
+        // from: null,
+        // to: null,
+        // statuses: [],
+        //subStatuses: [],
+        // workflowTypes: [],
+        //applicant: '',
+        //assignee: '',
+        //product: '',
+        //referenceNumber: '',
+        //idNumber: '',
+        //userId: '',
+        applicantName: ''
     })
+
+    const [searchValueApplicantName, setSearchValueApplicantName] = useState('')
+    const [searchHappening, setSearchHappening] = useState(false)
+
+    const [searchData, setSearchedData] = useState<any[]>([])
+
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const gridSize: any = {
@@ -139,7 +160,7 @@ const Filter = ({onFilter, loading}: IProps) => {
 
     useEffect(() => {
 
-    }, [check])
+    }, [check,searchData, searchHappening])
     console.log('filtered:', data)
     const ids = ['status-grid', 'subStatus-grid', 'refNumber-grid', 'from-grid', 'to-grid']
     const labels = ['Status', 'Sub Status', 'Ref. Number', 'From Date', 'To Date']
@@ -151,6 +172,8 @@ const Filter = ({onFilter, loading}: IProps) => {
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    console.log("loading from within: ", loading)
 
     const checkListShowMoreOrLess = (): IList<IPropsChecks> => {
 
@@ -169,14 +192,53 @@ const Filter = ({onFilter, loading}: IProps) => {
     }
 
     function submitForm(values: any) {
+        console.log("new from search:", values)
         onFilter(values)
+        //setSearchIsHappening(true)
+
+        setSearchHappening(true)
+        if (setSearchIsHappening) {
+            setSearchIsHappening(searchHappening)
+        }
+
     }
+
+    // function determineSearchHappening() {
+    //
+    //     const values = new KeyValueMap<string, string>();
+    //     values.put('applicant', searchValueApplicantName);
+    //
+    //     // if any of the fields is not empty, then search is happening
+    //     for (const value of values) {
+    //         if (value.value !== '' && value.value !== null && value.value !== undefined) {
+    //             if (setSearchIsHappening) {
+    //                 setSearchIsHappening(true)
+    //             }
+    //             break
+    //         } else {
+    //             if (setSearchIsHappening) {
+    //                 setSearchIsHappening(false)
+    //             }
+    //             break
+    //         }
+    //     }
+    //
+    //     return values.getValues().toArray().every(value => value !== '' && value !== null && value !== undefined)
+    //
+    //
+    // }
 
     function handleChange(event: React.ChangeEvent<any>) {
         const name = event.target.name
         const value = event.target.value
         const newData = {...data, [name]: value}
+        console.log("foundation: ", newData)
         setData(newData)
+        // submitForm(newData)
+        setSearchedData(FilterResult.getResult().getValues().toArray())
+        if (setFilteredData) {
+            setFilteredData(FilterResult.getResult().getValues().toArray())
+        }
         submitForm(newData)
     }
 
@@ -190,9 +252,20 @@ const Filter = ({onFilter, loading}: IProps) => {
     }
 
     const handleComboValueChange = (name: string) => (value: any) => {
+        console.log("name: ", name)
+        console.log("value: ", value)
+        // const newData = {...data, [name]: value}
         const newData = {...data, [name]: value}
+        console.log("newData: ", newData)
         const newFilterData = {...data, [name]: value ? value.id : null}
+        console.log("newFilterData: ", newFilterData)
         setData(newData)
+        if (setFilteredData) {
+            setFilteredData(FilterResult.getResult().getValues().toArray())
+        }
+
+        // determineSearchHappening()
+
         submitForm(newFilterData)
     }
 
@@ -207,9 +280,10 @@ const Filter = ({onFilter, loading}: IProps) => {
 
             <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}>
                 <PRemoteSelect
+
                     name="applicant"
-                    value={data['applicant']}
-                    onChange={handleComboValueChange('applicant')}
+                    value={data['applicantName']}
+                    onChange={handleComboValueChange('applicantName')}
                     label="Applicant"
                     remote={remoteRoutes.workflowsCombo}
                     parser={({id, name}: any) => ({id, label: name})}
@@ -223,102 +297,102 @@ const Filter = ({onFilter, loading}: IProps) => {
                 />
             </Grid>
 
-            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}>
-                <PRemoteSelect
-                    name="userId"
-                    value={data['userId']}
-                    onChange={handleComboValueChange('userId')}
-                    label="Beneficiary"
-                    remote={remoteRoutes.workflowsCombo}
-                    parser={({id, name}: any) => ({id, label: name})}
-                    textFieldProps={
-                        {variant: "outlined", size: "small"}
-                    }
-                    filter={{
-                        'IdField': 'UserId',
-                        'DisplayField': 'MetaData.userName',
-                    }}
-                />
-            </Grid>
+            {/*<Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}>*/}
+            {/*    <PRemoteSelect*/}
+            {/*        name="userId"*/}
+            {/*        value={data['userId']}*/}
+            {/*        onChange={handleComboValueChange('userId')}*/}
+            {/*        label="Beneficiary"*/}
+            {/*        remote={remoteRoutes.workflowsCombo}*/}
+            {/*        parser={({id, name}: any) => ({id, label: name})}*/}
+            {/*        textFieldProps={*/}
+            {/*            {variant: "outlined", size: "small"}*/}
+            {/*        }*/}
+            {/*        filter={{*/}
+            {/*            'IdField': 'UserId',*/}
+            {/*            'DisplayField': 'MetaData.userName',*/}
+            {/*        }}*/}
+            {/*    />*/}
+            {/*</Grid>*/}
 
-            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}>
-                <PSelectInput
-                    name="workflowTypes"
-                    value={data['workflowTypes']}
-                    onChange={handleChange}
-                    multiple
-                    label="Transfer Type"
-                    variant="outlined"
-                    size='small'
-                    options={toOptions(workflowTypes)}
-                />
-            </Grid>
+            {/*<Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}>*/}
+            {/*    <PSelectInput*/}
+            {/*        name="workflowTypes"*/}
+            {/*        value={data['workflowTypes']}*/}
+            {/*        onChange={handleChange}*/}
+            {/*        multiple*/}
+            {/*        label="Transfer Type"*/}
+            {/*        variant="outlined"*/}
+            {/*        size='small'*/}
+            {/*        options={toOptions(workflowTypes)}*/}
+            {/*    />*/}
+            {/*</Grid>*/}
 
-            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}
-                  id="status-grid" hidden={check.checks.get("status-grid")}>
-                <PSelectInput
-                    name="statuses"
-                    value={data['statuses']}
-                    onChange={handleChange}
-                    multiple
-                    label="Status"
-                    variant="outlined"
-                    size='small'
-                    options={toOptions(enumToArray(WorkflowStatus))}
-                />
-            </Grid>
+            {/*<Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}*/}
+            {/*      id="status-grid" hidden={check.checks.get("status-grid")}>*/}
+            {/*    <PSelectInput*/}
+            {/*        name="statuses"*/}
+            {/*        value={data['statuses']}*/}
+            {/*        onChange={handleChange}*/}
+            {/*        multiple*/}
+            {/*        label="Status"*/}
+            {/*        variant="outlined"*/}
+            {/*        size='small'*/}
+            {/*        options={toOptions(enumToArray(WorkflowStatus))}*/}
+            {/*    />*/}
+            {/*</Grid>*/}
 
-            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}
-                  id="subStatus-grid" hidden={check.checks.get("subStatus-grid")}>
-                <PSelectInput
-                    name="subStatuses"
-                    value={data['subStatuses']}
-                    onChange={handleChange}
-                    multiple
-                    label="Sub Status"
-                    variant="outlined"
-                    size='small'
-                    options={toOptions(enumToArray(WorkflowSubStatus))}
-                />
-            </Grid>
+            {/*<Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}*/}
+            {/*      id="subStatus-grid" hidden={check.checks.get("subStatus-grid")}>*/}
+            {/*    <PSelectInput*/}
+            {/*        name="subStatuses"*/}
+            {/*        value={data['subStatuses']}*/}
+            {/*        onChange={handleChange}*/}
+            {/*        multiple*/}
+            {/*        label="Sub Status"*/}
+            {/*        variant="outlined"*/}
+            {/*        size='small'*/}
+            {/*        options={toOptions(enumToArray(WorkflowSubStatus))}*/}
+            {/*    />*/}
+            {/*</Grid>*/}
 
-            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}
-                  id="refNumber-grid" hidden={check.checks.get("refNumber-grid")}>
-                <TextField
-                    name="referenceNumber"
-                    value={data['referenceNumber']}
-                    onChange={handleChange}
-                    label="Ref. Number"
-                    type="text"
-                    variant='outlined'
-                    size='small'
-                    fullWidth
-                />
-            </Grid>
+            {/*<Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}*/}
+            {/*      id="refNumber-grid" hidden={check.checks.get("refNumber-grid")}>*/}
+            {/*    <TextField*/}
+            {/*        name="referenceNumber"*/}
+            {/*        value={data['referenceNumber']}*/}
+            {/*        onChange={handleChange}*/}
+            {/*        label="Ref. Number"*/}
+            {/*        type="text"*/}
+            {/*        variant='outlined'*/}
+            {/*        size='small'*/}
+            {/*        fullWidth*/}
+            {/*    />*/}
+            {/*</Grid>*/}
 
-            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}
-                  id="from-grid" hidden={check.checks.get("from-grid")}>
-                <PDateInput
-                    name="from"
-                    value={data['from'] || null}
-                    onChange={handleValueChange('from')}
-                    label="From"
-                    variant="inline"
-                    inputVariant='outlined'
-                />
-            </Grid>
+            {/*<Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}*/}
+            {/*      id="from-grid" hidden={check.checks.get("from-grid")}>*/}
+            {/*    <PDateInput*/}
+            {/*        name="from"*/}
+            {/*        value={data['from'] || null}*/}
+            {/*        onChange={handleValueChange('from')}*/}
+            {/*        label="From"*/}
+            {/*        variant="inline"*/}
+            {/*        inputVariant='outlined'*/}
+            {/*    />*/}
+            {/*</Grid>*/}
 
-            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl} id="to-grid"
-                  hidden={check.checks.get("to-grid")}>
-                <PDateInput
-                    name="to"
-                    value={data['to'] || null}
-                    onChange={handleValueChange('to')}
-                    label="To"
-                    variant="inline"
-                    inputVariant='outlined'
-                />
-            </Grid>
+            {/*<Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl} id="to-grid"*/}
+            {/*      hidden={check.checks.get("to-grid")}>*/}
+            {/*    <PDateInput*/}
+            {/*        name="to"*/}
+            {/*        value={data['to'] || null}*/}
+            {/*        onChange={handleValueChange('to')}*/}
+            {/*        label="To"*/}
+            {/*        variant="inline"*/}
+            {/*        inputVariant='outlined'*/}
+            {/*    />*/}
+            {/*</Grid>*/}
 
             <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}>
 
