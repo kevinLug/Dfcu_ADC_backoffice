@@ -12,6 +12,22 @@ export const checkNested = (object: any, ...rest: any) => {
 export const isNullOrEmpty = (str: string): boolean => str === undefined || str === null || str.trim() === "";
 export const isNullOrUndefined = (value:any): boolean => value === null || value === undefined;
 
+/**
+ *  remove last comma in a string and return the resulting string
+ * @param str
+ */
+export const removeLastComma = (str: string) => {
+
+    const lastComma = str.substr(str.length - 1, str.length);
+
+    if (lastComma.trim() === ',') {
+        return str.substr(0, (str.length - 1))
+    }
+    return str;
+
+}
+
+
 export enum CriteriaTest {
     //Value should be present
     Presence = "Present",

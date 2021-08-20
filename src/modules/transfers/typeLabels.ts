@@ -12,7 +12,7 @@ import {printDateTime} from "../../utils/dateHelpers";
 import {ConstantLabelsAndValues} from "../../data/constants";
 import {RequestType} from "../workflows/config";
 import ObjectHelpersFluent, {fluentValidationInstance} from "../../utils/objectHelpersFluent";
-import {isNullOrEmpty, isNullOrUndefined} from "../../utils/objectHelpers";
+import {isNullOrEmpty, isNullOrUndefined, removeLastComma} from "../../utils/objectHelpers";
 
 import Numbers from "../../utils/numbers";
 
@@ -96,10 +96,6 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
     return keyValueLabels(labels);
 }
 
-const removeLastComma = (s: string) => {
-    //s.lastIndexOf(',')
-    return s.substr(0, s.length -1)
-}
 
 export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: IBankDetails, aCase: ICase) => {
     const labellingOne = {...dataOne}
@@ -156,7 +152,7 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
             label: ConstantLabelsAndValues.BANK_NAME,
             value: fluentValidationInstance()
                 .testTitle("CASE is present")
-                .selector(aCase,'$')
+                .selector(aCase, '$')
                 .isPresent()
                 .successCallBack(() => {
 
@@ -174,15 +170,15 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
                                 .directValue(eftOrRtgs1)
                                 .isEqualTo(true)
                                 .successCallBack(() => {
-                                    console.log(labellingTwo.beneficiaryBank,labellingTwo.beneficiaryBank.bankName)
-                                    if (!isNullOrUndefined(labellingTwo.beneficiaryBank.bankName) && !isNullOrEmpty(labellingTwo.beneficiaryBank.bankName)){
+                                    console.log(labellingTwo.beneficiaryBank, labellingTwo.beneficiaryBank.bankName)
+                                    if (!isNullOrUndefined(labellingTwo.beneficiaryBank.bankName) && !isNullOrEmpty(labellingTwo.beneficiaryBank.bankName)) {
                                         // @ts-ignore
                                         bankName = ConstantLabelsAndValues.mapOfRecipientBankCodeToValueOfBank().get(labellingTwo.beneficiaryBank.bankName).name
                                     }
 
                                 })
                                 .failureCallBack(() => {
-                                    if (!isNullOrUndefined(labellingTwo.beneficiaryBank.bankName) && !isNullOrEmpty(labellingTwo.beneficiaryBank.bankName)){
+                                    if (!isNullOrUndefined(labellingTwo.beneficiaryBank.bankName) && !isNullOrEmpty(labellingTwo.beneficiaryBank.bankName)) {
                                         bankName = labellingTwo.beneficiaryBank.bankName
                                     }
 
