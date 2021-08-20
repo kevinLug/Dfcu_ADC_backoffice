@@ -29,7 +29,7 @@ import RejectionForm from "./RejectionDialog";
 import ForexForm from "./ForexDialog";
 import {ICheckKeyValueDefault, IForex, ISelectKeyValueDefault} from "../../transfers/types";
 import {actionIForexValue, IForexValueState} from "../../../data/redux/forex/reducer";
-import  {fluentValidationInstance} from "../../../utils/objectHelpersFluent";
+import {fluentValidationInstance} from "../../../utils/objectHelpersFluent";
 import {addDynamicPropertyToObject, isNullOrEmpty, isNullOrUndefined} from "../../../utils/objectHelpers";
 import ConfirmationDialog from "../confirmation-dialog";
 import SuccessFailureDisplay from "./SuccessFailureDisplay";
@@ -95,7 +95,7 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
 
     }, [showConfirmationDialog, dispatch, check, workflow, rejectionComment, data, select, forexValue, isNewTransferRequestStarted])
 
-    const handleCSOApproval = async () => {
+    async function handleCSOSubmission() {
 
         const dataCSOManual: any = {
             isRejected: false,
@@ -107,7 +107,9 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
         // provide check values as part of the object to be sent
         for (const v of ConstantLabelsAndValues.csoValidationCheckList()) {
             // @ts-ignore
-            addDynamicPropertyToObject(dataCSOManual, v.name, getChecksToPopulate(check.checks)[v.name])
+            const value = getChecksToPopulate(check.checks)[v.name]
+            // @ts-ignore
+            addDynamicPropertyToObject(dataCSOManual, v.name, value)
 
         }
 
@@ -351,6 +353,28 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
         }
 
         // @ts-ignore
+        const flagForexConfirmation = getChecksToPopulate(check.checks)[ConstantLabelsAndValues.csoValidationCheckList().get(1).name]
+
+        // confirm forex details presence
+        const confirmForex = fluentValidationInstance()
+            .testTitle("confirming forex details presence before submission by CSO")
+            .selector(forexValue, '$.remittanceAmount')
+            .isPresent()
+            .logDetailed()
+
+        // if remittanceAmount is not present and check is true
+        if (!confirmForex.getSummary().testResult && flagForexConfirmation) {
+            Toast.warn("Forex details are marked as required but not provided")
+            return;
+        }
+
+        // if remittance is present and check is false
+        if (confirmForex.getSummary().testResult && !flagForexConfirmation){
+            Toast.warn("Forex details are provided but not marked as required")
+            return;
+        }
+
+        // @ts-ignore
         if (workflow.subStatus !== WorkflowSubStatus.AwaitingCSOApproval) {
             Toast.warn('Make sure the form data is complete')
         } else
@@ -360,7 +384,6 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
     const isEven = (num: number) => num % 2 !== 0
 
     function showResultBeingConfirmedByCSO() {
-
 
         return ConstantLabelsAndValues.csoValidationCheckList().toArray().map((v, index) => {
             // @ts-ignore
@@ -384,7 +407,7 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
     }
 
     function handleConfirmCSOValidation() {
-        return <ConfirmationDialog title="Confirm to submit or cancel" handleDialogCancel={cancelConfirmationDialogApproval} handleConfirmation={handleCSOApproval}
+        return <ConfirmationDialog title="Confirm to submit or cancel" handleDialogCancel={cancelConfirmationDialogApproval} handleConfirmation={handleCSOSubmission}
                                    children={showResultBeingConfirmedByCSO()}/>
     }
 

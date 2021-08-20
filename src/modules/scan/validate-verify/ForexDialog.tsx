@@ -22,15 +22,12 @@ import Numbers from "../../../utils/numbers";
 
 
 import NumberFormat from 'react-number-format';
-import ForexDetailsFilePreview, {DialogTitleProps} from "./ForexDetailsFilePreview";
+import  {DialogTitleProps} from "./ForexDetailsFilePreview";
 import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
+
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 
-import EditDialog from "../../../components/EditDialog";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import Modal from "@material-ui/core/Modal";
 import {Theme, withStyles} from "@material-ui/core/styles";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import Typography from "@material-ui/core/Typography";
@@ -184,7 +181,6 @@ const RateConfirmationFileUpload = ({classes, forexDetails, docUpdating}: IRateC
             docUpdating(imageSrc)
         }
 
-
         return imageSrc ? <Dialog onClose={() => setShowPreview(false)} aria-labelledby="customized-dialog-title" open={showPreview} disableBackdropClick={true}>
             <DialogTitlePreview id="customized-dialog-title" onClose={() => setShowPreview(false)}>
                 Forex details file preview
@@ -250,7 +246,6 @@ class InternalConstants {
      * */
     public static TITLE_BOTH_REMITTANCE_AMOUNT_AND_EXIST = 'BOTH RATE AND REMITTANCE AMOUNT CAPTURED'
 
-    public static BOTH_EXIST = 'REMITTANCE AMOUNT & FOREX RATE ARE PRESENT'
     /**
      * selector $.rate
      * */
@@ -332,38 +327,9 @@ const ForexForm = ({data, handleDialogCancel, handleSubmission, isSubmitBtnDisab
 
     }
 
-    function handlePreviewClose() {
-        setShowPreview(false)
-    }
-
-    // function falsifyBackdropFirst() {
-    //     return <ForexDetailFileViewOnDemand shouldOpen={showPreview} imageSrc={theData.doc}/>
-    // }
-
     function updatingDoc(doc:string){
         theData.doc = doc
         return doc
-    }
-
-    function viewFileOnDemand() {
-        // console.log('updating doc:', theData.doc)
-        // return theData.doc ? <Dialog onClose={() => } aria-labelledby="customized-dialog-title" open={showPreview} disableBackdropClick={true}>
-        //     <DialogTitlePreview id="customized-dialog-title" onClose={() => setShowPreview(false)}>
-        //         Forex details file preview
-        //     </DialogTitlePreview>
-        //     <DialogContent dividers>
-        //
-        //         {
-        //             <img src={theData.doc} alt="scanned-result"/>
-        //         }
-        //
-        //     </DialogContent>
-        //     <DialogActions>
-        //         <Button autoFocus onClick={() => setShowPreview(false)} color="primary">
-        //             OK
-        //         </Button>
-        //     </DialogActions>
-        // </Dialog> : ""
     }
 
     return <Grid item sm={12}>
@@ -379,7 +345,7 @@ const ForexForm = ({data, handleDialogCancel, handleSubmission, isSubmitBtnDisab
                     console.log("sub value: ", values)
                     setTheData(values)
                     handleConfirmation()
-                    // alert(`ale-2${JSON.stringify(data, null, 2)}:`);
+
                 });
 
             }}
@@ -391,7 +357,6 @@ const ForexForm = ({data, handleDialogCancel, handleSubmission, isSubmitBtnDisab
                     <Box className={classes.submissionBox}>
                         <label>Rate</label>
                         <NumberFormat onChange={handleRateChange} thousandSeparator={true} inputMode="numeric"/>
-                        {/*<input type="text" onChange={handleRateChange}/>*/}
                     </Box>
 
                     <Box className={classes.submissionBox}>
