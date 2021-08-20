@@ -1,30 +1,18 @@
 import {IKeyValueMap} from "../../utils/collections/map";
 import {IManualDecision} from "../workflows/types";
 import {isNullOrEmpty} from "../../utils/objectHelpers";
-import {IList} from "../../utils/collections/list";
+
 
 export const populateLabelAndValue = (exclusions: string[] = [], pairs: IKeyValueMap<string, any>, valuePlaceHolder: any) => {
 
     exclusions.forEach(e => pairs.remove(e))
 
-    pairs.keyValueMapToArray().map((kv) => {
+    pairs.keyValueMapToArray().map((kv): any => {
         if (kv.value === null || kv.value === undefined || kv.value === '')
             return pairs.replace(kv.key, valuePlaceHolder)
     })
 
     return pairs.keyValueMapToArray();
-}
-
-export const populateValue = (exceptions: string[] = [], list: IList<string>, valuePlaceHolder: any) => {
-
-    exceptions.forEach(e => list.remove(e))
-
-    // list.toArray().map((kv) => {
-    //     if (!kv.value)
-    //         return pairs.replace(kv.key, valuePlaceHolder)
-    // })
-
-    return list.toArray();
 }
 
 export const getChecksToPopulate = (checks: IKeyValueMap<string, boolean>) => {

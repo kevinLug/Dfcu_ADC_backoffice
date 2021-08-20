@@ -32,6 +32,20 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
 
     let branchCode: string = ''
 
+    let rate: any
+    if (forexDetails.rate !== 0 && forexDetails.rate !== '' && forexDetails.rate > 0){
+        rate = Numbers.format_En_UK(forexDetails.rate)
+    }else {
+        rate = ''
+    }
+
+    let remittanceAmount: any
+    if ( forexDetails.remittanceAmount !== '' && forexDetails.remittanceAmount > 0){
+        rate = Numbers.format_En_UK(forexDetails.remittanceAmount)
+    }else {
+        remittanceAmount = ''
+    }
+
     const labels: ILabelValue[] = [
         {
             label: ConstantLabelsAndValues.DATE,
@@ -75,11 +89,11 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
         },
         {
             label: ConstantLabelsAndValues.RATE,
-            value: Numbers.format_En_UK(forexDetails.rate)
+            value: rate
         },
         {
             label: ConstantLabelsAndValues.REMITTANCE_AMOUNT,
-            value: Numbers.format_En_UK(forexDetails.remittanceAmount)
+            value: remittanceAmount
         },
         {
             label: ConstantLabelsAndValues.PURPOSE_OF_TRANSFER,
