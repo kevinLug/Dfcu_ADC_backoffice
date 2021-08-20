@@ -173,7 +173,7 @@ const AllValidations = ({workflow}: IProps) => {
 
                 <Divider style={{padding: 10}} light={true} orientation='horizontal' variant="middle"/>
 
-                <Typography variant="h4">Validation Checklist</Typography>
+                <Typography variant="h4">Approver Validation Checklist</Typography>
                 <VerificationByBmo workflow={workflow}/>
             </Grid>
 
@@ -186,7 +186,7 @@ const AllValidations = ({workflow}: IProps) => {
 
                 <Divider style={{padding: 10}} light={true} orientation='horizontal' variant="middle"/>
 
-                <Typography variant="h4">Validation Checklist</Typography>
+                <Typography variant="h4">Approver Validation Checklist</Typography>
                 <VerificationsAlreadyDoneByBM workflow={workflow}/>
 
             </Grid>
