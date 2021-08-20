@@ -127,12 +127,7 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
     }
 
     function allTransferCodes(): any[] {
-        fluentValidationInstance().testTitle('getting transfer code')
-            .selector(aCase, '$.workflowType')
-            .isEqualTo(ConstantLabelsAndValues.CASE_VALIDATION_SWIFT)
-            .successCallBack(() => {
 
-                console.log('situation...')
                 if (!isNullOrEmpty(labellingTwo.beneficiaryBank.swiftCode))
                     addCodeAndLabel(ConstantLabelsAndValues.SWIFT_CODE, labellingTwo.beneficiaryBank.swiftCode);
                 // add iban
@@ -151,8 +146,6 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
                 if (!isNullOrEmpty(labellingTwo.beneficiaryBank.sortCode))
                     addCodeAndLabel(ConstantLabelsAndValues.IBAN, labellingTwo.beneficiaryBank.sortCode);
 
-            })
-        // console.log('the code: ', transferCodesAndLabels)
         return transferCodesAndLabels
     }
 
@@ -184,7 +177,7 @@ export const beneficiaryDetailsLabels = (dataOne: IBeneficiaryDetails, dataTwo: 
                                 .directValue(eftOrRtgs1)
                                 .isEqualTo(true)
                                 .successCallBack(() => {
-                                    console.log(labellingTwo.beneficiaryBank, labellingTwo.beneficiaryBank.bankName)
+
                                     if (!isNullOrUndefined(labellingTwo.beneficiaryBank.bankName) && !isNullOrEmpty(labellingTwo.beneficiaryBank.bankName)) {
                                         // @ts-ignore
                                         bankName = ConstantLabelsAndValues.mapOfRecipientBankCodeToValueOfBank().get(labellingTwo.beneficiaryBank.bankName).name
