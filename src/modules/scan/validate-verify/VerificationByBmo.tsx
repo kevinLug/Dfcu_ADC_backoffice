@@ -295,8 +295,11 @@ const VerificationByBmo = ({workflow}: IPropsBMO) => {
                 console.log(resp) // todo ... consider providing a message for both success and failure
             }, undefined,
             () => {
-                window.location.href = `${localRoutes.applications}/${caseId}`
-                dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
+
+                //window.location.href = `${localRoutes.applications}/${caseId}`
+                //dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
+                window.location.href = window.location.origin
+
             }
         )
     }
