@@ -25,6 +25,7 @@ export interface IWorkflowFilter {
     include?: IWorkflowInclude;
 
     applicantName?: string
+    beneficiaryName?:string;
 
 }
 

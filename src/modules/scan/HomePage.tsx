@@ -43,14 +43,14 @@ const HomePage = () => {
         setLoadingFilter(true)
         search(remoteRoutes.workflows, filter, resp => {
             console.log("the filtered-filter:,,,", filter)
-            console.log("the filtered:,,,", resp)
-            //setData(resp)
+            console.log("the filtered:,,,", populateWithFilterResult , resp)
+            setData(resp)
             console.log("homepage search:",resp , filter)
         }, undefined, () => setLoadingFilter(false))
 
         console.log('loading filter: ',loadingFilter, newData, data, populateWithFilterResult)
 
-    }, [filter,data,populateWithFilterResult])
+    }, [filter])
 
     function handleFilterToggle() {
         setOpen(!open);
@@ -83,10 +83,22 @@ const HomePage = () => {
 
             <Grid item xs={12}>
 
-                {
-                    populateWithFilterResult ?
+                {/*{*/}
+                {/*    populateWithFilterResult ?*/}
+                {/*        <XTable*/}
+                {/*            loading={loadingFilter}*/}
+                {/*            headCells={workflowHeadCellsNew}*/}
+                {/*            data={data}*/}
+                {/*            initialRowsPerPage={5}*/}
+                {/*            usePagination={true}*/}
+                {/*            onFilterToggle={handleFilterToggle}*/}
+                {/*            initialSortBy={wfInitialSort}*/}
+                {/*            initialOrder="desc"*/}
+
+                {/*        />*/}
+                {/*        :*/}
                         <XTable
-                            loading={loadingFilter}
+                            loading={loadingNew}
                             headCells={workflowHeadCellsNew}
                             data={data}
                             initialRowsPerPage={5}
@@ -96,18 +108,7 @@ const HomePage = () => {
                             initialOrder="desc"
 
                         />
-                        :
-                        <XTable
-                            loading={loadingNew}
-                            headCells={workflowHeadCellsNew}
-                            data={newData}
-                            initialRowsPerPage={5}
-                            usePagination={true}
-                            initialSortBy={wfInitialSort}
-                            initialOrder="desc"
-
-                        />
-                }
+                {/*}*/}
 
             </Grid>
 
