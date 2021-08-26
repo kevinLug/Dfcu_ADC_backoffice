@@ -1,7 +1,6 @@
 import React from 'react'
 
 import Grid from "@material-ui/core/Grid";
-import {Form, Formik} from "formik";
 
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
@@ -36,7 +35,7 @@ interface IProps {
     children?: any
 }
 
-const ConfirmationDialog = ({title, data, handleDialogCancel, handleConfirmation, children}: IProps) => {
+const ConfirmationDialog = ({title, handleDialogCancel, handleConfirmation, children}: IProps) => {
 
     const classes = useStyles()
 

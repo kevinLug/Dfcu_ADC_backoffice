@@ -52,7 +52,6 @@ const Details = (props: IProps) => {
     const classes = useStyles()
     const [blocker, setBlocker] = useState<boolean>(false)
     const {loading, workflow}: IWorkflowState = useSelector((state: any) => state.workflows)
-    // const user = useSelector((state: IState) => state.core.user)
     const {forexValue}: IForexValueState = useSelector((state: any) => state.forexDetails)
 
     const dispatch: Dispatch<any> = useDispatch();
@@ -68,7 +67,6 @@ const Details = (props: IProps) => {
 
     const hasError = !loading && !workflow
     if (hasError) {
-        console.log('workflow erred', workflow)
         return <Navigation>
             <Error text='Failed load case data'/>
         </Navigation>

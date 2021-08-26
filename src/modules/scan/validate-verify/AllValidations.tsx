@@ -11,7 +11,7 @@ import {ICase, ICaseData, IForex, IForexDefault} from "../../transfers/types";
 import {actionICaseState} from "../../../data/redux/transfers/reducer";
 import {Dispatch} from "redux";
 import {useDispatch, useSelector} from "react-redux";
-import {useStyles} from "../ScanCrop";
+import {useStyles} from "../ScanQrCode";
 import {IState} from "../../../data/types";
 import CsoValidationChecklist from "./CsoValidationChecklist";
 import ImageUtils from "../../../utils/imageUtils";

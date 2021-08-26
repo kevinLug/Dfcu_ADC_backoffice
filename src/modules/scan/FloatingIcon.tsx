@@ -39,15 +39,12 @@ export default function FloatingActionButtons() {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-
     const [isInitialServerAccess, setInitialServerAccess] = useState(true)
-    // const {isLoading, user}: ICoreState = useSelector((state: any) => state.core)
 
     const {serverPingValue}: IServerPingValueState = useSelector((state: any) => state.pings)
     useEffect(() => {
 
         tryReachingServer()
-
 
     }, [])
 

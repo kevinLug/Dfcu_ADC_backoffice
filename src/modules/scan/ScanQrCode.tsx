@@ -13,16 +13,16 @@ import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import {getCroppedImg, getRotatedImage} from "./canvasUtils";
 import ObjectHelpersFluent, {fluentValidationInstance} from "../../utils/objectHelpersFluent";
 import Toast from "../../utils/Toast";
-import {login} from "../../api-stress/login";
+
 import {randomInt} from "../../utils/numberHelpers";
 import uuid from "uuid";
 import {actionICaseState} from "../../data/redux/transfers/reducer";
 import validateData from "../validations/validations";
-import idbHandler from "../../data/indexed-db/indexedDbHandler";
+
 import SuccessCriteria from "../../utils/successCriteria";
 import {BrowserMultiFormatReader} from "@zxing/library";
 import RunMappingRules from "./mappings/runMappingRules";
-import {ICase, ICaseDefault, ITimestampRun} from "../transfers/types";
+import {ICase, ICaseDefault} from "../transfers/types";
 import {getOrientation} from "get-orientation/browser";
 import {Dispatch} from "redux";
 import {useDispatch, useSelector} from "react-redux";
@@ -33,7 +33,7 @@ import {localRoutes, remoteRoutes} from "../../data/constants";
 import {actionIWorkflowResponseMessage} from "../../data/redux/workflow-response/reducer";
 import {fetchWorkflowAsync, startWorkflowFetch} from "../../data/redux/workflows/reducer";
 
-const useTyleScanQrCode = makeStyles((theme: Theme) =>
+export const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
             flexGrow: 1,
@@ -134,7 +134,7 @@ const ORIENTATION_TO_ANGLE: any = {
 
 const ScanQrCode = () => {
 
-    const classes = useTyleScanQrCode();
+    const classes = useStyles();
     const runMappingRules = new RunMappingRules();
 
     const [imageSrc, setImageSrc] = useState<string>("")
@@ -170,10 +170,8 @@ const ScanQrCode = () => {
             const croppedImage: any = await getCroppedImg(imageSrc, croppedAreaPixels, 0)
 
             const decodedRawResult = await codeReader.decodeFromImage(undefined, croppedImage.toString())
-            console.log(`decoded:`, decodedRawResult.getText())
 
             const resultOfScan = await runMappingRules.getScanResult(decodedRawResult.getText());
-            console.log('result of scan: ', resultOfScan);
 
             // check if decoding succeeded
             if (!new ObjectHelpersFluent().directValue(decodedRawResult.getText()).isPresent().getFlag()) {
@@ -198,11 +196,8 @@ const ScanQrCode = () => {
             })
 
             Object.assign(aCase, runMappingRules.setCase(resultOfScan));
-            // console.log('aCase:', aCase)
-            // console.log(aCase.workflowType)
 
-            const {access_token} = await login()
-
+            //const {access_token} = await login()
 
             // the counter is to allow sending the a Post request only once
             if (counter === 1 && aCase.workflowType !== "") {
@@ -216,15 +211,11 @@ const ScanQrCode = () => {
                     "region": ""
                 }
 
-                console.log(aCase.workflowType)
-                console.log({aCase})
-
                 aCase.applicationDate = new Date()
                 aCase.referenceNumber = randomInt(100000, 500000) // todo...this will have to be picked from the PDF to avoid redundancy
                 aCase.externalReference = uuid()
                 aCase.caseData.user = userObj;
                 aCase.caseData.doc = imageSrc
-
 
                 const newDate = aCase.applicationDate
                 aCase.caseData.timestampRun = {
@@ -234,10 +225,6 @@ const ScanQrCode = () => {
                     cmoClearanceDateTime: newDate
                 };
 
-                // set csoInitiationDateTime
-                console.log('timestamp:', aCase.caseData.timestampRun)
-                console.log('timestamp:', aCase)
-
                 // aCase.caseData.doc = ImageUtils.base64ToArrayBuffer(imageSrc)
 
                 dispatch(actionICaseState(aCase));
@@ -246,10 +233,10 @@ const ScanQrCode = () => {
 
                 // todo...try getting use from the one the logged in
 
-                console.log('idb-support: ', idbHandler.isSupported())
-                const ttt = await idbHandler.setUpDb("test_again")
-                console.log('sss:', ttt)
-                console.log('sss:', idbHandler.getDb())
+                // console.log('idb-support: ', idbHandler.isSupported())
+                // const ttt = await idbHandler.setUpDb("test_again")
+                // console.log('sss:', ttt)
+                // console.log('sss:', idbHandler.getDb())
 
                 if (!validationResult){
                         const messages = SuccessCriteria.getFailedTestResults(aCase.workflowType).toArray().map((msg) => {
@@ -262,11 +249,8 @@ const ScanQrCode = () => {
                     Toast.warn("Did not initiate transfer request")
                 }else {
 
-                    console.log("the user: ", user)
-                        console.log("the case: ", aCase)
-
                         post(remoteRoutes.workflows, aCase, (resp: any) => {
-                                console.log('resp-initiation:', resp) // todo ... consider providing a message for both success and failure
+
                                 dispatch(actionIWorkflowResponseMessage(resp))
 
                                 const postResp = fluentValidationInstance()
@@ -287,14 +271,6 @@ const ScanQrCode = () => {
                             }, undefined,
                             () => {
 
-                                // pick caseId of initiated case
-
-                                // refresh page based on the caseId
-
-                                // console.log("results-from-tests-failed: ", SuccessCriteria.getFailedTestResults(aCase.workflowType))
-                                // console.log("results-from-tests-passed: ", SuccessCriteria.getPassedTestResults(aCase.workflowType))
-                                // console.log("summary: ", SuccessCriteria.getSuccessCriteriaSummarySet())
-
                             }
                         )
 
@@ -306,7 +282,6 @@ const ScanQrCode = () => {
             setResult(decodedRawResult.getText())
 
         } catch (e) {
-            console.log(e)
             Toast.warn("Not scanned, zoom or rotate target area")
         }
 
@@ -328,7 +303,7 @@ const ScanQrCode = () => {
         }
 
         setImageSrc(imageDataUrl)
-        // console.log("dropped image:", imageDataUrl)
+
     }
 
     function handleZoomIn() {
@@ -352,15 +327,8 @@ const ScanQrCode = () => {
     }
 
     function showSnackBarMessage() {
-        // return openSnackBar ? <PositionedSnackbar message={snackBarMessage} shouldOpen={openSnackBar} severity={snackBarColor}/> : ""
         return openSnackBar ? <AlertDialogForMessages messages={infoMessages} title="Missing requirements (Initiation failed)" shouldOpen={openSnackBar}/> : ""
     }
-
-    //
-    // function showStackedSnackBarMessage() {
-    //     return openSnackBar ? <StackedSnackbars message={snackBarMessage} shouldOpen={openSnackBar} variant={snackBarColor}/> : ""
-    // }
-
 
     return <Grid item sm={7} container alignContent={"center"} justify="center"
                  className={isNullOrEmpty(result) ? classes.dragAndDropArea : classes.dragAndDropAreaAfterScan}>

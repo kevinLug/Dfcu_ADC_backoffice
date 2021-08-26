@@ -72,10 +72,6 @@ interface IProps {
     setSearchIsHappening?: (flag: boolean) => any
 }
 
-interface IFilterResult {
-    result: IList<any>[]
-}
-
 export class FilterResult {
 
     private static result: IKeyValueMap<string, IWorkflowFilter> = new KeyValueMap<string, IWorkflowFilter>();
@@ -89,7 +85,6 @@ export class FilterResult {
             result.map((e) => {
                 const demandedData = e["demandedData"]
                 const parsed = new Object(demandedData)
-                console.log('demandedData', JSON.stringify(parsed))
 
                 // @ts-ignore
                 FilterResult.result.put(Object.values(parsed)[0], parsed);
@@ -122,7 +117,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 
-const Filter = ({onFilter, loading, setFilteredData, setSearchIsHappening}: IProps) => {
+const Filter = ({onFilter, loading}: IProps) => {
 
     const classes = useStyles();
 
@@ -159,7 +154,7 @@ const Filter = ({onFilter, loading, setFilteredData, setSearchIsHappening}: IPro
     useEffect(() => {
 
     }, [check,searchData, searchHappening])
-    console.log('filtered:', data)
+
     const ids = ['status-grid', 'subStatus-grid', 'refNumber-grid', 'from-grid', 'to-grid']
     const labels = ['Status', 'Sub Status', 'Ref. Number', 'From Date', 'To Date']
 
@@ -188,7 +183,7 @@ const Filter = ({onFilter, loading, setFilteredData, setSearchIsHappening}: IPro
     }
 
     function submitForm(values: any) {
-        console.log("new from search:", values)
+
         onFilter(values)
     }
 
@@ -211,19 +206,13 @@ const Filter = ({onFilter, loading, setFilteredData, setSearchIsHappening}: IPro
     }
 
     const handleComboValueChange = (name: string) => (value: any) => {
-        console.log("name: ", name)
-        console.log("value: ", value)
+
         // const newData = {...data, [name]: value}
         const newData = {...data, [name]: value}
-        console.log("newData: ", newData)
-        const newFilterData = {...data, [name]: value ? value.id : null}
-        console.log("newFilterData: ", newFilterData)
-        setData(newData)
-        if (setFilteredData) {
-            setFilteredData(FilterResult.getResult().getValues().toArray())
-        }
 
-        // determineSearchHappening()
+        const newFilterData = {...data, [name]: value ? value.id : null}
+
+        setData(newData)
 
         submitForm(newFilterData)
     }

@@ -9,8 +9,7 @@ import {IState} from "../data/types";
 import ErrorMessage from "../components/messages/ErrorMessage";
 import Loading from "../components/Loading";
 import Users from "./settings/users/List"
-import Scan from './scan/Scan'
-import ScanCrop from "./scan/ScanCrop";
+
 import InitiateTransfer from "./scan/InitiateTransfer";
 
 
@@ -47,8 +46,6 @@ const ContentSwitch = () => {
             }
             <Route path={localRoutes.contactsDetails} component={ContactDetails}/>
             <Route path={localRoutes.contacts} component={Contacts} />
-            <Route path={localRoutes.scan} component={Scan}/>
-            <Route path={localRoutes.scanCrop} component={ScanCrop}/>
             <Route path={localRoutes.applicationsDetails} component={ApplicationDetails}/>
             <Route path={localRoutes.applications} component={Workflows}/>
             <Route path={localRoutes.usersDetails} component={UserDetails}/>

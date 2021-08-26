@@ -53,27 +53,11 @@ export function PRemoteSelect(props: IProps) {
         if (noQuery && options.length > 0)
             return
         setLoading(true)
-        console.log('dig: ', props.filter, query)
+
         search(props.remote, {...props.filter, query},
             resp => {
 
-
                 const data = resp.map(props.parser)
-                console.log("props.remote: ", props.remote)
-                console.log("props.filter: ", props.filter)
-                console.log("query: ", query)
-                // console.log("searched: ", data)
-                // console.log("result: ", resp)
-                // console.log("result-clean: ", FilterResult.getResult())
-
-                FilterResult.setResult(resp)
-
-                if (props.setViewData){
-                    console.log('FilterResult.getResult(): ', FilterResult.getResult())
-                    props.setViewData(FilterResult.getResult())
-                }
-
-
 
                 const map = new KeyValueMap<string,ISelectOpt>()
 
@@ -82,7 +66,7 @@ export function PRemoteSelect(props: IProps) {
                 }
 
                 setOptions(map.getValues().toArray())
-                // console.log("options: ", options)
+
             },
             undefined,
             () => {

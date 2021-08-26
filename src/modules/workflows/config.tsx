@@ -92,17 +92,6 @@ export const workflowHeadCells: XHeadCell[] = [
             }
         },
         render: (data, rec) => {
-            console.log('record back:', rec)
-            // if (hasValue(rec.caseData))
-            //     console.log(`the case data: `, rec.caseData)
-            // return <ContactLink
-            //     id={rec.caseData}
-            //     name={trimString(data, 20)}
-            // />
-            // return <XLink
-            //     name={trimString(data, 20)}
-            //     title={data}
-            // />
             return data
         }
     },
@@ -129,16 +118,6 @@ export const workflowHeadCells: XHeadCell[] = [
             }
         },
         render: (data, rec) => {
-            console.log('ttttt-data:', data)
-            console.log('ttttt-rec:', rec)
-            // let valueToDisplay = ''
-
-            // if (rec.workflowType === RequestType.EFT || rec.workflowType === RequestType.RTGS_1)
-            //     // @ts-ignore
-            //     valueToDisplay = ConstantLabelsAndValues.mapOfRecipientBankCodeToValueOfBank().get(rec.beneficiaryBank.bankName).name
-            // else
-            //     valueToDisplay = data
-
             // @ts-ignore
             return rec.type === RequestType.EFT || rec.type === RequestType.RTGS_1 ? ConstantLabelsAndValues.mapOfRecipientBankCodeToValueOfBank().get(data).name : data
         }
