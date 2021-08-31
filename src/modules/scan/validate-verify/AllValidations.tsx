@@ -84,11 +84,11 @@ const AllValidations = ({workflow}: IProps) => {
             workflow.status === WorkflowStatus.Closed
         ) {
 
-            if (workflow.tasks[1].actions[0].outputData){
+            if (workflow.tasks[1].actions[0].outputData) {
 
                 const parsed = JSON.parse(workflow.tasks[1].actions[0].outputData)
 
-                if (parsed['forexDetails']){
+                if (parsed['forexDetails']) {
                     setForexRequired(true)
                     setForexDetailsFound(parsed['forexDetails'])
                 }
@@ -129,7 +129,6 @@ const AllValidations = ({workflow}: IProps) => {
         }
 
 
-
         return theCheckList
     }
 
@@ -142,9 +141,8 @@ const AllValidations = ({workflow}: IProps) => {
             return <Grid className={classes.expansion}>
                 <Typography variant="h4">Validation Checklist</Typography>
 
-
                 <CsoValidationChecklist theCheckList={checksReviewCSO()}/>
-                {/*<CsoValidationChecklist theCheckList={ConstantLabelsAndValues.csoValidationCheckList()}/>*/}
+
             </Grid>
 
         // show verifications done by CSO if process awaits BM action, CMO action, or erred

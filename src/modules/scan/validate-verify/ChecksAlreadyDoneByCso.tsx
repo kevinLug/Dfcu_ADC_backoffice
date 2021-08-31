@@ -14,21 +14,21 @@ interface IProps {
 
 const VerificationsAlreadyDoneByCSO = ({workflow}: IProps) => {
     const [theWorkflow] = useState(workflow)
-    const criteria = theWorkflow.tasks[1].actions[0].outputData
+    const csoValidationResult = theWorkflow.tasks[1].actions[0].outputData
 
     useEffect(() => {
-    }, [workflow, criteria])
+    }, [workflow, csoValidationResult])
 
     const checksReview = (): IList<IPropsChecks> => {
 
-        const criteriaObj = JSON.parse(criteria)
+        const resultParsed = JSON.parse(csoValidationResult)
 
         let theCheckList = ConstantLabelsAndValues.csoCheckList()
 
         for (let aCheck of theCheckList) {
 
             const propertyName: string = aCheck.name.split("_")[0];
-            aCheck.value = criteriaObj[propertyName]
+            aCheck.value = resultParsed[propertyName]
 
         }
 

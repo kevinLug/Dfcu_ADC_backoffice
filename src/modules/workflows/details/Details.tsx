@@ -19,7 +19,7 @@ import {renderStatus} from "../widgets";
 
 import AllValidations from "../../scan/validate-verify/AllValidations";
 
-import {printStdDatetime} from "../../../utils/dateHelpers";
+import {printDateTime} from "../../../utils/dateHelpers";
 import {ConstantLabelsAndValues} from "../../../data/constants";
 
 import {isNullOrEmpty, isNullOrUndefined} from "../../../utils/objectHelpers";
@@ -78,12 +78,13 @@ const Details = (props: IProps) => {
         let returned: any
         // @ts-ignore
         const outputDataCSO = workflow.tasks[1].actions[0].outputData
+        // @ts-ignore
+        const actionRunDate = workflow.tasks[1].actions[0].runDate
 
         if (!isNullOrUndefined(outputDataCSO)) {
             const parsedOutputDataCSO = JSON.parse(outputDataCSO)
 
             const submittedByCSO = parsedOutputDataCSO["submittedBy"]
-            const runDateCSO = new Date(parsedOutputDataCSO["runDate"])
 
             let rejectionComment: string
 
@@ -102,7 +103,7 @@ const Details = (props: IProps) => {
 
                 returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
                     <span style={styleUserName}>{submittedByCSO}</span>{" - "}
-                    <span style={styleUserName}>{printStdDatetime(runDateCSO)}</span>
+                    <span style={styleUserName}>{printDateTime(actionRunDate)}</span>
                     <br/>&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
                     <span style={styleUserName}>{rejectionComment}</span>
                 </div>
@@ -110,14 +111,13 @@ const Details = (props: IProps) => {
             } else {
                 returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.SUBMITTED_BY}
                     <span style={styleUserName}>{submittedByCSO}</span>{" - "}
-                    <span style={styleUserName}>{printStdDatetime(runDateCSO)}</span>
+                    <span style={styleUserName}>{printDateTime(actionRunDate)}</span>
                 </div>
 
             }
         } else {
             returned = ""
         }
-
 
         return returned;
     }
@@ -129,12 +129,13 @@ const Details = (props: IProps) => {
         // @ts-ignore
         const outputDataBM = workflow.tasks[2].actions[0].outputData
         // @ts-ignore
+        const actionRunDate = workflow.tasks[2].actions[0].runDate
+        // @ts-ignore
         const parsedOutputDataBM = JSON.parse(workflow.tasks[2].actions[0].outputData)
 
         if (outputDataBM !== null && outputDataBM !== undefined) {
 
             const approvedByBM = JSON.parse(outputDataBM)["approvedBy"]
-            const runDateBM = new Date(JSON.parse(outputDataBM)["runDate"])
 
             let rejectionComment: string
 
@@ -150,7 +151,7 @@ const Details = (props: IProps) => {
 
                 returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
                     <span style={styleUserName}>{approvedByBM}</span>{" - "}
-                    <span style={styleUserName}>{printStdDatetime(runDateBM)}</span>
+                    <span style={styleUserName}>{printDateTime(actionRunDate)}</span>
                     <br/>&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
                     <span style={styleUserName}>{rejectionComment}</span>
                 </div>
@@ -159,7 +160,7 @@ const Details = (props: IProps) => {
 
                 returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.APPROVED_BY}
                     <span style={styleUserName}>{approvedByBM}</span>{" - "}
-                    <span style={styleUserName}>{printStdDatetime(runDateBM)}</span>
+                    <span style={styleUserName}>{printDateTime(actionRunDate)}</span>
                 </div>
 
             }
@@ -175,6 +176,9 @@ const Details = (props: IProps) => {
 
         let returned: {}
 
+        // @ts-ignore
+
+
         // first consider a rejection from the CMO
 
         let rejectionComment = ''
@@ -186,24 +190,24 @@ const Details = (props: IProps) => {
             rejectionComment = JSON.parse(inputDataCMO)['rejectionComment']
         }
 
-        //Then consider a success
-
         // @ts-ignore
         const outputDataCMO = workflow.tasks[3].actions[1].inputData
+        // @ts-ignore
+        const runDate = workflow.tasks[3].actions[1].runDate
 
         if (outputDataCMO !== null && outputDataCMO !== undefined) {
 
             // todo...include rejected by as well
-            const clearedByCMO = JSON.parse(outputDataCMO)["clearedBy"]
-            // const clearedByCMO = JSON.parse(outputDataCMO)["session"]["username"]
-            const runDateCMO = new Date(JSON.parse(outputDataCMO)["runDate"])
+            const clearedByCMO = JSON.parse(outputDataCMO)["session"]["username"]
+
+            const runDateCMO = printDateTime(runDate)
 
             if (caseData.status === WorkflowStatus.Error) {
 
                 // @ts-ignore
                 returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
                     <span style={styleUserName}>{clearedByCMO}</span>{" - "}
-                    <span style={styleUserName}>{printStdDatetime(runDateCMO)}</span>
+                    <span style={styleUserName}>{runDateCMO}</span>
                     <br/>&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
                     <span style={styleUserName}>{rejectionComment}</span>
                 </div>
@@ -212,7 +216,7 @@ const Details = (props: IProps) => {
 
                 returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.CLEARED_BY}
                     <span style={styleUserName}>{clearedByCMO}</span>{" - "}
-                    <span style={styleUserName}>{printStdDatetime(runDateCMO)}</span>
+                    <span style={styleUserName}>{runDateCMO}</span>
                 </div>
 
             }
@@ -220,7 +224,6 @@ const Details = (props: IProps) => {
         } else {
             returned = ""
         }
-
 
         return returned;
     }

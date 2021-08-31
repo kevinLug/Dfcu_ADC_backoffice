@@ -22,6 +22,9 @@ import {RequestType} from "../../workflows/config";
 import {addDynamicPropertyToObject, isNullOrEmpty, isNullOrUndefined} from "../../../utils/objectHelpers";
 import Toast from "../../../utils/Toast";
 
+import Loading from "../../../components/Loading";
+
+
 
 const useStylesInternal = makeStyles((theme: Theme) =>
     createStyles({
@@ -65,9 +68,10 @@ interface ISubmitTransferRequestProps {
     showCommentDialog: () => void;
     submitTransferRequest: () => void
     isRejectBtnDisabled?: boolean
+    isSubmitBtnDisabled?: boolean
 }
 
-const SubmitTransferRequest = ({showCommentDialog, submitTransferRequest, isRejectBtnDisabled}: ISubmitTransferRequestProps) => {
+const SubmitTransferRequest = ({showCommentDialog, submitTransferRequest, isRejectBtnDisabled, isSubmitBtnDisabled}: ISubmitTransferRequestProps) => {
 
     const classes = useStylesInternal()
 
@@ -75,9 +79,9 @@ const SubmitTransferRequest = ({showCommentDialog, submitTransferRequest, isReje
 
         <Box className={classes.submissionBox}>
 
-            <Button type="submit" variant="contained" color="primary" disabled={isRejectBtnDisabled} onClick={submitTransferRequest}>POST TO FINACLE</Button>
+            <Button type="submit" variant="contained" color="primary" disabled={isSubmitBtnDisabled} onClick={submitTransferRequest}>POST TO FINACLE</Button>
 
-            <Button variant="contained" className={classes.rejectButton} onClick={showCommentDialog}>Reject</Button>
+            <Button variant="contained" className={classes.rejectButton} disabled={isRejectBtnDisabled} onClick={showCommentDialog}>Reject</Button>
 
         </Box>
 
@@ -92,6 +96,8 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
     const {check}: ICheckKeyValueState = useSelector((state: any) => state.checks)
     const [rejectionComment, setRejectionComment] = useState('')
     const [isRejectBtnDisabled, setRejectBtnDisabled] = useState(false)
+    const [loading, setLoading] = useState(false);
+    const [submitBtnDisabled, setSubmitBtnDisabled] = useState(false);
     const initialData: IDataProps = {
         checks: check.checks,
         rejectionComment: rejectionComment
@@ -101,8 +107,12 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
     const dispatch: Dispatch<any> = useDispatch();
 
     useEffect(() => {
-        console.log(workflow.tasks[2].actions[0].status)
-    }, [dispatch, check, workflow, rejectionComment, data])
+
+    }, [dispatch, check, workflow, rejectionComment, data, loading, submitBtnDisabled])
+
+
+    if (loading)
+        return <Loading/>
 
 
     function prepareFinacleData() {
@@ -153,10 +163,12 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
         };
 
         let bankName: string
-        let bankCode: string
-        let branchCode: string
+        let bankCode = ''
+        let branchCode = ''
 
         const isTypeEftOrRtgs1 = workflow.type === RequestType.EFT || workflow.type === RequestType.RTGS_1;
+
+
 
         if (isTypeEftOrRtgs1) {
 
@@ -171,10 +183,22 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
         } else {
             bankName = workflow.caseData.bankDetails.beneficiaryBank.bankName
             const recipientBank = ConstantLabelsAndValues.mapOfRecipientNameToValueOfBank().get(workflow.caseData.bankDetails.beneficiaryBank.bankName)
-            // @ts-ignore
-            bankCode = recipientBank.name
-            // @ts-ignore
-            branchCode = recipientBank.branchCode
+
+            if (!isNullOrUndefined(recipientBank)) {
+                // @ts-ignore
+                if (!isNullOrUndefined(recipientBank.name) && !isNullOrEmpty(recipientBank.name)) {
+                    // @ts-ignore
+                    bankCode = recipientBank.name
+                } else
+                    bankCode = ''
+                // @ts-ignore
+                if (!isNullOrUndefined(recipientBank.branchCode) && !isNullOrEmpty(recipientBank.branchCode)) {
+                    // @ts-ignore
+                    branchCode = recipientBank.branchCode
+                } else
+                    branchCode = ''
+            }
+
         }
 
         const beneficiaryDetails = {
@@ -198,8 +222,6 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
             beneficiaryDetails: beneficiaryDetails
         }
 
-        console.log("finacleData: ", finacleData)
-
         const manualCMOApproval: IManualDecision = {
             caseId: caseId,
             taskName: "cmo-approval", // todo ...consider making these constants
@@ -210,10 +232,11 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
             override: false
         }
 
-        console.log("manual-bm:", manualCMOApproval)
-
+        setSubmitBtnDisabled(true)
+        setLoading(true)
         post(remoteRoutes.workflowsManual, manualCMOApproval, (resp: any) => {
-                console.log(resp) // todo ... consider providing a message for both success and failure
+
+                // todo ... consider providing a message for both success and failure
                 window.location.href = window.location.origin
             }, undefined,
             () => {
@@ -223,21 +246,12 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
 
     }
 
-    // submit to finacle
-    // hasAnyRole(user, [systemRoles.CMO]) && workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle ?
-
     function handleCMORejection() {
 
         let data = {...getChecksToPopulate(check.checks)}
 
         let dropdownSelects = getDropdownSelectsToPopulate(select.selects)
 
-        console.log("mans:", data)
-        const obj = {
-            checks: data,
-            rejectionComment: rejectionComment
-        }
-        console.log("mans-2:", obj)
         let caseId: string
         if (!workflowResponseMessage.caseId || workflowResponseMessage.caseId.includes("0000-0000")) {
             // @ts-ignore
@@ -248,7 +262,7 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
 
         // @ts-ignore
         const comment = dropdownSelects[systemRoles.CMO]
-        console.log("bmo:", comment)
+
 
         if (isNullOrUndefined(comment) || isNullOrEmpty(comment)) {
             Toast.warn('Please select a reason')
@@ -265,7 +279,7 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
             username: user.name
         }
 
-        addDynamicPropertyToObject(data,'session', session)
+        addDynamicPropertyToObject(data, 'session', session)
 
         const manualCMORejection: IManualDecision = {
             caseId: caseId,
@@ -277,17 +291,11 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
             override: false
         }
 
-        console.log("manual-time:", manualCMORejection)
-
-        console.log("manual-bm:", manualCMORejection)
-
         post(remoteRoutes.workflowsManual, manualCMORejection, (resp: any) => {
-                console.log(resp) // todo ... consider providing a message for both success and failure
                 window.location.href = window.location.origin
             }, undefined,
             () => {
 
-                window.location.href = window.location.origin
             }
         )
     }
@@ -350,7 +358,7 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
                 ""
         }
 
-        <SubmitTransferRequest showCommentDialog={showCommentDialog} submitTransferRequest={submitTransferRequest}/>
+        <SubmitTransferRequest isSubmitBtnDisabled={submitBtnDisabled} showCommentDialog={showCommentDialog} submitTransferRequest={submitTransferRequest}/>
 
     </Grid>
 
