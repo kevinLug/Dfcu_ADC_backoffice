@@ -110,7 +110,7 @@ const VerificationByBmo = ({workflow}: IPropsBMO) => {
 
     //todo...try to sieve by action name
     useEffect(() => {
-        console.log(workflow.tasks[2].actions[0].status)
+        console.log(workflow.tasks[2].actions[1].status)
     }, [dispatch, check, workflow, rejectionComment, data])
 
     const checksReviewConfirmation = (): IList<IPropsChecks> => {
@@ -276,7 +276,7 @@ const VerificationByBmo = ({workflow}: IPropsBMO) => {
             taskName: "bm-approval", // todo ...consider making these constants
             actionName: "bm-transfer-details-approval",
             resumeCase: true,
-            nextSubStatus: "BMApprovalSuccessful",
+            nextSubStatus: "BMApprovalFailed",
             data: {...data, rejectionComment: comment},
             override: false
         }

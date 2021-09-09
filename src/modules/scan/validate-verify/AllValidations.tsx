@@ -52,7 +52,7 @@ const AllValidations = ({workflow}: IProps) => {
         const aCase: ICase = {
             applicationDate: workflow.applicationDate,
             externalReference: workflow.externalReference,
-            referenceNumber: Number(workflow.referenceNumber),
+            referenceNumber: workflow.referenceNumber,
             workflowType: workflow.type,
             caseData: workflow.caseData
         }

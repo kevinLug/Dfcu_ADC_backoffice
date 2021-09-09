@@ -282,7 +282,7 @@ export interface ICase {
     applicationDate: Date;
     workflowType: string;
     externalReference: string;
-    referenceNumber: number;
+    referenceNumber: string;
     caseData: ICaseData;
 
 }
@@ -291,7 +291,7 @@ export const ICaseDefault: ICase = <ICase>{
     applicationDate: new Date(),
     workflowType: '',
     externalReference: '',
-    referenceNumber: 0,
+    referenceNumber: '',
     caseData: ICaseDataDefault,
 }
 
@@ -303,15 +303,6 @@ export interface IWorkflowResponseMessage {
 }
 
 export const IWorkflowResponseMessageDefault: IWorkflowResponseMessage = <IWorkflowResponseMessage>{}
-
-export interface ITemplateTempProps {
-    caseData: ICaseData;
-    applicationDate?: string;
-    workflowType?: string;
-    externalReference?: string;
-    referenceNumber?: number;
-
-}
 
 export interface IForex {
     rate: any;
@@ -357,7 +348,7 @@ export class Case implements ICase {
     // @ts-ignore
     caseData: ICaseData;
     // @ts-ignore
-    referenceNumber: number;
+    referenceNumber: string;
     // @ts-ignore
     type: string;
     // @ts-ignore

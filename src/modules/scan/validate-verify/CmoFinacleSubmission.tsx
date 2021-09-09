@@ -263,7 +263,6 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
         // @ts-ignore
         const comment = dropdownSelects[systemRoles.CMO]
 
-
         if (isNullOrUndefined(comment) || isNullOrEmpty(comment)) {
             Toast.warn('Please select a reason')
             return

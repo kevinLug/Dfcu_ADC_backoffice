@@ -212,7 +212,7 @@ const ScanQrCode = () => {
                 }
 
                 aCase.applicationDate = new Date()
-                aCase.referenceNumber = randomInt(100000, 500000) // todo...this will have to be picked from the PDF to avoid redundancy
+                aCase.referenceNumber = randomInt(100000, 500000).toString() // todo...this will have to be picked from the PDF to avoid redundancy
                 aCase.externalReference = uuid()
                 aCase.caseData.user = userObj;
                 aCase.caseData.doc = imageSrc
@@ -224,7 +224,7 @@ const ScanQrCode = () => {
                     bmoApprovalDateTime: newDate,
                     cmoClearanceDateTime: newDate
                 };
-
+                console.log("the sent:", aCase)
                 // aCase.caseData.doc = ImageUtils.base64ToArrayBuffer(imageSrc)
 
                 dispatch(actionICaseState(aCase));
@@ -238,41 +238,41 @@ const ScanQrCode = () => {
                 // console.log('sss:', ttt)
                 // console.log('sss:', idbHandler.getDb())
 
-                if (!validationResult){
-                        const messages = SuccessCriteria.getFailedTestResults(aCase.workflowType).toArray().map((msg) => {
-                            return msg.userFailureMessage
-                        })
-                        // @ts-ignore
-                        setInfoMessages(messages)
+                if (!validationResult) {
+                    const messages = SuccessCriteria.getFailedTestResults(aCase.workflowType).toArray().map((msg) => {
+                        return msg.userFailureMessage
+                    })
+                    // @ts-ignore
+                    setInfoMessages(messages)
 
-                        setOpenSnackBar(true)
+                    setOpenSnackBar(true)
                     Toast.warn("Did not initiate transfer request")
-                }else {
+                } else {
 
-                        post(remoteRoutes.workflows, aCase, (resp: any) => {
+                    post(remoteRoutes.workflows, aCase, (resp: any) => {
 
-                                dispatch(actionIWorkflowResponseMessage(resp))
+                            dispatch(actionIWorkflowResponseMessage(resp))
 
-                                const postResp = fluentValidationInstance()
-                                postResp.selector(resp, '$.caseId')
-                                    .isPresent()
-                                    .logDetailed()
-                                    .successCallBack(() => {
-                                        Toast.success("Initiated successfully")
-                                        dispatch(startWorkflowFetch())
-                                        dispatch(fetchWorkflowAsync(postResp.getSummary().value))
-                                        // refresh to show details of new case initiated
-                                        window.location.href = `${localRoutes.applications}/${resp.caseId}`
-                                    })
-                                    .failureCallBack(() => {
-                                        Toast.warn("Something is wrong")
-                                    })
+                            const postResp = fluentValidationInstance()
+                            postResp.selector(resp, '$.caseId')
+                                .isPresent()
+                                .logDetailed()
+                                .successCallBack(() => {
+                                    Toast.success("Initiated successfully")
+                                    dispatch(startWorkflowFetch())
+                                    dispatch(fetchWorkflowAsync(postResp.getSummary().value))
+                                    // refresh to show details of new case initiated
+                                    window.location.href = `${localRoutes.applications}/${resp.caseId}`
+                                })
+                                .failureCallBack(() => {
+                                    Toast.warn("Something is wrong")
+                                })
 
-                            }, undefined,
-                            () => {
+                        }, undefined,
+                        () => {
 
-                            }
-                        )
+                        }
+                    )
 
 
                 }
