@@ -4,7 +4,7 @@ import {printDateTime} from "../../utils/dateHelpers";
 import React from "react";
 import {renderStatus} from "./widgets";
 import {toTitleCase} from "../contacts/types";
-import {IWorkflow, WorkflowStatus, WorkflowSubStatus} from "./types";
+import {determineWorkflowStatus, IWorkflow, WorkflowStatus, WorkflowSubStatus} from "./types";
 import {ConstantLabelsAndValues} from "../../data/constants";
 
 
@@ -171,7 +171,7 @@ export const workflowHeadCells: XHeadCell[] = [
         },
         render: (data, rec) => {
             // awaiting submission
-            if (data === WorkflowStatus.Open && rec.subStatus === WorkflowSubStatus.AwaitingCSOApproval) {
+            if (determineWorkflowStatus(data) === WorkflowStatus.Open && rec.subStatus === WorkflowSubStatus.AwaitingCSOApproval) {
                 return renderStatus(WorkflowStatus.New)
             }
             // awaiting BOM approval

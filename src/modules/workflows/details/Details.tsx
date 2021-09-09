@@ -6,7 +6,7 @@ import Loading from "../../../components/Loading";
 import Error from "../../../components/Error";
 import {createStyles, Grid, makeStyles, Theme} from "@material-ui/core";
 
-import {IWorkflow, trimCaseId, WorkflowStatus, WorkflowSubStatus} from "../types";
+import {determineWorkflowStatus, IWorkflow, trimCaseId, WorkflowStatus, WorkflowSubStatus} from "../types";
 import Typography from "@material-ui/core/Typography";
 import {Flex} from "../../../components/widgets";
 
@@ -240,23 +240,23 @@ const Details = (props: IProps) => {
 
     function displayWorkflowStatus() {
 
-        if (caseData.status === WorkflowStatus.Open && caseData.subStatus === WorkflowSubStatus.AwaitingCSOApproval) {
+        if (determineWorkflowStatus(caseData.status) === WorkflowStatus.Open && caseData.subStatus === WorkflowSubStatus.AwaitingCSOApproval) {
             return renderStatus(WorkflowStatus.New)
         }
         // awaiting BOM approval
-        if (caseData.status === WorkflowStatus.Open && caseData.subStatus === WorkflowSubStatus.AwaitingBMApproval) {
+        if (determineWorkflowStatus(caseData.status) === WorkflowStatus.Open && caseData.subStatus === WorkflowSubStatus.AwaitingBMApproval) {
             return renderStatus(WorkflowStatus.Pending)
         }
         // awaiting CMO clearance
-        if (caseData.status === WorkflowStatus.Open && caseData.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle) {
+        if (determineWorkflowStatus(caseData.status) === WorkflowStatus.Open && caseData.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle) {
             return renderStatus(WorkflowStatus.PendingClearance)
         }
 
-        if (caseData.status === WorkflowStatus.Error) {
+        if (determineWorkflowStatus(caseData.status) === WorkflowStatus.Error) {
             return renderStatus(WorkflowStatus.Rejected)
         }
 
-        if (caseData.status === WorkflowStatus.Closed) {
+        if (determineWorkflowStatus(caseData.status) === WorkflowStatus.Closed) {
             return renderStatus(WorkflowStatus.Cleared)
         }
 

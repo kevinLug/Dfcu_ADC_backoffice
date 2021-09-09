@@ -25,7 +25,7 @@ export interface IWorkflowFilter {
     include?: IWorkflowInclude;
 
     applicantName?: string
-    beneficiaryName?:string;
+    beneficiaryName?: string;
 
 }
 
@@ -107,6 +107,20 @@ export interface IWorkflow extends BaseModel {
 
     assigneeId?: string;
     assignedDate?: string;
+}
+
+export const determineWorkflowStatus = (status: string | number) => {
+    if (typeof (status) === "number") {
+        switch (status) {
+            case 0:
+                return WorkflowStatus.Open;
+            case 1:
+                return WorkflowStatus.Closed;
+            default:
+                return WorkflowStatus.Error;
+        }
+    }
+    return status
 }
 
 export enum WorkflowStatus {
