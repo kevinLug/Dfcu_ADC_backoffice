@@ -175,19 +175,19 @@ export const workflowHeadCells: XHeadCell[] = [
                 return renderStatus(WorkflowStatus.New)
             }
             // awaiting BOM approval
-            if (data === WorkflowStatus.Open && rec.subStatus === WorkflowSubStatus.AwaitingBMApproval) {
+            if (determineWorkflowStatus(data) === WorkflowStatus.Open && rec.subStatus === WorkflowSubStatus.AwaitingBMApproval) {
                 return renderStatus(WorkflowStatus.Pending)
             }
             // awaiting CMO clearance
-            if (data === WorkflowStatus.Open && rec.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle) {
+            if (determineWorkflowStatus(data) === WorkflowStatus.Open && rec.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle) {
                 return renderStatus(WorkflowStatus.PendingClearance)
             }
             // erred
-            if (data === WorkflowStatus.Error) {
+            if (determineWorkflowStatus(data) === WorkflowStatus.Error) {
                 return renderStatus(WorkflowStatus.Rejected)
             }
             // closed (sent to finacle)
-            if (data === WorkflowStatus.Closed) {
+            if (determineWorkflowStatus(data) === WorkflowStatus.Closed) {
                 return renderStatus(WorkflowStatus.Cleared)
             }
 

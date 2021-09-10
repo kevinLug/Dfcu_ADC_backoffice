@@ -85,7 +85,7 @@ const Details = (props: IProps) => {
             const parsedOutputDataCSO = JSON.parse(outputDataCSO)
 
             const submittedByCSO = parsedOutputDataCSO["submittedBy"]
-
+            
             let rejectionComment: string
 
             // @ts-ignore
