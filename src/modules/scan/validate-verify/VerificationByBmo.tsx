@@ -110,7 +110,7 @@ const VerificationByBmo = ({workflow}: IPropsBMO) => {
 
     //todo...try to sieve by action name
     useEffect(() => {
-        console.log(workflow.tasks[2].actions[1].status)
+        
     }, [dispatch, check, workflow, rejectionComment, data])
 
     const checksReviewConfirmation = (): IList<IPropsChecks> => {
