@@ -76,8 +76,8 @@ const servers: any = {
     dev: {
         // Auth: 'https://localhost:44313',
         Auth: 'https://dfcu-autodatacapture-auth-api-test.test001.laboremus.no',
-        Case: 'http://localhost:6001',
-        // Case: 'https://dfcu-autodataca/pture-casehandling-test.test001.laboremus.no',
+        // Case: 'http://localhost:6001',
+        Case: 'https://dfcu-autodataca/pture-casehandling-test.test001.laboremus.no',
         Notification: 'https://dfcu-notification-api-test.test001.laboremus.no',
     },
     test: {
@@ -335,12 +335,6 @@ export class ConstantLabelsAndValues {
     public static forexDetailsIgnored(aCheck: IPropsChecks, checks: IList<IPropsChecks>, index: number){
         return aCheck.label === checks.get(index).label && !aCheck.value
     }
-    //
-    // public static disableForexDetailsCheck(workflow: IWorkflow, aCheck: IPropsChecks, checks: IList<IPropsChecks>, index: number) {
-    //
-    //     return workflow.type !== ConstantLabelsAndValues.CASE_VALIDATION_SWIFT && aCheck.label === checks.get(index).label;
-    // }
-
 
 }
 

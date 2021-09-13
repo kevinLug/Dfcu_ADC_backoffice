@@ -28,6 +28,7 @@ import {addDynamicPropertyToObject, isNullOrEmpty, isNullOrUndefined} from "../.
 import grey from "@material-ui/core/colors/grey";
 import SuccessFailureDisplay from "./SuccessFailureDisplay";
 import ConfirmationDialog from "../confirmation-dialog";
+import Loading from "../../../components/Loading";
 
 interface IPropsBMO {
     workflow: IWorkflow
@@ -88,7 +89,7 @@ const VerificationByBmo = ({workflow}: IPropsBMO) => {
 
     const criteriaBm = theWorkflow.tasks[2].actions[0].outputData
 
-
+    const [loading, setLoading] = useState(false);
     const user = useSelector((state: IState) => state.core.user)
     const [showCommentBox, setShowCommentBox] = useState(false)
 
@@ -110,8 +111,8 @@ const VerificationByBmo = ({workflow}: IPropsBMO) => {
 
     //todo...try to sieve by action name
     useEffect(() => {
-        
-    }, [dispatch, check, workflow, rejectionComment, data])
+
+    }, [dispatch, check, workflow, rejectionComment, data,loading])
 
     const checksReviewConfirmation = (): IList<IPropsChecks> => {
         const criteriaObj = JSON.parse(criteriaBm)
@@ -132,6 +133,9 @@ const VerificationByBmo = ({workflow}: IPropsBMO) => {
         return theCheckList
 
     }
+
+    if (loading)
+        return <Loading/>
 
     function cancelCommentDialog() {
         setShowCommentBox(false)
@@ -174,14 +178,17 @@ const VerificationByBmo = ({workflow}: IPropsBMO) => {
             override: false
         }
 
-        console.log("manual-bm:", manualBMApproval)
+
+        setLoading(true)
 
         post(remoteRoutes.workflowsManual, manualBMApproval, (resp: any) => {
-                console.log(resp) // todo ... consider providing a message for both success and failure
+
             }, undefined,
+
             () => {
-                window.location.href = `${localRoutes.applications}/${caseId}`
-                dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
+                setTimeout(()=>{
+                    window.location.href = window.location.origin
+                },2000)
             }
         )
     }
@@ -289,17 +296,16 @@ const VerificationByBmo = ({workflow}: IPropsBMO) => {
             return;
         }
 
-        console.log("manual-bm:", manualBMRejection)
+        setLoading(true)
 
         post(remoteRoutes.workflowsManual, manualBMRejection, (resp: any) => {
-                console.log(resp) // todo ... consider providing a message for both success and failure
+
             }, undefined,
+
             () => {
-
-                //window.location.href = `${localRoutes.applications}/${caseId}`
-                //dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
-                window.location.href = window.location.origin
-
+                setTimeout(()=>{
+                    window.location.href = window.location.origin
+                },2000)
             }
         )
     }

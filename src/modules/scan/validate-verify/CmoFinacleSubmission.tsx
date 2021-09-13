@@ -168,8 +168,6 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
 
         const isTypeEftOrRtgs1 = workflow.type === RequestType.EFT || workflow.type === RequestType.RTGS_1;
 
-
-
         if (isTypeEftOrRtgs1) {
 
             const recipientBank = ConstantLabelsAndValues.mapOfRecipientBankCodeToValueOfBank().get(workflow.caseData.bankDetails.beneficiaryBank.bankName)
@@ -237,10 +235,13 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
         post(remoteRoutes.workflowsManual, manualCMOApproval, (resp: any) => {
 
                 // todo ... consider providing a message for both success and failure
-                window.location.href = window.location.origin
-            }, undefined,
-            () => {
 
+            }, undefined,
+
+            () => {
+                setTimeout(()=>{
+                    window.location.href = window.location.origin
+                },2000)
             }
         )
 
@@ -289,12 +290,15 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
             data: {...data, rejectionComment: comment},
             override: false
         }
-
+        setLoading(true)
         post(remoteRoutes.workflowsManual, manualCMORejection, (resp: any) => {
-                window.location.href = window.location.origin
-            }, undefined,
-            () => {
 
+            }, undefined,
+
+            () => {
+                setTimeout(()=>{
+                    window.location.href = window.location.origin
+                },2000)
             }
         )
     }

@@ -34,6 +34,7 @@ import {addDynamicPropertyToObject, isNullOrEmpty, isNullOrUndefined} from "../.
 import ConfirmationDialog from "../confirmation-dialog";
 import SuccessFailureDisplay from "./SuccessFailureDisplay";
 import grey from "@material-ui/core/colors/grey";
+import Loading from "../../../components/Loading";
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -73,7 +74,7 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
     const user = useSelector((state: IState) => state.core.user)
     const {select}: ISelectKeyValueState = useSelector((state: any) => state.selects)
     const isNewTransferRequestStarted: boolean = useSelector((state: IState) => state.core.startNewTransferRequest)
-
+    const [loading, setLoading] = useState(false);
     const dispatch: Dispatch<any> = useDispatch();
 
     const [showCommentBox, setShowCommentBox] = useState(false)
@@ -93,7 +94,10 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
 
     useEffect(() => {
 
-    }, [showConfirmationDialog, dispatch, check, workflow, rejectionComment, data, select, forexValue, isNewTransferRequestStarted])
+    }, [showConfirmationDialog, dispatch, check, workflow, rejectionComment, data, select, forexValue, isNewTransferRequestStarted,loading])
+
+    if (loading)
+        return <Loading/>
 
     async function handleCSOSubmission() {
 
@@ -180,12 +184,17 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             .logDetailed()
             .haltProcess(false, true,)
 
-        post(remoteRoutes.workflowsManual, manualCSOApproval, () => {
-                window.location.href = window.location.origin
-                dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
-            }, undefined,
-            () => {
+        setLoading(true)
 
+        post(remoteRoutes.workflowsManual, manualCSOApproval, () => {
+                // window.location.href = window.location.origin
+                // dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
+            }, undefined,
+
+            () => {
+                setTimeout(()=>{
+                    window.location.href = window.location.origin
+                },2000)
             }
         )
 
@@ -248,14 +257,17 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             return;
         }
 
+        setLoading(true)
         post(remoteRoutes.workflowsManual, manualCSORejection, () => {
                 // todo... place this after the the post (inside it)
-                dispatch(actionISelectKeyValue(ISelectKeyValueDefault))
-                window.location.href = window.location.origin
+                // dispatch(actionISelectKeyValue(ISelectKeyValueDefault))
+                // window.location.href = window.location.origin
             }, undefined,
+
             () => {
-
-
+                setTimeout(()=>{
+                    window.location.href = window.location.origin
+                },2000)
             }
         )
 
