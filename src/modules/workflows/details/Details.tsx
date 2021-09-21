@@ -249,7 +249,7 @@ const Details = (props: IProps) => {
         }
         // awaiting CMO clearance
         if (determineWorkflowStatus(caseData.status) === WorkflowStatus.Open && caseData.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle) {
-            return renderStatus(WorkflowStatus.PendingClearance)
+            return renderStatus(WorkflowStatus.Approved)
         }
 
         if (determineWorkflowStatus(caseData.status) === WorkflowStatus.Error) {

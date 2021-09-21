@@ -9,7 +9,7 @@ import TextField from '@material-ui/core/TextField';
 import PSelectInput from "../../components/plain-inputs/PSelectInput";
 import PDateInput from "../../components/plain-inputs/PDateInput";
 import {enumToArray, getRandomStr} from "../../utils/stringHelpers";
-import {IWorkflowFilter, WorkflowStatus, WorkflowSubStatus} from "./types";
+import {IWorkflowFilter, OpenWorkflowStatusRepresentation, WorkflowStatus, WorkflowSubStatus} from "./types";
 import {workflowTypes} from "./config";
 import {PRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {remoteRoutes} from "../../data/constants";
@@ -131,7 +131,7 @@ const Filter = ({onFilter, loading}: IProps) => {
         //idNumber: '',
         //userId: '',
         applicantName: '',
-        beneficiaryName:''
+        beneficiaryName: ''
     })
 
     const [searchValueApplicantName, setSearchValueApplicantName] = useState('')
@@ -153,7 +153,7 @@ const Filter = ({onFilter, loading}: IProps) => {
 
     useEffect(() => {
 
-    }, [check,searchData, searchHappening])
+    }, [check, searchData, searchHappening])
 
     const ids = ['status-grid', 'subStatus-grid', 'refNumber-grid', 'from-grid', 'to-grid']
     const labels = ['Status', 'Sub Status', 'Ref. Number', 'From Date', 'To Date']
@@ -176,7 +176,9 @@ const Filter = ({onFilter, loading}: IProps) => {
                 value: true,
                 name: ids[index]
             }
-            theCheckList.add(aCheck);
+            if (aCheck.name !== ids[1]) {
+                theCheckList.add(aCheck);
+            }
         })
 
         return theCheckList;
@@ -189,11 +191,96 @@ const Filter = ({onFilter, loading}: IProps) => {
 
     function handleChange(event: React.ChangeEvent<any>) {
         const name = event.target.name
+        // console.log('write-up-name:',name)
         const value = event.target.value
-
+        // console.log('write-up:',value)
         const newData = {...data, [name]: value}
         setData(newData)
-        submitForm(newData)
+        // console.log('write-up:',newData)
+
+        if (name === 'statuses'){
+
+            const subStatuses = autoHandleSubStatuses(name, value)
+
+            const listingStatuses = subStatuses.getValues().toArray().map((v) =>{
+                return v['status']
+            })
+
+            const listingSubStatuses = subStatuses.getValues().toArray().map((v) =>{
+                return v['subStatus']
+            })
+
+            if (listingStatuses.includes('Error')){
+                listingSubStatuses.concat(WorkflowSubStatus.FailedBMApproval)
+                listingSubStatuses.concat("FailedCMOApproval")
+            }
+
+            const theNewSubStatusData = {...data, ['subStatuses']: listingSubStatuses, [name]:listingStatuses}
+
+            // console.log('karama-2:',listingSubStatuses, theNewSubStatusData)
+
+            submitForm(theNewSubStatusData)
+
+        }else {
+            submitForm(newData)
+        }
+
+    }
+
+    function autoHandleSubStatuses(name:string, input:any){
+
+        let theSubStatuses = new KeyValueMap<any,any>();
+
+        interface IStatusDetails {
+            originalStatus: any
+            status: any,
+            subStatus: any
+        }
+
+        const addAStatusDetail = (originalStatus: any, status:any,subStatus:any) => {
+
+            const aDetail: IStatusDetails = {
+
+                originalStatus,
+                status,
+                subStatus
+
+            };
+
+            theSubStatuses.put(status, aDetail)
+
+        }
+
+        if (name === 'statuses'){
+
+            input.map((e: WorkflowStatus) => {
+
+                if (e === WorkflowStatus.Pending){
+                    addAStatusDetail(WorkflowStatus.Pending, WorkflowStatus.Open, WorkflowSubStatus.AwaitingBMApproval);
+                }
+
+                if (e === WorkflowStatus.Approved){
+                    addAStatusDetail(WorkflowStatus.Approved, WorkflowStatus.Open, WorkflowSubStatus.AwaitingSubmissionToFinacle);
+                }
+
+                if (e === WorkflowStatus.Cleared){
+                    addAStatusDetail(WorkflowStatus.Cleared, WorkflowStatus.Closed, WorkflowSubStatus.TransactionComplete);
+                }
+
+                if (e === WorkflowStatus.New){
+                    addAStatusDetail(WorkflowStatus.New, WorkflowStatus.Open, WorkflowSubStatus.AwaitingCSOApproval);
+                }
+
+                if (e === WorkflowStatus.Rejected){
+                    addAStatusDetail(WorkflowStatus.Rejected, WorkflowStatus.Error, WorkflowSubStatus.FailedCSOApproval);
+                }
+
+            })
+
+        }
+
+        return theSubStatuses;
+
     }
 
     const handleValueChange = (name: string) => (value: any) => {
@@ -263,8 +350,7 @@ const Filter = ({onFilter, loading}: IProps) => {
                 />
             </Grid>
 
-            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}
-                  id="status-grid" hidden={check.checks.get("status-grid")}>
+            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl} id="status-grid" hidden={check.checks.get("status-grid")}>
                 <PSelectInput
                     name="statuses"
                     value={data['statuses']}
@@ -277,19 +363,18 @@ const Filter = ({onFilter, loading}: IProps) => {
                 />
             </Grid>
 
-            {/*<Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}*/}
-            {/*      id="subStatus-grid" hidden={check.checks.get("subStatus-grid")}>*/}
-            {/*    <PSelectInput*/}
-            {/*        name="subStatuses"*/}
-            {/*        value={data['subStatuses']}*/}
-            {/*        onChange={handleChange}*/}
-            {/*        multiple*/}
-            {/*        label="Sub Status"*/}
-            {/*        variant="outlined"*/}
-            {/*        size='small'*/}
-            {/*        options={toOptions(enumToArray(WorkflowSubStatus))}*/}
-            {/*    />*/}
-            {/*</Grid>*/}
+            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl} id="subStatus-grid" hidden={true} >
+                <PSelectInput
+                    name="subStatuses"
+                    value={data['subStatuses']}
+                    onChange={handleChange}
+                    multiple
+                    label="Sub Status"
+                    variant="outlined"
+                    size='small'
+                    options={toOptions(enumToArray(WorkflowSubStatus))}
+                />
+            </Grid>
 
             <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}
                   id="refNumber-grid" hidden={check.checks.get("refNumber-grid")}>

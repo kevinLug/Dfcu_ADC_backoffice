@@ -131,8 +131,18 @@ export enum WorkflowStatus {
     New = "New",
     Pending = "Pending",
     Rejected = "Rejected",
-    PendingApproval = 'Pending Approval',
-    PendingClearance = 'Approved'
+    //PendingApproval = 'Pending Approval',
+    Approved = 'Approved' // PendingClearance
+}
+
+export enum OpenWorkflowStatusRepresentation {
+    Pending = "Pending",
+    PendingClearance = 'Approved',
+    New = "New",
+}
+
+export enum PendingWorkflowStatusRepresentation {
+
 }
 
 export enum WorkflowSubStatus {

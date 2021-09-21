@@ -180,7 +180,7 @@ export const workflowHeadCells: XHeadCell[] = [
             }
             // awaiting CMO clearance
             if (determineWorkflowStatus(data) === WorkflowStatus.Open && rec.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle) {
-                return renderStatus(WorkflowStatus.PendingClearance)
+                return renderStatus(WorkflowStatus.Approved)
             }
             // erred
             if (determineWorkflowStatus(data) === WorkflowStatus.Error) {

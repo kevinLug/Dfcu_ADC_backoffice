@@ -193,7 +193,7 @@ const AllValidations = ({workflow}: IProps) => {
     function displaySubmissionToFinacle() {
         if (workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle && hasAnyRole(user, [systemRoles.CMO])) {
             return <Grid className={classes.expansion}>
-                <Typography variant="h4">Submit to Finacle</Typography>
+
                 <CmoFinacleSubmission user={user} workflowResponseMessage={workflowResponseMessage} workflow={workflow}/>
             </Grid>
         }
