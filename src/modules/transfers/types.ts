@@ -16,7 +16,8 @@ export interface ITransferDetails {
     remittanceType: string,
     currencyCode: string,
     transactionAmount: number,
-    remittanceAmount: string,
+    rate: number,
+    rateInvolve: boolean,
     exchangeRate: number,
     amountInWords: string,
     transferPurpose: string
@@ -29,8 +30,9 @@ export const ITransferDetailsDefault: ITransferDetails = {
     remittanceType: '',
     currencyCode: '',
     transactionAmount: 0,
-    remittanceAmount: '',
+    rate: 0,
     exchangeRate: 0,
+    rateInvolve: false,
     amountInWords: '',
     transferPurpose: ''
 }

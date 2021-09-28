@@ -76,8 +76,8 @@ const servers: any = {
     dev: {
         // Auth: 'https://localhost:44313',
         Auth: 'https://dfcu-autodatacapture-auth-api-test.test001.laboremus.no',
-        // Case: 'http://localhost:6001',
-        Case: 'https://dfcu-autodataca/pture-casehandling-test.test001.laboremus.no',
+        Case: 'http://localhost:6001',
+        // Case: 'https://dfcu-autodataca/pture-casehandling-test.test001.laboremus.no',
         Notification: 'https://dfcu-notification-api-test.test001.laboremus.no',
     },
     test: {
@@ -133,6 +133,7 @@ export const remoteRoutes = {
 
     workflowsCombo: caseHandlingURL + '/api/queries/combo',
     workflowsReports: caseHandlingURL + '/api/report/download',
+    workflowsReportsDownloadWithParams: caseHandlingURL + '/api/report/downloadWithParams',
     documentsDownload: caseHandlingURL + '/api/documents/download',
     workflowsManual: caseHandlingURL + '/api/manual',
     samplePdf: caseHandlingURL + '/sample.pdf',
@@ -174,7 +175,9 @@ export class ConstantLabelsAndValues {
     public static CURRENCY = 'Currency'
     public static AMOUNT = 'Amount'
     public static AMOUNT_IN_WORDS = 'Amount in words'
-    public static RATE = 'Rate'
+    public static RATE_PROVIDED_BY_CUSTOMER = 'Rate (Customer)'
+    public static RATE_PROVIDED_BY_BANK_USER = 'Rate (BANK User)'
+    public static RATE_INVOLVE = 'Rate Involve'
     public static REMITTANCE_AMOUNT = 'Remittance amount'
     public static PURPOSE_OF_TRANSFER = 'Purpose of  transfer'
 

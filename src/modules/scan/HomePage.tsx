@@ -61,7 +61,7 @@ const HomePage = () => {
 
             <Grid item sm={12}>
 
-                <Filter onFilter={handleFilter} loading={loadingFilter} />
+                <Filter onFilter={handleFilter} loading={loadingFilter}  filterResult={data}/>
 
             </Grid>
 

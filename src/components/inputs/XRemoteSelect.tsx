@@ -6,7 +6,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import {Field, FieldProps, getIn} from "formik";
 import {hasValue} from "./inputHelpers";
 import {TextFieldProps} from "@material-ui/core/TextField/TextField";
-import {FilterResult} from "../../modules/workflows/Filter";
+
 import {KeyValueMap} from "../../utils/collections/map";
 
 interface IProps {

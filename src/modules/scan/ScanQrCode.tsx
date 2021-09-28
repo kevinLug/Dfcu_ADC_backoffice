@@ -184,7 +184,7 @@ const ScanQrCode = () => {
             }
 
             const pairKeyValueFromDecodedRawResult = decodedRawResult.getText().split(",");
-
+            console.log("the raw scan:", pairKeyValueFromDecodedRawResult)
             // cleanup raw data
             pairKeyValueFromDecodedRawResult.map((pair) => {
                 const valueTrimmed = pair.trim();
@@ -248,6 +248,8 @@ const ScanQrCode = () => {
                     setOpenSnackBar(true)
                     Toast.warn("Did not initiate transfer request")
                 } else {
+
+                    console.log('the new case:', aCase)
 
                     post(remoteRoutes.workflows, aCase, (resp: any) => {
 

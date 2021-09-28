@@ -1,21 +1,21 @@
 import * as React from "react";
 import {useEffect, useState} from "react";
-import {flatMap, uniqBy} from "lodash";
+
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import {IOption, toOptions} from "../../components/inputs/inputHelpers";
+
+import {toOptions} from "../../components/inputs/inputHelpers";
 import {Box, Menu, MenuProps} from "@material-ui/core";
 import TextField from '@material-ui/core/TextField';
 import PSelectInput from "../../components/plain-inputs/PSelectInput";
 import PDateInput from "../../components/plain-inputs/PDateInput";
 import {enumToArray, getRandomStr} from "../../utils/stringHelpers";
-import {IWorkflowFilter, OpenWorkflowStatusRepresentation, WorkflowStatus, WorkflowSubStatus} from "./types";
+import {determineWorkflowStatus, IWorkflowFilter, WorkflowStatus, WorkflowSubStatus} from "./types";
 import {workflowTypes} from "./config";
-import {PRemoteSelect} from "../../components/inputs/XRemoteSelect";
+
 import {remoteRoutes} from "../../data/constants";
 import {useSelector} from "react-redux";
-import {IState} from "../../data/types";
-import {downLoad, triggerDownLoad} from "../../utils/ajax";
+
+import {downLoad, downLoadWithParams, triggerDownLoad} from "../../utils/ajax";
 import {IList, List} from "../../utils/collections/list";
 import CheckBoxTemplate, {IPropsChecks} from "../scan/validate-verify/Check";
 
@@ -29,8 +29,9 @@ import IconButton from "@material-ui/core/IconButton";
 
 import {ICheckKeyValueState} from "../../data/redux/checks/reducer";
 import {MoreHoriz} from "@material-ui/icons";
-import {IKeyValueMap, KeyValueMap} from "../../utils/collections/map";
-import {ObjectUtils} from "../../utils/objectHelpers";
+import {KeyValueMap} from "../../utils/collections/map";
+import {ExportToExcel} from "../../components/import-export/ExportButton";
+import {renderStatus} from "./widgets";
 
 
 const StyledMenu = withStyles({
@@ -67,36 +68,10 @@ const StyledMenuItem = withStyles((theme) => ({
 interface IProps {
     onFilter: (data: any) => any
     loading: boolean
+    filterResult?: any
     setFilteredData?: (dataFiltered: any) => any
 
     setSearchIsHappening?: (flag: boolean) => any
-}
-
-export class FilterResult {
-
-    private static result: IKeyValueMap<string, IWorkflowFilter> = new KeyValueMap<string, IWorkflowFilter>();
-
-    static setResult(result: any[]): void {
-
-        if (result.length > 0) {
-
-            FilterResult.result.clear();
-
-            result.map((e) => {
-                const demandedData = e["demandedData"]
-                const parsed = new Object(demandedData)
-
-                // @ts-ignore
-                FilterResult.result.put(Object.values(parsed)[0], parsed);
-            })
-        }
-
-    }
-
-    static getResult() {
-        return FilterResult.result;
-    }
-
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -117,7 +92,79 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 
-const Filter = ({onFilter, loading}: IProps) => {
+interface IReport {
+    id: string;
+    applicationDate: string;
+    referenceNumber: string;
+    applicantName: string;
+    beneficiaryName: string;
+    beneficiaryBankName: string;
+    amount: number;
+    currency: string;
+    status: string;
+}
+
+const formatExportData = (data: any) =>{
+
+    /**
+     * - Get all array
+     * - For each element, pick out
+     *  1 - ID
+     *  2 - Application Date
+     *  3 - Reference Number
+     *  4 - Beneficiary Name
+     *  5 - Beneficiary Bank Name
+     *  6 - Amount
+     *  7 - Currency
+     *  8 - Status
+     */
+
+    return data.map((value: any) => {
+
+        let reportStatus = '';
+        const subStatus = value.subStatus
+        const status = value.status
+        if (determineWorkflowStatus(status) === WorkflowStatus.Open && subStatus === WorkflowSubStatus.AwaitingCSOApproval) {
+            reportStatus = WorkflowStatus.New
+        }
+        // awaiting BOM approval
+        if (determineWorkflowStatus(status) === WorkflowStatus.Open && subStatus === WorkflowSubStatus.AwaitingBMApproval) {
+            reportStatus =  WorkflowStatus.Pending
+        }
+        // awaiting CMO clearance
+        if (determineWorkflowStatus(status) === WorkflowStatus.Open && subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle) {
+            reportStatus =  WorkflowStatus.Approved
+        }
+        // erred
+        if (determineWorkflowStatus(status) === WorkflowStatus.Error) {
+            reportStatus =  WorkflowStatus.Rejected
+        }
+        // closed (sent to finacle)
+        if (determineWorkflowStatus(status) === WorkflowStatus.Closed) {
+            reportStatus =  WorkflowStatus.Cleared
+        }
+
+        const row: IReport = {
+            id: value.id,
+            applicationDate: value.applicationDate,
+            referenceNumber: value.referenceNumber,
+            applicantName: value.metaData.applicantName,
+            beneficiaryName: value.metaData.beneficiaryName,
+            beneficiaryBankName: value.metaData.beneficiaryBankName,
+            amount: value.metaData.amount,
+            currency: value.metaData.currency,
+            status: reportStatus
+        }
+
+        // console.log("a row: ", row)
+
+        return row
+
+    })
+
+}
+
+const Filter = ({onFilter, loading, filterResult}: IProps) => {
 
     const classes = useStyles();
 
@@ -134,10 +181,9 @@ const Filter = ({onFilter, loading}: IProps) => {
         beneficiaryName: ''
     })
 
-    const [searchValueApplicantName, setSearchValueApplicantName] = useState('')
-    const [searchHappening, setSearchHappening] = useState(false)
+    // const [searchHappening, setSearchHappening] = useState(false)
 
-    const [searchData, setSearchedData] = useState<any[]>([])
+    // const [searchData, setSearchedData] = useState<any[]>([])
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
@@ -152,8 +198,9 @@ const Filter = ({onFilter, loading}: IProps) => {
     const {check}: ICheckKeyValueState = useSelector((state: any) => state.checks)
 
     useEffect(() => {
-
-    }, [check, searchData, searchHappening])
+        console.log('filterResult:', filterResult)
+        formatExportData(filterResult)
+    }, [check, filterResult])
 
     const ids = ['status-grid', 'subStatus-grid', 'refNumber-grid', 'from-grid', 'to-grid']
     const labels = ['Status', 'Sub Status', 'Ref. Number', 'From Date', 'To Date']
@@ -198,38 +245,38 @@ const Filter = ({onFilter, loading}: IProps) => {
         setData(newData)
         // console.log('write-up:',newData)
 
-        if (name === 'statuses'){
+        if (name === 'statuses') {
 
             const subStatuses = autoHandleSubStatuses(name, value)
 
-            const listingStatuses = subStatuses.getValues().toArray().map((v) =>{
+            const listingStatuses = subStatuses.getValues().toArray().map((v) => {
                 return v['status']
             })
 
-            const listingSubStatuses = subStatuses.getValues().toArray().map((v) =>{
+            const listingSubStatuses = subStatuses.getValues().toArray().map((v) => {
                 return v['subStatus']
             })
 
-            if (listingStatuses.includes('Error')){
+            if (listingStatuses.includes('Error')) {
                 listingSubStatuses.concat(WorkflowSubStatus.FailedBMApproval)
                 listingSubStatuses.concat("FailedCMOApproval")
             }
 
-            const theNewSubStatusData = {...data, ['subStatuses']: listingSubStatuses, [name]:listingStatuses}
+            const theNewSubStatusData = {...data, ['subStatuses']: listingSubStatuses, [name]: listingStatuses}
 
             // console.log('karama-2:',listingSubStatuses, theNewSubStatusData)
 
             submitForm(theNewSubStatusData)
 
-        }else {
+        } else {
             submitForm(newData)
         }
 
     }
 
-    function autoHandleSubStatuses(name:string, input:any){
+    function autoHandleSubStatuses(name: string, input: any) {
 
-        let theSubStatuses = new KeyValueMap<any,any>();
+        let theSubStatuses = new KeyValueMap<any, any>();
 
         interface IStatusDetails {
             originalStatus: any
@@ -237,7 +284,7 @@ const Filter = ({onFilter, loading}: IProps) => {
             subStatus: any
         }
 
-        const addAStatusDetail = (originalStatus: any, status:any,subStatus:any) => {
+        const addAStatusDetail = (originalStatus: any, status: any, subStatus: any) => {
 
             const aDetail: IStatusDetails = {
 
@@ -251,27 +298,27 @@ const Filter = ({onFilter, loading}: IProps) => {
 
         }
 
-        if (name === 'statuses'){
+        if (name === 'statuses') {
 
             input.map((e: WorkflowStatus) => {
 
-                if (e === WorkflowStatus.Pending){
+                if (e === WorkflowStatus.Pending) {
                     addAStatusDetail(WorkflowStatus.Pending, WorkflowStatus.Open, WorkflowSubStatus.AwaitingBMApproval);
                 }
 
-                if (e === WorkflowStatus.Approved){
+                if (e === WorkflowStatus.Approved) {
                     addAStatusDetail(WorkflowStatus.Approved, WorkflowStatus.Open, WorkflowSubStatus.AwaitingSubmissionToFinacle);
                 }
 
-                if (e === WorkflowStatus.Cleared){
+                if (e === WorkflowStatus.Cleared) {
                     addAStatusDetail(WorkflowStatus.Cleared, WorkflowStatus.Closed, WorkflowSubStatus.TransactionComplete);
                 }
 
-                if (e === WorkflowStatus.New){
+                if (e === WorkflowStatus.New) {
                     addAStatusDetail(WorkflowStatus.New, WorkflowStatus.Open, WorkflowSubStatus.AwaitingCSOApproval);
                 }
 
-                if (e === WorkflowStatus.Rejected){
+                if (e === WorkflowStatus.Rejected) {
                     addAStatusDetail(WorkflowStatus.Rejected, WorkflowStatus.Error, WorkflowSubStatus.FailedCSOApproval);
                 }
 
@@ -292,22 +339,16 @@ const Filter = ({onFilter, loading}: IProps) => {
         submitForm(newData)
     }
 
-    const handleComboValueChange = (name: string) => (value: any) => {
-
-        // const newData = {...data, [name]: value}
-        const newData = {...data, [name]: value}
-
-        const newFilterData = {...data, [name]: value ? value.id : null}
-
-        setData(newData)
-
-        submitForm(newFilterData)
-    }
-
     function handleExport() {
-        downLoad(remoteRoutes.workflowsReports, data => {
-            triggerDownLoad(data, `file-${getRandomStr(5)}.xlsx`)
+        console.log("crossing-line:", data)
+
+        downLoadWithParams(remoteRoutes.workflowsReportsDownloadWithParams, data, theData => {
+            triggerDownLoad(theData, `file-${getRandomStr(5)}.xlsx`)
         })
+
+        //     downLoad(remoteRoutes.workflowsReports, data => {
+        //     triggerDownLoad(data, `file-${getRandomStr(5)}.xlsx`)
+        // })
     }
 
     return <form>
@@ -363,7 +404,7 @@ const Filter = ({onFilter, loading}: IProps) => {
                 />
             </Grid>
 
-            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl} id="subStatus-grid" hidden={true} >
+            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl} id="subStatus-grid" hidden={true}>
                 <PSelectInput
                     name="subStatuses"
                     value={data['subStatuses']}
@@ -452,11 +493,9 @@ const Filter = ({onFilter, loading}: IProps) => {
             <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}
                   className={classes.exportBtn}>
                 <Box display="flex" flexDirection="row-reverse">
-                    <Button
-                        disabled={loading}
-                        variant="outlined"
-                        color="primary"
-                        onClick={handleExport}>Export</Button>
+
+                    <ExportToExcel dataToExport={formatExportData(filterResult)} />
+
                 </Box>
             </Grid>
 

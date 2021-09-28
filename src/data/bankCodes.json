@@ -86,7 +86,7 @@
       "branchCode": "00"
     },
     {
-      "name": "IMPERIAL BANK",
+      "name": "EXIM (IMPERIAL) BANK",
       "bankCode": "32",
       "branchCode": "01"
     },
@@ -144,7 +144,16 @@
       "name": "BANK OF UGANDA",
       "bankCode": "99",
       "branchCode": "01"
+    },
+    {
+      "name": "CENTENARY RURAL DEVELOPMENT BANK",
+      "bankCode": "16",
+      "branchCode": "00"
+    },
+    {
+      "name": "KENYA COMMERCIAL BANK",
+      "bankCode": "25",
+      "branchCode": "00"
     }
-
   ]
 }

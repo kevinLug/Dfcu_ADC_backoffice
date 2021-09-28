@@ -1,4 +1,4 @@
-import ObjectHelpersFluent from "../../utils/objectHelpersFluent"
+import ObjectHelpersFluent, {fluentValidationInstance} from "../../utils/objectHelpersFluent"
 import SuccessCriteria from "../../utils/successCriteria"
 import {List} from "../../utils/collections/list"
 import {ICase} from "./types"
@@ -53,18 +53,38 @@ const validateInternal = async (data: ICase): Promise<boolean> => {
         isCurrencyPresent.failureCallBack(() => Toast.error("Currency is missing")).haltProcess(false, false)
         tests.add(isCurrencyPresent)
 
-        const isRatePresent = new ObjectHelpersFluent()
-            .testTitle("is rate present?")
-            .selector(data, "$.caseData.transferDetails.exchangeRate")
-            .isGreaterThanOrEqualTo(0)
-            .addUserFailureMessage("rate must be greater or equal to zero")
-            // .isIgnorable()
+        const isRateInvolve = fluentValidationInstance()
+            .testTitle("is rate required present?")
+            .selector(data, "$.caseData.transferDetails.rateInvolve")
+            .isEqualTo("1")
+            // .addUserFailureMessage(" is rate a requirement?")
+            .isIgnorable()
             .logDetailed()
             .logDetailed()
-        isRatePresent.failureCallBack(() => Toast.error("Rate is missing"))
-        tests.add(isRatePresent)
+        tests.add(isRateInvolve);
 
-        const isAmountPresent = new ObjectHelpersFluent()
+        const flagRateRequirement = fluentValidationInstance()
+            .testTitle("side-work for checking if rate is a requirement")
+            .selector(isRateInvolve.getSummary().testResult, "$")
+            .isEqualTo(true)
+            .getSummary().testResult
+
+        if (flagRateRequirement){
+
+            const isRatePresent = fluentValidationInstance()
+                .testTitle("is rate present?")
+                .selector(data, "$.caseData.transferDetails.rate")
+                .isGreaterThanOrEqualTo(0)
+                .addUserFailureMessage("rate must be greater zero (0)")
+                // .isIgnorable()
+                .logDetailed()
+                .logDetailed()
+            isRatePresent.failureCallBack(() => Toast.error("Rate is missing"))
+            tests.add(isRatePresent)
+
+        }
+
+        const isAmountPresent = fluentValidationInstance()
             .testTitle("Is amount present ( > 0 )")
             .selector(data, "$.caseData.transferDetails.transactionAmount")
             .isGreaterThan(0)

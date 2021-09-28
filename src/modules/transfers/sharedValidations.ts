@@ -21,7 +21,7 @@ const validateSharedValuesAndRules = (data: ICase, tests: IList<ObjectHelpersFlu
         .selector(accountNumberOfSenderLength, "$")
         .isEqualTo(14)
         .logDetailed()
-        .addUserFailureMessage("Sender's account number is length is not equal to 14")
+        .addUserFailureMessage("Sender's account number length is not equal to 14")
     isSenderAccountNumberEqualTo_14.failureCallBack(() => {
 
         if (isSenderAccountNumberEqualTo_14.getSummary().value > isSenderAccountNumberEqualTo_14.getSummary().expected)

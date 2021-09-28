@@ -10,8 +10,8 @@
         "remittanceType": "F3",
         "currencyCode": "X1",
         "transactionAmount": "X2",
-        "remittanceAmount": "X4",
-        "exchangeRate": "X3",
+        "rate": "X4",
+        "rateInvolve": "X3",
         "amountInWords": "X5",
         "transferPurpose": "Z9"
       },

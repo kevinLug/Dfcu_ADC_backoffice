@@ -27,29 +27,28 @@ const keyValueLabels = (labelsAndValues: ILabelValue[]) => {
     return keyValue;
 }
 
+const zeroBasedNumberPlaceHolderDeterminant = (value: number): string => {
+    if (value > 0){
+        return Numbers.format_En_UK(value)
+    }
+    return ''
+}
+
 export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: ICase, forexDetails: IForex) => {
     const labelling = transferDetails
 
     let branchCode: string = ''
 
-    let rate: any
-    if (forexDetails.rate !== 0 && forexDetails.rate !== '' && forexDetails.rate > 0){
-        rate = Numbers.format_En_UK(forexDetails.rate)
-    }else {
-        rate = ''
-    }
-
-    let remittanceAmount: any
-    if ( forexDetails.remittanceAmount !== '' && forexDetails.remittanceAmount > 0){
-        rate = Numbers.format_En_UK(forexDetails.remittanceAmount)
-    }else {
-        remittanceAmount = ''
-    }
+    let dateStr: any
+    if (isNullOrUndefined(aCase.workflowType) || isNullOrEmpty(aCase.workflowType)){
+        dateStr = ''
+    }else
+        dateStr = printDateTime(aCase.applicationDate)
 
     const labels: ILabelValue[] = [
         {
             label: ConstantLabelsAndValues.DATE,
-            value: printDateTime(aCase.applicationDate)
+            value: dateStr
         },
         {
             label: ConstantLabelsAndValues.REQUESTING_BRANCH,
@@ -81,19 +80,20 @@ export const transferDetailsLabels = (transferDetails: ITransferDetails, aCase: 
         },
         {
             label: ConstantLabelsAndValues.AMOUNT,
-            value: Numbers.format_En_UK(labelling.transactionAmount)
+            value: zeroBasedNumberPlaceHolderDeterminant(labelling.transactionAmount)
         },
         {
             label: ConstantLabelsAndValues.AMOUNT_IN_WORDS,
             value: labelling.amountInWords
         },
+
         {
-            label: ConstantLabelsAndValues.RATE,
-            value: rate
+            label: ConstantLabelsAndValues.RATE_PROVIDED_BY_CUSTOMER,
+            value: zeroBasedNumberPlaceHolderDeterminant(labelling.rate)
         },
         {
-            label: ConstantLabelsAndValues.REMITTANCE_AMOUNT,
-            value: remittanceAmount
+            label: ConstantLabelsAndValues.RATE_PROVIDED_BY_BANK_USER,
+            value: zeroBasedNumberPlaceHolderDeterminant(forexDetails.rate)
         },
         {
             label: ConstantLabelsAndValues.PURPOSE_OF_TRANSFER,

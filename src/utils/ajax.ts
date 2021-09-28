@@ -174,6 +174,24 @@ export const downLoad = (url: string, callBack: CallbackFunction, errorCallBack?
         .end(handleResponse(callBack, errorCallBack, endCallBack))
 }
 
+// export const downLoadWithParams = (url: string, data: any, callBack: CallbackFunction, errorCallBack?: ErrorCallback, endCallBack?: EndCallback) => {
+//     superagent.get(url)
+//         .set('Authorization', `Bearer ${getToken()}`)
+//         .query(data)
+//         .responseType('blob')
+//         .end(handleResponse(callBack, errorCallBack, endCallBack))
+// }
+
+export const downLoadWithParams = (url: string, data: any, callBack: CallbackFunction, errorCallBack?: ErrorCallback, endCallBack?: EndCallback) => {
+    superagent.get(url)
+        .set('Authorization', `Bearer ${getToken()}`)
+        .set('Accept', 'application/json')
+        .query(data)
+        .responseType('blob')
+        .timeout(timeout)
+        .end(handleResponse(callBack, errorCallBack, endCallBack))
+}
+
 export const triggerDownLoad = (data: Blob, fileName = 'export.csv') => {
     const a = document.createElement('a');
     a.href = window.URL.createObjectURL(data);
