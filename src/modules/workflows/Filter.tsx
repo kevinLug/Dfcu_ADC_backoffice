@@ -15,7 +15,7 @@ import {workflowTypes} from "./config";
 import {remoteRoutes} from "../../data/constants";
 import {useSelector} from "react-redux";
 
-import {downLoad, downLoadWithParams, triggerDownLoad} from "../../utils/ajax";
+import {downLoadWithParams, triggerDownLoad} from "../../utils/ajax";
 import {IList, List} from "../../utils/collections/list";
 import CheckBoxTemplate, {IPropsChecks} from "../scan/validate-verify/Check";
 
@@ -31,8 +31,8 @@ import {ICheckKeyValueState} from "../../data/redux/checks/reducer";
 import {MoreHoriz} from "@material-ui/icons";
 import {KeyValueMap} from "../../utils/collections/map";
 import {ExportToExcel} from "../../components/import-export/ExportButton";
-import {renderStatus} from "./widgets";
 
+import {printDateTime} from "../../utils/dateHelpers";
 
 const StyledMenu = withStyles({
     paper: {
@@ -146,7 +146,7 @@ const formatExportData = (data: any) =>{
 
         const row: IReport = {
             id: value.id,
-            applicationDate: value.applicationDate,
+            applicationDate: printDateTime(value.applicationDate),
             referenceNumber: value.referenceNumber,
             applicantName: value.metaData.applicantName,
             beneficiaryName: value.metaData.beneficiaryName,
@@ -162,6 +162,15 @@ const formatExportData = (data: any) =>{
 
     })
 
+}
+
+enum WorkflowStatusInternal {
+
+    Cleared = "Cleared",
+    New = "New",
+    Pending = "Pending",
+    Rejected = "Rejected",
+    Approved = 'Approved' // PendingClearance
 }
 
 const Filter = ({onFilter, loading, filterResult}: IProps) => {
@@ -198,7 +207,6 @@ const Filter = ({onFilter, loading, filterResult}: IProps) => {
     const {check}: ICheckKeyValueState = useSelector((state: any) => state.checks)
 
     useEffect(() => {
-        console.log('filterResult:', filterResult)
         formatExportData(filterResult)
     }, [check, filterResult])
 
@@ -351,6 +359,8 @@ const Filter = ({onFilter, loading, filterResult}: IProps) => {
         // })
     }
 
+
+
     return <form>
         <Grid spacing={2} container>
 
@@ -400,7 +410,7 @@ const Filter = ({onFilter, loading, filterResult}: IProps) => {
                     label="Status"
                     variant="outlined"
                     size='small'
-                    options={toOptions(enumToArray(WorkflowStatus))}
+                    options={toOptions(enumToArray(WorkflowStatusInternal))}
                 />
             </Grid>
 
