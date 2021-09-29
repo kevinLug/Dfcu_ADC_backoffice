@@ -1,0 +1,159 @@
+{
+  "Banks": [
+    {
+      "name": "BARCLAYS BANK",
+      "bankCode": "01",
+      "branchCode": "01"
+    },
+    {
+      "name": "BANK OF BARODA",
+      "bankCode": "02",
+      "branchCode": "01"
+    },
+    {
+      "name": "STANBIC BANK",
+      "bankCode": "04",
+      "branchCode": "00"
+    },
+    {
+      "name": "DFCU BANK LTD",
+      "bankCode": "05",
+      "branchCode": "00"
+    },
+    {
+      "name": "TROPICAL AFRICA BANK",
+      "bankCode": "06",
+      "branchCode": "01"
+    },
+    {
+      "name": "STANDARD CHARTERED BANK",
+      "bankCode": "08",
+      "branchCode": "01"
+    },
+    {
+      "name": "ORIENT BANK",
+      "bankCode": "11",
+      "branchCode": "00"
+    },
+    {
+      "name": "BANK OF AFRICA",
+      "bankCode": "13",
+      "branchCode": "01"
+    },
+    {
+      "name": "CAIRO INTERNATIONAL BANK",
+      "bankCode": "18",
+      "branchCode": "01"
+    },
+    {
+      "name": "DIAMOND TRUST BANK",
+      "bankCode": "19",
+      "branchCode": "01"
+    },
+    {
+      "name": "CITI BANK",
+      "bankCode": "22",
+      "branchCode": "01"
+    },
+    {
+      "name": "HOUSING FINANCE BANK LTD",
+      "bankCode": "23",
+      "branchCode": "01"
+    },
+    {
+      "name": "UNITED BANK OF AFRICA",
+      "bankCode": "26",
+      "branchCode": "01"
+    },
+    {
+      "name": "GUARANTY TRUST BANK",
+      "bankCode": "27",
+      "branchCode": "01"
+    },
+    {
+      "name": "ECOBANK",
+      "bankCode": "29",
+      "branchCode": "01"
+    },
+    {
+      "name": "EQUITY BANK UGANDA LTD",
+      "bankCode": "30",
+      "branchCode": "00"
+    },
+    {
+      "name": "ABC BANK",
+      "bankCode": "31",
+      "branchCode": "00"
+    },
+    {
+      "name": "EXIM (IMPERIAL) BANK",
+      "bankCode": "32",
+      "branchCode": "01"
+    },
+    {
+      "name": "BANK OF INDIA UGANDA LTD",
+      "bankCode": "34",
+      "branchCode": "01"
+    },
+    {
+      "name": "NCBA BANK UGANDA LIMITED",
+      "bankCode": "36",
+      "branchCode": "01"
+    },
+    {
+      "name": "FINANCE TRUST BANK",
+      "bankCode": "37",
+      "branchCode": "01"
+    },
+    {
+      "name": "OPPORTUNITY BANK",
+      "bankCode": "38",
+      "branchCode": "01"
+    },
+    {
+      "name": "FINCA UGANDA LTD",
+      "bankCode": "53",
+      "branchCode": "01"
+    },
+    {
+      "name": "MERCANTILE CREDIT BANK",
+      "bankCode": "55",
+      "branchCode": "01"
+    },
+    {
+      "name": "POST BANK UGANDA",
+      "bankCode": "56",
+      "branchCode": "00"
+    },
+    {
+      "name": "PRIDE MICROFINANCE LTD",
+      "bankCode": "57",
+      "branchCode": "01"
+    },
+    {
+      "name": "UGAFODE",
+      "bankCode": "60",
+      "branchCode": "01"
+    },
+    {
+      "name": "TOP FINANCE BANK",
+      "bankCode": "62",
+      "branchCode": "01"
+    },
+    {
+      "name": "BANK OF UGANDA",
+      "bankCode": "99",
+      "branchCode": "01"
+    },
+    {
+      "name": "CENTENARY RURAL DEVELOPMENT BANK",
+      "bankCode": "16",
+      "branchCode": "00"
+    },
+    {
+      "name": "KENYA COMMERCIAL BANK",
+      "bankCode": "25",
+      "branchCode": "00"
+    }
+  ]
+}

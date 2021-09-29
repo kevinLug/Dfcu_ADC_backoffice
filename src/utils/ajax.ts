@@ -44,7 +44,9 @@ export const handleError = (err: any = {}, res: superagent.Response) => {
         Toast.error(res.body.message, ajaxError)
     } else {
         console.log(">>>>>",res)
+
         const message = err.message || 'Unknown error, contact admin'
+        console.log(">>>>>-2",err)
         const finalMessage = message.indexOf("offline") !== -1
             ? "Can't reach server, Check connectivity"
             : message
@@ -63,6 +65,7 @@ export const isAuthError = (err: any = {}, res: superagent.Response) => {
 
 export const handleResponse = (callBack: CallbackFunction, errorCallBack?: ErrorCallback, endCallBack?: EndCallback) => (err: any, res: superagent.Response) => {
     try {
+        console.log("res:-->>>>>",res)
         if (err || !res.ok) {
             if (errorCallBack) {
                 errorCallBack(err, res)
@@ -81,12 +84,41 @@ export const handleResponse = (callBack: CallbackFunction, errorCallBack?: Error
     }
 }
 
+export const handleResponsePing = (callBack: CallbackFunction, errorCallBack?: ErrorCallback, endCallBack?: EndCallback) => (err: any, res: superagent.Response) => {
+    try {
+        console.log("res:-->>>>>",res)
+        if (err || !res.ok) {
+            if (errorCallBack) {
+                errorCallBack(err, res)
+            } else {
+                handleError(err, res)
+            }
+        } else {
+            callBack(res)
+        }
+    } catch (e) {
+        console.error("Failed to process response", e)
+    } finally {
+        if (endCallBack) {
+            endCallBack()
+        }
+    }
+}
+
 export const get = (url: string, callBack: CallbackFunction, errorCallBack?: ErrorCallback, endCallBack?: EndCallback) => {
     superagent.get(url)
         .set('Authorization', `Bearer ${getToken()}`)
         .set('Accept', 'application/json')
         .timeout(timeout)
         .end(handleResponse(callBack, errorCallBack, endCallBack))
+}
+
+export const getPing = (url: string, callBack: CallbackFunction, errorCallBack?: ErrorCallback, endCallBack?: EndCallback) => {
+    superagent.get(url)
+        .set('Authorization', `Bearer ${getToken()}`)
+        .set('Accept', 'application/json')
+        .timeout(timeout)
+        .end(handleResponsePing(callBack, errorCallBack, endCallBack))
 }
 
 export const search = (url: string, data: any, callBack: CallbackFunction, errorCallBack?: ErrorCallback, endCallBack?: EndCallback) => {
@@ -97,7 +129,6 @@ export const search = (url: string, data: any, callBack: CallbackFunction, error
         .timeout(timeout)
         .end(handleResponse(callBack, errorCallBack, endCallBack))
 }
-
 
 export const post = (url: string, data: any, callBack: CallbackFunction, errorCallBack?: ErrorCallback, endCallBack?: EndCallback) => {
     superagent.post(url)
@@ -136,7 +167,6 @@ export const del = (url: string, callBack: CallbackFunction, errorCallBack?: Err
         .end(handleResponse(callBack, errorCallBack, endCallBack))
 }
 
-
 export const downLoad = (url: string, callBack: CallbackFunction, errorCallBack?: ErrorCallback, endCallBack?: EndCallback) => {
     superagent.get(url)
         .set('Authorization', `Bearer ${getToken()}`)
@@ -144,6 +174,23 @@ export const downLoad = (url: string, callBack: CallbackFunction, errorCallBack?
         .end(handleResponse(callBack, errorCallBack, endCallBack))
 }
 
+// export const downLoadWithParams = (url: string, data: any, callBack: CallbackFunction, errorCallBack?: ErrorCallback, endCallBack?: EndCallback) => {
+//     superagent.get(url)
+//         .set('Authorization', `Bearer ${getToken()}`)
+//         .query(data)
+//         .responseType('blob')
+//         .end(handleResponse(callBack, errorCallBack, endCallBack))
+// }
+
+export const downLoadWithParams = (url: string, data: any, callBack: CallbackFunction, errorCallBack?: ErrorCallback, endCallBack?: EndCallback) => {
+    superagent.get(url)
+        .set('Authorization', `Bearer ${getToken()}`)
+        .set('Accept', 'application/json')
+        .query(data)
+        .responseType('blob')
+        .timeout(timeout)
+        .end(handleResponse(callBack, errorCallBack, endCallBack))
+}
 
 export const triggerDownLoad = (data: Blob, fileName = 'export.csv') => {
     const a = document.createElement('a');

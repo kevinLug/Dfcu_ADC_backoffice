@@ -36,54 +36,54 @@ const NewPersonForm = ({data, done}: IProps) => {
     const dispatch = useDispatch();
 
     function handleSubmit(values: any, actions: FormikActions<any>) {
-        const toSave = {
-            category: 'Person',
-            person: {
-                firstName: values.firstName,
-                middleName: values.middleName,
-                lastName: values.lastName,
-                dateOfBirth: values.dateOfBirth,
-                gender: values.gender
-            },
-            phones: [
-                {
-                    category: 'Mobile',
-                    isPrimary: true,
-                    value: values.phone
-                }
-            ],
-            emails: [
-                {
-                    category: 'Personal',
-                    isPrimary: true,
-                    value: values.email
-                }
-            ],
-            addresses: [],
-            identifications: [],
-            events: [],
-            metaData: {
-                cellGroup: 'Music MC',
-                churchLocation: 'WHDowntown',
-            }
-        }
-        post(remoteRoutes.contacts, toSave,
-            (data) => {
-                Toast.info('Operation successful')
-                actions.resetForm()
-                dispatch({
-                    type: crmConstants.crmAddContact,
-                    payload: {...data},
-                })
-                if (done)
-                    done()
-            },
-            undefined,
-            () => {
-                actions.setSubmitting(false);
-
-            }
-        )
+        // const toSave = {
+        //     category: 'Person',
+        //     person: {
+        //         firstName: values.firstName,
+        //         middleName: values.middleName,
+        //         lastName: values.lastName,
+        //         dateOfBirth: values.dateOfBirth,
+        //         gender: values.gender
+        //     },
+        //     phones: [
+        //         {
+        //             category: 'Mobile',
+        //             isPrimary: true,
+        //             value: values.phone
+        //         }
+        //     ],
+        //     emails: [
+        //         {
+        //             category: 'Personal',
+        //             isPrimary: true,
+        //             value: values.email
+        //         }
+        //     ],
+        //     addresses: [],
+        //     identifications: [],
+        //     events: [],
+        //     metaData: {
+        //         cellGroup: 'Music MC',
+        //         churchLocation: 'WHDowntown',
+        //     }
+        // }
+        // post(remoteRoutes.contacts, toSave,
+        //     (data) => {
+        //         Toast.info('Operation successful')
+        //         actions.resetForm()
+        //         dispatch({
+        //             type: crmConstants.crmAddContact,
+        //             payload: {...data},
+        //         })
+        //         if (done)
+        //             done()
+        //     },
+        //     undefined,
+        //     () => {
+        //         actions.setSubmitting(false);
+        //
+        //     }
+        // )
     }
 
     return (

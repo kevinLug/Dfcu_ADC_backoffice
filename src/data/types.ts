@@ -29,7 +29,7 @@ export interface IState {
     workflows: IWorkflowState
     crm: ICrmState
     users: IUserState
-    contacts: any
+    contacts: any;
 }
 
 
@@ -64,24 +64,24 @@ export interface IOidcProfile {
 }
 
 export interface GatewayMetadata {
-    version:           number;
-    versionMessage:    string;
-    districts:         District[];
-    businesses:        GatewayBusiness[];
-    accountCategories: AccountCategory[];
+    version: number;
+    versionMessage: string;
+    districts: District[];
+    businesses: GatewayBusiness[];
+    transferCategories: TransferCategory[];
 }
 
-export interface AccountCategory {
-    name:     string;
-    code:     string;
-    type:     number;
+export interface TransferCategory {
+    name: string;
+    code: string;
+    type: number;
     accounts: GatewayAccount[];
 }
 
 export interface GatewayAccount {
-    name:       string;
-    code:       string;
-    documents:  GatewayDocument[];
+    name: string;
+    code: string;
+    documents: GatewayDocument[];
     currencies: GatewayStatus[];
 }
 
@@ -92,18 +92,18 @@ export interface GatewayStatus {
 
 export interface GatewayDocument {
     required: boolean;
-    name:     string;
-    code:     string;
+    name: string;
+    code: string;
 }
 
 export interface GatewayBusiness {
-    name:     string;
-    code:     string;
+    name: string;
+    code: string;
     statuses: GatewayStatus[];
 }
 
 export interface District {
-    name:     string;
-    code:     string;
+    name: string;
+    code: string;
     counties: GatewayStatus[];
 }

@@ -1,0 +1,69 @@
+{
+  "case": {
+    "workflowType": "",
+    "referenceNumber": 0,
+    "externalReference": "",
+    "applicationDate": "Date",
+    "caseData": {
+      "transferDetails": {
+        "branchCode": "string",
+        "remittanceType": "string",
+        "currencyCode": "string",
+        "transactionAmount": "number",
+        "remittanceAmount": "number",
+        "exchangeRate": "number",
+        "amountInWords": "string",
+        "transferPurpose": "string"
+      },
+      "bankDetails": {
+        "beneficiaryBank": {
+          "bankName": "string",
+          "swiftCode": "string",
+          "sortCode": "string",
+          "aba": "string",
+          "fedwire": "string",
+          "ifsc": "string",
+          "iban": "string"
+        },
+        "applicantBank": {
+          "branchCode": "string"
+        }
+      },
+      "charges": {
+        "chargeMode": "string"
+      },
+      "beneficiaryDetails": {
+        "fullName": "string",
+        "accountNumber": "string",
+        "address": {
+          "town": "string",
+          "countryCode": "string",
+          "physicalAddress": "string"
+        }
+      },
+      "applicantDetails": {
+        "fullName": "string",
+        "accountNumber": "string",
+        "chequeNumber": "string",
+        "emailAddress": "string",
+        "phoneNumber": "string",
+        "natureOfBusiness": "string",
+        "address": {
+          "plotNumber": "string",
+          "street": "string",
+          "town": "string",
+          "district": "string"
+        }
+      },
+      "user": {
+        "id": "1f824a84-46b6-4e7f-b601-5d041118439d",
+        "name": "Enock Mwesigwa",
+        "phone": "25787903162",
+        "agentCode": "2345566",
+        "branchName": "02",
+        "region": ""
+      }
+    }
+  }
+}
+

@@ -52,22 +52,22 @@ const Contacts = () => {
             type: crmConstants.crmFetchLoading,
             payload: true,
         })
-        search(
-            remoteRoutes.contacts,
-            filter,
-            (resp) => {
-                dispatch({
-                    type: crmConstants.crmFetchAll,
-                    payload: [...resp],
-                })
-            },
-            undefined,
-            () => {
-                dispatch({
-                    type: crmConstants.crmFetchLoading,
-                    payload: false,
-                })
-            })
+        // search(
+        //     remoteRoutes.contacts,
+        //     filter,
+        //     (resp) => {
+        //         dispatch({
+        //             type: crmConstants.crmFetchAll,
+        //             payload: [...resp],
+        //         })
+        //     },
+        //     undefined,
+        //     () => {
+        //         dispatch({
+        //             type: crmConstants.crmFetchLoading,
+        //             payload: false,
+        //         })
+        //     })
     }, [filter, dispatch])
 
 

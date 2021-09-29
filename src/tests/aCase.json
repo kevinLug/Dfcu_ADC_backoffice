@@ -1,0 +1,99 @@
+{
+    "applicationDate": "05/25/2021",
+    "workflowType": "RTGSLOCAL",
+    "externalReference": null,
+    "referenceNumber": null,
+    "caseData": {
+      "transferDetails": {
+        "branchCode": "41",
+        "remittanceType": "RTGSLOCAL",
+        "currencyCode": "UGX",
+        "transactionAmount": "2500000",
+        "remittanceAmount": null,
+        "exchangeRate": null,
+        "amountInWords": "UGX - TWO MILLION FIVE HUNDRED THOUSAND ONLY.",
+        "transferPurpose": "EZOKULYA"
+      },
+      "bankDetails": {
+        "beneficiaryBank": {
+          "bankName": "STANBIC BANK",
+          "swiftCode": "12345",
+          "sortCode": null,
+          "aba": null,
+          "fedwire": null,
+          "ifsc": null,
+          "iban": null
+        },
+        "applicantBank": {
+          "branchCode": "41"
+        }
+      },
+      "charges": {
+        "chargeMode": "OUR"
+      },
+      "beneficiaryDetails": {
+        "fullName": "DANIEL COMBONI",
+        "accountNumber": "12345678912345",
+        "address": {
+          "town": "BUGOLOBI",
+          "countryCode": "UG",
+          "physicalAddress": "BUGOLOBI, PLOT-1253, NICE HOUS"
+        }
+      },
+      "applicantDetails": {
+        "fullName": "MWESIGWA ENOCK OMUBEDE",
+        "accountNumber": "12345678912345",
+        "chequeNumber": null,
+        "emailAddress": "enockmwesigwa@testmail.com",
+        "phoneNumber": "0780750721",
+        "natureOfBusiness": "MULIMI",
+        "address": {
+          "plotNumber": "BU-1234",
+          "street": "KALUNGI RD",
+          "town": "BUKASA",
+          "district": "KAMPALA"
+        }
+      },
+      "user": {
+        "id": null,
+        "name": null,
+        "phone": null,
+        "agentCode": null,
+        "branchName": null,
+        "region": null
+      }
+    },
+    "beneficiaryDetails": {
+      "fullName": "DANIEL COMBONI",
+      "accountNumber": "12345678912345",
+      "address": {
+        "town": "BUGOLOBI",
+        "countryCode": "UG",
+        "physicalAddress": "BUGOLOBI, PLOT-1253, NICE HOUS"
+      }
+    },
+    "bankDetails": {
+      "beneficiaryBank": {
+        "bankName": "STANBIC BANK",
+        "swiftCode": "12345",
+        "sortCode": null,
+        "aba": null,
+        "fedwire": null,
+        "ifsc": null,
+        "iban": null
+      },
+      "applicantBank": {
+        "branchCode": "41"
+      }
+    },
+    "transferDetails": {
+      "branchCode": "41",
+      "remittanceType": "RTGSLOCAL",
+      "currencyCode": "UGX",
+      "transactionAmount": "2500000",
+      "remittanceAmount": null,
+      "exchangeRate": null,
+      "amountInWords": "UGX - TWO MILLION FIVE HUNDRED THOUSAND ONLY.",
+      "transferPurpose": "EZOKULYA"
+    }
+  }

@@ -36,6 +36,7 @@ function Login() {
                         variant="contained"
                         color="primary"
                         className={classes.submit}
+                        id='sign-in-btn'
                     >
                         Sign in
                     </Button>

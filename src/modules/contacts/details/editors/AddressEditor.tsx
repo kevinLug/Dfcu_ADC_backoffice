@@ -36,19 +36,19 @@ const AddressEditor = ({data, isNew, contactId, done}: IProps) => {
     const dispatch = useDispatch();
 
     function handleSubmit(values: any, actions: FormikActions<any>) {
-        const submission: ISubmission = {
-            url: `${remoteRoutes.contactsAddress}/${contactId}`,
-            values:{...values,contactId}, actions, isNew,
-            onAjaxComplete: (data: any) => {
-                dispatch({
-                    type: isNew ? crmConstants.crmAddAddress : crmConstants.crmEditAddress,
-                    payload: {...data},
-                })
-                if (done)
-                    done()
-            }
-        }
-        handleSubmission(submission)
+        // const submission: ISubmission = {
+        //     url: `${remoteRoutes.contactsAddress}/${contactId}`,
+        //     values:{...values,contactId}, actions, isNew,
+        //     onAjaxComplete: (data: any) => {
+        //         dispatch({
+        //             type: isNew ? crmConstants.crmAddAddress : crmConstants.crmEditAddress,
+        //             payload: {...data},
+        //         })
+        //         if (done)
+        //             done()
+        //     }
+        // }
+        // handleSubmission(submission)
     }
 
     return (

@@ -6,54 +6,28 @@ import Loading from "../../../components/Loading";
 import Error from "../../../components/Error";
 import {createStyles, Grid, makeStyles, Theme} from "@material-ui/core";
 
-import {IWorkflow, trimCaseId, WorkflowStatus} from "../types";
+import {determineWorkflowStatus, IWorkflow, trimCaseId, WorkflowStatus, WorkflowSubStatus} from "../types";
 import Typography from "@material-ui/core/Typography";
 import {Flex} from "../../../components/widgets";
-import Summary from "./Summary";
-import WorkflowView from "./WorkflowView";
-import {put} from "../../../utils/ajax";
-import {remoteRoutes} from "../../../data/constants";
-import Button from "@material-ui/core/Button";
+
 import LoaderDialog from "../../../components/LoaderDialog";
 import {Dispatch} from "redux";
 import {useDispatch, useSelector} from "react-redux";
 import {fetchWorkflowAsync, IWorkflowState, startWorkflowFetch} from "../../../data/redux/workflows/reducer";
-import {successColor} from "../../../theme/custom-colors";
-import {renderStatus, renderSubStatus} from "../widgets";
-import Box from "@material-ui/core/Box";
-import Divider from "@material-ui/core/Divider";
-import Preview from "../actions/templates/verify-documents/Preview";
 
+import {renderStatus} from "../widgets";
+
+import AllValidations from "../../scan/validate-verify/AllValidations";
+
+import {printDateTime} from "../../../utils/dateHelpers";
+import {ConstantLabelsAndValues} from "../../../data/constants";
+
+import {isNullOrEmpty, isNullOrUndefined} from "../../../utils/objectHelpers";
+import {IForexValueState} from "../../../data/redux/forex/reducer";
 
 interface IProps extends RouteComponentProps {
 
 }
-
-const useWfStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
-            padding: 0,
-            backgroundColor: 'transparent'
-        },
-        stepPaper: {
-            borderRadius: 0,
-        },
-        stepLabel: {
-            padding: theme.spacing(1)
-        },
-        stepContent: {
-            paddingRight: 0,
-            paddingBottom: theme.spacing(1)
-
-        },
-        taskIcon: {
-            marginTop: 1
-        },
-        successIcon: {
-            color: successColor
-        }
-    })
-);
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -73,43 +47,18 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const Details = (props: IProps) => {
+
     const caseId = getRouteParam(props, 'caseId')
-    const wfClasses = useWfStyles()
     const classes = useStyles()
-    const [preview, setPreview] = useState(false)
     const [blocker, setBlocker] = useState<boolean>(false)
     const {loading, workflow}: IWorkflowState = useSelector((state: any) => state.workflows)
+    const {forexValue}: IForexValueState = useSelector((state: any) => state.forexDetails)
+
     const dispatch: Dispatch<any> = useDispatch();
-
-    function handlePreviewDocs() {
-        setPreview(true)
-    }
-
-    function closePreview() {
-        return setPreview(false);
-    }
-
-    function loadData() {
-        dispatch(startWorkflowFetch())
-        dispatch(fetchWorkflowAsync(caseId))
-    }
-
     useEffect(() => {
         dispatch(startWorkflowFetch())
         dispatch(fetchWorkflowAsync(caseId))
-    }, [caseId, dispatch])
-
-    function onResume() {
-        const url = `${remoteRoutes.workflows}/${caseId}`
-        setBlocker(true)
-        put(url, {},
-            resp => loadData(),
-            undefined,
-            () => {
-                setBlocker(false)
-            })
-    }
-
+    }, [caseId, dispatch, forexValue])
 
     if (loading)
         return <Navigation>
@@ -117,13 +66,203 @@ const Details = (props: IProps) => {
         </Navigation>
 
     const hasError = !loading && !workflow
-    if (hasError)
+    if (hasError) {
         return <Navigation>
             <Error text='Failed load case data'/>
         </Navigation>
+    }
+
+    const caseData = workflow as IWorkflow;
+
+    function submittedOrRejectedByCSO() {
+        let returned: any
+        // @ts-ignore
+        const outputDataCSO = workflow.tasks[1].actions[0].outputData
+        // @ts-ignore
+        const actionRunDate = workflow.tasks[1].actions[0].runDate
+
+        if (!isNullOrUndefined(outputDataCSO)) {
+            const parsedOutputDataCSO = JSON.parse(outputDataCSO)
+
+            const submittedByCSO = parsedOutputDataCSO["submittedBy"]
+
+            let rejectionComment: string
+
+            // @ts-ignore
+            if (!isNullOrEmpty(parsedOutputDataCSO['rejectionComment']) && !isNullOrUndefined(parsedOutputDataCSO['rejectionComment'])) {
+
+                rejectionComment = parsedOutputDataCSO['rejectionComment']
+            } else {
+
+                // @ts-ignore
+                rejectionComment = workflow.tasks[1].actions[0].statusMessage
+
+            }
+
+            if (caseData.subStatus === WorkflowSubStatus.FailedCSOApproval) {
+
+                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
+                    <span style={styleUserName}>{submittedByCSO}</span>{" - "}
+                    <span style={styleUserName}>{printDateTime(actionRunDate)}</span>
+                    <br/>&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
+                    <span style={styleUserName}>{rejectionComment}</span>
+                </div>
+
+            } else {
+                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.SUBMITTED_BY}
+                    <span style={styleUserName}>{submittedByCSO}</span>{" - "}
+                    <span style={styleUserName}>{printDateTime(actionRunDate)}</span>
+                </div>
+
+            }
+        } else {
+            returned = ""
+        }
+
+        return returned;
+    }
+
+    function submittedOrRejectedByBM() {
+
+        let returned: {}
+
+        // @ts-ignore
+        const outputDataBM = workflow.tasks[2].actions[0].outputData
+        // @ts-ignore
+        const actionRunDate = workflow.tasks[2].actions[0].runDate
+        // @ts-ignore
+        const parsedOutputDataBM = JSON.parse(workflow.tasks[2].actions[0].outputData)
+
+        if (outputDataBM !== null && outputDataBM !== undefined) {
+
+            const approvedByBM = JSON.parse(outputDataBM)["approvedBy"]
+
+            let rejectionComment: string
+
+            if (!isNullOrUndefined(parsedOutputDataBM['rejectionComment']) && !isNullOrEmpty(parsedOutputDataBM['rejectionComment'])) {
+
+                rejectionComment = parsedOutputDataBM['rejectionComment']
+            } else {
+                // @ts-ignore
+                rejectionComment = workflow.tasks[2].actions[0].statusMessage
+            }
+
+            if (caseData.subStatus === WorkflowSubStatus.FailedBMApproval) {
+
+                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
+                    <span style={styleUserName}>{approvedByBM}</span>{" - "}
+                    <span style={styleUserName}>{printDateTime(actionRunDate)}</span>
+                    <br/>&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
+                    <span style={styleUserName}>{rejectionComment}</span>
+                </div>
+
+            } else {
+
+                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.APPROVED_BY}
+                    <span style={styleUserName}>{approvedByBM}</span>{" - "}
+                    <span style={styleUserName}>{printDateTime(actionRunDate)}</span>
+                </div>
+
+            }
+
+        } else {
+            returned = ""
+        }
+
+        return returned;
+    }
+
+    function submittedOrRejectedByCMO() {
+
+        let returned: {}
+
+        // @ts-ignore
 
 
-    const caseData = workflow as IWorkflow
+        // first consider a rejection from the CMO
+
+        let rejectionComment = ''
+        // @ts-ignore
+        if (workflow.subStatus === WorkflowSubStatus.SendingToFinacleFailed) {
+            // @ts-ignore
+            const inputDataCMO = workflow.tasks[3].actions[0].outputData
+
+            rejectionComment = JSON.parse(inputDataCMO)['rejectionComment']
+        }
+
+        // @ts-ignore
+        const outputDataCMO = workflow.tasks[3].actions[1].inputData
+        // @ts-ignore
+        const runDate = workflow.tasks[3].actions[1].runDate
+
+        if (outputDataCMO !== null && outputDataCMO !== undefined) {
+
+            // todo...include rejected by as well
+            const clearedByCMO = JSON.parse(outputDataCMO)["session"]["username"]
+
+            const runDateCMO = printDateTime(runDate)
+
+            if (caseData.status === WorkflowStatus.Error) {
+
+                // @ts-ignore
+                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
+                    <span style={styleUserName}>{clearedByCMO}</span>{" - "}
+                    <span style={styleUserName}>{runDateCMO}</span>
+                    <br/>&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
+                    <span style={styleUserName}>{rejectionComment}</span>
+                </div>
+
+            } else {
+
+                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.CLEARED_BY}
+                    <span style={styleUserName}>{clearedByCMO}</span>{" - "}
+                    <span style={styleUserName}>{runDateCMO}</span>
+                </div>
+
+            }
+
+        } else {
+            returned = ""
+        }
+
+        return returned;
+    }
+
+    const styleUserAndDate = {
+        marginTop: 4,
+        fontWeight: 10
+    };
+
+    const styleUserName = {
+        fontSize: 14,
+        fontWeight: 450
+    };
+
+    function displayWorkflowStatus() {
+
+        if (determineWorkflowStatus(caseData.status) === WorkflowStatus.Open && caseData.subStatus === WorkflowSubStatus.AwaitingCSOApproval) {
+            return renderStatus(WorkflowStatus.New)
+        }
+        // awaiting BOM approval
+        if (determineWorkflowStatus(caseData.status) === WorkflowStatus.Open && caseData.subStatus === WorkflowSubStatus.AwaitingBMApproval) {
+            return renderStatus(WorkflowStatus.Pending)
+        }
+        // awaiting CMO clearance
+        if (determineWorkflowStatus(caseData.status) === WorkflowStatus.Open && caseData.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle) {
+            return renderStatus(WorkflowStatus.Approved)
+        }
+
+        if (determineWorkflowStatus(caseData.status) === WorkflowStatus.Error) {
+            return renderStatus(WorkflowStatus.Rejected)
+        }
+
+        if (determineWorkflowStatus(caseData.status) === WorkflowStatus.Closed) {
+            return renderStatus(WorkflowStatus.Cleared)
+        }
+
+        return renderStatus(caseData.status)
+    }
+
     return (
         <Navigation>
             <div className={classes.root}>
@@ -134,48 +273,28 @@ const Details = (props: IProps) => {
                             <Typography variant='h3'>
                                 Case #{trimCaseId(caseData.id)}
                             </Typography>
-                            <div style={{marginTop: 4}}>&nbsp;&nbsp;{renderStatus(caseData.status)}</div>
-                            <div style={{marginTop: 4}}>&nbsp;&nbsp;{renderSubStatus(caseData.subStatus)}</div>
+                            <div
+
+                                style={{marginTop: 4}}>&nbsp;&nbsp;{displayWorkflowStatus()}</div>
+
                         </Flex>
 
+                        {
+                            submittedOrRejectedByCSO()
+                        }
+
+                        {
+                            submittedOrRejectedByBM()
+                        }
+
+                        {
+                            submittedOrRejectedByCMO()
+                        }
+
                     </Grid>
-                    <Grid item xs={12} sm={9}>
-                        <Box display='flex' py={1}>
-                            <Box flexGrow={1} pt={1}>
-                                <Typography variant='h5'>Details</Typography>
-                            </Box>
-                            <Box>
-                                <Button size='small' variant="outlined" color='primary' onClick={handlePreviewDocs}>
-                                    Preview Docs
-                                </Button>
-                                &nbsp;
-                                {
-                                    workflow && workflow.status !== WorkflowStatus.Closed &&
-                                    <Button size='small' variant="outlined" color='primary' onClick={onResume}>
-                                        Resume Case
-                                    </Button>
-                                }
-                            </Box>
-                        </Box>
-                        <Divider/>
-                        <Box pt={1}>
-                            <WorkflowView data={caseData} classes={wfClasses}/>
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} sm={3}>
-                        <Box display='flex' py={1}>
-                            <Box flexGrow={1} pt={1}>
-                                <Typography variant='h5'>Summary</Typography>
-                            </Box>
-                        </Box>
-                        <Divider/>
-                        <Box pt={1}>
-                            <Summary data={caseData}/>
-                        </Box>
-                    </Grid>
+                    <AllValidations workflow={caseData}/>
                 </Grid>
             </div>
-            <Preview open={preview} onClose={closePreview} docs={caseData.documents}/>
         </Navigation>
     );
 }

@@ -9,11 +9,11 @@ class AuthService {
     constructor() {
         const clientRoot = this.clientRoot
         const settings = {
-            client_id: 'dfcu:backoffice',
+            client_id: 'backoffice',
             redirect_uri: `${clientRoot}/signin-callback.html`,
             post_logout_redirect_uri: clientRoot,
             response_type: 'token id_token',
-            scope: 'openid profile offline_access roles agent_details Crm CaseHandling KycConnector Gateway IdentityServerApi',
+            scope: 'openid profile offline_access roles CaseHandling',
             authority: remoteRoutes.authServer,
             silent_redirect_uri: `${clientRoot}/silent_renew.html`,
             automaticSilentRenew: true,
@@ -41,8 +41,15 @@ class AuthService {
     public async logout(): Promise<void> {
         return await this.userManager.signoutRedirect();
     }
+
+    // public async session(): Promise<any> {
+    //     await this.userManager.events.
+    // }
+
 }
 
 const authService = new AuthService();
 
+console.log(`settings: `,authService.userManager.settings)
+console.log(`getUser: `,authService.userManager.getUser())
 export default authService

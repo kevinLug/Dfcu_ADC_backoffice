@@ -1,0 +1,44 @@
+.overlay-top {
+    height: 20%;
+    position: absolute;
+    top: 10%;
+    background-color: rgba(221, 221, 221, 0.5);
+    width: 96%;
+    /* z-index: 2147483647; */
+  }
+  
+  .overlay-bottom {
+    height: 20%;
+    position: absolute;
+    top: 80%;
+    background-color: rgba(221, 221, 221, 0.5);
+    width: 96%;
+    /* z-index: 2147483647; */
+  }
+  
+  .overlay-left {
+    height: 50%;
+    position: absolute;
+    top: 30%;
+    background-color: rgba(221, 221, 221, 0.5);
+    width: 15%;
+    /* z-index: 2147483647; */
+  }
+  
+  .overlay-right {
+    height: 50%;
+    position: absolute;
+    top: 30%;
+    background-color: rgba(221, 221, 221, 0.5);
+    width: 15%;
+    margin-left: 80%;
+    /* z-index: 2147483647; */
+  }
+  
+  /* .content {
+    background-color: rgba(221, 221, 221, 0.5);
+  } */
+
+  /* .dialog{
+    background-color: rgba(17, 17, 17, 0.5);
+  } */

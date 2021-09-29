@@ -35,7 +35,9 @@ const ActionView = ({action, taskName, workflowId,workflow}: IProps) => {
     const classes = useStyles()
     const theme = useTheme()
     let ViewComponent: any = BaseTemplate
+    console.log('the action:',{action})
     if (action.template && loader.hasOwnProperty(action.template)) {
+        console.log('the action with template:',{action})
         ViewComponent = loader[action.template];
     }
     return (

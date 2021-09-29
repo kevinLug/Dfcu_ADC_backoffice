@@ -1,23 +1,37 @@
+
+import {IList, List} from "../utils/collections/list";
+import {addCheck, IPropsChecks} from "../modules/scan/validate-verify/Check";
+import {branches} from "../modules/settings/customClaims/region-data";
+import {IKeyValueMap, KeyValueMap} from "../utils/collections/map";
+import bankCodes from './bankCodes.json'
+import countryCodes from './countryCodes.json'
+import {IManualDecision} from "../modules/workflows/types";
+
 export const AUTH_TOKEN_KEY = '__demo__dfcu__token'
 export const AUTH_USER_KEY = '__demo__dfcu__user'
 
 export const systemRoles = {
-    COMPLIANCE: 'COMPLIANCE',
     BACKOFFICE: 'BACKOFFICE',
-    SUPERVISOR: 'SUPERVISOR',
-    ADMIN: 'ADMIN',
+    BM: 'BM',
+    BOM: 'BOM',
+    CMO: 'CMO',
+    CSO: 'CSO',
+    ADMIN: 'Admin',
+
 }
-//COMPLIANCE,BACKOFFICE,SUPERVISOR or ADMIN
+
+// BACKOFFICE, BM, CMO, CSO, OR Admin
 export const isSystemUser = (user: any): boolean => {
     const roles = [
-        systemRoles.COMPLIANCE,
         systemRoles.BACKOFFICE,
-        systemRoles.SUPERVISOR,
+        systemRoles.BM,
+        systemRoles.BOM,
+        systemRoles.CMO,
+        systemRoles.CSO,
         systemRoles.ADMIN,
     ]
     return hasAnyRole(user, roles)
 }
-
 
 export const hasAnyRole = (user: any, roles: string[] = []): boolean => {
     const roleData = user.role;
@@ -30,6 +44,8 @@ export const hasAnyRole = (user: any, roles: string[] = []): boolean => {
         return roles.some((r: any) => rolesList.indexOf(r) >= 0)
     }
 }
+
+// export const csoOrBmRolesForDev = (user:any) => hasAnyRole(user,[systemRoles.CSO]) || hasAnyRole(user,[systemRoles.BM])
 
 export const redux = {
     doLogin: 'DO_LOGIN',
@@ -44,6 +60,10 @@ export const localRoutes = {
     applicationsDetails: '/applications/:caseId',
     dashboard: '/dashboard',
     contacts: '/contacts',
+    scan: '/scan',
+    scanCrop: '/scanCrop',
+    homePage: '/',
+    initiateTransferRequest: '/initiateTransferRequest',
     contactsDetails: '/contacts/:contactId',
     settings: '/settings',
     customClaimsDetails: '/customClaims/:id',
@@ -54,74 +74,49 @@ export const localRoutes = {
 
 const servers: any = {
     dev: {
-        Auth: 'https://localhost:44313',
-        Crm: 'https://dfcu-crm-service-test.test001.laboremus.no',
-        Case: 'http://localhost:6001',
-        Gateway: 'http://localhost:5003',
-        Kyc: 'https://dfcu-kycconnector-service-test.test001.laboremus.no',
+        // Auth: 'https://localhost:44313',
+        Auth: 'https://dfcu-autodatacapture-auth-api-test.test001.laboremus.no',
+        // Case: 'http://localhost:6001',
+        Case: 'https://dfcu-autodataca/pture-casehandling-test.test001.laboremus.no',
         Notification: 'https://dfcu-notification-api-test.test001.laboremus.no',
-        Log: 'https://dfcu-customeronboarding-logging-test.laboremus.no'
     },
     test: {
-        Auth: 'https://authservice-test.laboremus.no',
-        Crm: 'https://crmservice-test.laboremus.no',
-        Case: 'https://dfcu-customeronboarding-casehandling-test.laboremus.no',
-        Gateway: 'https://dfcu-customeronboarding-gateway-test.laboremus.no',
-        Kyc: 'https://dfcu-customeronboarding-kycconnector-test.laboremus.no',
-        Notification: 'https://notificationservice-test.laboremus.no',
-        Log: 'https://dfcu-customeronboarding-logging-test.laboremus.no'
+        Auth: 'https://dfcu-autodatacapture-auth-api-test.test001.laboremus.no',
+        Case: 'https://dfcu-autodatacapture-casehandling-test.test001.laboremus.no',
+        Notification: 'https://dfcu-notification-api-test.test001.laboremus.no',
     },
     visolit: {
-        Auth: 'https://dfcu-auth-api-test.test001.laboremus.no',
-        Crm: 'https://dfcu-crm-service-test.test001.laboremus.no',
-        Case: 'https://dfcu-casehandling-service-test.test001.laboremus.no',
-        Gateway: 'https://dfcu-gateway-service-test.test001.laboremus.no',
-        Kyc: 'https://dfcu-kycconnector-service-test.test001.laboremus.no',
+        Auth: 'https://dfcu-autodatacapture-auth-api-test.test001.laboremus.no',
+        Case: 'https://dfcu-autodatacapture-casehandling-test.test001.laboremus.no',
         Notification: 'https://dfcu-notification-api-test.test001.laboremus.no',
-        Log: 'https://dfcu-customeronboarding-logging-test.laboremus.no'
     },
     sit: {
-        Auth: 'https://authentication-test.onboarding.dfcugroup.com',
-        Crm: 'https://crm-test.onboarding.dfcugroup.com',
-        Case: 'https://casehandling-test.onboarding.dfcugroup.com/',
-        Gateway: 'https://gateway-test.onboarding.dfcugroup.com',
-        Kyc: 'https://kyc-connector-test.onboarding.dfcugroup.com',
-        Notification: 'https://notification-test.onboarding.dfcugroup.com',
-        Accounts: 'https://finacle-connector-test.onboarding.dfcugroup.com',
-        Log: 'https://logging-test.onboarding.dfcugroup.com'
+        Auth: 'https://auth-api-test.autodatacapture.dfcugroup.com',
+        Case: 'https://casehandling-api-test.autodatacapture.dfcugroup.com',
+        Notification: 'https://notification-api-test.autodatacapture.dfcugroup.com',
     },
     uat: {
-        Auth: "https://authentication-staging.onboarding.dfcugroup.com",
-        Crm: "https://crm-staging.onboarding.dfcugroup.com",
-        Case: "https://casehandling-staging.onboarding.dfcugroup.com",
-        Gateway: "https://gateway-staging.onboarding.dfcugroup.com",
-        Kyc: "https://kyc-connector-staging.onboarding.dfcugroup.com",
-        Notification: "https://notification-staging.onboarding.dfcugroup.com",
-        Accounts: "https://finacle-connector-staging.onboarding.dfcugroup.com",
-        Log: "https://logging-staging.onboarding.dfcugroup.com"
+        Auth: 'https://auth-api-uar.autodatacapture.dfcugroup.com',
+        Case: 'https://casehandling-api-uat.autodatacapture.dfcugroup.com',
+        Notification: 'https://notification-api-uat.autodatacapture.dfcugroup.com',
     },
     production: {
         Auth: "https://authentication.onboarding.dfcugroup.com",
-        Crm: "https://crm.onboarding.dfcugroup.com",
         Case: "https://casehandling.onboarding.dfcugroup.com",
-        Gateway: "https://gateway.onboarding.dfcugroup.com",
-        Kyc: "https://kyc-connector.onboarding.dfcugroup.com",
         Notification: "https://notification.onboarding.dfcugroup.com",
-        Accounts: "https://finacle-connector.onboarding.dfcugroup.com",
-        Log: "https://logging.onboarding.dfcugroup.com"
     }
 }
 
+
 const evVar = process.env.REACT_APP_ENV || 'dev'
-const environment = evVar.trim()
+export const environment = evVar.trim()
 console.log(`############# Env : ${environment} ###############`)
 const env = servers[environment]
 const authURL = env.Auth
-const crmURL = env.Crm
+
 const caseHandlingURL = env.Case
 const gatewayURL = env.Gateway
-const kycURL = env.Kyc
-const notificationURL = env.Notification
+// const notificationURL = env.Notification
 
 
 export const remoteRoutes = {
@@ -131,22 +126,14 @@ export const remoteRoutes = {
     profile: authURL + '/api/test/profile',
     register: authURL + '/api/auth/register',
     resetPass: authURL + '/reset',
-    contacts: crmURL + '/api/contact',
-    contactSearch: crmURL + '/api/contact/search',
-    contactById: crmURL + '/api/contact/id',
-    contactsPerson: crmURL + '/api/person',
-    contactsChc: crmURL + '/api/person/chc',
-    contactsEmail: crmURL + '/api/email',
-    contactsTag: crmURL + '/api/tag',
-    contactsUrl: crmURL + '/api/url',
-    contactsPhone: crmURL + '/api/phone',
-    contactsAddress: crmURL + '/api/address',
-    contactsIdentification: crmURL + '/api/identification',
 
+    workflowsRoot: caseHandlingURL,
     workflowsDocsUpload: caseHandlingURL + '/api/documents/upload',
     workflows: caseHandlingURL + '/api/workflows',
+
     workflowsCombo: caseHandlingURL + '/api/queries/combo',
     workflowsReports: caseHandlingURL + '/api/report/download',
+    workflowsReportsDownloadWithParams: caseHandlingURL + '/api/report/downloadWithParams',
     documentsDownload: caseHandlingURL + '/api/documents/download',
     workflowsManual: caseHandlingURL + '/api/manual',
     samplePdf: caseHandlingURL + '/sample.pdf',
@@ -159,5 +146,203 @@ export const remoteRoutes = {
 
 }
 
+export class ConstantLabelsAndValues {
 
+    public static DATE = 'Date'
+    public static NAME = 'Name'
+    // public static FULL_NAME = 'Full name'
+    public static EMAIL = 'Email'
+    public static BANK_NAME = 'Bank name'
+    public static BENEFICIARY_BANK = 'Beneficiary Bank'
+    public static BANK = 'Bank'
+    public static TELEPHONE = 'Telephone'
 
+    public static NATURE_OF_BUSINESS = 'Nature of business'
+    public static CHEQUE_NO = 'Cheque No.'
+    public static ACCOUNT_NO = 'A/C No.'
+    public static ACCOUNT_NUMBER_FULL = 'Account number'
+    public static COUNTRY = 'Country'
+    public static COUNTRY_CODE = 'Country code'
+    // public static ADDRESS = 'Address'
+    public static PHYSICAL_ADDRESS = 'Physical address'
+    public static TOWN = 'Town'
+    // public static DISTRICT = 'District'
+    public static PLOT = 'Plot'
+    public static BUILDING = 'Building'
+
+    public static REQUESTING_BRANCH = 'Requesting branch'
+    public static TRANSFER_TYPE = 'Transfer type'
+    public static CURRENCY = 'Currency'
+    public static AMOUNT = 'Amount'
+    public static AMOUNT_IN_WORDS = 'Amount in words'
+    public static RATE_PROVIDED_BY_CUSTOMER = 'Rate (Customer)'
+    public static RATE_PROVIDED_BY_BANK_USER = 'Rate (BANK User)'
+    public static RATE_INVOLVE = 'Rate Involve'
+    public static REMITTANCE_AMOUNT = 'Remittance amount'
+    public static PURPOSE_OF_TRANSFER = 'Purpose of  transfer'
+
+    public static SORT_CODE = 'Sort code'
+    public static SWIFT_CODE = 'Swift code'
+    public static IBAN = 'IBAN'
+    public static ABA = 'ABA'
+    public static IFSC = 'IFSC'
+    public static FED_WIRE = 'Fedwire'
+
+    public static APPROVED_BY = 'Approved by:'
+    public static REJECTED_BY = 'Rejected by:'
+    public static REASON_FOR_REJECTION = 'Reason for rejection:'
+    public static SUBMITTED_BY = 'Submitted by:'
+    public static CLEARED_BY = 'Cleared by:'
+
+    public static A_MINUTE = 60000
+    public static CASE_VALIDATION_INTERNAL = 'INTERNAL'
+    public static CASE_VALIDATION_RTGS_1 = 'RTGS1'
+    public static CASE_VALIDATION_SWIFT = 'SWIFT'
+    public static CASE_VALIDATION_EFT = 'EFT'
+
+    // public static caseValidationCallback(workflowType: string, func: () => any) {
+    //     switch (workflowType){
+    //         case ConstantLabelsAndValues.CASE_VALIDATION_INTERNAL:
+    //             func()
+    //             break
+    //         case ConstantLabelsAndValues.CASE_VALIDATION_INTERNAL:
+    //             func()
+    //             break
+    //     }
+    // }
+
+    public static csoCheckList() {
+        const theCheckList = new List<IPropsChecks>();
+        theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate_Bm"))
+        theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex_Bm"))
+        theCheckList.add(addCheck("Sender's account number is correct", "isSenderAccountNumberCorrect_Bm"))
+        theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds_Bm"))
+        theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete_Bm"))
+        theCheckList.add(addCheck("Recipient's physical address is complete", "isRecipientPhysicalAddressComplete_Bm"))
+        return theCheckList
+    }
+
+    public static csoValidationCheckList(): IList<IPropsChecks> {
+        const theCheckList = new List<IPropsChecks>();
+        theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate"))
+        theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex"))
+        theCheckList.add(addCheck("Sender's account number is correct", "isSenderAccountNumberCorrect"))
+        theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds"))
+        theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete"))
+        theCheckList.add(addCheck("Recipient's physical address is complete", "isRecipientPhysicalAddressComplete"))
+        // theCheckList.add(addCheck("There are no discrepancies in the amounts", "isDiscrepanciesInAmounts"))
+        return theCheckList
+    }
+
+    public static bomChecksReviewConfirmation() {
+        const theCheckList = new List<IPropsChecks>();
+        theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate_Bm_Confirmation"))
+        theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex_Bm_Confirmation"))
+        theCheckList.add(addCheck("Sender's account number is correct", "isSenderAccountNumberCorrect_Bm_Confirmation"))
+        theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds_Bm_Confirmation"))
+        theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete_Bm_Confirmation"))
+        theCheckList.add(addCheck("Recipient's physical address is complete", "isRecipientPhysicalAddressComplete_Bm_Confirmation"))
+        theCheckList.add(addCheck("Confirm that callbacks are done", "isCallbacksDone_Bm_Confirmation")) // todo...must include this
+        return theCheckList
+    }
+
+    public static bomRemarks() {
+        const remarks = new List<string>();
+        remarks.add("Instruction is not signed as per mandate");
+        remarks.add("Sender's account number is invalid");
+        remarks.add("Sender has insufficient funds");
+        remarks.add("The recipient's details are incomplete");
+        remarks.add("Recipient's physical address is missing");
+        remarks.add("Forex details are incorrect");
+        remarks.add("Callbacks where not done"); // todo...who is supposed to do the callbacks...guess it's CSO
+        return remarks
+    }
+
+    public static cmoRemarks() {
+        const remarks = new List<string>();
+        remarks.add("Instruction is not signed as per mandate");
+        remarks.add("Sender's account number is invalid");
+        remarks.add("Sender has insufficient funds");
+        remarks.add("The recipient's details are incomplete");
+        remarks.add("Recipient's physical address is missing");
+        remarks.add("Forex details are incorrect");
+        remarks.add("Callbacks where not done"); // todo...who is supposed to do the callbacks...guess it's CSO
+        return remarks
+    }
+
+    public static csoRemarks() {
+        const remarks = new List<string>();
+        remarks.add("Instruction is not signed as per mandate");
+        remarks.add("Sender's account number is invalid");
+        remarks.add("Sender has insufficient funds");
+        remarks.add("The recipient's details are incomplete");
+        remarks.add("Recipient's physical address is missing");
+        remarks.add("Forex details are incorrect");
+        remarks.add("Callbacks where not done"); // todo...who is supposed to do the callbacks...guess it's CSO
+        return remarks
+    }
+
+    /**
+     * key of BRANCH CODE & value of label (BRANCH NAME)
+     */
+    public static mapOfDFCUBranchCodeToBranchLabel(): IKeyValueMap<string, string> {
+        const map = new KeyValueMap<string, string>()
+        branches.map((aBranch) => map.put(aBranch.value, aBranch.label))
+        return map
+    }
+
+    public static mapOfRecipientBankCodeToValueOfBank(): IKeyValueMap<string, IRecipientBank> {
+        const map = new KeyValueMap<string, IRecipientBank>()
+        bankCodes.Banks.map((aBank: IRecipientBank) => map.put(aBank.bankCode, aBank))
+        return map
+    }
+
+    public static mapOfRecipientNameToValueOfBank(): IKeyValueMap<string, IRecipientBank> {
+        const map = new KeyValueMap<string, IRecipientBank>()
+        bankCodes.Banks.map((aBank: IRecipientBank) => map.put(aBank.bankCode, aBank))
+        return map
+    }
+
+    // public static mapOfRecipientBranchCodeToValueOfBank(): IKeyValueMap<string, IRecipientBank> {
+    //     const map = new KeyValueMap<string, IRecipientBank>()
+    //     bankCodes.Banks.map((aBank: IRecipientBank) => map.put(aBank.branchCode, aBank))
+    //     return map
+    // }
+
+    public static mapOfCountryCodeToCountryName(): IKeyValueMap<string, string> {
+        const map = new KeyValueMap<string, string>()
+        countryCodes.map((aCountry) => map.put(aCountry.code, aCountry.name))
+        return map;
+    }
+
+    public static csoSubmissionDateTimeData(caseId: string) {
+        const currentTimestamp = new Date()
+
+        const csoSubmissionDateTimeData = {
+            csoSubmissionDateTime: currentTimestamp
+        }
+
+        const currentTimestampManual: IManualDecision = {
+            caseId: caseId,
+            taskName: "cso-approval", // todo ...consider making these constants
+            actionName: "update-csoSubmissionDateTime-trigger",
+            resumeCase: true,
+            nextSubStatus: "csoSubmissionDateTimeSuccessful",
+            data: csoSubmissionDateTimeData,
+            override: false
+        }
+
+        return currentTimestampManual
+    }
+
+    public static forexDetailsIgnored(aCheck: IPropsChecks, checks: IList<IPropsChecks>, index: number){
+        return aCheck.label === checks.get(index).label && !aCheck.value
+    }
+
+}
+
+export interface IRecipientBank {
+    name: string;
+    bankCode: string;
+    branchCode: string;
+}

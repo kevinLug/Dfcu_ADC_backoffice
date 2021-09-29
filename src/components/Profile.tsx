@@ -20,7 +20,23 @@ import {getInitials} from "../utils/stringHelpers";
 import {handleLogout} from "../data/redux/coreActions";
 import authService from "../data/oidc/AuthService";
 
+import theme from "../theme";
+
+import {createStyles, makeStyles, Theme, useTheme} from '@material-ui/core/styles';
+
+
+
+const useStyles = makeStyles((theme:Theme) =>
+    createStyles({
+        root:{
+            marginLeft: 'auto'
+        }
+    })
+)
 export const BarView = (props: any) => {
+    const classes = useStyles();
+    const theme = useTheme()
+
     const profile = useSelector((state: IState) => state.core.user)
     const dispatch = useDispatch();
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -47,7 +63,7 @@ export const BarView = (props: any) => {
         setAnchorEl(null);
     }
 
-    return <div>
+    return <div className={classes.root}>
         <IconButton
             aria-label="account of current user"
             aria-controls="menu-appbar"
@@ -79,7 +95,7 @@ export const BarView = (props: any) => {
             open={menuOpen}
             onClose={handleCloseMenu}
         >
-            <MenuItem onClick={openDialog}>Profile</MenuItem>
+            {/*<MenuItem onClick={openDialog}>Profile</MenuItem>*/}
             <MenuItem onClick={doLogout}>Logout</MenuItem>
         </Menu>
         <Dialog onClose={closeDialog} aria-labelledby="simple-dialog-title" open={dialogOpen}>

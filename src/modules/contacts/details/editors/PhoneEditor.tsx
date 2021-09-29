@@ -33,20 +33,20 @@ const PhoneEditor = ({data, isNew, contactId, done}: IProps) => {
     const dispatch = useDispatch();
 
     function handleSubmit(values: any, actions: FormikActions<any>) {
-        const toSave = {...values,contactId}
-        const submission: ISubmission = {
-            url:remoteRoutes.contactsPhone,
-            values:toSave, actions, isNew,
-            onAjaxComplete: (data: any) => {
-                dispatch({
-                    type: isNew ? crmConstants.crmAddPhone : crmConstants.crmEditPhone,
-                    payload: {...data},
-                })
-                if (done)
-                    done()
-            }
-        }
-        handleSubmission(submission)
+        // const toSave = {...values,contactId}
+        // const submission: ISubmission = {
+        //     url:remoteRoutes.contactsPhone,
+        //     values:toSave, actions, isNew,
+        //     onAjaxComplete: (data: any) => {
+        //         dispatch({
+        //             type: isNew ? crmConstants.crmAddPhone : crmConstants.crmEditPhone,
+        //             payload: {...data},
+        //         })
+        //         if (done)
+        //             done()
+        //     }
+        // }
+        // handleSubmission(submission)
     }
 
     return (

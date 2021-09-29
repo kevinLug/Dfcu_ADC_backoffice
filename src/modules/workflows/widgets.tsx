@@ -11,12 +11,29 @@ export const renderStatus = (value: WorkflowStatus) => {
         case WorkflowStatus.Closed:
             color = successColor
             break
+        case WorkflowStatus.Cleared:
+            color = successColor
+            break
         case WorkflowStatus.Error:
+            color = errorColor
+            break
+        case WorkflowStatus.Rejected:
             color = errorColor
             break
         case WorkflowStatus.Open:
             color = warningColor
             break
+        case WorkflowStatus.New:
+            color = warningColor
+            break
+        // case WorkflowStatus.PendingApproval:
+        //     color = warningColor
+        //     break
+        case WorkflowStatus.Approved:
+            color = successColor
+            break
+        case WorkflowStatus.Pending:
+            color = warningColor
     }
 
     return <Chip
@@ -32,7 +49,7 @@ export const renderStatus = (value: WorkflowStatus) => {
 export const renderSubStatus = (value: WorkflowSubStatus) => {
     let color = successColor
     switch (value) {
-        case WorkflowSubStatus.Verified:
+        case WorkflowSubStatus.TransactionComplete:
             color = successColor
             break
         case WorkflowSubStatus.UnknownError:
@@ -43,8 +60,8 @@ export const renderSubStatus = (value: WorkflowSubStatus) => {
         case WorkflowSubStatus.InternalWatchlistFailed:
         case WorkflowSubStatus.RegulationCheckFailed:
 
-        case WorkflowSubStatus.CifCreationFailed:
-        case WorkflowSubStatus.AccountCreationFailed:
+        // case WorkflowSubStatus.CifCreationFailed:
+        // case WorkflowSubStatus.AccountCreationFailed:
 
 
         case WorkflowSubStatus.DocumentsValidationFailed:
@@ -59,6 +76,11 @@ export const renderSubStatus = (value: WorkflowSubStatus) => {
         case WorkflowSubStatus.AwaitingCaseClosure:
         case WorkflowSubStatus.AwaitingDocumentsApproval:
         case WorkflowSubStatus.AwaitingSignatureUpload:
+        case WorkflowSubStatus.AwaitingCSOApproval:
+        case WorkflowSubStatus.AwaitingCheckerApproval:
+        case WorkflowSubStatus.AwaitingBMApproval:
+        case WorkflowSubStatus.AwaitingClearingDeptApproval:
+        case WorkflowSubStatus.AwaitingSubmissionToFinacle:
             color = warningColor
             break
         default:

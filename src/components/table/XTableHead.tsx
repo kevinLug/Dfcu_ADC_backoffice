@@ -47,7 +47,7 @@ function XTableHead(props: XTableHeadProps) {
                             indeterminate={numSelected > 0 && numSelected < rowCount}
                             checked={numSelected === rowCount}
                             onChange={onSelectAllClick}
-                            inputProps={{'aria-label': 'select all desserts'}}
+                            inputProps={{'aria-label': 'selects all desserts'}}
                         />
                     </TableCell>
                 }

@@ -1,0 +1,69 @@
+{
+  "case": {
+    "workflowType": "",
+    "referenceNumber": 0,
+    "externalReference": "",
+    "applicationDate": "",
+    "caseData": {
+      "transferDetails": {
+        "branchCode": "",
+        "remittanceType": "",
+        "currencyCode": "",
+        "transactionAmount": 0,
+        "remittanceAmount": 0,
+        "exchangeRate": 1,
+        "amountInWords": "",
+        "transferPurpose": ""
+      },
+      "bankDetails": {
+        "beneficiaryBank": {
+          "bankName": "",
+          "swiftCode": "",
+          "sortCode": "",
+          "aba": "",
+          "fedwire": "",
+          "ifsc": "",
+          "iban": ""
+        },
+        "applicantBank": {
+          "branchCode": ""
+        }
+      },
+      "charges": {
+        "chargeMode": ""
+      },
+      "beneficiaryDetails": {
+        "fullName": "",
+        "accountNumber": "",
+        "address": {
+          "town": "",
+          "countryCode": "",
+          "physicalAddress": ""
+        }
+      },
+      "applicantDetails": {
+        "fullName": "",
+        "accountNumber": "",
+        "chequeNumber": "",
+        "emailAddress": "",
+        "phoneNumber": "",
+        "natureOfBusiness": "",
+        "address": {
+          "plotNumber": "",
+          "street": "",
+          "town": "",
+          "district": ""
+        }
+      },
+      "user": {
+        "id": "1f824a84-46b6-4e7f-b601-5d041118439d",
+        "name": "Enock Mwesigwa",
+        "phone": "25787903162",
+        "agentCode": "2345566",
+        "branchName": "02",
+        "region": ""
+      }
+    }
+  }
+}
+

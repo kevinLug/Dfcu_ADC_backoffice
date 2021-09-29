@@ -7,7 +7,8 @@ const authData = {
     client_id: 'casehandling',
     client_secret: 'casehandling@lug',
     grant_type: 'client_credentials',
-    scope: 'CaseHandling Gateway',
+    // scope: 'CaseHandling Gateway',
+    scope: 'CaseHandling',
 }
 
 export const login = async (): Promise<any> => {

@@ -7,6 +7,8 @@ import {Field, FieldProps, getIn} from "formik";
 import {hasValue} from "./inputHelpers";
 import {TextFieldProps} from "@material-ui/core/TextField/TextField";
 
+import {KeyValueMap} from "../../utils/collections/map";
+
 interface IProps {
     name: string
     label: string
@@ -20,6 +22,7 @@ interface IProps {
     fullWidth?: boolean;
     helperText?: React.ReactNode;
     textFieldProps?: TextFieldProps
+    setViewData?: (data: any) => any
 }
 
 export interface ISelectOpt {
@@ -29,11 +32,12 @@ export interface ISelectOpt {
 
 const FakeProgress = () => <div style={{height: 20, width: 20}}>&nbsp;</div>
 const labelParser = (option: any) => {
-    if(hasValue(option)){
+    if (hasValue(option)) {
         return option.label
     }
     return ''
 }
+
 export function PRemoteSelect(props: IProps) {
     const [loading, setLoading] = React.useState(false);
     const [options, setOptions] = React.useState<ISelectOpt[]>([]);
@@ -49,16 +53,27 @@ export function PRemoteSelect(props: IProps) {
         if (noQuery && options.length > 0)
             return
         setLoading(true)
+
         search(props.remote, {...props.filter, query},
             resp => {
+
                 const data = resp.map(props.parser)
-                setOptions(data)
+
+                const map = new KeyValueMap<string,ISelectOpt>()
+
+                for (const d of data) {
+                    map.put(d['id'], d);
+                }
+
+                setOptions(map.getValues().toArray())
+
             },
             undefined,
             () => {
                 setLoading(false)
             })
     }
+
     const handleChange = (event: React.ChangeEvent<any>, value: any) => {
         props.onChange && props.onChange(value)
     }

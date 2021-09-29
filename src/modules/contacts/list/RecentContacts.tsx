@@ -24,19 +24,19 @@ const RecentContacts = () => {
             limit: 3
         }
         setLoading(true)
-        search(
-            remoteRoutes.contacts,
-            filter,
-            (resp) => {
-                dispatch({
-                    type: crmConstants.crmFetchRecent,
-                    payload: [...resp],
-                })
-            },
-            undefined,
-            () => {
-                setLoading(false)
-            })
+        // search(
+        //     remoteRoutes.contacts,
+        //     filter,
+        //     (resp) => {
+        //         dispatch({
+        //             type: crmConstants.crmFetchRecent,
+        //             payload: [...resp],
+        //         })
+        //     },
+        //     undefined,
+        //     () => {
+        //         setLoading(false)
+        //     })
     }, [dispatch])
     return (
         <Box p={1} width='100%'>

@@ -37,32 +37,32 @@ const PersonEditor = ({data, done,contactId}: IProps) => {
     const dispatch = useDispatch();
 
     function handleSubmit(values: any, actions: FormikActions<any>) {
-        const toSave: IPerson = {
-            firstName: values.firstName,
-            middleName: values.middleName,
-            lastName: values.lastName,
-            dateOfBirth: values.dateOfBirth,
-            gender: values.gender,
-            salutation: values.salutation,
-            civilStatus: values.civilStatus
-        }
-        put(remoteRoutes.contactsPerson, {...toSave,contactId},
-            (data) => {
-                Toast.info('Operation successful')
-                actions.resetForm()
-                dispatch({
-                    type: crmConstants.crmEditPerson,
-                    payload: {...data,contactId},
-                })
-                if (done)
-                    done()
-            },
-            undefined,
-            () => {
-                actions.setSubmitting(false);
-
-            }
-        )
+        // const toSave: IPerson = {
+        //     firstName: values.firstName,
+        //     middleName: values.middleName,
+        //     lastName: values.lastName,
+        //     dateOfBirth: values.dateOfBirth,
+        //     gender: values.gender,
+        //     salutation: values.salutation,
+        //     civilStatus: values.civilStatus
+        // }
+        // put(remoteRoutes.contactsPerson, {...toSave,contactId},
+        //     (data) => {
+        //         Toast.info('Operation successful')
+        //         actions.resetForm()
+        //         dispatch({
+        //             type: crmConstants.crmEditPerson,
+        //             payload: {...data,contactId},
+        //         })
+        //         if (done)
+        //             done()
+        //     },
+        //     undefined,
+        //     () => {
+        //         actions.setSubmitting(false);
+        //
+        //     }
+        // )
     }
 
     return (

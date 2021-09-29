@@ -42,7 +42,7 @@ const Details = (props: IProps) => {
     const contactId = getRouteParam(props, 'contactId')
     const classes = useStyles()
     const dispatch = useDispatch();
-    const data: IContact | undefined = useSelector((state: any) => state.crm.selected)
+    // const data: IContact | undefined = useSelector((state: any) => state.crm.selected)
 
     const [loading, setLoading] = useState<boolean>(true)
     const [value, setValue] = React.useState('one');
@@ -52,30 +52,30 @@ const Details = (props: IProps) => {
     };
     useEffect(() => {
         setLoading(true)
-        get(
-            `${remoteRoutes.contacts}/${contactId}`,
-            resp => dispatch({
-                type: crmConstants.crmFetchOne,
-                payload: resp,
-            }),
-            undefined,
-            () => setLoading(false))
+        // get(
+        //     `${remoteRoutes.contacts}/${contactId}`,
+        //     resp => dispatch({
+        //         type: crmConstants.crmFetchOne,
+        //         payload: resp,
+        //     }),
+        //     undefined,
+        //     () => setLoading(false))
     }, [dispatch, contactId])
-    const hasError = !loading && !data
+    const hasError = !loading
     return (
         <Layout>
             {loading && <Loading/>}
             {hasError && <Error text='Failed load contact'/>}
             {
-                data &&
+                // data &&
                 <div className={classes.root}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} style={{paddingBottom: 0}}>
-                            <Profile data={data}/>
+                            {/*<Profile data={data}/>*/}
                             <Divider className={classes.divider}/>
                         </Grid>
                         <Grid item xs={12} style={{paddingTop: 0}}>
-                            <Info data={data}/>
+                            {/*<Info data={data}/>*/}
                         </Grid>
                     </Grid>
                 </div>

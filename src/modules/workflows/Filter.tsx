@@ -1,58 +1,341 @@
 import * as React from "react";
-import {useState} from "react";
-import {flatMap, uniqBy} from "lodash";
+import {useEffect, useState} from "react";
+
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import {IOption, toOptions} from "../../components/inputs/inputHelpers";
-import {Box} from "@material-ui/core";
+
+import {toOptions} from "../../components/inputs/inputHelpers";
+import {Box, Menu, MenuProps} from "@material-ui/core";
 import TextField from '@material-ui/core/TextField';
 import PSelectInput from "../../components/plain-inputs/PSelectInput";
 import PDateInput from "../../components/plain-inputs/PDateInput";
 import {enumToArray, getRandomStr} from "../../utils/stringHelpers";
-import {IWorkflowFilter, WorkflowStatus, WorkflowSubStatus} from "./types";
+import {determineWorkflowStatus, IWorkflowFilter, WorkflowStatus, WorkflowSubStatus} from "./types";
 import {workflowTypes} from "./config";
-import {PRemoteSelect} from "../../components/inputs/XRemoteSelect";
+
 import {remoteRoutes} from "../../data/constants";
 import {useSelector} from "react-redux";
-import {IState} from "../../data/types";
-import {downLoad, triggerDownLoad} from "../../utils/ajax";
+
+import {downLoadWithParams, triggerDownLoad} from "../../utils/ajax";
+import {IList, List} from "../../utils/collections/list";
+import CheckBoxTemplate, {IPropsChecks} from "../scan/validate-verify/Check";
+
+import MenuItem from "@material-ui/core/MenuItem";
+
+import makeStyles from "@material-ui/core/styles/makeStyles";
+import {Theme, withStyles} from "@material-ui/core/styles";
+import createStyles from "@material-ui/core/styles/createStyles";
+
+import IconButton from "@material-ui/core/IconButton";
+
+import {ICheckKeyValueState} from "../../data/redux/checks/reducer";
+import {MoreHoriz} from "@material-ui/icons";
+import {KeyValueMap} from "../../utils/collections/map";
+import {ExportToExcel} from "../../components/import-export/ExportButton";
+
+import {printDateTime} from "../../utils/dateHelpers";
+
+const StyledMenu = withStyles({
+    paper: {
+        border: '1px solid #d3d4d5',
+    },
+})((props: MenuProps) => (
+    <Menu
+        elevation={0}
+        getContentAnchorEl={null}
+        anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+        }}
+        transformOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+        }}
+        {...props}
+    />
+));
+
+const StyledMenuItem = withStyles((theme) => ({
+    root: {
+        '&:focus': {
+            backgroundColor: theme.palette.primary.main,
+            '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+                color: theme.palette.common.white,
+            },
+        },
+    },
+}))(MenuItem);
 
 interface IProps {
     onFilter: (data: any) => any
     loading: boolean
+    filterResult?: any
+    setFilteredData?: (dataFiltered: any) => any
+
+    setSearchIsHappening?: (flag: boolean) => any
 }
 
-const Filter = ({onFilter, loading}: IProps) => {
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        formControl: {
+            width: '100%'
+            // margin: theme.spacing(1),
+            // minWidth: 120,
+        },
+        selectEmpty: {
+            marginTop: theme.spacing(2),
+        },
+        filterGrids: {},
+        exportBtn: {
+            marginLeft: 'auto'
+        }
+    }),
+);
 
-    const metaData = useSelector((state: IState) => state.core.metadata)
-    const accountCategories: IOption[] = uniqBy(flatMap(metaData.accountCategories, it => it.accounts.map(({code, name}) => ({
-        label: name,
-        value: code
-    }))), "value")
+
+interface IReport {
+    id: string;
+    applicationDate: string;
+    referenceNumber: string;
+    applicantName: string;
+    beneficiaryName: string;
+    beneficiaryBankName: string;
+    amount: number;
+    currency: string;
+    status: string;
+}
+
+const formatExportData = (data: any) =>{
+
+    /**
+     * - Get all array
+     * - For each element, pick out
+     *  1 - ID
+     *  2 - Application Date
+     *  3 - Reference Number
+     *  4 - Beneficiary Name
+     *  5 - Beneficiary Bank Name
+     *  6 - Amount
+     *  7 - Currency
+     *  8 - Status
+     */
+
+    return data.map((value: any) => {
+
+        let reportStatus = '';
+        const subStatus = value.subStatus
+        const status = value.status
+        if (determineWorkflowStatus(status) === WorkflowStatus.Open && subStatus === WorkflowSubStatus.AwaitingCSOApproval) {
+            reportStatus = WorkflowStatus.New
+        }
+        // awaiting BOM approval
+        if (determineWorkflowStatus(status) === WorkflowStatus.Open && subStatus === WorkflowSubStatus.AwaitingBMApproval) {
+            reportStatus =  WorkflowStatus.Pending
+        }
+        // awaiting CMO clearance
+        if (determineWorkflowStatus(status) === WorkflowStatus.Open && subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle) {
+            reportStatus =  WorkflowStatus.Approved
+        }
+        // erred
+        if (determineWorkflowStatus(status) === WorkflowStatus.Error) {
+            reportStatus =  WorkflowStatus.Rejected
+        }
+        // closed (sent to finacle)
+        if (determineWorkflowStatus(status) === WorkflowStatus.Closed) {
+            reportStatus =  WorkflowStatus.Cleared
+        }
+
+        const row: IReport = {
+            id: value.id,
+            applicationDate: printDateTime(value.applicationDate),
+            referenceNumber: value.referenceNumber,
+            applicantName: value.metaData.applicantName,
+            beneficiaryName: value.metaData.beneficiaryName,
+            beneficiaryBankName: value.metaData.beneficiaryBankName,
+            amount: value.metaData.amount,
+            currency: value.metaData.currency,
+            status: reportStatus
+        }
+
+        // console.log("a row: ", row)
+
+        return row
+
+    })
+
+}
+
+enum WorkflowStatusInternal {
+
+    Cleared = "Cleared",
+    New = "New",
+    Pending = "Pending",
+    Rejected = "Rejected",
+    Approved = 'Approved' // PendingClearance
+}
+
+const Filter = ({onFilter, loading, filterResult}: IProps) => {
+
+    const classes = useStyles();
+
     const [data, setData] = useState<IWorkflowFilter>({
         from: null,
         to: null,
         statuses: [],
         subStatuses: [],
         workflowTypes: [],
-        applicant: '',
-        assignee: '',
-        product: '',
-        referenceNumber: '',
-        idNumber: '',
-        userId: ''
+        //referenceNumber: '',
+        //idNumber: '',
+        //userId: '',
+        applicantName: '',
+        beneficiaryName: ''
     })
 
+    // const [searchHappening, setSearchHappening] = useState(false)
+
+    // const [searchData, setSearchedData] = useState<any[]>([])
+
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+    const gridSize: any = {
+        xs: 6,
+        sm: 3,
+        md: 2,
+        lg: 2,
+        xl: 1
+    }
+
+    const {check}: ICheckKeyValueState = useSelector((state: any) => state.checks)
+
+    useEffect(() => {
+        formatExportData(filterResult)
+    }, [check, filterResult])
+
+    const ids = ['status-grid', 'subStatus-grid', 'refNumber-grid', 'from-grid', 'to-grid']
+    const labels = ['Status', 'Sub Status', 'Ref. Number', 'From Date', 'To Date']
+
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const checkListShowMoreOrLess = (): IList<IPropsChecks> => {
+
+        const theCheckList = new List<IPropsChecks>();
+
+        labels.forEach((aLabel, index) => {
+            const aCheck: IPropsChecks = {
+                label: aLabel,
+                value: true,
+                name: ids[index]
+            }
+            if (aCheck.name !== ids[1]) {
+                theCheckList.add(aCheck);
+            }
+        })
+
+        return theCheckList;
+    }
+
     function submitForm(values: any) {
+
         onFilter(values)
     }
 
     function handleChange(event: React.ChangeEvent<any>) {
         const name = event.target.name
+        // console.log('write-up-name:',name)
         const value = event.target.value
+        // console.log('write-up:',value)
         const newData = {...data, [name]: value}
         setData(newData)
-        submitForm(newData)
+        // console.log('write-up:',newData)
+
+        if (name === 'statuses') {
+
+            const subStatuses = autoHandleSubStatuses(name, value)
+
+            const listingStatuses = subStatuses.getValues().toArray().map((v) => {
+                return v['status']
+            })
+
+            const listingSubStatuses = subStatuses.getValues().toArray().map((v) => {
+                return v['subStatus']
+            })
+
+            if (listingStatuses.includes('Error')) {
+                listingSubStatuses.concat(WorkflowSubStatus.FailedBMApproval)
+                listingSubStatuses.concat("FailedCMOApproval")
+            }
+
+            const theNewSubStatusData = {...data, ['subStatuses']: listingSubStatuses, [name]: listingStatuses}
+
+            // console.log('karama-2:',listingSubStatuses, theNewSubStatusData)
+
+            submitForm(theNewSubStatusData)
+
+        } else {
+            submitForm(newData)
+        }
+
+    }
+
+    function autoHandleSubStatuses(name: string, input: any) {
+
+        let theSubStatuses = new KeyValueMap<any, any>();
+
+        interface IStatusDetails {
+            originalStatus: any
+            status: any,
+            subStatus: any
+        }
+
+        const addAStatusDetail = (originalStatus: any, status: any, subStatus: any) => {
+
+            const aDetail: IStatusDetails = {
+
+                originalStatus,
+                status,
+                subStatus
+
+            };
+
+            theSubStatuses.put(status, aDetail)
+
+        }
+
+        if (name === 'statuses') {
+
+            input.map((e: WorkflowStatus) => {
+
+                if (e === WorkflowStatus.Pending) {
+                    addAStatusDetail(WorkflowStatus.Pending, WorkflowStatus.Open, WorkflowSubStatus.AwaitingBMApproval);
+                }
+
+                if (e === WorkflowStatus.Approved) {
+                    addAStatusDetail(WorkflowStatus.Approved, WorkflowStatus.Open, WorkflowSubStatus.AwaitingSubmissionToFinacle);
+                }
+
+                if (e === WorkflowStatus.Cleared) {
+                    addAStatusDetail(WorkflowStatus.Cleared, WorkflowStatus.Closed, WorkflowSubStatus.TransactionComplete);
+                }
+
+                if (e === WorkflowStatus.New) {
+                    addAStatusDetail(WorkflowStatus.New, WorkflowStatus.Open, WorkflowSubStatus.AwaitingCSOApproval);
+                }
+
+                if (e === WorkflowStatus.Rejected) {
+                    addAStatusDetail(WorkflowStatus.Rejected, WorkflowStatus.Error, WorkflowSubStatus.FailedCSOApproval);
+                }
+
+            })
+
+        }
+
+        return theSubStatuses;
+
     }
 
     const handleValueChange = (name: string) => (value: any) => {
@@ -64,42 +347,61 @@ const Filter = ({onFilter, loading}: IProps) => {
         submitForm(newData)
     }
 
-    const handleComboValueChange = (name: string) => (value: any) => {
-        const newData = {...data, [name]: value}
-        const newFilterData = {...data, [name]: value ? value.id : null}
-        setData(newData)
-        submitForm(newFilterData)
+    function handleExport() {
+        console.log("crossing-line:", data)
+
+        downLoadWithParams(remoteRoutes.workflowsReportsDownloadWithParams, data, theData => {
+            triggerDownLoad(theData, `file-${getRandomStr(5)}.xlsx`)
+        })
+
+        //     downLoad(remoteRoutes.workflowsReports, data => {
+        //     triggerDownLoad(data, `file-${getRandomStr(5)}.xlsx`)
+        // })
     }
 
-    function handleExport() {
-        downLoad(remoteRoutes.workflowsReports, data => {
-            triggerDownLoad(data, `file-${getRandomStr(5)}.xlsx`)
-        })
-    }
+
 
     return <form>
-        <Grid spacing={3} container>
-            <Grid item xs={12}>
-                <PDateInput
-                    name="from"
-                    value={data['from'] || null}
-                    onChange={handleValueChange('from')}
-                    label="From"
-                    variant="inline"
-                    inputVariant='outlined'
+        <Grid spacing={2} container>
+
+            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}>
+                <TextField
+                    name="applicantName"
+                    onChange={handleChange}
+                    label="Applicant Name"
+                    type="text"
+                    variant='outlined'
+                    size='small'
+                    fullWidth
                 />
             </Grid>
-            <Grid item xs={12}>
-                <PDateInput
-                    name="to"
-                    value={data['to'] || null}
-                    onChange={handleValueChange('to')}
-                    label="To"
-                    variant="inline"
-                    inputVariant='outlined'
+
+            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}>
+                <TextField
+                    name="beneficiaryName"
+                    onChange={handleChange}
+                    label="Beneficiary Name"
+                    type="text"
+                    variant='outlined'
+                    size='small'
+                    fullWidth
                 />
             </Grid>
-            <Grid item xs={12}>
+
+            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}>
+                <PSelectInput
+                    name="workflowTypes"
+                    value={data['workflowTypes']}
+                    onChange={handleChange}
+                    multiple
+                    label="Transfer Type"
+                    variant="outlined"
+                    size='small'
+                    options={toOptions(workflowTypes)}
+                />
+            </Grid>
+
+            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl} id="status-grid" hidden={check.checks.get("status-grid")}>
                 <PSelectInput
                     name="statuses"
                     value={data['statuses']}
@@ -108,10 +410,11 @@ const Filter = ({onFilter, loading}: IProps) => {
                     label="Status"
                     variant="outlined"
                     size='small'
-                    options={toOptions(enumToArray(WorkflowStatus))}
+                    options={toOptions(enumToArray(WorkflowStatusInternal))}
                 />
             </Grid>
-            <Grid item xs={12}>
+
+            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl} id="subStatus-grid" hidden={true}>
                 <PSelectInput
                     name="subStatuses"
                     value={data['subStatuses']}
@@ -124,30 +427,8 @@ const Filter = ({onFilter, loading}: IProps) => {
                 />
             </Grid>
 
-            <Grid item xs={12}>
-                <PSelectInput
-                    name="workflowTypes"
-                    value={data['workflowTypes']}
-                    onChange={handleChange}
-                    multiple
-                    label="Account Type"
-                    variant="outlined"
-                    size='small'
-                    options={toOptions(workflowTypes)}
-                />
-            </Grid>
-            <Grid item xs={12}>
-                <PSelectInput
-                    name="product"
-                    value={data['product']}
-                    onChange={handleChange}
-                    label="Product"
-                    variant="outlined"
-                    size='small'
-                    options={accountCategories}
-                />
-            </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}
+                  id="refNumber-grid" hidden={check.checks.get("refNumber-grid")}>
                 <TextField
                     name="referenceNumber"
                     value={data['referenceNumber']}
@@ -159,78 +440,75 @@ const Filter = ({onFilter, loading}: IProps) => {
                     fullWidth
                 />
             </Grid>
-            <Grid item xs={12}>
-                <TextField
-                    name="idNumber"
-                    value={data['idNumber']}
-                    onChange={handleChange}
-                    label="ID.Number (NIN)"
-                    type="text"
-                    variant='outlined'
-                    size='small'
-                    fullWidth
+
+            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}
+                  id="from-grid" hidden={check.checks.get("from-grid")}>
+                <PDateInput
+                    name="from"
+                    value={data['from'] || null}
+                    onChange={handleValueChange('from')}
+                    label="From"
+                    variant="inline"
+                    inputVariant='outlined'
                 />
             </Grid>
-            <Grid item xs={12}>
-                <PRemoteSelect
-                    name="applicant"
-                    value={data['applicant']}
-                    onChange={handleComboValueChange('applicant')}
-                    label="Applicant"
-                    remote={remoteRoutes.workflowsCombo}
-                    parser={({id, name}: any) => ({id, label: name})}
-                    textFieldProps={
-                        {variant: "outlined", size: "small"}
-                    }
-                    filter={{
-                        'IdField': 'MetaData.ApplicantName',
-                        'DisplayField': 'MetaData.ApplicantName',
-                    }}
+
+            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl} id="to-grid"
+                  hidden={check.checks.get("to-grid")}>
+                <PDateInput
+                    name="to"
+                    value={data['to'] || null}
+                    onChange={handleValueChange('to')}
+                    label="To"
+                    variant="inline"
+                    inputVariant='outlined'
                 />
             </Grid>
-            <Grid item xs={12}>
-                <PRemoteSelect
-                    name="assignee"
-                    value={data['assignee']}
-                    onChange={handleComboValueChange('assignee')}
-                    label="Assignee"
-                    remote={remoteRoutes.workflowsCombo}
-                    parser={({id, name}: any) => ({id, label: name})}
-                    textFieldProps={
-                        {variant: "outlined", size: "small"}
-                    }
-                    filter={{
-                        'IdField': 'AssigneeId',
-                        'DisplayField': 'MetaData.AssigneeName',
-                    }}
-                />
+
+            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}>
+
+                <Box>
+                    <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={handleClick}
+                        size='small'
+                    >
+                        <MoreHoriz/>
+                    </IconButton>
+                    <StyledMenu
+                        id="customized-menu"
+                        anchorEl={anchorEl}
+                        keepMounted
+                        open={Boolean(anchorEl)}
+                        onClose={handleClose}
+                    >
+
+                        {
+                            checkListShowMoreOrLess().toArray().map((more, index) => {
+                                return <StyledMenuItem key={ids[index]}>
+                                    <CheckBoxTemplate value={more.value} label={more.label}
+                                                      name={more.name}/>
+                                </StyledMenuItem>
+                            })
+                        }
+
+                    </StyledMenu>
+
+                </Box>
+
             </Grid>
-            <Grid item xs={12}>
-                <PRemoteSelect
-                    name="userId"
-                    value={data['userId']}
-                    onChange={handleComboValueChange('userId')}
-                    label="CSO User/Agent"
-                    remote={remoteRoutes.workflowsCombo}
-                    parser={({id, name}: any) => ({id, label: name})}
-                    textFieldProps={
-                        {variant: "outlined", size: "small"}
-                    }
-                    filter={{
-                        'IdField': 'UserId',
-                        'DisplayField': 'MetaData.userName',
-                    }}
-                />
-            </Grid>
-            <Grid item xs={12}>
+
+            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}
+                  className={classes.exportBtn}>
                 <Box display="flex" flexDirection="row-reverse">
-                    <Button
-                        disabled={loading}
-                        variant="outlined"
-                        color="primary"
-                        onClick={handleExport}>Excel Export</Button>
+
+                    <ExportToExcel dataToExport={formatExportData(filterResult)} />
+
                 </Box>
             </Grid>
+
         </Grid>
     </form>
 
