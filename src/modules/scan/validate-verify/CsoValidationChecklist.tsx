@@ -233,9 +233,8 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
         // @ts-ignore
         const comment = dropdownSelects[systemRoles.CSO]
 
-
         if (comment === undefined || comment === null) {
-            Toast.warn("Please select a remark (rejection reason)")
+            Toast.warn("Please select a reason for rejection")
             return;
         }
 
