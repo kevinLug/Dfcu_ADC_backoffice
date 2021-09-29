@@ -96,9 +96,9 @@ const servers: any = {
         Notification: 'https://notification-api-test.autodatacapture.dfcugroup.com',
     },
     uat: {
-        Auth: "https://authentication-staging.onboarding.dfcugroup.com",
-        Case: "https://casehandling-staging.onboarding.dfcugroup.com",
-        Notification: "https://notification-staging.onboarding.dfcugroup.com",
+        Auth: 'https://auth-api-uar.autodatacapture.dfcugroup.com',
+        Case: 'https://casehandling-api-uat.autodatacapture.dfcugroup.com',
+        Notification: 'https://notification-api-uat.autodatacapture.dfcugroup.com',
     },
     production: {
         Auth: "https://authentication.onboarding.dfcugroup.com",
