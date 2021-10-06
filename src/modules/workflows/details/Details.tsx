@@ -174,58 +174,71 @@ const Details = (props: IProps) => {
 
     function submittedOrRejectedByCMO() {
 
-        let returned: {}
-
-        // @ts-ignore
-
-
-        // first consider a rejection from the CMO
+        let returned: any
 
         let rejectionComment = ''
         // @ts-ignore
-        if (workflow.subStatus === WorkflowSubStatus.SendingToFinacleFailed) {
+        if (workflow.subStatus === WorkflowSubStatus.FailedCMOApproval) {
             // @ts-ignore
             const inputDataCMO = workflow.tasks[3].actions[0].outputData
 
             rejectionComment = JSON.parse(inputDataCMO)['rejectionComment']
-        }
+            const clearedByCMO = JSON.parse(inputDataCMO)["session"]["username"]
 
-        // @ts-ignore
-        const outputDataCMO = workflow.tasks[3].actions[1].inputData
-        // @ts-ignore
-        const runDate = workflow.tasks[3].actions[1].runDate
-
-        if (outputDataCMO !== null && outputDataCMO !== undefined) {
-
-            // todo...include rejected by as well
-            const clearedByCMO = JSON.parse(outputDataCMO)["session"]["username"]
-
+            // @ts-ignore
+            const runDate = workflow.tasks[3].actions[0].runDate
             const runDateCMO = printDateTime(runDate)
 
-            if (caseData.status === WorkflowStatus.Error) {
+            returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
+                <span style={styleUserName}>{clearedByCMO}</span>{" - "}
+                <span style={styleUserName}>{runDateCMO}</span>
+                <br/>&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
+                <span style={styleUserName}>{rejectionComment}</span>
+            </div>
 
-                // @ts-ignore
-                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
-                    <span style={styleUserName}>{clearedByCMO}</span>{" - "}
-                    <span style={styleUserName}>{runDateCMO}</span>
-                    <br/>&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
-                    <span style={styleUserName}>{rejectionComment}</span>
-                </div>
+        }
+        // @ts-ignore
+        else if (workflow.subStatus === WorkflowSubStatus.SendingToFinacleFailed) {
+            // @ts-ignore
+            const outputDataCMOResponse = workflow.tasks[3].actions[1].outputData
+            // @ts-ignore
+            const runDate = workflow.tasks[3].actions[1].runDate
+            const runDateCMO = printDateTime(runDate)
+            const outputDataCMOResponseParsed = JSON.parse(outputDataCMOResponse)
 
+
+            let finacleResponseMessage: string;
+
+            if (!outputDataCMOResponseParsed['Message']) {
+                finacleResponseMessage = outputDataCMOResponseParsed['message']
             } else {
-
-                returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.CLEARED_BY}
-                    <span style={styleUserName}>{clearedByCMO}</span>{" - "}
-                    <span style={styleUserName}>{runDateCMO}</span>
-                </div>
-
+                finacleResponseMessage = outputDataCMOResponseParsed['Message']
             }
 
-        } else {
-            returned = ""
+            returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
+                <span style={styleUserName}>Finacle</span>{" - "}
+                <span style={styleUserName}>{runDateCMO}</span>
+                <br/>&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
+                <span style={styleUserName}>{finacleResponseMessage}</span>
+            </div>
         }
 
-        return returned;
+        // @ts-ignore
+        else if (workflow.subStatus === WorkflowSubStatus.TransactionComplete) {
+            // @ts-ignore
+            const inputDataCMOResponse = workflow.tasks[3].actions[1].inputData
+            // @ts-ignore
+            const runDateCMO = printDateTime(workflow.tasks[3].actions[1].runDate)
+            const jsonInput = JSON.parse(inputDataCMOResponse)
+            const clearedByCMO = jsonInput['session']['username'];
+            returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.CLEARED_BY}
+                <span style={styleUserName}>{clearedByCMO}</span>{" - "}
+                <span style={styleUserName}>{runDateCMO}</span>
+            </div>
+        } else
+            returned = ""
+
+      return returned;
     }
 
     const styleUserAndDate = {

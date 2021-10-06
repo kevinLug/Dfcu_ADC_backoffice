@@ -12,7 +12,7 @@ import {actionICheckKeyValue, ICheckKeyValueState} from "../../../data/redux/che
 
 import {IManualDecision, WorkflowSubStatus} from "../../workflows/types";
 
-import {ConstantLabelsAndValues, hasAnyRole, remoteRoutes, systemRoles} from "../../../data/constants";
+import {ConstantLabelsAndValues, hasAnyRole, localRoutes, remoteRoutes, systemRoles} from "../../../data/constants";
 
 import {post} from "../../../utils/ajax";
 import {getChecksToPopulate, getDropdownSelectsToPopulate} from "../populateLabelAndValue";
@@ -91,13 +91,14 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
 
     const [data, setData] = useState(initialData)
     const [dataForexDetails] = useState({})
+    const [loadingMessage,setLoadingMessage] = useState('Loading')
 
     useEffect(() => {
 
-    }, [showConfirmationDialog, dispatch, check, workflow, rejectionComment, data, select, forexValue, isNewTransferRequestStarted,loading])
+    }, [showConfirmationDialog, dispatch, check, workflow, rejectionComment, data, select, forexValue, isNewTransferRequestStarted,loading, loadingMessage])
 
     if (loading)
-        return <Loading/>
+        return <Loading message={loadingMessage}/>
 
     async function handleCSOSubmission() {
 
@@ -184,6 +185,7 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             .logDetailed()
             .haltProcess(false, true,)
 
+        setLoadingMessage('Processing...Please wait')
         setLoading(true)
 
         post(remoteRoutes.workflowsManual, manualCSOApproval, () => {
@@ -192,9 +194,9 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             }, undefined,
 
             () => {
-                setTimeout(()=>{
-                    window.location.href = window.location.origin
-                },2000)
+                // setTimeout(()=>{
+                    window.location.href = `${localRoutes.applications}/${caseId}`
+                // },2000)
             }
         )
 
@@ -256,6 +258,7 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             return;
         }
 
+        setLoadingMessage('Processing...Please wait')
         setLoading(true)
         post(remoteRoutes.workflowsManual, manualCSORejection, () => {
                 // todo... place this after the the post (inside it)
@@ -264,9 +267,9 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             }, undefined,
 
             () => {
-                setTimeout(()=>{
-                    window.location.href = window.location.origin
-                },2000)
+                // setTimeout(()=>{
+                    window.location.href = `${localRoutes.applications}/${caseId}`
+                // },2000)
             }
         )
 

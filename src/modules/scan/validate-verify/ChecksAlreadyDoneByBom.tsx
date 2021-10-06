@@ -18,7 +18,7 @@ const VerificationsAlreadyDoneByBM = ({workflow}: IProps) => {
 
     //todo...try to sieve by action name
     useEffect(() => {
-        console.log('testing-by-bm: ', workflow.tasks[2].actions[0].outputData)
+
     }, [workflow, criteria])
 
     const checksReview = (): IList<IPropsChecks> => {
@@ -27,8 +27,6 @@ const VerificationsAlreadyDoneByBM = ({workflow}: IProps) => {
         const theCheckList = ConstantLabelsAndValues.bomChecksReviewConfirmation();
 
         for (let aCheck of theCheckList) {
-
-            // const propertyName: string = aCheck.name.split("_")[0];
             aCheck.value = criteriaObj[aCheck.name]
         }
 

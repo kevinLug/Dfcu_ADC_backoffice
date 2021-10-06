@@ -33,9 +33,10 @@ interface IProps {
     handleDialogCancel: () => any
     handleConfirmation: () => any
     children?: any
+    showCancelBtn?: boolean
 }
 
-const ConfirmationDialog = ({title, handleDialogCancel, handleConfirmation, children}: IProps) => {
+const ConfirmationDialog = ({title, handleDialogCancel, handleConfirmation, children, showCancelBtn = false}: IProps) => {
 
     const classes = useStyles()
 
@@ -55,7 +56,7 @@ const ConfirmationDialog = ({title, handleDialogCancel, handleConfirmation, chil
                 <Box className={classes.submissionBox}>
 
                     <Button type="submit" variant="contained" color="primary" onClick={handleConfirmation}>OK</Button>
-                    <Button variant="contained" className={classes.rejectButton} onClick={handleDialogCancel}>Cancel</Button>
+                    <Button variant="contained" hidden={showCancelBtn} className={classes.rejectButton} onClick={handleDialogCancel}>Cancel</Button>
 
                 </Box>
 

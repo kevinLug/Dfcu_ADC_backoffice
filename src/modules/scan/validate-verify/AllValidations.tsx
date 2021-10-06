@@ -31,6 +31,7 @@ import {getChecksToPopulate} from "../populateLabelAndValue";
 import {IList, List} from "../../../utils/collections/list";
 import {IPropsChecks} from "./Check";
 import {isNullOrUndefined} from "../../../utils/objectHelpers";
+import HandleFinacleResponse from "./HandleFinacleResponse";
 
 interface IProps {
     workflow: IWorkflow;
@@ -199,6 +200,13 @@ const AllValidations = ({workflow}: IProps) => {
         }
     }
 
+    function displayFinacleMessage() {
+        if (workflow.subStatus === WorkflowSubStatus.SentToFinacle || workflow.subStatus === WorkflowSubStatus.SendingToFinacleFailed
+            || workflow.subStatus === WorkflowSubStatus.TransactionComplete ) {
+            return <HandleFinacleResponse/>
+        }
+    }
+
     return (
 
         <Grid container item xs={12} className={classes.root}>
@@ -227,6 +235,10 @@ const AllValidations = ({workflow}: IProps) => {
 
                 {
                     displaySubmissionToFinacle()
+                }
+
+                {
+                    displayFinacleMessage()
                 }
 
             </Grid>
