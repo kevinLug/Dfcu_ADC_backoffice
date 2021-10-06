@@ -1,13 +1,26 @@
 import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
-import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
+
 import React, {useEffect} from "react";
-import {ICaseState} from "../../../data/redux/transfers/reducer";
+
 import {useSelector} from "react-redux";
 import {IWorkflowState} from "../../../data/redux/workflows/reducer";
 import DataLabel from "../../../components/DataLabel";
 import DataValue from "../../../components/DataValue";
+import ExpansionCard from "../../../components/ExpansionCard";
+import {createStyles, makeStyles, Theme} from "@material-ui/core";
+
+export const useStylesHandleFinacleResponseTransfer = makeStyles((theme: Theme) =>
+    createStyles({
+
+        root: {
+            flexGrow: 1,
+        },
+        expansion: {
+            padding: 5,
+        }
+
+    })
+);
 
 interface IFinacleResponse {
     finacleResponse: any
@@ -18,6 +31,9 @@ interface IFinacleErrorResponse {
 }
 
 const HandleFinacleResponse = () => {
+
+    const classes = useStylesHandleFinacleResponseTransfer();
+
     const {workflow}: IWorkflowState = useSelector((state: any) => state.workflows)
 
     useEffect(() => {
@@ -71,12 +87,12 @@ const HandleFinacleResponse = () => {
         </Grid>
     }
 
-    return  <Grid container>
-        <Box>
-            <Typography>Finacle Response Message:</Typography>
-            <Divider />
-            {displayResponse()}
-        </Box>
+    return <Grid item sm={12}>
+
+                <Grid className={classes.expansion}>
+                    <ExpansionCard title="Finacle Response" children={displayResponse()}/>
+                </Grid>
+
     </Grid>
 }
 
