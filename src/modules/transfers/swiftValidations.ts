@@ -49,7 +49,7 @@ const validateSwift = async (data: ICase): Promise<boolean> => {
             .selector(data, "$.caseData.transferDetails.exchangeRate")
             .isGreaterThanOrEqualTo(0)
             .addUserFailureMessage("rate must be greater or equal to zero")
-            // .isIgnorable()
+            .isIgnorable()
             .logDetailed();
         tests.add(isRatePresent)
 

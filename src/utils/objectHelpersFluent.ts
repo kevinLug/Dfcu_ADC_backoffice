@@ -361,7 +361,7 @@ class ObjectHelpersFluent {
     // todo...index to show the position of the test (number of tests run) + title of the test as well
     testTitle(title: string) {
         this.summary.title = title
-        if (env === 'dev' || env === 'development' || env === 'test') {
+        if (env === 'dev' || env === 'development' || env === 'test' || env === 'Test') {
             console.log(`title:--> ${title} <--`);
         }
 

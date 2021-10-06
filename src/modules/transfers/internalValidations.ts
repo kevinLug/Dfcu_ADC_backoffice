@@ -76,7 +76,7 @@ const validateInternal = async (data: ICase): Promise<boolean> => {
                 .selector(data, "$.caseData.transferDetails.rate")
                 .isGreaterThanOrEqualTo(0)
                 .addUserFailureMessage("rate must be greater zero (0)")
-                // .isIgnorable()
+                .isIgnorable()
                 .logDetailed()
                 .logDetailed()
             isRatePresent.failureCallBack(() => Toast.error("Rate is missing"))

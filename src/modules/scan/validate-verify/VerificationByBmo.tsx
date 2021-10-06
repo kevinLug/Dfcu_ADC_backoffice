@@ -99,7 +99,7 @@ const VerificationByBmo = ({workflow}: IPropsBMO) => {
     const {workflowResponseMessage}: IWorkflowResponseMessageState = useSelector((state: any) => state.workflowResponse)
     const [rejectionComment] = useState('')
     const {select}: ISelectKeyValueState = useSelector((state: any) => state.selects)
-
+    const [loadingMessage,setLoadingMessage] = useState('Loading')
     const dispatch: Dispatch<any> = useDispatch();
 
 
@@ -112,7 +112,7 @@ const VerificationByBmo = ({workflow}: IPropsBMO) => {
     //todo...try to sieve by action name
     useEffect(() => {
 
-    }, [dispatch, check, workflow, rejectionComment, data,loading])
+    }, [dispatch, check, workflow, rejectionComment, data,loading, loadingMessage])
 
     const checksReviewConfirmation = (): IList<IPropsChecks> => {
         const criteriaObj = JSON.parse(criteriaBm)
@@ -135,7 +135,7 @@ const VerificationByBmo = ({workflow}: IPropsBMO) => {
     }
 
     if (loading)
-        return <Loading/>
+        return <Loading message={loadingMessage}/>
 
     function cancelCommentDialog() {
         setShowCommentBox(false)
@@ -179,6 +179,7 @@ const VerificationByBmo = ({workflow}: IPropsBMO) => {
         }
 
 
+        setLoadingMessage('Processing...Please wait')
         setLoading(true)
 
         post(remoteRoutes.workflowsManual, manualBMApproval, (resp: any) => {
@@ -186,9 +187,10 @@ const VerificationByBmo = ({workflow}: IPropsBMO) => {
             }, undefined,
 
             () => {
-                setTimeout(()=>{
-                    window.location.href = window.location.origin
-                },2000)
+                // setTimeout(()=>{
+                    // window.location.href = window.location.origin
+                    window.location.href = `${localRoutes.applications}/${caseId}`
+                // },2000)
             }
         )
     }
@@ -296,6 +298,7 @@ const VerificationByBmo = ({workflow}: IPropsBMO) => {
             return;
         }
 
+        setLoadingMessage('Processing...Please wait')
         setLoading(true)
 
         post(remoteRoutes.workflowsManual, manualBMRejection, (resp: any) => {
@@ -303,9 +306,10 @@ const VerificationByBmo = ({workflow}: IPropsBMO) => {
             }, undefined,
 
             () => {
-                setTimeout(()=>{
-                    window.location.href = window.location.origin
-                },2000)
+                // setTimeout(()=>{
+                    // window.location.href = window.location.origin
+                    window.location.href = `${localRoutes.applications}/${caseId}`
+                // },2000)
             }
         )
     }

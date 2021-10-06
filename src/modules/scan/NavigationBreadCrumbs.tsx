@@ -39,7 +39,6 @@ const NavigationBreadCrumbs = () => {
 
         // eslint-disable-next-line array-callback-return
         pathNameSplit.map((p) => {
-            console.log("p:", p)
             if (p.toLowerCase().includes('application')) {
                 map.remove(localRoutes.applicationsDetails)
                 map.put(pathname, 'Application details')

@@ -1,5 +1,5 @@
 import {IManualDecision, IWorkflow} from "../../workflows/types";
-import {ConstantLabelsAndValues, remoteRoutes, systemRoles} from "../../../data/constants";
+import {ConstantLabelsAndValues, localRoutes, remoteRoutes, systemRoles} from "../../../data/constants";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
@@ -23,7 +23,6 @@ import {addDynamicPropertyToObject, isNullOrEmpty, isNullOrUndefined} from "../.
 import Toast from "../../../utils/Toast";
 
 import Loading from "../../../components/Loading";
-
 
 
 const useStylesInternal = makeStyles((theme: Theme) =>
@@ -106,13 +105,15 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
     const {select}: ISelectKeyValueState = useSelector((state: any) => state.selects)
     const dispatch: Dispatch<any> = useDispatch();
 
+    const [loadingMessage,setLoadingMessage] = useState('Loading')
+
     useEffect(() => {
 
-    }, [dispatch, check, workflow, rejectionComment, data, loading, submitBtnDisabled])
+    }, [dispatch, check, workflow, rejectionComment, data, loading, submitBtnDisabled, loadingMessage])
 
 
     if (loading)
-        return <Loading/>
+        return <Loading message={loadingMessage}/>
 
 
     function prepareFinacleData() {
@@ -229,19 +230,30 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
             data: finacleData,
             override: false
         }
-
+        setLoadingMessage('Processing...please wait')
         setSubmitBtnDisabled(true)
         setLoading(true)
         post(remoteRoutes.workflowsManual, manualCMOApproval, (resp: any) => {
 
-                // todo ... consider providing a message for both success and failure
+                if ( (!resp.message || isNullOrEmpty(resp.message)) && resp.status === -1){
+                    Toast.error("Rejected");
+                    setTimeout(() => {
+                        Toast.info("See finacle message at bottom");
+                    }, 1000)
+                }
 
-            }, undefined,
+            }, (err, res) => {
+
+                Toast.error(err)
+            },
 
             () => {
-                setTimeout(()=>{
-                    window.location.href = window.location.origin
-                },2000)
+
+                // setLoading(true)
+                // setTimeout(() => {
+                    // window.location.href = window.location.origin
+                    window.location.href = `${localRoutes.applications}/${caseId}`
+                // }, 2000)
             }
         )
 
@@ -290,15 +302,18 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
             data: {...data, rejectionComment: comment},
             override: false
         }
+        setLoadingMessage('Processing...please wait')
         setLoading(true)
         post(remoteRoutes.workflowsManual, manualCMORejection, (resp: any) => {
 
             }, undefined,
 
             () => {
-                setTimeout(()=>{
-                    window.location.href = window.location.origin
-                },2000)
+
+                // setTimeout(() => {
+                    // window.location.href = window.location.origin
+                    window.location.href = `${localRoutes.applications}/${caseId}`
+                // }, 2000)
             }
         )
     }
