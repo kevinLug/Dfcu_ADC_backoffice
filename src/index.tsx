@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import store from "./data/redux/store";
 import './index.css';
 import App from './App';
-import * as serviceWorker from './serviceWorker';
+// import * as serviceWorker from './serviceWorker';
 import theme from "./theme";
 
 ReactDOM.render(
@@ -16,12 +16,12 @@ ReactDOM.render(
         </ThemeProvider>
     </Provider>, document.getElementById('root'));
 
-serviceWorker.register({
-    onUpdate: registration => {
-        if (window.confirm("New content available, update now?")) {
-            window.location.reload()
-            if (registration.waiting)
-                registration.waiting.postMessage({type: 'SKIP_WAITING'});
-        }
-    }
-});
+// serviceWorker.register({
+//     onUpdate: registration => {
+//         if (window.confirm("New content available, update now?")) {
+//             window.location.reload()
+//             if (registration.waiting)
+//                 registration.waiting.postMessage({type: 'SKIP_WAITING'});
+//         }
+//     }
+// });
