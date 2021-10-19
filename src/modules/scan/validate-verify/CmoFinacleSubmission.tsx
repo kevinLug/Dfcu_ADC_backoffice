@@ -1,25 +1,25 @@
-import {IManualDecision, IWorkflow} from "../../workflows/types";
-import {ConstantLabelsAndValues, localRoutes, remoteRoutes, systemRoles} from "../../../data/constants";
+import { IManualDecision, IWorkflow } from "../../workflows/types";
+import { ConstantLabelsAndValues, localRoutes, remoteRoutes, systemRoles } from "../../../data/constants";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
-import React, {useEffect, useState} from "react";
-import {IWorkflowResponseMessage} from "../../transfers/types";
-import {createStyles, makeStyles} from "@material-ui/core";
-import {Theme} from "@material-ui/core/styles";
-import {CMORejectionRemarks, IRemarks} from "./RejectionRemarksValues";
+import React, { useEffect, useState } from "react";
+import { IWorkflowResponseMessage } from "../../transfers/types";
+import { createStyles, makeStyles } from "@material-ui/core";
+import { Theme } from "@material-ui/core/styles";
+import { CMORejectionRemarks, IRemarks } from "./RejectionRemarksValues";
 import EditDialog from "../../../components/EditDialog";
-import {Form, Formik} from "formik";
+import { Form, Formik } from "formik";
 import RejectionRemarks from "./RejectionRemarks";
-import {IDataProps} from "./CsoValidationChecklist";
-import {ICheckKeyValueState} from "../../../data/redux/checks/reducer";
-import {useDispatch, useSelector} from "react-redux";
-import {getChecksToPopulate, getDropdownSelectsToPopulate} from "../populateLabelAndValue";
-import {post} from "../../../utils/ajax";
-import {ISelectKeyValueState} from "../../../data/redux/selects/reducer";
-import {Dispatch} from "redux";
-import {RequestType} from "../../workflows/config";
-import {addDynamicPropertyToObject, isNullOrEmpty, isNullOrUndefined} from "../../../utils/objectHelpers";
+import { IDataProps } from "./CsoValidationChecklist";
+import { ICheckKeyValueState } from "../../../data/redux/checks/reducer";
+import { useDispatch, useSelector } from "react-redux";
+import { getChecksToPopulate, getDropdownSelectsToPopulate } from "../populateLabelAndValue";
+import { post } from "../../../utils/ajax";
+import { ISelectKeyValueState } from "../../../data/redux/selects/reducer";
+import { Dispatch } from "redux";
+import { RequestType } from "../../workflows/config";
+import { addDynamicPropertyToObject, isNullOrEmpty, isNullOrUndefined } from "../../../utils/objectHelpers";
 import Toast from "../../../utils/Toast";
 
 import Loading from "../../../components/Loading";
@@ -70,7 +70,7 @@ interface ISubmitTransferRequestProps {
     isSubmitBtnDisabled?: boolean
 }
 
-const SubmitTransferRequest = ({showCommentDialog, submitTransferRequest, isRejectBtnDisabled, isSubmitBtnDisabled}: ISubmitTransferRequestProps) => {
+const SubmitTransferRequest = ({ showCommentDialog, submitTransferRequest, isRejectBtnDisabled, isSubmitBtnDisabled }: ISubmitTransferRequestProps) => {
 
     const classes = useStylesInternal()
 
@@ -88,11 +88,11 @@ const SubmitTransferRequest = ({showCommentDialog, submitTransferRequest, isReje
 
 }
 
-const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsCmoFinacleSubmission) => {
+const CmoFinacleSubmission = ({ workflowResponseMessage, user, workflow }: IPropsCmoFinacleSubmission) => {
 
     const classes = useStylesInternal()
     const [showCommentBox, setShowCommentBox] = useState(false)
-    const {check}: ICheckKeyValueState = useSelector((state: any) => state.checks)
+    const { check }: ICheckKeyValueState = useSelector((state: any) => state.checks)
     const [rejectionComment, setRejectionComment] = useState('')
     const [isRejectBtnDisabled, setRejectBtnDisabled] = useState(false)
     const [loading, setLoading] = useState(false);
@@ -102,10 +102,10 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
         rejectionComment: rejectionComment
     }
     const [data, setData] = useState(initialData)
-    const {select}: ISelectKeyValueState = useSelector((state: any) => state.selects)
+    const { select }: ISelectKeyValueState = useSelector((state: any) => state.selects)
     const dispatch: Dispatch<any> = useDispatch();
 
-    const [loadingMessage,setLoadingMessage] = useState('Loading')
+    const [loadingMessage, setLoadingMessage] = useState('Loading')
 
     useEffect(() => {
 
@@ -113,7 +113,7 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
 
 
     if (loading)
-        return <Loading message={loadingMessage}/>
+        return <Loading message={loadingMessage} />
 
 
     function prepareFinacleData() {
@@ -168,6 +168,13 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
         let branchCode = ''
 
         const isTypeEftOrRtgs1 = workflow.type === RequestType.EFT || workflow.type === RequestType.RTGS_1;
+
+        // set swift code for RTGS1
+        if (workflow.type === RequestType.RTGS_1) {
+            // @ts-ignore
+            const swiftCode = ConstantLabelsAndValues.mapOfRecipientBankCodeToValueOfBank().get(workflow.caseData.bankDetails.beneficiaryBank.bankName).swiftCode;
+            transferDetails.swiftCode = swiftCode;
+        }
 
         if (isTypeEftOrRtgs1) {
 
@@ -235,24 +242,24 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
         setLoading(true)
         post(remoteRoutes.workflowsManual, manualCMOApproval, (resp: any) => {
 
-                if ( (!resp.message || isNullOrEmpty(resp.message)) && resp.status === -1){
-                    Toast.error("Rejected");
-                    setTimeout(() => {
-                        Toast.info("See finacle message at bottom");
-                    }, 1000)
-                }
+            if ((!resp.message || isNullOrEmpty(resp.message)) && resp.status === -1) {
+                Toast.error("Rejected");
+                setTimeout(() => {
+                    Toast.info("See finacle message at bottom");
+                }, 1000)
+            }
 
-            }, (err, res) => {
+        }, (err, res) => {
 
-                Toast.error(err)
-            },
+            Toast.error(err)
+        },
 
             () => {
 
                 // setLoading(true)
                 // setTimeout(() => {
-                    // window.location.href = window.location.origin
-                    window.location.href = `${localRoutes.applications}/${caseId}`
+                // window.location.href = window.location.origin
+                window.location.href = `${localRoutes.applications}/${caseId}`
                 // }, 2000)
             }
         )
@@ -261,7 +268,7 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
 
     function handleCMORejection() {
 
-        let data = {...getChecksToPopulate(check.checks)}
+        let data = { ...getChecksToPopulate(check.checks) }
 
         let dropdownSelects = getDropdownSelectsToPopulate(select.selects)
 
@@ -299,20 +306,20 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
             actionName: "cmo-transfer-details-approval",
             resumeCase: true,
             nextSubStatus: "AwaitingSubmissionToFinacle",
-            data: {...data, rejectionComment: comment},
+            data: { ...data, rejectionComment: comment },
             override: false
         }
         setLoadingMessage('Processing...please wait')
         setLoading(true)
         post(remoteRoutes.workflowsManual, manualCMORejection, (resp: any) => {
 
-            }, undefined,
+        }, undefined,
 
             () => {
 
                 // setTimeout(() => {
-                    // window.location.href = window.location.origin
-                    window.location.href = `${localRoutes.applications}/${caseId}`
+                // window.location.href = window.location.origin
+                window.location.href = `${localRoutes.applications}/${caseId}`
                 // }, 2000)
             }
         )
@@ -336,47 +343,47 @@ const CmoFinacleSubmission = ({workflowResponseMessage, user, workflow}: IPropsC
 
         {
             showCommentBox ? <EditDialog open={true} onClose={() => {
-                }} title="Reject with a reason (comment)" disableBackdropClick={false}>
-                    <Grid item sm={12}>
+            }} title="Reject with a reason (comment)" disableBackdropClick={false}>
+                <Grid item sm={12}>
 
-                        <Formik enableReinitialize initialValues={data} onSubmit={async values => {
-                            await new Promise(resolve => {
+                    <Formik enableReinitialize initialValues={data} onSubmit={async values => {
+                        await new Promise(resolve => {
 
-                                setTimeout(resolve, 500)
+                            setTimeout(resolve, 500)
 
-                                handleCMORejection()
+                            handleCMORejection()
 
-                            });
+                        });
 
-                        }}
-                        >
-                            <Form>
+                    }}
+                    >
+                        <Form>
 
-                                <RejectionRemarks remarks={remarks.remarks} role={remarks.role}/>
+                            <RejectionRemarks remarks={remarks.remarks} role={remarks.role} />
 
-                                <Grid item sm={12} className={classes.submissionGrid}>
+                            <Grid item sm={12} className={classes.submissionGrid}>
 
-                                    <Box className={classes.submissionBox}>
+                                <Box className={classes.submissionBox}>
 
-                                        <Button type="submit" variant="contained" color="primary" disabled={isRejectBtnDisabled} onSubmit={handleCMORejection}>OK</Button>
+                                    <Button type="submit" variant="contained" color="primary" disabled={isRejectBtnDisabled} onSubmit={handleCMORejection}>OK</Button>
 
-                                        <Button variant="contained" className={classes.rejectButton} onClick={cancelCommentDialog}>Cancel</Button>
+                                    <Button variant="contained" className={classes.rejectButton} onClick={cancelCommentDialog}>Cancel</Button>
 
-                                    </Box>
+                                </Box>
 
-                                </Grid>
+                            </Grid>
 
-                            </Form>
+                        </Form>
 
-                        </Formik>
+                    </Formik>
 
-                    </Grid>
-                </EditDialog>
+                </Grid>
+            </EditDialog>
                 :
                 ""
         }
 
-        <SubmitTransferRequest isSubmitBtnDisabled={submitBtnDisabled} showCommentDialog={showCommentDialog} submitTransferRequest={submitTransferRequest}/>
+        <SubmitTransferRequest isSubmitBtnDisabled={submitBtnDisabled} showCommentDialog={showCommentDialog} submitTransferRequest={submitTransferRequest} />
 
     </Grid>
 

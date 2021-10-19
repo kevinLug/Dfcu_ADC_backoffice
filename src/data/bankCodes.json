@@ -3,157 +3,188 @@
     {
       "name": "BARCLAYS BANK",
       "bankCode": "01",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "BARCUGKXXXX"
     },
     {
       "name": "BANK OF BARODA",
       "bankCode": "02",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "BARBUGKAXXX"
     },
     {
       "name": "STANBIC BANK",
       "bankCode": "04",
-      "branchCode": "00"
+      "branchCode": "00",
+      "swiftCode": "SBICUGKXXXX"
     },
     {
       "name": "DFCU BANK LTD",
       "bankCode": "05",
-      "branchCode": "00"
+      "branchCode": "00",
+      "swiftCode": "DFCUUGKAXXX"
     },
     {
       "name": "TROPICAL AFRICA BANK",
       "bankCode": "06",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "TROAUGKAXXX"
     },
     {
       "name": "STANDARD CHARTERED BANK",
       "bankCode": "08",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "SCBLUGKAXXX"
     },
     {
       "name": "ORIENT BANK",
       "bankCode": "11",
-      "branchCode": "00"
+      "branchCode": "00",
+      "swiftCode": "ORINUGKAXXX"
     },
     {
       "name": "BANK OF AFRICA",
       "bankCode": "13",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "AFRIUGKAXXX"
     },
     {
       "name": "CAIRO INTERNATIONAL BANK",
       "bankCode": "18",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "CAIEUGKAXXX"
     },
     {
       "name": "DIAMOND TRUST BANK",
       "bankCode": "19",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "DTKEUGKAXXX"
     },
     {
       "name": "CITI BANK",
       "bankCode": "22",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "CITIUGKAXXX"
     },
     {
       "name": "HOUSING FINANCE BANK LTD",
       "bankCode": "23",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "HFINUGKAXXX"
     },
     {
       "name": "UNITED BANK OF AFRICA",
       "bankCode": "26",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "UNAFUGKAXXX"
     },
     {
       "name": "GUARANTY TRUST BANK",
       "bankCode": "27",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "GTBIUGKAXXX"
     },
     {
       "name": "ECOBANK",
       "bankCode": "29",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "ECOCUGKAXXX"
     },
     {
       "name": "EQUITY BANK UGANDA LTD",
       "bankCode": "30",
-      "branchCode": "00"
+      "branchCode": "00",
+      "swiftCode": "EQBLUGKAXXX"
     },
     {
       "name": "ABC BANK",
       "bankCode": "31",
-      "branchCode": "00"
+      "branchCode": "00",
+      "swiftCode": "ABCFUGKAXXX"
     },
     {
       "name": "EXIM (IMPERIAL) BANK",
       "bankCode": "32",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "EXTNUGKAXXX"
     },
     {
       "name": "BANK OF INDIA UGANDA LTD",
       "bankCode": "34",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "BKIDUGKAXXX"
     },
     {
       "name": "NCBA BANK UGANDA LIMITED",
       "bankCode": "36",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "NINCUGKAXXX"
     },
     {
       "name": "FINANCE TRUST BANK",
       "bankCode": "37",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "FTBLUGKAXXX"
     },
     {
       "name": "OPPORTUNITY BANK",
       "bankCode": "38",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "OPRTUGKAXXX"
     },
     {
       "name": "FINCA UGANDA LTD",
       "bankCode": "53",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "FINCUGKAXXX"
     },
     {
       "name": "MERCANTILE CREDIT BANK",
       "bankCode": "55",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "MCBDUGKAXXX"
     },
     {
       "name": "POST BANK UGANDA",
       "bankCode": "56",
-      "branchCode": "00"
+      "branchCode": "00",
+      "swiftCode": "UGPBUGKAXXX"
     },
     {
       "name": "PRIDE MICROFINANCE LTD",
       "bankCode": "57",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "PMFLUGKAXXX"
     },
     {
       "name": "UGAFODE",
       "bankCode": "60",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "UGFOUGKAXXX"
     },
     {
       "name": "TOP FINANCE BANK",
       "bankCode": "62",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "TOPFUGKAXXX"
     },
     {
       "name": "BANK OF UGANDA",
       "bankCode": "99",
-      "branchCode": "01"
+      "branchCode": "01",
+      "swiftCode": "UGBAUGKAXXX"
     },
     {
       "name": "CENTENARY RURAL DEVELOPMENT BANK",
       "bankCode": "16",
-      "branchCode": "00"
+      "branchCode": "00",
+      "swiftCode": "CERBUGKAXXX"
     },
     {
       "name": "KENYA COMMERCIAL BANK",
       "bankCode": "25",
-      "branchCode": "00"
+      "branchCode": "00",
+      "swiftCode": "KCBLUGKAXXX"
     }
   ]
 }
