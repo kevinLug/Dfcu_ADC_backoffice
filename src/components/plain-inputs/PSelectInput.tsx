@@ -4,11 +4,12 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import {IOption} from "../inputs/inputHelpers";
+import { IOption } from "../inputs/inputHelpers";
 
 interface IProps {
     onChange?: (event: React.ChangeEvent<{ value: unknown }>) => any
     value?: any
+    defaultValue?: any
     label?: any
     name?: any
     size?: 'small' | 'medium'
@@ -17,9 +18,10 @@ interface IProps {
     options: IOption[]
     multiple?: boolean;
     disabled?: boolean;
+    ref?: any
 }
 
-const PSelectInput = ({name, multiple, helperText, size, options, variant, label, value, onChange,disabled}: IProps) => {
+const PSelectInput = ({ name, multiple, helperText, size, options, variant, label, value, onChange, disabled, defaultValue, ref}: IProps) => {
     const inputLabel = React.useRef<HTMLLabelElement>(null);
     const [labelWidth, setLabelWidth] = React.useState(0);
     React.useEffect(() => {
@@ -34,6 +36,8 @@ const PSelectInput = ({name, multiple, helperText, size, options, variant, label
                 onChange={onChange}
                 labelWidth={variant === "outlined" ? labelWidth : undefined}
                 multiple={multiple}
+                defaultValue={defaultValue}
+                ref={ref}
             >
                 {options.map(it => <MenuItem value={it.value} key={it.value}>{it.label}</MenuItem>)}
             </Select>
