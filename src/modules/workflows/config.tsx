@@ -1,25 +1,24 @@
-import {XHeadCell} from "../../components/table/XTableHead";
+import { XHeadCell } from "../../components/table/XTableHead";
 import ApplicationLink from "../../components/links/ApplicationLink";
-import {printDateTime} from "../../utils/dateHelpers";
+import { printDateTime } from "../../utils/dateHelpers";
 import React from "react";
-import {renderStatus} from "./widgets";
-import {toTitleCase} from "../contacts/types";
-import {determineWorkflowStatus, IWorkflow, WorkflowStatus, WorkflowSubStatus} from "./types";
-import {ConstantLabelsAndValues} from "../../data/constants";
+import { renderStatus } from "./widgets";
+import { toTitleCase } from "../contacts/types";
+import { determineWorkflowStatus, IWorkflow, WorkflowStatus, WorkflowSubStatus } from "./types";
+import { ConstantLabelsAndValues } from "../../data/constants";
 
 
 export enum RequestType {
 
-    FOREIGN_REMITTANCE = 'FOREIGNREMITTANCE',
     EFT = 'EFT',
     RTGS_1 = 'RTGS1',
-    RTGS = 'RTGS',
-    EAPS = 'EAPS',
-    REPSS = 'REPSS',
-    ForeignDraft = 'foreignDraft',
     SWIFT = 'SWIFT',
     INTERNAL = 'INTERNAL'
 
+}
+
+export const requestTypesAsArray = (): string[] => {
+    return Object.values(RequestType)
 }
 
 export const wfInitialSort = 'applicationDate';
@@ -27,7 +26,7 @@ export const workflowHeadCells: XHeadCell[] = [
     {
         name: 'referenceNumber', label: 'Ref.No',
         render: (value, rec) => {
-            return <ApplicationLink id={rec.id} name={rec.referenceNumber}/>
+            return <ApplicationLink id={rec.id} name={rec.referenceNumber} />
         },
         cellProps: {
             style: {
@@ -37,7 +36,7 @@ export const workflowHeadCells: XHeadCell[] = [
         },
     },
     {
-        name: 'runDate', label: 'Application Date', render:(data,rec) =>{
+        name: 'runDate', label: 'Application Date', render: (data, rec) => {
 
             return printDateTime(data)
             // console.log('checking runDate:',rec)
@@ -74,7 +73,7 @@ export const workflowHeadCells: XHeadCell[] = [
             // }
 
 
-        } ,
+        },
         cellProps: {
             style: {
                 width: 80,
@@ -214,7 +213,7 @@ export const workflowHeadCells: XHeadCell[] = [
 
 export const workflowHeadCellsNew: XHeadCell[] = [...workflowHeadCells.filter(it => it.name !== 'metaData.assigneeName')]
 
-export const workflowTypes = ['EFT',  'RTGS1', 'SWIFT', 'INTERNAL']
+export const workflowTypes = ['EFT', 'RTGS1', 'SWIFT', 'INTERNAL']
 
 
 export const parseWorkflows = (data: IWorkflow[]) => {

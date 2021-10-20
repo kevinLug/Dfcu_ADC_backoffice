@@ -43,9 +43,6 @@ export default function AlertDialogForMessages({shouldOpen, title, messages}: IP
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    {/*<Button onClick={handleClose} color="primary">*/}
-                    {/*    Disagree*/}
-                    {/*</Button>*/}
                     <Button onClick={handleClose} color="primary" autoFocus>
                         OK
                     </Button>

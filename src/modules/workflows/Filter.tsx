@@ -1,38 +1,44 @@
 import * as React from "react";
-import {useEffect, useState} from "react";
+import { useEffect, useState, useMemo } from "react";
 
 import Grid from '@material-ui/core/Grid';
 
-import {toOptions} from "../../components/inputs/inputHelpers";
-import {Box, Menu, MenuProps} from "@material-ui/core";
+import { toOptions } from "../../components/inputs/inputHelpers";
+import { Box, Menu, MenuProps } from "@material-ui/core";
 import TextField from '@material-ui/core/TextField';
 import PSelectInput from "../../components/plain-inputs/PSelectInput";
 import PDateInput from "../../components/plain-inputs/PDateInput";
-import {enumToArray, getRandomStr} from "../../utils/stringHelpers";
-import {determineWorkflowStatus, IWorkflowFilter, WorkflowStatus, WorkflowSubStatus} from "./types";
-import {workflowTypes} from "./config";
+import { enumToArray, getRandomStr } from "../../utils/stringHelpers";
+import { determineWorkflowStatus, IWorkflowFilter, WorkflowStatus, WorkflowSubStatus } from "./types";
+import { workflowTypes } from "./config";
 
-import {remoteRoutes} from "../../data/constants";
-import {useSelector} from "react-redux";
+import { ConstantLabelsAndValues, remoteRoutes } from "../../data/constants";
+import { useSelector } from "react-redux";
 
-import {downLoadWithParams, triggerDownLoad} from "../../utils/ajax";
-import {IList, List} from "../../utils/collections/list";
-import CheckBoxTemplate, {IPropsChecks} from "../scan/validate-verify/Check";
+import { downLoadWithParams, triggerDownLoad } from "../../utils/ajax";
+import { IList, List } from "../../utils/collections/list";
+import CheckBoxTemplate, { IPropsChecks } from "../scan/validate-verify/Check";
 
 import MenuItem from "@material-ui/core/MenuItem";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import {Theme, withStyles} from "@material-ui/core/styles";
+import { Theme, withStyles } from "@material-ui/core/styles";
 import createStyles from "@material-ui/core/styles/createStyles";
 
 import IconButton from "@material-ui/core/IconButton";
 
-import {ICheckKeyValueState} from "../../data/redux/checks/reducer";
-import {MoreHoriz} from "@material-ui/icons";
-import {KeyValueMap} from "../../utils/collections/map";
-import {ExportToExcel} from "../../components/import-export/ExportButton";
+import { ICheckKeyValueState } from "../../data/redux/checks/reducer";
+import { MoreHoriz } from "@material-ui/icons";
+import { KeyValueMap } from "../../utils/collections/map";
+import { ExportToExcel } from "../../components/import-export/ExportButton";
 
-import {printDateTime} from "../../utils/dateHelpers";
+import { printDateTime } from "../../utils/dateHelpers";
+
+import DataAccessConfigs from "../../data/dataAccessConfigs";
+import { isNullOrEmpty, isNullOrUndefined } from "../../utils/objectHelpers";
+import { IState } from "../../data/types";
+import Toast from "../../utils/Toast";
+
 
 const StyledMenu = withStyles({
     paper: {
@@ -104,7 +110,7 @@ interface IReport {
     status: string;
 }
 
-const formatExportData = (data: any) =>{
+const formatExportData = (data: any) => {
 
     /**
      * - Get all array
@@ -119,29 +125,35 @@ const formatExportData = (data: any) =>{
      *  8 - Status
      */
 
+    if (!data) {
+        Toast.warn('Trying to export empty data')
+        throw 'trying to export empty data'
+    }
+
     return data.map((value: any) => {
 
         let reportStatus = '';
         const subStatus = value.subStatus
         const status = value.status
+
         if (determineWorkflowStatus(status) === WorkflowStatus.Open && subStatus === WorkflowSubStatus.AwaitingCSOApproval) {
             reportStatus = WorkflowStatus.New
         }
         // awaiting BOM approval
         if (determineWorkflowStatus(status) === WorkflowStatus.Open && subStatus === WorkflowSubStatus.AwaitingBMApproval) {
-            reportStatus =  WorkflowStatus.Pending
+            reportStatus = WorkflowStatus.Pending
         }
         // awaiting CMO clearance
         if (determineWorkflowStatus(status) === WorkflowStatus.Open && subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle) {
-            reportStatus =  WorkflowStatus.Approved
+            reportStatus = WorkflowStatus.Approved
         }
         // erred
         if (determineWorkflowStatus(status) === WorkflowStatus.Error) {
-            reportStatus =  WorkflowStatus.Rejected
+            reportStatus = WorkflowStatus.Rejected
         }
         // closed (sent to finacle)
         if (determineWorkflowStatus(status) === WorkflowStatus.Closed) {
-            reportStatus =  WorkflowStatus.Cleared
+            reportStatus = WorkflowStatus.Cleared
         }
 
         const row: IReport = {
@@ -155,8 +167,6 @@ const formatExportData = (data: any) =>{
             currency: value.metaData.currency,
             status: reportStatus
         }
-
-        // console.log("a row: ", row)
 
         return row
 
@@ -173,7 +183,11 @@ enum WorkflowStatusInternal {
     Approved = 'Approved' // PendingClearance
 }
 
-const Filter = ({onFilter, loading, filterResult}: IProps) => {
+export const manageBranchChosen = () => {
+
+}
+
+const Filter = ({ onFilter, loading, filterResult }: IProps) => {
 
     const classes = useStyles();
 
@@ -183,16 +197,12 @@ const Filter = ({onFilter, loading, filterResult}: IProps) => {
         statuses: [],
         subStatuses: [],
         workflowTypes: [],
-        //referenceNumber: '',
-        //idNumber: '',
-        //userId: '',
         applicantName: '',
-        beneficiaryName: ''
+        beneficiaryName: '',
+        branchName: '',
+        branchCode: ''
     })
 
-    // const [searchHappening, setSearchHappening] = useState(false)
-
-    // const [searchData, setSearchedData] = useState<any[]>([])
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
@@ -204,11 +214,35 @@ const Filter = ({onFilter, loading, filterResult}: IProps) => {
         xl: 1
     }
 
-    const {check}: ICheckKeyValueState = useSelector((state: any) => state.checks)
+    const { check }: ICheckKeyValueState = useSelector((state: any) => state.checks)
+    const [branchNamesOnly, setBranchNamesOnly] = useState<string[]>([]);
+    const [defaultBranchName, setDefaultBranchName] = useState('');
+    const user = useSelector((state: IState) => state.core.user)
+
+    const theDefaultBranchName = useMemo(() => {
+
+        const result = DataAccessConfigs.getBranchOfUserSelected()!;
+
+        if (!isNullOrEmpty(result.toString()) && !isNullOrUndefined(result)) {
+            setDefaultBranchName(JSON.parse(result)['branchName'])
+        }
+
+        return defaultBranchName
+    }, [])
 
     useEffect(() => {
+
+        setBranchNamesOnly(ConstantLabelsAndValues.mapOfDFCUBranchCodeToBranchLabel().getValues().toArray())
+
         formatExportData(filterResult)
-    }, [check, filterResult])
+
+        const result = DataAccessConfigs.getBranchOfUserSelected()!;
+
+        if (!isNullOrEmpty(result) && !isNullOrUndefined(result)) {
+            setDefaultBranchName(JSON.parse(result)['branchName'])
+        }
+
+    }, [check, filterResult, defaultBranchName])
 
     const ids = ['status-grid', 'subStatus-grid', 'refNumber-grid', 'from-grid', 'to-grid']
     const labels = ['Status', 'Sub Status', 'Ref. Number', 'From Date', 'To Date']
@@ -246,14 +280,30 @@ const Filter = ({onFilter, loading, filterResult}: IProps) => {
 
     function handleChange(event: React.ChangeEvent<any>) {
         const name = event.target.name
-        // console.log('write-up-name:',name)
         const value = event.target.value
-        // console.log('write-up:',value)
-        const newData = {...data, [name]: value}
+        const newData = { ...data, [name]: value }
         setData(newData)
-        // console.log('write-up:',newData)
 
-        if (name === 'statuses') {
+        if (name === 'branchName') {
+            const branchCodeValue = handleBranchNameChange(value);
+
+            if (DataAccessConfigs.isBranchOfUserSelected(user) && branchCodeValue) {
+                DataAccessConfigs.setBranchOfUser(value, branchCodeValue)
+            }
+
+            // check if no previous branch name was in use already
+            if (!DataAccessConfigs.isBranchOfUserSelected(user) && branchCodeValue) {
+                DataAccessConfigs.setBranchOfUser(value, branchCodeValue)
+                window.location.reload()
+            } else {
+
+                const newDataValue = { ...data, ['branchCode']: branchCodeValue };
+
+                submitForm(newDataValue);
+
+            }
+        }
+        else if (name === 'statuses') {
 
             const subStatuses = autoHandleSubStatuses(name, value)
 
@@ -270,9 +320,7 @@ const Filter = ({onFilter, loading, filterResult}: IProps) => {
                 listingSubStatuses.concat("FailedCMOApproval")
             }
 
-            const theNewSubStatusData = {...data, ['subStatuses']: listingSubStatuses, [name]: listingStatuses}
-
-            // console.log('karama-2:',listingSubStatuses, theNewSubStatusData)
+            const theNewSubStatusData = { ...data, ['subStatuses']: listingSubStatuses, [name]: listingStatuses }
 
             submitForm(theNewSubStatusData)
 
@@ -280,6 +328,11 @@ const Filter = ({onFilter, loading, filterResult}: IProps) => {
             submitForm(newData)
         }
 
+    }
+
+    function handleBranchNameChange(branchName: string) {
+        const branchCode = ConstantLabelsAndValues.mapOfDFCUBranchLabelToBranchCode().get(branchName.trim());
+        return branchCode;
     }
 
     function autoHandleSubStatuses(name: string, input: any) {
@@ -342,13 +395,13 @@ const Filter = ({onFilter, loading, filterResult}: IProps) => {
         if (name === 'from' || name === 'to') {
             value = value ? value.toISOString() : value
         }
-        const newData = {...data, [name]: value}
+        const newData = { ...data, [name]: value }
         setData(newData)
         submitForm(newData)
     }
 
     function handleExport() {
-        console.log("crossing-line:", data)
+
 
         downLoadWithParams(remoteRoutes.workflowsReportsDownloadWithParams, data, theData => {
             triggerDownLoad(theData, `file-${getRandomStr(5)}.xlsx`)
@@ -359,10 +412,24 @@ const Filter = ({onFilter, loading, filterResult}: IProps) => {
         // })
     }
 
-
-
     return <form>
+
         <Grid spacing={2} container>
+
+            <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}>
+                <PSelectInput
+                    name="branchName"
+                    value={data['branchName']}
+                    onChange={handleChange}
+                    label="Branch"
+                    variant="outlined"
+                    size='small'
+                    multiple={false}
+                    options={toOptions(branchNamesOnly)}
+                    defaultValue={theDefaultBranchName}
+
+                />
+            </Grid>
 
             <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}>
                 <TextField
@@ -428,7 +495,7 @@ const Filter = ({onFilter, loading, filterResult}: IProps) => {
             </Grid>
 
             <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}
-                  id="refNumber-grid" hidden={check.checks.get("refNumber-grid")}>
+                id="refNumber-grid" hidden={check.checks.get("refNumber-grid")}>
                 <TextField
                     name="referenceNumber"
                     value={data['referenceNumber']}
@@ -442,7 +509,7 @@ const Filter = ({onFilter, loading, filterResult}: IProps) => {
             </Grid>
 
             <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}
-                  id="from-grid" hidden={check.checks.get("from-grid")}>
+                id="from-grid" hidden={check.checks.get("from-grid")}>
                 <PDateInput
                     name="from"
                     value={data['from'] || null}
@@ -454,7 +521,7 @@ const Filter = ({onFilter, loading, filterResult}: IProps) => {
             </Grid>
 
             <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl} id="to-grid"
-                  hidden={check.checks.get("to-grid")}>
+                hidden={check.checks.get("to-grid")}>
                 <PDateInput
                     name="to"
                     value={data['to'] || null}
@@ -475,7 +542,7 @@ const Filter = ({onFilter, loading, filterResult}: IProps) => {
                         onClick={handleClick}
                         size='small'
                     >
-                        <MoreHoriz/>
+                        <MoreHoriz />
                     </IconButton>
                     <StyledMenu
                         id="customized-menu"
@@ -489,7 +556,7 @@ const Filter = ({onFilter, loading, filterResult}: IProps) => {
                             checkListShowMoreOrLess().toArray().map((more, index) => {
                                 return <StyledMenuItem key={ids[index]}>
                                     <CheckBoxTemplate value={more.value} label={more.label}
-                                                      name={more.name}/>
+                                        name={more.name} />
                                 </StyledMenuItem>
                             })
                         }
@@ -501,7 +568,7 @@ const Filter = ({onFilter, loading, filterResult}: IProps) => {
             </Grid>
 
             <Grid item xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md} lg={gridSize.lg} xl={gridSize.xl}
-                  className={classes.exportBtn}>
+                className={classes.exportBtn}>
                 <Box display="flex" flexDirection="row-reverse">
 
                     <ExportToExcel dataToExport={formatExportData(filterResult)} />

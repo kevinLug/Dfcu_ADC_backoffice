@@ -26,6 +26,8 @@ export interface IWorkflowFilter {
 
     applicantName?: string
     beneficiaryName?: string;
+    branchName?: string;
+    branchCode?: string;
 
 }
 
