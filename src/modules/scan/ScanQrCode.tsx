@@ -29,10 +29,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { ICoreState } from "../../data/redux/coreReducer";
 import AlertDialogForMessages from "./AlertDialog";
 import { post } from "../../utils/ajax";
-import { localRoutes, remoteRoutes } from "../../data/constants";
+import { ConstantLabelsAndValues, localRoutes, remoteRoutes } from "../../data/constants";
 import { actionIWorkflowResponseMessage } from "../../data/redux/workflow-response/reducer";
 import { fetchWorkflowAsync, startWorkflowFetch } from "../../data/redux/workflows/reducer";
 import { RequestType, requestTypesAsArray } from "../workflows/config";
+import DataAccessConfigs from "../../data/dataAccessConfigs";
 
 export const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -200,11 +201,29 @@ const ScanQrCode = () => {
 
             Object.assign(aCase, runMappingRules.setCase(resultOfScan));
 
+            const branchCodeUser = DataAccessConfigs.getBranchCode();
+            const branchCodePdf = aCase.caseData.transferDetails.branchCode;
+            // check if the branch on the PDF is the same as the user's branch
+
+            if (isNullOrEmpty(branchCodePdf)) {
+                Toast.warn('dfcu Branch not specified')
+                setSnackBarCustomMessage(`dfcu Branch not specified`)
+                setOpenSnackBarCustomMessage(true)
+                return;
+            }
+
+            if (branchCodePdf !== branchCodeUser) {
+                Toast.warn('Branch mismatch')
+                setSnackBarCustomMessage(`Customer specified branch: ${ConstantLabelsAndValues.mapOfDFCUBranchCodeToBranchLabel().get(branchCodePdf)}. Contradicts your branch: ${DataAccessConfigs.getBranchName()}`)
+                setOpenSnackBarCustomMessage(true)
+                return;
+            }
+
             //const {access_token} = await login()
 
             // make sure the scanned PDF has a transfer type within in the predefined ones
             const isTransferTypePartOfRequired = requestTypesAsArray().includes(aCase.workflowType)
-            
+
             if (!isTransferTypePartOfRequired) {
                 Toast.warn('Wrong transfer type')
                 setSnackBarCustomMessage(`Transfer type ${aCase.workflowType} will not be considered. Click Initiate transfer to try again`)

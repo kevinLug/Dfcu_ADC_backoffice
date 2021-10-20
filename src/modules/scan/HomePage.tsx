@@ -66,9 +66,6 @@ const HomePage = () => {
             const result = DataAccessConfigs.getBranchOfUserSelected()!;
 
             if (!isNullOrEmpty(result) && !isNullOrUndefined(result)) {
-                const r = JSON.parse(result)
-
-
                 filter.branchCode = JSON.parse(result)['branchCode']
             }
 

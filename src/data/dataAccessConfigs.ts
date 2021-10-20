@@ -1,4 +1,4 @@
-import { isNullOrEmpty, isNullOrUndefined } from "../utils/objectHelpers";
+import { isNullOrEmpty } from "../utils/objectHelpers";
 import { BRANCH_SELECTED_KEY, hasAnyRole, systemRoles } from "./constants";
 
 class DataAccessConfigs {
@@ -22,9 +22,30 @@ class DataAccessConfigs {
 
   static getBranchOfUserSelected() {
     const result = localStorage.getItem(BRANCH_SELECTED_KEY);
-    if (result !== null) return result;
+    if (result !== null) {
+      return result;
+    }
     return "";
   }
+
+  static roleIsCso(user: any) {
+    return hasAnyRole(user, [systemRoles.CSO]);
+  }
+
+  static roleIsBomOrBm(user: any) {
+    return hasAnyRole(user, [systemRoles.BOM]) || hasAnyRole(user, [systemRoles.BM]);
+  }
+
+  static getBranchCode() {
+    const result = DataAccessConfigs.getBranchOfUserSelected()!;
+    return JSON.parse(result)["branchCode"];
+  }
+
+  static getBranchName() {
+    const result = DataAccessConfigs.getBranchOfUserSelected()!;
+    return JSON.parse(result)["branchName"];
+  }
+
 }
 
 export default DataAccessConfigs;
