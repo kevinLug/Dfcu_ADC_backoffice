@@ -1,37 +1,38 @@
 import Grid from "@material-ui/core/Grid";
-import {isNullOrEmpty} from "../../utils/objectHelpers";
-import React, {useCallback, useEffect, useState} from "react";
+import { isNullOrEmpty } from "../../utils/objectHelpers";
+import React, { useCallback, useEffect, useState } from "react";
 import Cropper from "react-easy-crop";
 import Button from "@material-ui/core/Button";
-import {ZoomIn, ZoomOut} from "@material-ui/icons";
+import { ZoomIn, ZoomOut } from "@material-ui/icons";
 import RotateLeftIcon from "@material-ui/icons/RotateLeft";
 import RotateRightIcon from "@material-ui/icons/RotateRight";
 import ImgDialog from "./ImgDialog";
 import Dropzone from "react-dropzone";
 import Typography from "@material-ui/core/Typography";
-import {createStyles, makeStyles, Theme} from "@material-ui/core";
-import {getCroppedImg, getRotatedImage} from "./canvasUtils";
-import ObjectHelpersFluent, {fluentValidationInstance} from "../../utils/objectHelpersFluent";
+import { createStyles, makeStyles, Theme } from "@material-ui/core";
+import { getCroppedImg, getRotatedImage } from "./canvasUtils";
+import ObjectHelpersFluent, { fluentValidationInstance } from "../../utils/objectHelpersFluent";
 import Toast from "../../utils/Toast";
 
-import {randomInt} from "../../utils/numberHelpers";
+import { randomInt } from "../../utils/numberHelpers";
 import uuid from "uuid";
-import {actionICaseState} from "../../data/redux/transfers/reducer";
+import { actionICaseState } from "../../data/redux/transfers/reducer";
 import validateData from "../validations/validations";
 
 import SuccessCriteria from "../../utils/successCriteria";
-import {BrowserMultiFormatReader} from "@zxing/library";
+import { BrowserMultiFormatReader } from "@zxing/library";
 import RunMappingRules from "./mappings/runMappingRules";
-import {ICase, ICaseDefault} from "../transfers/types";
-import {getOrientation} from "get-orientation/browser";
-import {Dispatch} from "redux";
-import {useDispatch, useSelector} from "react-redux";
-import {ICoreState} from "../../data/redux/coreReducer";
+import { ICase, ICaseDefault } from "../transfers/types";
+import { getOrientation } from "get-orientation/browser";
+import { Dispatch } from "redux";
+import { useDispatch, useSelector } from "react-redux";
+import { ICoreState } from "../../data/redux/coreReducer";
 import AlertDialogForMessages from "./AlertDialog";
-import {post} from "../../utils/ajax";
-import {localRoutes, remoteRoutes} from "../../data/constants";
-import {actionIWorkflowResponseMessage} from "../../data/redux/workflow-response/reducer";
-import {fetchWorkflowAsync, startWorkflowFetch} from "../../data/redux/workflows/reducer";
+import { post } from "../../utils/ajax";
+import { localRoutes, remoteRoutes } from "../../data/constants";
+import { actionIWorkflowResponseMessage } from "../../data/redux/workflow-response/reducer";
+import { fetchWorkflowAsync, startWorkflowFetch } from "../../data/redux/workflows/reducer";
+import { RequestType, requestTypesAsArray } from "../workflows/config";
 
 export const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -140,6 +141,8 @@ const ScanQrCode = () => {
     const [imageSrc, setImageSrc] = useState<string>("")
     const [iScanSuccessful, setScanSuccessful] = useState(false)
     const [openSnackBar, setOpenSnackBar] = useState(false)
+    const [openSnackBarCustomMessage, setOpenSnackBarCustomMessage] = useState(false)
+    const [snackBarCustomMessage, setSnackBarCustomMessage] = useState('')
 
     const [snackBarMessage, setSnackBarMessage] = useState<any>()
     const [snackBarColor, setSnackBarColor] = useState<any>()
@@ -147,7 +150,7 @@ const ScanQrCode = () => {
     const [infoMessages, setInfoMessages] = useState<string[]>([])
 
 
-    const [crop, setCrop] = useState({x: -261, y: 454})
+    const [crop, setCrop] = useState({ x: -261, y: 454 })
     const [rotation, setRotation] = useState(0)
     const [zoom, setZoom] = useState<any>(3)
     const [croppedImage, setCroppedImage] = useState<any>(null)
@@ -155,11 +158,11 @@ const ScanQrCode = () => {
     const [rawTransferFormValues] = useState(new Map())
     const [aCase, setACase] = useState<ICase>(ICaseDefault)
     const dispatch: Dispatch<any> = useDispatch();
-    const {user}: ICoreState = useSelector((state: any) => state.core)
+    const { user }: ICoreState = useSelector((state: any) => state.core)
 
     useEffect(() => {
 
-    }, [aCase, snackBarMessage, openSnackBar, snackBarColor])
+    }, [aCase, snackBarMessage, openSnackBar, snackBarColor, openSnackBarCustomMessage, snackBarCustomMessage])
 
     let counter = 0
 
@@ -199,6 +202,16 @@ const ScanQrCode = () => {
 
             //const {access_token} = await login()
 
+            // make sure the scanned PDF has a transfer type within in the predefined ones
+            const isTransferTypePartOfRequired = requestTypesAsArray().includes(aCase.workflowType)
+            
+            if (!isTransferTypePartOfRequired) {
+                Toast.warn('Wrong transfer type')
+                setSnackBarCustomMessage(`Transfer type ${aCase.workflowType} will not be considered. Click Initiate transfer to try again`)
+                setOpenSnackBarCustomMessage(true)
+                return;
+            }
+
             // the counter is to allow sending the a Post request only once
             if (counter === 1 && aCase.workflowType !== "") {
 
@@ -209,7 +222,7 @@ const ScanQrCode = () => {
                     "agentCode": "",
                     "branchName": "",
                     "region": ""
-                }
+                } // TODO ... get branch name from the branch_store in the indexedDb
 
                 aCase.applicationDate = new Date()
                 aCase.referenceNumber = randomInt(100000, 500000).toString() // todo...this will have to be picked from the PDF to avoid redundancy
@@ -224,19 +237,10 @@ const ScanQrCode = () => {
                     bmoApprovalDateTime: newDate,
                     cmoClearanceDateTime: newDate
                 };
-                console.log("the sent:", aCase)
-                // aCase.caseData.doc = ImageUtils.base64ToArrayBuffer(imageSrc)
 
                 dispatch(actionICaseState(aCase));
 
                 const validationResult = await validateData(aCase);
-
-                // todo...try getting use from the one the logged in
-
-                // console.log('idb-support: ', idbHandler.isSupported())
-                // const ttt = await idbHandler.setUpDb("test_again")
-                // console.log('sss:', ttt)
-                // console.log('sss:', idbHandler.getDb())
 
                 if (!validationResult) {
                     const messages = SuccessCriteria.getFailedTestResults(aCase.workflowType).toArray().map((msg) => {
@@ -253,24 +257,24 @@ const ScanQrCode = () => {
 
                     post(remoteRoutes.workflows, aCase, (resp: any) => {
 
-                            dispatch(actionIWorkflowResponseMessage(resp))
+                        dispatch(actionIWorkflowResponseMessage(resp))
 
-                            const postResp = fluentValidationInstance()
-                            postResp.selector(resp, '$.caseId')
-                                .isPresent()
-                                .logDetailed()
-                                .successCallBack(() => {
-                                    Toast.success("Initiated successfully")
-                                    dispatch(startWorkflowFetch())
-                                    dispatch(fetchWorkflowAsync(postResp.getSummary().value))
-                                    // refresh to show details of new case initiated
-                                    window.location.href = `${localRoutes.applications}/${resp.caseId}`
-                                })
-                                .failureCallBack(() => {
-                                    Toast.warn("Something is wrong")
-                                })
+                        const postResp = fluentValidationInstance()
+                        postResp.selector(resp, '$.caseId')
+                            .isPresent()
+                            .logDetailed()
+                            .successCallBack(() => {
+                                Toast.success("Initiated successfully")
+                                dispatch(startWorkflowFetch())
+                                dispatch(fetchWorkflowAsync(postResp.getSummary().value))
+                                // refresh to show details of new case initiated
+                                window.location.href = `${localRoutes.applications}/${resp.caseId}`
+                            })
+                            .failureCallBack(() => {
+                                Toast.warn("Something is wrong")
+                            })
 
-                        }, undefined,
+                    }, undefined,
                         () => {
 
                         }
@@ -328,12 +332,16 @@ const ScanQrCode = () => {
         setRotation(prevRotation)
     }
 
+    function showSnackBarMessageCustom(msg: string) {
+        return openSnackBarCustomMessage ? <AlertDialogForMessages messages={[msg]} title="Message" shouldOpen={openSnackBarCustomMessage} /> : ""
+    }
+
     function showSnackBarMessage() {
-        return openSnackBar ? <AlertDialogForMessages messages={infoMessages} title="Missing requirements (Initiation failed)" shouldOpen={openSnackBar}/> : ""
+        return openSnackBar ? <AlertDialogForMessages messages={infoMessages} title="Missing requirements (Initiation failed)" shouldOpen={openSnackBar} /> : ""
     }
 
     return <Grid item sm={7} container alignContent={"center"} justify="center"
-                 className={isNullOrEmpty(result) ? classes.dragAndDropArea : classes.dragAndDropAreaAfterScan}>
+        className={isNullOrEmpty(result) ? classes.dragAndDropArea : classes.dragAndDropAreaAfterScan}>
         {imageSrc ? (
 
             !iScanSuccessful ?
@@ -356,22 +364,22 @@ const ScanQrCode = () => {
                     </div>
 
                     <Button variant="contained" onClick={handleZoomOut}>
-                        Zoom out<ZoomOut/>
+                        Zoom out<ZoomOut />
                     </Button>
 
                     <Button variant="contained" onClick={handleZoomIn}>
-                        Zoom in<ZoomIn/>
+                        Zoom in<ZoomIn />
                     </Button>
 
                     <Button variant="outlined" onClick={handleLeftRotation}>
-                        Rotate Left<RotateLeftIcon/>
+                        Rotate Left<RotateLeftIcon />
                     </Button>
 
                     <Button variant="outlined" onClick={handleRightRotation}>
-                        Rotate Right<RotateRightIcon/>
+                        Rotate Right<RotateRightIcon />
                     </Button>
 
-                    <ImgDialog img={croppedImage} onClose={onClose}/>
+                    <ImgDialog img={croppedImage} onClose={onClose} />
 
 
                 </React.Fragment>
@@ -381,15 +389,15 @@ const ScanQrCode = () => {
                 // show image upon scanning
 
                 <Grid container item xs={12}>
-                    <img src={imageSrc} className={classes.imageAfterScan} alt="scanned-result"/>
+                    <img src={imageSrc} className={classes.imageAfterScan} alt="scanned-result" />
                 </Grid>
 
         ) : (
 
             <Dropzone onDrop={handleDrop} accept="image/*">
 
-                {({getRootProps, getInputProps}) => (
-                    <div {...getRootProps({className: "dropzone"})} className={classes.dropzoneClue}>
+                {({ getRootProps, getInputProps }) => (
+                    <div {...getRootProps({ className: "dropzone" })} className={classes.dropzoneClue}>
                         <input {...getInputProps()} />
 
                         <Grid>
@@ -410,7 +418,9 @@ const ScanQrCode = () => {
         {
             showSnackBarMessage()
         }
-
+        {
+            showSnackBarMessageCustom(snackBarCustomMessage)
+        }
 
     </Grid>
 }
