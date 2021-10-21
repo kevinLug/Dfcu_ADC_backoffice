@@ -66,9 +66,6 @@ const HomePage = () => {
             const result = DataAccessConfigs.getBranchOfUserSelected()!;
 
             if (!isNullOrEmpty(result) && !isNullOrUndefined(result)) {
-                const r = JSON.parse(result)
-
-
                 filter.branchCode = JSON.parse(result)['branchCode']
             }
 
@@ -79,7 +76,7 @@ const HomePage = () => {
         }
         else {
             setOpenSnackBarCustomMessage(true)
-            setBranchMissingMessage('Please select your branch')
+            setBranchMissingMessage('Please select your branch to be able to proceed')
         }
 
     }, [filter, isReadyToDisplay, openSnackBarCustomMessage])

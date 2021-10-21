@@ -1,30 +1,28 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import IconButton from '@material-ui/core/IconButton';
 
 import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
-import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
-import {withRouter} from 'react-router';
-import {hasAnyRole, localRoutes, systemRoles} from "../data/constants";
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { withRouter } from 'react-router';
+import { hasAnyRole, localRoutes, systemRoles } from "../data/constants";
 import grey from '@material-ui/core/colors/grey';
-import {BarView} from "./Profile";
+import { BarView } from "./Profile";
 import logo from "../assets/download.png";
-import {Button} from "@material-ui/core";
-import {linkColor, themeBackground} from "../theme/custom-colors";
+import { Button } from "@material-ui/core";
+import { linkColor, themeBackground } from "../theme/custom-colors";
 import Paper from "@material-ui/core/Paper";
-import {useDispatch, useSelector} from "react-redux";
-import {startNewTransferRequest} from "../data/redux/coreActions";
-import {Dispatch} from "redux";
-import {IState} from "../data/types";
-import {Link} from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Dispatch } from "redux";
+import { IState } from "../data/types";
+import { Link } from "react-router-dom";
 import FloatingActionButtons from "../modules/scan/FloatingIcon";
-import {actionICheckKeyValue} from "../data/redux/checks/reducer";
-import {ICaseDefault, ICheckKeyValueDefault} from "../modules/transfers/types";
-import {actionICaseState, initialState} from "../data/redux/transfers/reducer";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import NavigationBreadCrumbs from "../modules/scan/NavigationBreadCrumbs";
+import DataAccessConfigs from '../data/dataAccessConfigs';
+import { isNullOrEmpty } from '../utils/objectHelpers';
 
 const drawerWidth = 240;
 
@@ -149,12 +147,12 @@ function Layout(props: any) {
     }
 
     function canShowRequestButton() {
-        return (hasAnyRole(user, [systemRoles.CSO]) && window.location.pathname === "/")
+        return (hasAnyRole(user, [systemRoles.CSO]) && !isNullOrEmpty(DataAccessConfigs.getBranchCode()) && window.location.pathname === "/")
     }
 
     return (
         <div className={classes.root}>
-            <CssBaseline/>
+            <CssBaseline />
             <AppBar position="fixed" className={classes.appBar} color='default'>
 
                 <Toolbar>
@@ -165,17 +163,17 @@ function Layout(props: any) {
                         onClick={handleDrawerToggle}
                         className={classes.menuButton}
                     >
-                        <MenuIcon/>
+                        <MenuIcon />
                     </IconButton>
 
                     <div className={classes.logoHolder}>
-                        <img src={logo} alt="logo" className={classes.logo}/>
+                        <img src={logo} alt="logo" className={classes.logo} />
                     </div>
 
                     {canShowRequestButton() ?
                         <div className={classes.requestButton}>
 
-                            <Link style={{textDecoration: 'none', color: linkColor}} to={localRoutes.initiateTransferRequest}>
+                            <Link style={{ textDecoration: 'none', color: linkColor }} to={localRoutes.initiateTransferRequest}>
                                 <Button
                                     variant="contained"
                                     color="primary"
@@ -183,7 +181,7 @@ function Layout(props: any) {
                                     id='new-request-btn'
 
                                     onClick={startNewTransfer}
-                                    startIcon={btnTransferName === 'BACK' ? <ArrowBackIcon/> : undefined}
+                                    startIcon={btnTransferName === 'BACK' ? <ArrowBackIcon /> : undefined}
                                 >
                                     {btnTransferName}
                                 </Button>
@@ -193,18 +191,18 @@ function Layout(props: any) {
                         </div>
                         : ""}
 
-                    <BarView textClass={classes.menuSelected}/>
+                    <BarView textClass={classes.menuSelected} />
                 </Toolbar>
             </AppBar>
 
             <main className={classes.content}>
-                <div className={classes.toolbar}/>
+                <div className={classes.toolbar} />
                 <Paper className={classes.body}>
 
-                    <NavigationBreadCrumbs/>
-                    <br/>
+                    <NavigationBreadCrumbs />
+                    <br />
                     {props.children}
-                    <FloatingActionButtons/>
+                    <FloatingActionButtons />
                 </Paper>
             </main>
         </div>
