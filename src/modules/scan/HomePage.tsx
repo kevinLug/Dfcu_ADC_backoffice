@@ -35,6 +35,12 @@ const HomePage = () => {
 
     useEffect(() => {
 
+        async function test() {
+            await DataAccessConfigs.shouldCustomerAndCsoHaveSameBranch()
+        }
+
+        test();
+
         if (isReadyToDisplay) {
             setLoadingNew(true)
             const newFilter = {

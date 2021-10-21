@@ -48,6 +48,20 @@ class DataAccessConfigs {
     const result = DataAccessConfigs.getBranchOfUserSelected()!;
     return JSON.parse(result)["branchName"];
   }
+
+  static async shouldCustomerAndCsoHaveSameBranch() {
+    const jsonResult = await DataAccessConfigs.fetchConfigFileJson("afterScanRules.json");
+    const res: boolean = DataAccessConfigs.getRootObject("root", jsonResult)["shouldCustomerAndCsoHaveSameBranch"];
+    return res;
+  }
+
+  private static getRootObject(objectName: string, jsonResult: any) {
+    return jsonResult[objectName];
+  }
+
+  static async fetchConfigFileJson(filePath: string) {
+    return (await fetch(filePath)).json();
+  }
 }
 
 export default DataAccessConfigs;
