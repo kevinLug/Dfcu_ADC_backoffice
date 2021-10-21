@@ -76,7 +76,7 @@ const HomePage = () => {
         }
         else {
             setOpenSnackBarCustomMessage(true)
-            setBranchMissingMessage('Please select your branch')
+            setBranchMissingMessage('Please select your branch to be able to proceed')
         }
 
     }, [filter, isReadyToDisplay, openSnackBarCustomMessage])

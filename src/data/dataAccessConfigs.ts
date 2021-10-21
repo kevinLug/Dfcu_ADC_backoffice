@@ -38,14 +38,16 @@ class DataAccessConfigs {
 
   static getBranchCode() {
     const result = DataAccessConfigs.getBranchOfUserSelected()!;
-    return JSON.parse(result)["branchCode"];
+    if (!isNullOrEmpty(result)) {
+      return JSON.parse(result)["branchCode"];
+    }
+    return "";
   }
 
   static getBranchName() {
     const result = DataAccessConfigs.getBranchOfUserSelected()!;
     return JSON.parse(result)["branchName"];
   }
-
 }
 
 export default DataAccessConfigs;
