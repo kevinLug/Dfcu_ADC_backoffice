@@ -61,7 +61,6 @@ const validateRTGS = async (data: ICase): Promise<boolean> => {
             .addUserFailureMessage("rate must be greater or equal to zero")
             .isIgnorable()
             .logDetailed()
-            .logDetailed()
         isRatePresent.failureCallBack(() => Toast.error("Rate is missing"))
         tests.add(isRatePresent)
 

@@ -88,11 +88,11 @@ export default function FloatingActionButtons() {
             setInitialServerAccess(false)
 
             pingServer()
-            //check in every 2 minutes if server is reachable
+            
         }, aMinute * 2)
 
     }
-
+    
     return (
         <div className={classes.root}>
 

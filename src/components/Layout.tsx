@@ -23,6 +23,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import NavigationBreadCrumbs from "../modules/scan/NavigationBreadCrumbs";
 import DataAccessConfigs from '../data/dataAccessConfigs';
 import { isNullOrEmpty } from '../utils/objectHelpers';
+import FloatingBranchLabel from '../modules/scan/FloatingBranchLabel';
 
 const drawerWidth = 240;
 
@@ -202,6 +203,7 @@ function Layout(props: any) {
                     <NavigationBreadCrumbs />
                     <br />
                     {props.children}
+                    <FloatingBranchLabel />
                     <FloatingActionButtons />
                 </Paper>
             </main>

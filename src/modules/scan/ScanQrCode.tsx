@@ -205,14 +205,9 @@ const ScanQrCode = () => {
             const branchCodePdf = aCase.caseData.transferDetails.branchCode;
             // check if the branch on the PDF is the same as the user's branch
 
-            if (isNullOrEmpty(branchCodePdf)) {
-                Toast.warn('dfcu Branch not specified')
-                setSnackBarCustomMessage(`dfcu Branch not specified`)
-                setOpenSnackBarCustomMessage(true)
-                return;
-            }
+            const shouldCustomerAndCsoHaveSameBranch = await DataAccessConfigs.shouldCustomerAndCsoHaveSameBranch()
 
-            if (branchCodePdf !== branchCodeUser) {
+            if (branchCodePdf !== branchCodeUser && shouldCustomerAndCsoHaveSameBranch) {
                 Toast.warn('Branch mismatch')
                 setSnackBarCustomMessage(`Customer specified branch: ${ConstantLabelsAndValues.mapOfDFCUBranchCodeToBranchLabel().get(branchCodePdf)}. Contradicts your branch: ${DataAccessConfigs.getBranchName()}`)
                 setOpenSnackBarCustomMessage(true)
