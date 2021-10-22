@@ -1,4 +1,4 @@
-import { isNullOrEmpty } from "../utils/objectHelpers";
+import { isNullOrEmpty, resolveDotNotationToBracket } from "../utils/objectHelpers";
 import { BRANCH_SELECTED_KEY, hasAnyRole, systemRoles } from "./constants";
 
 class DataAccessConfigs {
@@ -46,12 +46,18 @@ class DataAccessConfigs {
 
   static getBranchName() {
     const result = DataAccessConfigs.getBranchOfUserSelected()!;
-    return JSON.parse(result)["branchName"];
+    if (!isNullOrEmpty(result)) {
+      return JSON.parse(result)["branchName"];
+    }
+    return "No branch selected";
   }
 
   static async shouldCustomerAndCsoHaveSameBranch() {
     const jsonResult = await DataAccessConfigs.fetchConfigFileJson("afterScanRules.json");
     const res: boolean = DataAccessConfigs.getRootObject("root", jsonResult)["shouldCustomerAndCsoHaveSameBranch"];
+
+    await DataAccessConfigs.loadConfigValue("afterScanRules.json", "root", "");
+
     return res;
   }
 
@@ -61,6 +67,18 @@ class DataAccessConfigs {
 
   static async fetchConfigFileJson(filePath: string) {
     return (await fetch(filePath)).json();
+  }
+
+  static async loadConfigValue(configFileName: string, rootObjectName: string, valuePath: string) {
+    const jsonResult = await DataAccessConfigs.fetchConfigFileJson(configFileName);
+    const rootObject = DataAccessConfigs.getRootObject(rootObjectName, jsonResult);
+    const result = resolveDotNotationToBracket(valuePath, rootObject);
+
+    if (!result) {
+      return rootObject;
+    }
+
+    return result;
   }
 }
 
