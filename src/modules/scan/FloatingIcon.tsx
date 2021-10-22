@@ -10,6 +10,7 @@ import {actionIServerPingValue, IServerPingValueState} from "../../data/redux/pi
 import {useDispatch, useSelector} from "react-redux";
 
 import Tooltip from "@material-ui/core/Tooltip";
+import DataAccessConfigs from '../../data/dataAccessConfigs';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -77,7 +78,7 @@ export default function FloatingActionButtons() {
 
     }
 
-    function tryReachingServer() {
+    async function tryReachingServer() {
 
         if (isInitialServerAccess) {
 
@@ -89,7 +90,7 @@ export default function FloatingActionButtons() {
 
             pingServer()
             
-        }, aMinute * 2)
+        }, aMinute * await DataAccessConfigs.loadConfigValue('serverPingingConfig.json', 'root', 'pingingIntervalInMinutes'))
 
     }
     

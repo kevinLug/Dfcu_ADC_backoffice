@@ -34,9 +34,17 @@ export default function FloatingBranchLabel() {
     return (
         <div className={classes.root}>
 
-            <Fab variant="extended" className={classes.serverIsReachable} aria-label="add">
-                {DataAccessConfigs.getBranchName()}
-            </Fab>
+            {
+                'No branch selected' !== DataAccessConfigs.getBranchName() ?
+                    <Fab variant="extended" className={classes.serverIsReachable} aria-label="add">
+                        {DataAccessConfigs.getBranchName()}
+                    </Fab>
+                    :
+                    <Fab variant="extended" className={classes.serverIsNotReachable} aria-label="add">
+                        {DataAccessConfigs.getBranchName()}
+                    </Fab>
+            }
+
 
         </div>
 

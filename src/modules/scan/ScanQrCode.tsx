@@ -202,6 +202,7 @@ const ScanQrCode = () => {
             Object.assign(aCase, runMappingRules.setCase(resultOfScan));
 
             const branchCodeUser = DataAccessConfigs.getBranchCode();
+            const branchNameUser = DataAccessConfigs.getBranchName();
             const branchCodePdf = aCase.caseData.transferDetails.branchCode;
             // check if the branch on the PDF is the same as the user's branch
 
@@ -234,8 +235,9 @@ const ScanQrCode = () => {
                     "name": user.name,
                     "phone": "",
                     "agentCode": "",
-                    "branchName": "",
-                    "region": ""
+                    "branchName": branchNameUser,
+                    "region": "",
+                    "branchCode": branchCodeUser
                 } // TODO ... get branch name from the branch_store in the indexedDb
 
                 aCase.applicationDate = new Date()
