@@ -66,7 +66,14 @@ class DataAccessConfigs {
   }
 
   static async fetchConfigFileJson(filePath: string) {
-    return (await fetch(filePath)).json();
+    return (
+      await fetch(filePath, {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      })
+    ).json();
   }
 
   static async loadConfigValue(configFileName: string, rootObjectName: string, valuePath: string) {
