@@ -42,7 +42,7 @@ class DataAccessConfigs {
     function submitted(record: any) {
       return determineWorkflowStatus(record.status) === WorkflowStatus.Open && record.subStatus === WorkflowSubStatus.AwaitingBMApproval;
     }
-    return data.filter((record: any) => newApplication(record) || submitted(record));
+    return data.filter((record: any) => newApplication(record) || submitted(record) || DataAccessConfigs.failedStatus(record));
   }
 
   static dataViewBomorBmRole(data: []) {
@@ -53,18 +53,23 @@ class DataAccessConfigs {
     function approvedByBom(record: any) {
       return determineWorkflowStatus(record.status) === WorkflowStatus.Open && record.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle;
     }
-    return data.filter((record) => pendingBomApproval(record) || approvedByBom(record));
+    return data.filter((record) => pendingBomApproval(record) || approvedByBom(record) || DataAccessConfigs.failedStatus(record));
+  }
+
+  static failedStatus(record: any) {
+    return determineWorkflowStatus(record.status) === WorkflowStatus.Error;
   }
 
   static dataViewCmoRole(data: []) {
     function awaitingClearance(record: any) {
       return determineWorkflowStatus(record.status) === WorkflowStatus.Open && record.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle;
     }
+
     function cleared(record: any) {
       return determineWorkflowStatus(record.status) === WorkflowStatus.Closed;
     }
 
-    return data.filter((record: any) => awaitingClearance(record) || cleared(record));
+    return data.filter((record: any) => awaitingClearance(record) || cleared(record) || DataAccessConfigs.failedStatus(record));
   }
 
   static dataView(data: [], user: any) {
