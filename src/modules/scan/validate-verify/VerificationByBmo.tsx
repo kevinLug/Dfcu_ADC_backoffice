@@ -166,7 +166,7 @@ const VerificationByBmo = ({workflow}: IPropsBMO) => {
 
         addDynamicPropertyToObject(data, 'timestamp', new Date())
 
-        delete data.checks
+        // delete data.checks
 
         const manualBMApproval: IManualDecision = {
             caseId: caseId,

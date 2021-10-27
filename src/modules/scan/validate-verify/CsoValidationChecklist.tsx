@@ -1,36 +1,36 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import Grid from "@material-ui/core/Grid";
-import CheckBoxTemplate, {IPropsChecks} from "./Check";
-import {IList} from "../../../utils/collections/list";
+import CheckBoxTemplate, { IPropsChecks } from "./Check";
+import { IList } from "../../../utils/collections/list";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
-import {createStyles, makeStyles} from "@material-ui/core";
-import {IWorkflowResponseMessageState} from "../../../data/redux/workflow-response/reducer";
-import {useDispatch, useSelector} from "react-redux";
+import { createStyles, makeStyles } from "@material-ui/core";
+import { IWorkflowResponseMessageState } from "../../../data/redux/workflow-response/reducer";
+import { useDispatch, useSelector } from "react-redux";
 
-import {actionICheckKeyValue, ICheckKeyValueState} from "../../../data/redux/checks/reducer";
+import { actionICheckKeyValue, ICheckKeyValueState } from "../../../data/redux/checks/reducer";
 
-import {IManualDecision, WorkflowSubStatus} from "../../workflows/types";
+import { IManualDecision, WorkflowSubStatus } from "../../workflows/types";
 
-import {ConstantLabelsAndValues, hasAnyRole, localRoutes, remoteRoutes, systemRoles} from "../../../data/constants";
+import { ConstantLabelsAndValues, hasAnyRole, localRoutes, remoteRoutes, systemRoles } from "../../../data/constants";
 
-import {post} from "../../../utils/ajax";
-import {getChecksToPopulate, getDropdownSelectsToPopulate} from "../populateLabelAndValue";
-import {IWorkflowState} from "../../../data/redux/workflows/reducer";
-import {Dispatch} from "redux";
+import { post } from "../../../utils/ajax";
+import { getChecksToPopulate, getDropdownSelectsToPopulate } from "../populateLabelAndValue";
+import { IWorkflowState } from "../../../data/redux/workflows/reducer";
+import { Dispatch } from "redux";
 import EditDialog from "../../../components/EditDialog";
 
-import {IState} from "../../../data/types";
+import { IState } from "../../../data/types";
 import VerificationsAlreadyDoneByCSO from "./ChecksAlreadyDoneByCso";
 import Toast from "../../../utils/Toast";
-import {CSORejectionRemarks, IRemarks} from "./RejectionRemarksValues";
-import {actionISelectKeyValue, ISelectKeyValueState} from "../../../data/redux/selects/reducer";
+import { CSORejectionRemarks, IRemarks } from "./RejectionRemarksValues";
+import { actionISelectKeyValue, ISelectKeyValueState } from "../../../data/redux/selects/reducer";
 import RejectionForm from "./RejectionDialog";
 import ForexForm from "./ForexDialog";
-import {ICheckKeyValueDefault, IForex, ISelectKeyValueDefault} from "../../transfers/types";
-import {actionIForexValue, IForexValueState} from "../../../data/redux/forex/reducer";
-import {fluentValidationInstance} from "../../../utils/objectHelpersFluent";
-import {addDynamicPropertyToObject, isNullOrEmpty, isNullOrUndefined} from "../../../utils/objectHelpers";
+import { ICheckKeyValueDefault, IForex, ISelectKeyValueDefault } from "../../transfers/types";
+import { actionIForexValue, IForexValueState } from "../../../data/redux/forex/reducer";
+import { fluentValidationInstance } from "../../../utils/objectHelpersFluent";
+import { addDynamicPropertyToObject, isNullOrEmpty, isNullOrUndefined } from "../../../utils/objectHelpers";
 import ConfirmationDialog from "../confirmation-dialog";
 import SuccessFailureDisplay from "./SuccessFailureDisplay";
 import grey from "@material-ui/core/colors/grey";
@@ -63,16 +63,16 @@ export interface IDataProps {
     rejectionComment: string;
 }
 
-const CsoValidationChecklist = ({theCheckList}: IProps) => {
+const CsoValidationChecklist = ({ theCheckList }: IProps) => {
 
     const classes = useStyles()
-    const {workflowResponseMessage}: IWorkflowResponseMessageState = useSelector((state: any) => state.workflowResponse)
+    const { workflowResponseMessage }: IWorkflowResponseMessageState = useSelector((state: any) => state.workflowResponse)
 
-    const {check}: ICheckKeyValueState = useSelector((state: any) => state.checks)
-    const {forexValue}: IForexValueState = useSelector((state: any) => state.forexDetails)
-    const {workflow}: IWorkflowState = useSelector((state: any) => state.workflows)
+    const { check }: ICheckKeyValueState = useSelector((state: any) => state.checks)
+    const { forexValue }: IForexValueState = useSelector((state: any) => state.forexDetails)
+    const { workflow }: IWorkflowState = useSelector((state: any) => state.workflows)
     const user = useSelector((state: IState) => state.core.user)
-    const {select}: ISelectKeyValueState = useSelector((state: any) => state.selects)
+    const { select }: ISelectKeyValueState = useSelector((state: any) => state.selects)
     const isNewTransferRequestStarted: boolean = useSelector((state: IState) => state.core.startNewTransferRequest)
     const [loading, setLoading] = useState(false);
     const dispatch: Dispatch<any> = useDispatch();
@@ -91,14 +91,14 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
 
     const [data, setData] = useState(initialData)
     const [dataForexDetails] = useState({})
-    const [loadingMessage,setLoadingMessage] = useState('Loading')
+    const [loadingMessage, setLoadingMessage] = useState('Loading')
 
     useEffect(() => {
 
-    }, [showConfirmationDialog, dispatch, check, workflow, rejectionComment, data, select, forexValue, isNewTransferRequestStarted,loading, loadingMessage])
+    }, [showConfirmationDialog, dispatch, check, workflow, rejectionComment, data, select, forexValue, isNewTransferRequestStarted, loading, loadingMessage])
 
     if (loading)
-        return <Loading message={loadingMessage}/>
+        return <Loading message={loadingMessage} />
 
     async function handleCSOSubmission() {
 
@@ -154,7 +154,7 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
 
         const forexTransferIsRequired = fluentValidationInstance()
             .testTitle("forex remittance amount exists")
-            .selector(manualCSOApproval, `$.data.${ConstantLabelsAndValues.csoValidationCheckList().get(1).name}`)
+            .selector(manualCSOApproval, `$.data.${ConstantLabelsAndValues.csoValidationCheckList().get(1).name}`) // transferRequiresForex
             .isPresent()
             .logDetailed()
             .getSummary().testResult
@@ -177,6 +177,32 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             })
             .haltProcess(false, true,)
 
+        // @ts-ignore
+        const isRateProvidedByCustomer = Number(workflow.caseData.transferDetails.rate) > 0
+        // const shouldUserProvideExchangeRate = !(isRateProvidedByCustomer && rateExists);
+
+
+        if (isRateProvidedByCustomer) {
+
+            if (!rateExists) {
+                Toast.warn("Please provide an exchange rate to proceed")
+                return;
+            }
+
+        }
+
+
+
+        // make sure an exchange rate is provided
+        // fluentValidationInstance()
+        //     .directValue(shouldUserProvideExchangeRate)
+        //     .isEqualTo(false)
+        //     .logDetailed()
+        //     .failureCallBack(() => {
+
+        //     })
+        //     .haltProcess(false, true)
+
         const rejectionIsFalse = fluentValidationInstance()
         rejectionIsFalse
             .testTitle("isRejected === false")
@@ -189,13 +215,13 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
         setLoading(true)
 
         post(remoteRoutes.workflowsManual, manualCSOApproval, () => {
-                // window.location.href = window.location.origin
-                // dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
-            }, undefined,
+            // window.location.href = window.location.origin
+            // dispatch(actionICheckKeyValue(ICheckKeyValueDefault))
+        }, undefined,
 
             () => {
                 // setTimeout(()=>{
-                    window.location.href = `${localRoutes.applications}/${caseId}`
+                window.location.href = `${localRoutes.applications}/${caseId}`
                 // },2000)
             }
         )
@@ -215,7 +241,7 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             rejectionComment: rejectionComment
         }
 
-        setData({checks, rejectionComment})
+        setData({ checks, rejectionComment })
 
         // @ts-ignore
         checks["rejectionComment"] = obj.rejectionComment;
@@ -246,7 +272,7 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             actionName: "cso-transfer-details-approval",
             resumeCase: true,
             nextSubStatus: "SenderDetailsCheckSuccessful",
-            data: {...checks, rejectionComment: comment},
+            data: { ...checks, rejectionComment: comment },
             override: false
         }
 
@@ -261,14 +287,14 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
         setLoadingMessage('Processing...Please wait')
         setLoading(true)
         post(remoteRoutes.workflowsManual, manualCSORejection, () => {
-                // todo... place this after the the post (inside it)
-                // dispatch(actionISelectKeyValue(ISelectKeyValueDefault))
-                // window.location.href = window.location.origin
-            }, undefined,
+            // todo... place this after the the post (inside it)
+            // dispatch(actionISelectKeyValue(ISelectKeyValueDefault))
+            // window.location.href = window.location.origin
+        }, undefined,
 
             () => {
                 // setTimeout(()=>{
-                    window.location.href = `${localRoutes.applications}/${caseId}`
+                window.location.href = `${localRoutes.applications}/${caseId}`
                 // },2000)
             }
         )
@@ -321,13 +347,13 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
         if (!isNullOrUndefined(workflow) && (workflow.subStatus.includes("BM") || workflow.subStatus.includes("Fail")) && !isNewTransferRequestStarted) {
 
             // @ts-ignore
-            returned = <VerificationsAlreadyDoneByCSO workflow={workflow}/>
+            returned = <VerificationsAlreadyDoneByCSO workflow={workflow} />
         } else {
 
             returned = theCheckList.toArray().map((aCheck, index) => {
                 // @ts-ignore
                 return <Grid key={index} item sm={12}>
-                    <CheckBoxTemplate value={aCheck.value} label={aCheck.label} name={aCheck.name} handleCheckChange={showForexForm}/>
+                    <CheckBoxTemplate value={aCheck.value} label={aCheck.label} name={aCheck.name} handleCheckChange={showForexForm} />
                 </Grid>
             })
         }
@@ -383,7 +409,7 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
         }
 
         // if remittance is present and check is false
-        if (confirmForex.getSummary().testResult && !flagForexConfirmation){
+        if (confirmForex.getSummary().testResult && !flagForexConfirmation) {
             Toast.warn("Forex details are provided but not marked as required")
             return;
         }
@@ -404,14 +430,14 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             const value = getChecksToPopulate(check.checks)[v.name]
             v.value = value
 
-            return <Grid key={index} style={{backgroundColor: isEven(index) ? 'white' : grey[50]}}>
+            return <Grid key={index} style={{ backgroundColor: isEven(index) ? 'white' : grey[50] }}>
                 {
 
                     ConstantLabelsAndValues.forexDetailsIgnored(v, ConstantLabelsAndValues.csoValidationCheckList(), 1) ?
 
-                        <SuccessFailureDisplay key={v.name} value={value} label={v.label} name={v.name} showSuperScript={false} showWarning={true}/>
+                        <SuccessFailureDisplay key={v.name} value={value} label={v.label} name={v.name} showSuperScript={false} showWarning={true} />
                         :
-                        <SuccessFailureDisplay value={value} label={v.label} name={v.name} key={v.name}/>
+                        <SuccessFailureDisplay value={value} label={v.label} name={v.name} key={v.name} />
 
                 }
 
@@ -422,7 +448,7 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
 
     function handleConfirmCSOValidation() {
         return <ConfirmationDialog title="Confirm to submit or cancel" handleDialogCancel={cancelConfirmationDialogApproval} handleConfirmation={handleCSOSubmission}
-                                   children={showResultBeingConfirmedByCSO()}/>
+            children={showResultBeingConfirmedByCSO()} />
     }
 
     const remarks: IRemarks = CSORejectionRemarks()
@@ -459,17 +485,17 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
             {
 
                 showCommentBox ? <EditDialog open={true}
-                                             onClose={() => {
-                                             }}
-                                             title="Reject with a reason (select)"
+                    onClose={() => {
+                    }}
+                    title="Reject with a reason (select)"
 
-                                             disableBackdropClick={false}
+                    disableBackdropClick={false}
 
-                                             children={<RejectionForm data={data} handleDialogCancel={cancelCommentDialog} handleSubmission={handleCSORejection}
-                                                                      isCancelBtnDisabled={false}
-                                                                      isSubmitBtnDisabled={isRejectBtnDisabled} remarks={remarks}/>}
+                    children={<RejectionForm data={data} handleDialogCancel={cancelCommentDialog} handleSubmission={handleCSORejection}
+                        isCancelBtnDisabled={false}
+                        isSubmitBtnDisabled={isRejectBtnDisabled} remarks={remarks} />}
 
-                    />
+                />
 
                     :
                     ""
@@ -481,10 +507,10 @@ const CsoValidationChecklist = ({theCheckList}: IProps) => {
                 showForexDetailsForm ?
                     <EditDialog open={true} onClose={() => {
                     }}
-                                title="Forex details" disableBackdropClick={false}
+                        title="Forex details" disableBackdropClick={false}
 
-                                children={<ForexForm data={dataForexDetails} handleDialogCancel={handleDialogCancel} handleSubmission={handleSubmissionForexDetails}
-                                                     isCancelBtnDisabled={false} isSubmitBtnDisabled={false}/>}
+                        children={<ForexForm data={dataForexDetails} handleDialogCancel={handleDialogCancel} handleSubmission={handleSubmissionForexDetails}
+                            isCancelBtnDisabled={false} isSubmitBtnDisabled={false} />}
 
                     />
                     :
