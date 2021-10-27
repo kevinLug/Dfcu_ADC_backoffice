@@ -162,7 +162,8 @@ const CmoFinacleSubmission = ({ workflowResponseMessage, user, workflow }: IProp
                 const parsed = JSON.parse(workflow.tasks[1].actions[0].outputData)
 
                 if (parsed['forexDetails']) {
-                    transferDetails.exchangeRate = parsed['forexDetails']['rate']
+                    const rate = parsed['forexDetails']['rate']
+                    transferDetails.exchangeRate = rate.toString();
                     console.log(transferDetails.exchangeRate)
                     // setForexDetailsFound(parsed['forexDetails'])
                 }
