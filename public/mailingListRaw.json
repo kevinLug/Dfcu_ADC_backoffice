@@ -1,0 +1,121 @@
+{
+  "root": {
+    "mailingListRaw": [
+      {
+        "email": "SNabunya@dfcugroup.com",
+        "role": "CSO",
+        "branchCode": "Kyadondo"
+      },
+      {
+        "email": "CLKisarale@dfcugroup.com",
+        "role": "CSO",
+        "branchCode": "Kyadondo"
+      },
+      {
+        "email": "AKukunda@dfcugroup.com",
+        "role": "CSO",
+        "branchCode": "Impala"
+      },
+      {
+        "email": "EMuhumuza@dfcugroup.com",
+        "role": "CSO",
+        "branchCode": "Impala"
+      },
+      {
+        "email": "NDheyongera@dfcugroup.com",
+        "role": "CSO",
+        "branchCode": "Kyadondo"
+      },
+      {
+        "email": "RNantege@dfcugroup.com",
+        "role": "CSO",
+        "branchCode": "Impala"
+      },
+      {
+        "email": "GAsiingwire@dfcugroup.com",
+        "role": "CSO",
+        "branchCode": "Acacia"
+      },
+      {
+        "email": "BTuhairwe@dfcugroup.com",
+        "role": "CSO",
+        "branchCode": "Acacia"
+      },
+      {
+        "email": "PKizito@dfcugroup.com",
+        "role": "CSO",
+        "branchCode": "Acacia"
+      },
+      {
+        "email": "PYiga@dfcugroup.com",
+        "role": "CSO",
+        "branchCode": "Acacia"
+      },
+
+      {
+        "email": "fnanfuka@dfcugroup.com",
+        "role": "BOM",
+        "branchCode": "Impala"
+      },
+      {
+        "email": "ASsengendo@dfcugroup.com",
+        "role": "BOM",
+        "branchCode": "Impala"
+      },
+      {
+        "email": "DKobusingye@dfcugroup.com",
+        "role": "BOM",
+        "branchCode": "Impala"
+      },
+      {
+        "email": "AKakiika@dfcugroup.com",
+        "role": "BOM",
+        "branchCode": "Acacia"
+      },
+      {
+        "email": "PYiga@dfcugroup.com",
+        "role": "BOM",
+        "branchCode": "Acacia"
+      },
+      {
+        "email": "MNankya@dfcugroup.com",
+        "role": "BM",
+        "branchCode": "Acacia"
+      },
+      {
+        "email": "WNabayego@dfcugroup.com",
+        "role": "BM",
+        "branchCode": "Kyadondo"
+      },
+      {
+        "email": "BOgwang@dfcugroup.com",
+        "role": "BM",
+        "branchCode": "Impala"
+      },
+
+      {
+        "email": "EMRuhweza@dfcugroup.com",
+        "role": "CMO Approver 1",
+        "branchCode": "Operations"
+      },
+
+      {
+        "email": "FKSsekisaka@dfcugroup.com",
+        "role": "CMO Approver 2",
+        "branchCode": "Operations"
+      },
+
+      {
+        "email": "ENaisanga@dfcugroup.com",
+        "role": "CMO Approver 3",
+        "branchCode": "Operations"
+      },
+
+      {
+        "email": "FNamatovu@dfcugroup.com",
+        "role": "CMO Approver 4",
+        "branchCode": "Operations"
+      }
+    ]
+  }
+}

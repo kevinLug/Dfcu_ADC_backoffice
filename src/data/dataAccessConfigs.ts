@@ -1,5 +1,8 @@
+import { determineWorkflowStatus, WorkflowStatus, WorkflowSubStatus } from "../modules/workflows/types";
 import { isNullOrEmpty, resolveDotNotationToBracket } from "../utils/objectHelpers";
-import { BRANCH_SELECTED_KEY, hasAnyRole, systemRoles } from "./constants";
+import { BRANCH_SELECTED_KEY, ConstantLabelsAndValues, hasAnyRole, systemRoles } from "./constants";
+
+const publicFolder = process.env.PUBLIC_URL;
 
 class DataAccessConfigs {
   static isBranchOfUserSelected(user: any) {
@@ -10,6 +13,10 @@ class DataAccessConfigs {
 
   static roleIsCsoOrBomOrBm(user: any) {
     return hasAnyRole(user, [systemRoles.CSO]) || hasAnyRole(user, [systemRoles.BM]) || hasAnyRole(user, [systemRoles.BOM]);
+  }
+
+  static roleIsCmo(user: any) {
+    return user.role.startsWith(systemRoles.CMO);
   }
 
   static setBranchOfUser(branchName: string, branchCode: string) {
@@ -26,6 +33,58 @@ class DataAccessConfigs {
       return result;
     }
     return "";
+  }
+
+  static dataViewCsoRole(data: []) {
+    function newApplication(record: any) {
+      return determineWorkflowStatus(record.status) === WorkflowStatus.Open && record.subStatus === WorkflowSubStatus.AwaitingCSOApproval;
+    }
+    function submitted(record: any) {
+      return determineWorkflowStatus(record.status) === WorkflowStatus.Open && record.subStatus === WorkflowSubStatus.AwaitingBMApproval;
+    }
+    return data.filter((record: any) => newApplication(record) || submitted(record));
+  }
+
+  static dataViewBomorBmRole(data: []) {
+    function pendingBomApproval(record: any) {
+      return determineWorkflowStatus(record.status) === WorkflowStatus.Open && record.subStatus === WorkflowSubStatus.AwaitingBMApproval;
+    }
+
+    function approvedByBom(record: any) {
+      return determineWorkflowStatus(record.status) === WorkflowStatus.Open && record.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle;
+    }
+    return data.filter((record) => pendingBomApproval(record) || approvedByBom(record));
+  }
+
+  static dataViewCmoRole(data: []) {
+    function awaitingClearance(record: any) {
+      return determineWorkflowStatus(record.status) === WorkflowStatus.Open && record.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle;
+    }
+    function cleared(record: any) {
+      return determineWorkflowStatus(record.status) === WorkflowStatus.Closed;
+    }
+
+    return data.filter((record: any) => awaitingClearance(record) || cleared(record));
+  }
+
+  static dataView(data: [], user: any) {
+    const isCso = DataAccessConfigs.roleIsCso(user);
+    const isBomOrBm = DataAccessConfigs.roleIsBomOrBm(user);
+    const isCmo = DataAccessConfigs.roleIsCmo(user);
+
+    if (isCso) {
+      return DataAccessConfigs.dataViewCsoRole(data);
+    }
+
+    if (isBomOrBm) {
+      return DataAccessConfigs.dataViewBomorBmRole(data);
+    }
+
+    if (isCmo) {
+      return DataAccessConfigs.dataViewCmoRole(data);
+    }
+
+    return data;
   }
 
   static roleIsCso(user: any) {
@@ -67,7 +126,7 @@ class DataAccessConfigs {
 
   static async fetchConfigFileJson(filePath: string) {
     return (
-      await fetch(filePath, {
+      await fetch("./" + filePath, {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -80,12 +139,34 @@ class DataAccessConfigs {
     const jsonResult = await DataAccessConfigs.fetchConfigFileJson(configFileName);
     const rootObject = DataAccessConfigs.getRootObject(rootObjectName, jsonResult);
     const result = resolveDotNotationToBracket(valuePath, rootObject);
-
     if (!result) {
       return rootObject;
     }
 
     return result;
+  }
+
+  /**
+   * Use this to generate the mailing for BOM/BM and CMO
+   */
+  static async generateMailingList() {
+    let list = [];
+    const mailingListRaw: any = await DataAccessConfigs.loadConfigValue("mailingListRaw.json", "root", "mailingListRaw");
+
+    for (const c of ConstantLabelsAndValues.mapOfDFCUBranchLabelToBranchCode()) {
+      for (const aUser of mailingListRaw) {
+        if (c.key.toLowerCase().includes(aUser.branchCode.toLowerCase())) {
+          list.push({
+            email: aUser.email,
+            role: aUser.role,
+            branchCode: c.value,
+          });
+        }
+      }
+    }
+
+    // console.log("the mailing list:-->", list);
+    return list;
   }
 }
 

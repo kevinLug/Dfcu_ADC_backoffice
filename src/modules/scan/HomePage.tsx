@@ -33,58 +33,88 @@ const HomePage = () => {
         showAssigned: true
     });
 
+    
+
     useEffect(() => {
 
-        async function test() {
-            await DataAccessConfigs.shouldCustomerAndCsoHaveSameBranch()
+        // DataAccessConfigs.generateMailingList()
+        // async function test() {
+        //     await DataAccessConfigs.shouldCustomerAndCsoHaveSameBranch()
+        // }
+
+        // test();
+
+        // user is not CMO
+        if (!DataAccessConfigs.roleIsCmo(user)) {
+            if (isReadyToDisplay) {
+                setLoadingNew(true)
+                const newFilter = {
+                    workflowTypes: workflowTypes,
+                };
+
+                const result = DataAccessConfigs.getBranchOfUserSelected()!;
+
+                if (!isNullOrEmpty(result) && !isNullOrUndefined(result)) {
+                    addDynamicPropertyToObject(newFilter, 'branchCode', JSON.parse(result)['branchCode'])
+                }
+
+                search(remoteRoutes.workflows, newFilter, () => {
+
+                }, undefined, () => {
+                    setLoadingNew(false)
+                })
+            }
+            else {
+                setOpenSnackBarCustomMessage(true)
+                setBranchMissingMessage('Please select your branch from the branch list for you to continue')
+            }
         }
-
-        test();
-
-        if (isReadyToDisplay) {
+        // user is CMO
+        else {
             setLoadingNew(true)
             const newFilter = {
                 workflowTypes: workflowTypes,
             };
-
-            const result = DataAccessConfigs.getBranchOfUserSelected()!;
-
-            if (!isNullOrEmpty(result) && !isNullOrUndefined(result)) {
-                addDynamicPropertyToObject(newFilter, 'branchCode', JSON.parse(result)['branchCode'])
-            }
-
             search(remoteRoutes.workflows, newFilter, () => {
-
+                
             }, undefined, () => {
                 setLoadingNew(false)
             })
-        }
-        else {
-            setOpenSnackBarCustomMessage(true)
-            setBranchMissingMessage('Please select your branch from the branch list for you to continue')
         }
 
     }, [])
 
     useEffect(() => {
+        // user is not CMO
+        if (!DataAccessConfigs.roleIsCmo(user)) {
+            if (isReadyToDisplay) {
 
-        if (isReadyToDisplay) {
-            const result = DataAccessConfigs.getBranchOfUserSelected()!;
+                const result = DataAccessConfigs.getBranchOfUserSelected()!;
 
-            if (!isNullOrEmpty(result) && !isNullOrUndefined(result)) {
-                filter.branchCode = JSON.parse(result)['branchCode']
+                if (!isNullOrEmpty(result) && !isNullOrUndefined(result)) {
+                    filter.branchCode = JSON.parse(result)['branchCode']
+                }
+
+                setLoadingFilter(true)
+                search(remoteRoutes.workflows, filter, resp => {
+                    
+                    setData(DataAccessConfigs.dataView(resp, user))
+                    
+                }, undefined, () => setLoadingFilter(false))
             }
-
+            else {
+                setOpenSnackBarCustomMessage(true)
+                setBranchMissingMessage('Please select your branch to be able to proceed')
+            }
+        }
+        // user is CMO
+        else {
             setLoadingFilter(true)
             search(remoteRoutes.workflows, filter, resp => {
-                setData(resp)
+                setData(DataAccessConfigs.dataView(resp, user))
             }, undefined, () => setLoadingFilter(false))
         }
-        else {
-            setOpenSnackBarCustomMessage(true)
-            setBranchMissingMessage('Please select your branch to be able to proceed')
-        }
-
+        console.log('data:-->',data)
     }, [filter, isReadyToDisplay, openSnackBarCustomMessage])
 
     function handleFilterToggle() {
