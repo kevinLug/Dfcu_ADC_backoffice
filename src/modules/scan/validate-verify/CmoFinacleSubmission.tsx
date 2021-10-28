@@ -126,6 +126,9 @@ const CmoFinacleSubmission = ({ workflowResponseMessage, user, workflow }: IProp
             caseId = workflowResponseMessage.caseId
         }
 
+        // @ts-ignore
+        const isRateProvidedByCustomer = Number(workflow.caseData.transferDetails.rate) > 0
+
         const session = {
             userId: user.sub,
             sessionId: user.sid,
@@ -150,6 +153,25 @@ const CmoFinacleSubmission = ({ workflowResponseMessage, user, workflow }: IProp
             ifsc: workflow.caseData.bankDetails.beneficiaryBank.ifsc,
             iban: workflow.caseData.bankDetails.beneficiaryBank.iban,
         }
+
+        // set exchange rate
+        if (isRateProvidedByCustomer) {
+
+            if (workflow.tasks[1].actions[0].outputData) {
+
+                const parsed = JSON.parse(workflow.tasks[1].actions[0].outputData)
+
+                if (parsed['forexDetails']) {
+                    const rate = parsed['forexDetails']['rate']
+                    transferDetails.exchangeRate = rate.toString();
+                    console.log(transferDetails.exchangeRate)
+                    // setForexDetailsFound(parsed['forexDetails'])
+                }
+
+            }
+
+        }
+
 
         const applicantDetails = {
             fullName: workflow.caseData.applicantDetails.fullName,
@@ -218,6 +240,14 @@ const CmoFinacleSubmission = ({ workflowResponseMessage, user, workflow }: IProp
                 country: workflow.caseData.beneficiaryDetails.address.countryCode,
                 physicalAddress: workflow.caseData.beneficiaryDetails.address.physicalAddress
             }
+        }
+
+        const isTransferTypeSwift = workflow.type === RequestType.SWIFT
+        const isAccountNumberPresent = !isNullOrEmpty(beneficiaryDetails.accountNumber) && !isNullOrUndefined(beneficiaryDetails.accountNumber);
+        const isIbanPresent = !isNullOrEmpty(transferDetails.iban) && !isNullOrUndefined(transferDetails.iban)
+        // place IBAN in place of account number
+        if (isTransferTypeSwift && isAccountNumberPresent && isIbanPresent) {
+            beneficiaryDetails.accountNumber = transferDetails.iban
         }
 
         const finacleData = {
