@@ -4,48 +4,49 @@ import SenderDetails from "./SenderDetails";
 import BeneficiaryDetails from "./BeneficiaryDetails";
 import TransferDetails from "./TransferDetails";
 
-import React, {useEffect, useState} from "react";
-import {IWorkflow, WorkflowStatus, WorkflowSubStatus} from "../../workflows/types";
-import {ICase, ICaseData, IForex, IForexDefault} from "../../transfers/types";
+import React, { useEffect, useState } from "react";
+import { IWorkflow, WorkflowStatus, WorkflowSubStatus } from "../../workflows/types";
+import { ICase, ICaseData, IForex, IForexDefault } from "../../transfers/types";
 
-import {actionICaseState} from "../../../data/redux/transfers/reducer";
-import {Dispatch} from "redux";
-import {useDispatch, useSelector} from "react-redux";
-import {useStyles} from "../ScanQrCode";
-import {IState} from "../../../data/types";
+import { actionICaseState } from "../../../data/redux/transfers/reducer";
+import { Dispatch } from "redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useStyles } from "../ScanQrCode";
+import { IState } from "../../../data/types";
 import CsoValidationChecklist from "./CsoValidationChecklist";
 import ImageUtils from "../../../utils/imageUtils";
 
-import {ConstantLabelsAndValues, hasAnyRole, systemRoles} from "../../../data/constants";
+import { ConstantLabelsAndValues, hasAnyRole, systemRoles } from "../../../data/constants";
 
-import {ICheckKeyValueState} from "../../../data/redux/checks/reducer";
+import { ICheckKeyValueState } from "../../../data/redux/checks/reducer";
 import VerificationsAlreadyDoneByCSO from "./ChecksAlreadyDoneByCso";
 import VerificationsAlreadyDoneByBM from "./ChecksAlreadyDoneByBom";
 import VerificationByBmo from "./VerificationByBmo";
 import CmoFinacleSubmission from "./CmoFinacleSubmission";
-import {IWorkflowResponseMessageState} from "../../../data/redux/workflow-response/reducer";
+import { IWorkflowResponseMessageState } from "../../../data/redux/workflow-response/reducer";
 import Typography from "@material-ui/core/Typography";
 
 import Divider from "@material-ui/core/Divider";
-import {getChecksToPopulate} from "../populateLabelAndValue";
-import {IList, List} from "../../../utils/collections/list";
-import {IPropsChecks} from "./Check";
-import {isNullOrUndefined} from "../../../utils/objectHelpers";
+import { getChecksToPopulate } from "../populateLabelAndValue";
+import { IList, List } from "../../../utils/collections/list";
+import { IPropsChecks } from "./Check";
+import { isNullOrUndefined } from "../../../utils/objectHelpers";
 import HandleFinacleResponse from "./HandleFinacleResponse";
+import DataAccessConfigs from "../../../data/dataAccessConfigs";
 
 interface IProps {
     workflow: IWorkflow;
 }
 
-const AllValidations = ({workflow}: IProps) => {
+const AllValidations = ({ workflow }: IProps) => {
 
     const classes = useStyles();
     const [imageSrcFromBinary, setImageSrcFromBinary] = useState<string>("")
     const user = useSelector((state: IState) => state.core.user)
     const dispatch: Dispatch<any> = useDispatch();
 
-    const {check}: ICheckKeyValueState = useSelector((state: any) => state.checks)
-    const {workflowResponseMessage}: IWorkflowResponseMessageState = useSelector((state: any) => state.workflowResponse)
+    const { check }: ICheckKeyValueState = useSelector((state: any) => state.checks)
+    const { workflowResponseMessage }: IWorkflowResponseMessageState = useSelector((state: any) => state.workflowResponse)
     const [forexDetailsFound, setForexDetailsFound] = useState<IForex>(IForexDefault)
     const [isForexRequired, setForexRequired] = useState<boolean>(false)
     useEffect(() => {
@@ -116,7 +117,7 @@ const AllValidations = ({workflow}: IProps) => {
             const value = checkValues[name]
 
             if (!isNullOrUndefined(value)) {
-                const item: IPropsChecks = {name, value, label}
+                const item: IPropsChecks = { name, value, label }
                 theCheckList.add(item)
             } else {
                 const item: IPropsChecks = {
@@ -142,7 +143,7 @@ const AllValidations = ({workflow}: IProps) => {
             return <Grid className={classes.expansion}>
                 <Typography variant="h4">Validation Checklist</Typography>
 
-                <CsoValidationChecklist theCheckList={checksReviewCSO()}/>
+                <CsoValidationChecklist theCheckList={checksReviewCSO()} />
 
             </Grid>
 
@@ -150,7 +151,7 @@ const AllValidations = ({workflow}: IProps) => {
         if ((workflow.subStatus.includes("BM") || workflow.subStatus.includes("Finacle") || workflow.subStatus.includes("Fail")) && hasAnyRole(user, [systemRoles.CSO])) {
             return <Grid className={classes.expansion}>
                 <Typography variant="h4">Validation Checklist</Typography>
-                <VerificationsAlreadyDoneByCSO workflow={workflow}/>
+                <VerificationsAlreadyDoneByCSO workflow={workflow} />
             </Grid>
         }
 
@@ -161,19 +162,19 @@ const AllValidations = ({workflow}: IProps) => {
         if (workflow.subStatus === WorkflowSubStatus.FailedCSOApproval && hasAnyRole(user, [systemRoles.BOM, systemRoles.BM])) {
             return <Grid className={classes.expansion}>
                 <Typography variant="h4">CSO Validation Checklist</Typography>
-                <VerificationsAlreadyDoneByCSO workflow={workflow}/>
+                <VerificationsAlreadyDoneByCSO workflow={workflow} />
             </Grid>
         }
 
         if (workflow.subStatus === WorkflowSubStatus.AwaitingBMApproval && hasAnyRole(user, [systemRoles.BM, systemRoles.BOM]))
             return <Grid className={classes.expansion}>
                 <Typography variant="h4">CSO Validation Checklist</Typography>
-                <VerificationsAlreadyDoneByCSO workflow={workflow}/>
+                <VerificationsAlreadyDoneByCSO workflow={workflow} />
 
-                <Divider style={{padding: 10}} light={true} orientation='horizontal' variant="middle"/>
+                <Divider style={{ padding: 10 }} light={true} orientation='horizontal' variant="middle" />
 
                 <Typography variant="h4">Approver Validation Checklist</Typography>
-                <VerificationByBmo workflow={workflow}/>
+                <VerificationByBmo workflow={workflow} />
             </Grid>
 
         if ((workflow.subStatus.includes(WorkflowSubStatus.AwaitingSubmissionToFinacle) || workflow.subStatus.includes(WorkflowSubStatus.FailedBMApproval))
@@ -181,29 +182,29 @@ const AllValidations = ({workflow}: IProps) => {
             return <Grid className={classes.expansion}>
 
                 <Typography variant="h4">CSO Validation Checklist</Typography>
-                <VerificationsAlreadyDoneByCSO workflow={workflow}/>
+                <VerificationsAlreadyDoneByCSO workflow={workflow} />
 
-                <Divider style={{padding: 10}} light={true} orientation='horizontal' variant="middle"/>
+                <Divider style={{ padding: 10 }} light={true} orientation='horizontal' variant="middle" />
 
                 <Typography variant="h4">Approver Validation Checklist</Typography>
-                <VerificationsAlreadyDoneByBM workflow={workflow}/>
+                <VerificationsAlreadyDoneByBM workflow={workflow} />
 
             </Grid>
     }
 
     function displaySubmissionToFinacle() {
-        if (workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle && hasAnyRole(user, [systemRoles.CMO])) {
+        if (workflow.subStatus === WorkflowSubStatus.AwaitingSubmissionToFinacle && DataAccessConfigs.roleIsCmo(user)) {
             return <Grid className={classes.expansion}>
 
-                <CmoFinacleSubmission user={user} workflowResponseMessage={workflowResponseMessage} workflow={workflow}/>
+                <CmoFinacleSubmission user={user} workflowResponseMessage={workflowResponseMessage} workflow={workflow} />
             </Grid>
         }
     }
 
     function displayFinacleMessage() {
         if (workflow.subStatus === WorkflowSubStatus.SentToFinacle || workflow.subStatus === WorkflowSubStatus.SendingToFinacleFailed
-            || workflow.subStatus === WorkflowSubStatus.TransactionComplete ) {
-            return <HandleFinacleResponse/>
+            || workflow.subStatus === WorkflowSubStatus.TransactionComplete) {
+            return <HandleFinacleResponse />
         }
     }
 
@@ -214,15 +215,15 @@ const AllValidations = ({workflow}: IProps) => {
             <Grid item sm={4}>
 
                 <Grid className={classes.expansion}>
-                    <ExpansionCard title="Sender" children={<SenderDetails/>}/>
+                    <ExpansionCard title="Sender" children={<SenderDetails />} />
                 </Grid>
 
                 <Grid className={classes.expansion}>
-                    <ExpansionCard title="Recipient" children={<BeneficiaryDetails/>}/>
+                    <ExpansionCard title="Recipient" children={<BeneficiaryDetails />} />
                 </Grid>
 
                 <Grid className={classes.expansion}>
-                    <ExpansionCard title="Transfer Request" children={<TransferDetails isForexRequired={isForexRequired} forexDetailsReceived={forexDetailsFound}/>}/>
+                    <ExpansionCard title="Transfer Request" children={<TransferDetails isForexRequired={isForexRequired} forexDetailsReceived={forexDetailsFound} />} />
                 </Grid>
 
                 {
@@ -244,10 +245,10 @@ const AllValidations = ({workflow}: IProps) => {
             </Grid>
 
             <Grid item sm={7} container alignContent={"center"} justify="center"
-                  className={classes.dragAndDropAreaAfterScan}>
+                className={classes.dragAndDropAreaAfterScan}>
 
                 <Grid container item xs={12}>
-                    <img src={imageSrcFromBinary} className={classes.imageAfterScan} alt="scanned-result"/>
+                    <img src={imageSrcFromBinary} className={classes.imageAfterScan} alt="scanned-result" />
                 </Grid>
 
             </Grid>

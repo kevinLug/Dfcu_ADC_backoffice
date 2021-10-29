@@ -33,7 +33,8 @@ const HomePage = () => {
         showAssigned: true
     });
 
-    
+    // DataAccessConfigs.generateMailingList()
+    // DataAccessConfigs.cmoAllow()
 
     useEffect(() => {
 
@@ -76,7 +77,7 @@ const HomePage = () => {
                 workflowTypes: workflowTypes,
             };
             search(remoteRoutes.workflows, newFilter, () => {
-                
+
             }, undefined, () => {
                 setLoadingNew(false)
             })
@@ -97,9 +98,9 @@ const HomePage = () => {
 
                 setLoadingFilter(true)
                 search(remoteRoutes.workflows, filter, resp => {
-                    
+
                     setData(DataAccessConfigs.dataView(resp, user))
-                    
+
                 }, undefined, () => setLoadingFilter(false))
             }
             else {
@@ -114,7 +115,7 @@ const HomePage = () => {
                 setData(DataAccessConfigs.dataView(resp, user))
             }, undefined, () => setLoadingFilter(false))
         }
-        console.log('data:-->',data)
+        console.log('data:-->', data)
     }, [filter, isReadyToDisplay, openSnackBarCustomMessage])
 
     function handleFilterToggle() {

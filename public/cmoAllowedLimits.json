@@ -1,0 +1,30 @@
+{
+  "root": {
+    "cmoList": [
+      {
+        "cmoLimit": {
+          "limit": "140,000",
+          "roleName": "CMO-APPROVER-1"
+        }
+      },
+      {
+        "cmoLimit": {
+          "limit": "5,000,000,000",
+          "roleName": "CMO-APPROVER-2"
+        }
+      },
+      {
+        "cmoLimit": {
+          "limit": "50,000,000,000",
+          "roleName": "CMO-APPROVER-3"
+        }
+      },
+      {
+        "cmoLimit": {
+          "limit": "500,000,000,000",
+          "roleName": "CMO-APPROVER-4"
+        }
+      }
+    ]
+  }
+}

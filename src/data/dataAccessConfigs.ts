@@ -1,10 +1,12 @@
 import { determineWorkflowStatus, WorkflowStatus, WorkflowSubStatus } from "../modules/workflows/types";
+import Numbers from "../utils/numbers";
 import { isNullOrEmpty, resolveDotNotationToBracket } from "../utils/objectHelpers";
+import Toast from "../utils/Toast";
 import { BRANCH_SELECTED_KEY, ConstantLabelsAndValues, hasAnyRole, systemRoles } from "./constants";
 
-const publicFolder = process.env.PUBLIC_URL;
-
 class DataAccessConfigs {
+  static currentUrl = window.location.origin;
+
   static isBranchOfUserSelected(user: any) {
     const result = DataAccessConfigs.getBranchOfUserSelected();
     const role = DataAccessConfigs.roleIsCsoOrBomOrBm(user);
@@ -131,7 +133,7 @@ class DataAccessConfigs {
 
   static async fetchConfigFileJson(filePath: string) {
     return (
-      await fetch("./" + filePath, {
+      await fetch(DataAccessConfigs.currentUrl + "/" + filePath, {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -170,8 +172,39 @@ class DataAccessConfigs {
       }
     }
 
-    // console.log("the mailing list:-->", list);
     return list;
+  }
+
+  /**
+   * Checks if the user has rights to clear this transfer
+   * @param user - the currently logged in user
+   * @param transferAmount - the amount being tranfered
+   */
+  static async cmoAllowedLimits(user: any, transferAmount: number) {
+    if (!user) {
+      Toast.warn("No user provided to clear transfer");
+      throw "process halted!";
+    }
+
+    let flag = false;
+    if (!user.role) {
+      Toast.warn("User has no role specified");
+    } else {
+      const isUserCmo = DataAccessConfigs.roleIsCmo(user);
+
+      if (isUserCmo) {
+        const cmoList: any[] = await DataAccessConfigs.loadConfigValue("cmoAllowedLimits.json", "root", "cmoList");
+
+        for (const aCmo of cmoList) {
+          if (user.role.trim().toLowerCase() === aCmo.cmoLimit.roleName.trim().toLowerCase()) {
+            const transferAmountLimit = Numbers.unFormat_En_UK_toNumber(aCmo.cmoLimit.limit);
+            flag = transferAmount <= transferAmountLimit;
+            break;
+          }
+        }
+      }
+    }
+    return flag;
   }
 }
 
