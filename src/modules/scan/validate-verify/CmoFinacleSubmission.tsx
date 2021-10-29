@@ -358,9 +358,9 @@ const CmoFinacleSubmission = ({ workflowResponseMessage, user, workflow }: IProp
 
         handleCmoClearanceLimit(manualCMOApproval.data.transferDetails)
             .then(flag => {
-                
+
                 if (!flag) {
-                    Toast.warn('Limited rights to clear this amount');
+                    Toast.warn('Transaction amount is above clearance level');
                 } else {
                     setLoadingMessage('Processing...please wait')
                     setSubmitBtnDisabled(true)
