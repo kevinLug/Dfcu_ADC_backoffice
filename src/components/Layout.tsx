@@ -203,7 +203,9 @@ function Layout(props: any) {
                     <NavigationBreadCrumbs />
                     <br />
                     {props.children}
-                    <FloatingBranchLabel />
+                    {
+                        !DataAccessConfigs.roleIsCmo(user) ? <FloatingBranchLabel /> : ""
+                    }
                     <FloatingActionButtons />
                 </Paper>
             </main>

@@ -6,7 +6,6 @@ import bankCodes from "./bankCodes.json";
 import countryCodes from "./countryCodes.json";
 import { IManualDecision } from "../modules/workflows/types";
 
-
 export const AUTH_TOKEN_KEY = "__demo__dfcu__token";
 export const AUTH_USER_KEY = "__demo__dfcu__user";
 export const BRANCH_SELECTED_KEY = "__dfcu__adc__branch_code_";
@@ -16,13 +15,27 @@ export const systemRoles = {
   BM: "BM",
   BOM: "BOM",
   CMO: "CMO",
+  CMO_APPROVER_1: "CMO-APPROVER-1",
+  CMO_APPROVER_2: "CMO-APPROVER-2",
+  CMO_APPROVER_3: "CMO-APPROVER-_3",
+  CMO_APPROVER_4: "CMO-APPROVER-4",
   CSO: "CSO",
   ADMIN: "Admin",
 };
 
 // BACKOFFICE, BM, CMO, CSO, OR Admin
 export const isSystemUser = (user: any): boolean => {
-  const roles = [systemRoles.BACKOFFICE, systemRoles.BM, systemRoles.BOM, systemRoles.CMO, systemRoles.CSO, systemRoles.ADMIN];
+  const roles = [
+    systemRoles.BACKOFFICE,
+    systemRoles.BM,
+    systemRoles.BOM,
+    systemRoles.CSO,
+    systemRoles.CMO,
+    systemRoles.CMO_APPROVER_1,
+    systemRoles.CMO_APPROVER_2,
+    systemRoles.CMO_APPROVER_3,
+    systemRoles.CMO_APPROVER_4,
+  ];
   return hasAnyRole(user, roles);
 };
 

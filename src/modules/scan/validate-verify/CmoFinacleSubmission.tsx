@@ -23,6 +23,7 @@ import { addDynamicPropertyToObject, isNullOrEmpty, isNullOrUndefined } from "..
 import Toast from "../../../utils/Toast";
 
 import Loading from "../../../components/Loading";
+import DataAccessConfigs from "../../../data/dataAccessConfigs";
 
 
 const useStylesInternal = makeStyles((theme: Theme) =>
@@ -116,6 +117,39 @@ const CmoFinacleSubmission = ({ workflowResponseMessage, user, workflow }: IProp
         return <Loading message={loadingMessage} />
 
 
+    function setExhangeRate(transferDetails: any) {
+        if (workflow.tasks[1].actions[0].outputData) {
+
+            const parsed = JSON.parse(workflow.tasks[1].actions[0].outputData)
+
+            if (parsed['forexDetails']) {
+                const rate = parsed['forexDetails']['rate']
+                transferDetails.exchangeRate = rate.toString();
+                return transferDetails.exchangeRate;
+            }
+
+        }
+    }
+
+    function convertTransferAmountToUgx(transferDetails: any) {
+        let transferableAmount: number = transferDetails.transAmount;
+        // currency is not UGX
+        if (transferDetails.currencyCode && transferDetails.currencyCode !== 'UGX') {
+            // get the exchange rate
+            const exchangeRate = Number(setExhangeRate(transferDetails));
+            transferableAmount = transferDetails.transAmount * exchangeRate;
+            return transferableAmount
+        }
+
+        return transferableAmount
+    }
+
+    async function handleCmoClearanceLimit(transferDetails: any) {
+
+        return await DataAccessConfigs.cmoAllowedLimits(user, convertTransferAmountToUgx(transferDetails));
+
+    }
+
     function prepareFinacleData() {
 
         let caseId: string
@@ -156,22 +190,11 @@ const CmoFinacleSubmission = ({ workflowResponseMessage, user, workflow }: IProp
 
         // set exchange rate
         if (isRateProvidedByCustomer) {
-
-            if (workflow.tasks[1].actions[0].outputData) {
-
-                const parsed = JSON.parse(workflow.tasks[1].actions[0].outputData)
-
-                if (parsed['forexDetails']) {
-                    const rate = parsed['forexDetails']['rate']
-                    transferDetails.exchangeRate = rate.toString();
-                    console.log(transferDetails.exchangeRate)
-                    // setForexDetailsFound(parsed['forexDetails'])
-                }
-
-            }
-
+            setExhangeRate(transferDetails)
         }
 
+        // set exchange rate if the CSO did set a rate regardless of the customer have set it or not
+        setExhangeRate(transferDetails)
 
         const applicantDetails = {
             fullName: workflow.caseData.applicantDetails.fullName,
@@ -267,33 +290,8 @@ const CmoFinacleSubmission = ({ workflowResponseMessage, user, workflow }: IProp
             data: finacleData,
             override: false
         }
-        setLoadingMessage('Processing...please wait')
-        setSubmitBtnDisabled(true)
-        setLoading(true)
-        post(remoteRoutes.workflowsManual, manualCMOApproval, (resp: any) => {
 
-            if ((!resp.message || isNullOrEmpty(resp.message)) && resp.status === -1) {
-                Toast.error("Rejected");
-                setTimeout(() => {
-                    Toast.info("See finacle message at bottom");
-                }, 1000)
-            }
-
-        }, (err, res) => {
-
-            Toast.error(err)
-        },
-
-            () => {
-
-                // setLoading(true)
-                // setTimeout(() => {
-                // window.location.href = window.location.origin
-                window.location.href = `${localRoutes.applications}/${caseId}`
-                // }, 2000)
-            }
-        )
-
+        return manualCMOApproval
     }
 
     function handleCMORejection() {
@@ -356,7 +354,41 @@ const CmoFinacleSubmission = ({ workflowResponseMessage, user, workflow }: IProp
     }
 
     function submitTransferRequest() {
-        prepareFinacleData()
+        const manualCMOApproval = prepareFinacleData()
+
+        handleCmoClearanceLimit(manualCMOApproval.data.transferDetails)
+            .then(flag => {
+
+                if (!flag) {
+                    Toast.warn('Transaction amount is above clearance level');
+                } else {
+                    setLoadingMessage('Processing...please wait')
+                    setSubmitBtnDisabled(true)
+                    setLoading(true)
+                    post(remoteRoutes.workflowsManual, manualCMOApproval, (resp: any) => {
+
+                        if ((!resp.message || isNullOrEmpty(resp.message)) && resp.status === -1) {
+                            Toast.error("Rejected");
+                            setTimeout(() => {
+                                Toast.info("See finacle message at bottom");
+                            }, 1000)
+                        }
+
+                    }, (err, res) => {
+
+                        Toast.error(err)
+                    },
+
+                        () => {
+
+                            window.location.href = `${localRoutes.applications}/${manualCMOApproval.caseId}`
+
+                        }
+                    )
+                }
+            }).catch(e => console.log('the error:', e))
+
+
     }
 
     function cancelCommentDialog() {
