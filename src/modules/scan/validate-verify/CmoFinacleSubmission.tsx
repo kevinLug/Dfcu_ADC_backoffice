@@ -273,6 +273,10 @@ const CmoFinacleSubmission = ({ workflowResponseMessage, user, workflow }: IProp
             beneficiaryDetails.accountNumber = transferDetails.iban
         }
 
+        if (!transferDetails.exchangeRate) {
+            transferDetails.exchangeRate = "1"
+        }
+
         const finacleData = {
             session: session,
             caseId: caseId,
