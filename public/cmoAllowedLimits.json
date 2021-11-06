@@ -3,7 +3,7 @@
     "cmoList": [
       {
         "cmoLimit": {
-          "limit": "140,000",
+          "limit": "500,000,000",
           "roleName": "CMO-APPROVER-1"
         }
       },
