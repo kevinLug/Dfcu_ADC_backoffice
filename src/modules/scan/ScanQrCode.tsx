@@ -34,6 +34,9 @@ import { actionIWorkflowResponseMessage } from "../../data/redux/workflow-respon
 import { fetchWorkflowAsync, startWorkflowFetch } from "../../data/redux/workflows/reducer";
 import { RequestType, requestTypesAsArray } from "../workflows/config";
 import DataAccessConfigs from "../../data/dataAccessConfigs";
+import ScanAttempt from "./ScanAttempts";
+import ImageUtils from "../../utils/imageUtils";
+import ScanQrCodeHelper from "./scanQrCodeHelper";
 
 export const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -140,6 +143,7 @@ const ScanQrCode = () => {
     const runMappingRules = new RunMappingRules();
 
     const [imageSrc, setImageSrc] = useState<string>("")
+    const [qrCodeCroppedArea, setQrCodeCroppedArea] = useState("");
     const [iScanSuccessful, setScanSuccessful] = useState(false)
     const [openSnackBar, setOpenSnackBar] = useState(false)
     const [openSnackBarCustomMessage, setOpenSnackBarCustomMessage] = useState(false)
@@ -161,6 +165,8 @@ const ScanQrCode = () => {
     const dispatch: Dispatch<any> = useDispatch();
     const { user }: ICoreState = useSelector((state: any) => state.core)
 
+
+
     useEffect(() => {
 
     }, [aCase, snackBarMessage, openSnackBar, snackBarColor, openSnackBarCustomMessage, snackBarCustomMessage])
@@ -171,14 +177,25 @@ const ScanQrCode = () => {
 
         try {
 
-            const croppedImage: any = await getCroppedImg(imageSrc, croppedAreaPixels, 0)
+            const croppedImageTuple = await getCroppedImg(imageSrc, croppedAreaPixels, 0)
 
-            const decodedRawResult = await codeReader.decodeFromImage(undefined, croppedImage.toString())
+            // // try using multi format
+            // const multi = ScanAttempt.decodeWithMultiFormatReader(ImageUtils.base64ToArrayBuffer(imageSrc), croppedAreaPixels.width, croppedAreaPixels.height)
+            // console.log('more', { multi })
+            // console.log('imageBitMap', { imageBitMap })
+            // await ScanAttempt.decodeWithQrScanner(imageBitMap)
 
-            const resultOfScan = await runMappingRules.getScanResult(decodedRawResult.getText());
+            let decodedRes = ScanQrCodeHelper.getScanResultTextJsQrCodeResult(croppedImageTuple)
+            if (!decodedRes) {
+                decodedRes = await ScanQrCodeHelper.getScanResultTextBrowserMultiFormatReader(croppedImageTuple, codeReader);
+            }
+
+            // const decodedRawResult = await codeReader.decodeFromImage(undefined, croppedImage.toString())
+
+            const resultOfScan = await runMappingRules.getScanResult(decodedRes);
 
             // check if decoding succeeded
-            if (!new ObjectHelpersFluent().directValue(decodedRawResult.getText()).isPresent().getFlag()) {
+            if (!new ObjectHelpersFluent().directValue(decodedRes).isPresent().getFlag()) {
                 Toast.warn("Auto scan failed. ")
                 Toast.warn("Manually zoom the qr code image. ")
             } else {
@@ -187,7 +204,7 @@ const ScanQrCode = () => {
                 counter = counter + 1
             }
 
-            const pairKeyValueFromDecodedRawResult = decodedRawResult.getText().split(",");
+            const pairKeyValueFromDecodedRawResult = decodedRes.split(",");
             console.log("the raw scan:", pairKeyValueFromDecodedRawResult)
             // cleanup raw data
             pairKeyValueFromDecodedRawResult.map((pair) => {
@@ -301,10 +318,11 @@ const ScanQrCode = () => {
 
             }
 
-            setResult(decodedRawResult.getText())
+            setResult(decodedRes)
 
         } catch (e) {
             Toast.warn("Not scanned, zoom or rotate target area")
+            console.error(e)
         }
 
     }
@@ -330,6 +348,7 @@ const ScanQrCode = () => {
 
     function handleZoomIn() {
         const prevZoom = zoom + 0.1
+
         setZoom(prevZoom)
     }
 
@@ -358,6 +377,9 @@ const ScanQrCode = () => {
 
     return <Grid item sm={7} container alignContent={"center"} justify="center"
         className={isNullOrEmpty(result) ? classes.dragAndDropArea : classes.dragAndDropAreaAfterScan}>
+
+        <img />
+
         {imageSrc ? (
 
             !iScanSuccessful ?
@@ -444,7 +466,9 @@ const ScanQrCode = () => {
 function readFile(file: any) {
     return new Promise(resolve => {
         const reader = new FileReader()
-        reader.addEventListener('load', () => resolve(reader.result), false)
+        reader.addEventListener('load', () => {
+            resolve(reader.result)
+        }, false)
         reader.readAsDataURL(file)
     })
 }
