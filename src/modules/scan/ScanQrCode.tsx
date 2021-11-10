@@ -191,6 +191,7 @@ const ScanQrCode = () => {
             }
 
             // const decodedRawResult = await codeReader.decodeFromImage(undefined, croppedImage.toString())
+            console.log("decodes:-->", decodedRes)
 
             const resultOfScan = await runMappingRules.getScanResult(decodedRes);
 
@@ -231,7 +232,7 @@ const ScanQrCode = () => {
                 setOpenSnackBarCustomMessage(true)
                 return;
             }
-
+            console.log('aCase-->', aCase)
             //const {access_token} = await login()
 
             // make sure the scanned PDF has a transfer type within in the predefined ones

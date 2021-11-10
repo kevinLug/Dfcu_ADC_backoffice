@@ -1,138 +1,63 @@
 import ObjectHelpersFluent from "../../utils/objectHelpersFluent";
 import SuccessCriteria from "../../utils/successCriteria";
-import {List} from "../../utils/collections/list";
-import {ICase} from "./types";
-import {RequestType} from "../workflows/config";
-import {ConstantLabelsAndValues} from "../../data/constants";
+import { List } from "../../utils/collections/list";
+import { ICase } from "./types";
+import { RequestType } from "../workflows/config";
+import { ConstantLabelsAndValues } from "../../data/constants";
 import Toast from "../../utils/Toast";
 import validateSharedValuesAndRules from "./sharedValidations";
+import GeneralValidations from "./generalValidations";
 
 const validateEft = async (data: ICase): Promise<boolean> => {
+  return new Promise((resolve) => {
+    const tests = new List<ObjectHelpersFluent>();
 
-    return new Promise((resolve) => {
+    GeneralValidations.checkCasePresence(data, tests);
 
-        const tests = new List<ObjectHelpersFluent>()
+    GeneralValidations.checkTransferModePresence(data, tests);
 
-        const dataExists = new ObjectHelpersFluent()
-            .testTitle("Entire data object presence")
-            .selector(data, "$")
-            .isPresent()
-            .addUserFailureMessage("The scan result is empty")
-            .logDetailed();
-        tests.add(dataExists);
+    GeneralValidations.checkTransferModeEquality(data, tests, RequestType.EFT);
 
-        const workflowTypePresent = new ObjectHelpersFluent()
-            .testTitle("workflowType presence")
-            .selector(data, "$.workflowType")
-            .isPresent()
-            .addUserFailureMessage("Transfer type is missing")
-            .logDetailed()
-        tests.add(workflowTypePresent);
+    GeneralValidations.checkBranchPresence(data, tests);
 
-        const isEft = new ObjectHelpersFluent()
-            .testTitle("is EFT the type?")
-            .selector(data, "$.workflowType")
-            .isEqualTo(RequestType.EFT)
-            .addUserFailureMessage("Transfer type is expected to be EFT but is different")
-            .logDetailed();
-        tests.add(isEft);
+    GeneralValidations.checkCurrencyPresence(data, tests);
 
-        const isBranchPresent = new ObjectHelpersFluent()
-            .testTitle("is the branch present?")
-            .selector(data, "$.caseData.transferDetails.branchCode")
-            .isPresent()
-            .addUserFailureMessage("The bank branch is missing")
-            .logDetailed()
-        isBranchPresent.failureCallBack(() => Toast.error("Branch code is missing")).haltProcess(false, false)
-        tests.add(isBranchPresent)
+    // GeneralValidations.checkRateIsInvolved(data, tests);
 
-        const isCurrencyPresent = new ObjectHelpersFluent()
-            .testTitle("is the currency present")
-            .selector(data, "$.caseData.transferDetails.currencyCode")
-            .isPresent()
-            .logDetailed()
-        isCurrencyPresent.failureCallBack(() => Toast.error("Currency is missing")).haltProcess(false, false)
-        tests.add(isCurrencyPresent)
+    GeneralValidations.checkAmountPresence(data, tests);
 
-        const isRatePresent = new ObjectHelpersFluent()
-            .testTitle("is rate present?")
-            .selector(data, "$.caseData.transferDetails.exchangeRate")
-            .isGreaterThanOrEqualTo(0)
-            .addUserFailureMessage("rate must be greater or equal to zero")
-            .isIgnorable()
-            .logDetailed()
-        isRatePresent.failureCallBack(() => Toast.error("Rate is missing"))
-        tests.add(isRatePresent)
+    GeneralValidations.checkBeneficiaryNamePresence(data, tests);
 
-        const isAmountPresent = new ObjectHelpersFluent()
-            .testTitle("Is amount present ( > 0 )")
-            .selector(data, "$.caseData.transferDetails.transactionAmount")
-            .isGreaterThan(0)
-            .addUserFailureMessage("Transaction amount must be greater than zero (0)")
-            .logDetailed()
-        isAmountPresent.failureCallBack(() => Toast.error("Transaction amount is missing"))
-        tests.add(isAmountPresent)
+    GeneralValidations.checkBeneficiaryCountryPresence(data, tests);
 
-        const isUgxAmountPresent = new ObjectHelpersFluent()
-            .testTitle("is UGX amount present ( > 0 )")
-            .selector(data, "$.caseData.transferDetails.transactionAmount")
-            .isGreaterThan(0)
-            .logDetailed()
-        tests.add(isUgxAmountPresent)
+    GeneralValidations.checkBeneficiaryPhysicalAddressPresence(data, tests);
 
-        const isBeneficiaryNamePresent = new ObjectHelpersFluent()
-            .testTitle("is recipient name present?")
-            .selector(data, "$.caseData.beneficiaryDetails.fullName")
-            .isPresent()
-            .addUserFailureMessage("Customer's full name is non-existent")
-            .logDetailed()
-        isBeneficiaryNamePresent.failureCallBack(() => Toast.error("Recipient name is missing")).haltProcess(false, false)
-        tests.add(isBeneficiaryNamePresent)
+    GeneralValidations.checkBeneficiaryTownPresence(data, tests);
 
-        // can be ignored
-        const isRecipientCountryPresent = new ObjectHelpersFluent()
-            .testTitle("is recipient country code present?")
-            .selector(data, "$.caseData.beneficiaryDetails.address.countryCode")
-            .isPresent()
-            .addUserFailureMessage("Country of recipient is missing")
-            // .isIgnorable()
-            .logDetailed()
-        isRecipientCountryPresent.failureCallBack(() => Toast.error("Country is missing"))
-        tests.add(isRecipientCountryPresent)
+    GeneralValidations.checkSenderNamePresence(data, tests);
 
-        const isRecipientPhysicalAddressPresent = new ObjectHelpersFluent()
-            .testTitle("is recipient's physical address present?")
-            .selector(data, "$.caseData.beneficiaryDetails.address.physicalAddress")
-            .isPresent()
-            .addUserFailureMessage("Physical address of recipient is missing")
-            .logDetailed()
-        isRecipientPhysicalAddressPresent.failureCallBack(() => Toast.error("Recipient's physical address is missing")).haltProcess(false, false)
-        tests.add(isRecipientPhysicalAddressPresent)
+    GeneralValidations.checkSenderEmailPresence(data, tests);
 
-        const isSenderNamePresent = new ObjectHelpersFluent()
-            .testTitle("is sender's name present?")
-            .selector(data, "$.caseData.applicantDetails.fullName")
-            .isPresent()
-            .addUserFailureMessage("Sender's full name is missing")
-            .logDetailed()
-        isSenderNamePresent.failureCallBack(() => Toast.error("Sender's full name is missing")).haltProcess(false, false)
-        tests.add(isSenderNamePresent)
+    GeneralValidations.checkSenderAccountNumberPresence(data, tests);
 
-        const isSenderEmailPresent = new ObjectHelpersFluent()
-            .testTitle("is sender's email present?")
-            .selector(data, "$.caseData.applicantDetails.emailAddress")
-            .isPresent()
-            .addUserFailureMessage("Sender's email address is missing")
-            .isIgnorable()
-            .logDetailed()
-        isSenderEmailPresent.failureCallBack(() => {})
-        tests.add(isSenderEmailPresent)
+    GeneralValidations.checkSenderAccountNumberLength(data, tests);
 
-        validateSharedValuesAndRules(data, tests)
+    GeneralValidations.checkTansferPurposePresence(data, tests);
 
-        resolve(SuccessCriteria.testRuns(tests, ConstantLabelsAndValues.CASE_VALIDATION_EFT))
-    })
+    GeneralValidations.checkSenderTownPresence(data, tests);
 
-}
+    GeneralValidations.checkSenderDistrictPresence(data, tests);
 
-export default validateEft
+    GeneralValidations.checkBeneficiaryBankNamePresence(data, tests);
+
+    GeneralValidations.checkBeneficiaryBankAccountPresence(data, tests);
+
+    // GeneralValidations.checkBeneficiaryBankSwiftCodePresence(data, tests, false);
+
+    GeneralValidations.checkChargeModePresence(data, tests, false);
+
+    resolve(SuccessCriteria.testRuns(tests, ConstantLabelsAndValues.CASE_VALIDATION_EFT));
+  });
+};
+
+export default validateEft;

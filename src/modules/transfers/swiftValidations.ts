@@ -6,155 +6,56 @@ import { List } from "../../utils/collections/list";
 import { ConstantLabelsAndValues } from "../../data/constants";
 import Toast from "../../utils/Toast";
 import validateSharedValuesAndRules from "./sharedValidations";
+import GeneralValidations from "./generalValidations";
+import { RequestType } from "../workflows/config";
 
 const validateSwift = async (data: ICase): Promise<boolean> => {
   return new Promise((resolve) => {
     const tests = new List<ObjectHelpersFluent>();
 
-    const dataExists = fluentValidationInstance().testTitle("Entire data object presence").selector(data, "$").isPresent().logDetailed();
-    tests.add(dataExists);
+    GeneralValidations.checkCasePresence(data, tests);
 
-    const workflowTypePresent = fluentValidationInstance()
-      .testTitle("workflowType presence")
-      .selector(data, "$.workflowType")
-      .isPresent()
-      .addUserFailureMessage("Transfer type is missing")
-      .logDetailed();
-    tests.add(workflowTypePresent);
+    GeneralValidations.checkTransferModePresence(data, tests);
 
-    const isBranchPresent = fluentValidationInstance()
-      .testTitle("is the branch present?")
-      .selector(data, "$.caseData.transferDetails.branchCode")
-      .isPresent()
-      .addUserFailureMessage("The bank branch is missing")
-      .logDetailed();
-    tests.add(isBranchPresent);
+    GeneralValidations.checkTransferModeEquality(data, tests, RequestType.SWIFT);
 
-    const isCurrencyPresent = fluentValidationInstance()
-      .testTitle("is the currency present")
-      .selector(data, "$.caseData.transferDetails.currencyCode")
-      .isPresent()
-      .addUserFailureMessage("The currency code is missing")
-      .logDetailed();
-    tests.add(isCurrencyPresent);
+    GeneralValidations.checkBranchPresence(data, tests);
 
-    const isRatePresent = fluentValidationInstance()
-      .testTitle("is rate present?")
-      .selector(data, "$.caseData.transferDetails.exchangeRate")
-      .isGreaterThanOrEqualTo(0)
-      .addUserFailureMessage("rate must be greater or equal to zero")
-      .isIgnorable()
-      .logDetailed();
-    tests.add(isRatePresent);
+    GeneralValidations.checkCurrencyPresence(data, tests);
 
-    const isAmountPresent = fluentValidationInstance()
-      .testTitle("Is amount present ( > 0 )")
-      .selector(data, "$.caseData.transferDetails.transactionAmount")
-      .isGreaterThan(0)
-      .addUserFailureMessage("Transaction amount must be greater than zero (0)")
-      .logDetailed();
-    tests.add(isAmountPresent);
+    // GeneralValidations.checkRateIsInvolved(data, tests);
 
-    const isUgxAmountPresent = fluentValidationInstance()
-      .testTitle("is UGX amount present ( > 0 )")
-      .selector(data, "$.caseData.transferDetails.transactionAmount")
-      .isGreaterThan(0)
-      .logDetailed();
-    tests.add(isUgxAmountPresent);
+    GeneralValidations.checkAmountPresence(data, tests);
 
-    const isBeneficiaryNamePresent = fluentValidationInstance()
-      .testTitle("is recipient name present?")
-      .selector(data, "$.caseData.beneficiaryDetails.fullName")
-      .isPresent()
-      .addUserFailureMessage("Customer's full name is non-existent")
-      .logDetailed();
-    tests.add(isBeneficiaryNamePresent);
+    GeneralValidations.checkBeneficiaryNamePresence(data, tests);
 
-    // can be ignored
-    const isRecipientCountryPresent = fluentValidationInstance()
-      .testTitle("is recipient country code present?")
-      .selector(data, "$.caseData.beneficiaryDetails.address.countryCode")
-      .isPresent()
-      .addUserFailureMessage("Country of recipient is missing")
-      // .isIgnorable()
-      .logDetailed();
-    tests.add(isRecipientCountryPresent);
+    GeneralValidations.checkBeneficiaryCountryPresence(data, tests);
 
-    const isRecipientPhysicalAddressPresent = fluentValidationInstance()
-      .testTitle("is recipient's physical address present?")
-      .selector(data, "$.caseData.beneficiaryDetails.address.physicalAddress")
-      .isPresent()
-      .addUserFailureMessage("Physical address of recipient is missing")
-      .logDetailed();
-    tests.add(isRecipientPhysicalAddressPresent);
+    GeneralValidations.checkBeneficiaryPhysicalAddressPresence(data, tests);
 
-    const isSenderNamePresent = fluentValidationInstance()
-      .testTitle("is sender's name present?")
-      .selector(data, "$.caseData.applicantDetails.fullName")
-      .isPresent()
-      .addUserFailureMessage("Sender's full name is missing")
-      .logDetailed();
-    tests.add(isSenderNamePresent);
+    GeneralValidations.checkBeneficiaryTownPresence(data, tests);
 
-    const isSenderEmailPresent = new ObjectHelpersFluent()
-      .testTitle("is sender's email present?")
-      .selector(data, "$.caseData.applicantDetails.emailAddress")
-      .isPresent()
-      .addUserFailureMessage("Sender's email address is missing")
-      .isIgnorable()
-      .logDetailed();
-    tests.add(isSenderEmailPresent);
+    GeneralValidations.checkSenderNamePresence(data, tests);
 
-    const isRecipientBankSwiftCodePresent = new ObjectHelpersFluent()
-      .testTitle("is recipient bank swift code present?")
-      .selector(data, "$.caseData.bankDetails.beneficiaryBank.swiftCode")
-      .isPresent()
-      .addUserFailureMessage("SWIFT code is missing")
-      .isIgnorable()
-      .logDetailed();
-    tests.add(isRecipientBankSwiftCodePresent);
+    GeneralValidations.checkSenderEmailPresence(data, tests);
 
-    const isRecipientBankSortCodePresent = new ObjectHelpersFluent()
-      .testTitle("is recipient bank sort code present?")
-      .selector(data, "$.caseData.bankDetails.beneficiaryBank.sortCode")
-      .isPresent()
-      .addUserFailureMessage("Sort code is missing")
-      .isIgnorable()
-      .logDetailed();
-    isRecipientBankSortCodePresent.failureCallBack(() => Toast.error("Recipient's bank SORT code is missing"));
-    tests.add(isRecipientBankSortCodePresent);
+    GeneralValidations.checkSenderAccountNumberPresence(data, tests);
 
-    const isRecipientBankAbaPresent = new ObjectHelpersFluent()
-      .testTitle("is recipient bank ABA present?")
-      .selector(data, "$.caseData.bankDetails.beneficiaryBank.aba")
-      .isPresent()
-      .addUserFailureMessage("ABA is missing")
-      .isIgnorable()
-      .logDetailed();
-    isRecipientBankAbaPresent.failureCallBack(() => Toast.error("Recipient bank ABA is missing"));
-    tests.add(isRecipientBankAbaPresent);
+    GeneralValidations.checkSenderAccountNumberLength(data, tests);
 
-    const isRecipientBankFedWirePresent = new ObjectHelpersFluent()
-      .testTitle("is recipient bank fed wire present?")
-      .selector(data, "$.caseData.bankDetails.beneficiaryBank.fedWire")
-      .isPresent()
-      .addUserFailureMessage("Fedwire is missing")
-      .isIgnorable()
-      .logDetailed();
-    isRecipientBankFedWirePresent.failureCallBack(() => Toast.error("Fedwire is missing"));
-    tests.add(isRecipientBankFedWirePresent);
+    GeneralValidations.checkTansferPurposePresence(data, tests);
 
-    const isRecipientBankIbanPresent = new ObjectHelpersFluent()
-      .testTitle("is recipient bank iban present?")
-      .selector(data, "$.caseData.bankDetails.beneficiaryBank.iban")
-      .isPresent()
-      .addUserFailureMessage("IBAN is missing")
-      .isIgnorable()
-      .logDetailed();
-    isRecipientBankIbanPresent.failureCallBack(() => Toast.error("IBAN is missing"));
-    tests.add(isRecipientBankIbanPresent);
+    GeneralValidations.checkSenderTownPresence(data, tests);
 
-    validateSharedValuesAndRules(data, tests);
+    GeneralValidations.checkSenderDistrictPresence(data, tests);
+
+    GeneralValidations.checkBeneficiaryBankNamePresence(data, tests);
+
+    GeneralValidations.checkBeneficiaryBankAccountPresence(data, tests);
+
+    GeneralValidations.checkBeneficiaryBankSwiftCodePresence(data, tests, false);
+
+    GeneralValidations.checkChargeModePresence(data, tests, false);
 
     resolve(SuccessCriteria.testRuns(tests, ConstantLabelsAndValues.CASE_VALIDATION_SWIFT));
   });
