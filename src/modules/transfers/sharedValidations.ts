@@ -1,10 +1,10 @@
-import ObjectHelpersFluent from "../../utils/objectHelpersFluent";
+import ObjectHelpersFluent, { fluentValidationInstance } from "../../utils/objectHelpersFluent";
 import Toast from "../../utils/Toast";
 import { ICase } from "./types";
 import { IList } from "../../utils/collections/list";
 
 const validateSharedValuesAndRules = (data: ICase, tests: IList<ObjectHelpersFluent>) => {
-  const isSenderAccountNumberPresent = new ObjectHelpersFluent()
+  const isSenderAccountNumberPresent = fluentValidationInstance()
     .testTitle("is sender's account number present?")
     .selector(data, "$.caseData.applicantDetails.accountNumber")
     .isPresent()
@@ -14,7 +14,7 @@ const validateSharedValuesAndRules = (data: ICase, tests: IList<ObjectHelpersFlu
   tests.add(isSenderAccountNumberPresent);
   const accountNumberOfSenderLength = isSenderAccountNumberPresent.getSummary().value.length;
 
-  const isSenderAccountNumberEqualTo_14 = new ObjectHelpersFluent()
+  const isSenderAccountNumberEqualTo_14 = fluentValidationInstance()
     .testTitle("is sender's account number length equal to 14?")
     .selector(accountNumberOfSenderLength, "$")
     .isEqualTo(14)
@@ -32,7 +32,7 @@ const validateSharedValuesAndRules = (data: ICase, tests: IList<ObjectHelpersFlu
     .haltProcess(false, false);
   tests.add(isSenderAccountNumberEqualTo_14);
 
-  const isSenderTelephonePresent = new ObjectHelpersFluent()
+  const isSenderTelephonePresent = fluentValidationInstance()
     .testTitle("is sender's telephone present?")
     .selector(data, "$.caseData.applicantDetails.phoneNumber")
     .isPresent()
@@ -41,11 +41,11 @@ const validateSharedValuesAndRules = (data: ICase, tests: IList<ObjectHelpersFlu
     .logDetailed();
   tests.add(isSenderTelephonePresent);
 
-  const isSenderTownPresent = new ObjectHelpersFluent().testTitle("is sender's town present?").selector(data, "$.caseData.applicantDetails.address.town").isPresent().logDetailed();
+  const isSenderTownPresent = fluentValidationInstance().testTitle("is sender's town present?").selector(data, "$.caseData.applicantDetails.address.town").isPresent().logDetailed();
   isSenderTownPresent.failureCallBack(() => Toast.warn("Sender's town is missing"));
   tests.add(isSenderTownPresent);
 
-  const isSenderDistrictPresent = new ObjectHelpersFluent()
+  const isSenderDistrictPresent = fluentValidationInstance()
     .testTitle("is sender's district present?")
     .selector(data, "$.caseData.applicantDetails.address.district")
     .isPresent()
@@ -54,7 +54,7 @@ const validateSharedValuesAndRules = (data: ICase, tests: IList<ObjectHelpersFlu
     .logDetailed();
   tests.add(isSenderDistrictPresent);
 
-  const isRecipientBankNamePresent = new ObjectHelpersFluent()
+  const isRecipientBankNamePresent = fluentValidationInstance()
     .testTitle("is recipient bank name present?")
     .selector(data, "$.caseData.bankDetails.beneficiaryBank.bankName")
     .isPresent()
@@ -62,7 +62,7 @@ const validateSharedValuesAndRules = (data: ICase, tests: IList<ObjectHelpersFlu
     .logDetailed();
   tests.add(isRecipientBankNamePresent);
 
-  const isRecipientBankAccountPresent = new ObjectHelpersFluent()
+  const isRecipientBankAccountPresent = fluentValidationInstance()
     .testTitle("is recipient bank account present?")
     .selector(data, "$.caseData.beneficiaryDetails.accountNumber")
     .isPresent()
@@ -70,12 +70,12 @@ const validateSharedValuesAndRules = (data: ICase, tests: IList<ObjectHelpersFlu
     .logDetailed();
   tests.add(isRecipientBankAccountPresent);
 
-  const isTransferPurposePresent = new ObjectHelpersFluent()
+  const isTransferPurposePresent = fluentValidationInstance()
     .testTitle("is transfer purpose present?")
     .selector(data, "$.caseData.transferDetails.transferPurpose")
     .isPresent()
-    // .addUserFailureMessage("Purpose of transfer is missing")
-    .isIgnorable()
+    .addUserFailureMessage("Purpose of transfer is missing")
+    // .isIgnorable()
     .logDetailed();
   tests.add(isTransferPurposePresent);
 };
