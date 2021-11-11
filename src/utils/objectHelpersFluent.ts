@@ -1,5 +1,5 @@
 import { JSONPath } from "jsonpath-plus";
-import { CriteriaTest, isNullOrEmpty, isObject } from "./objectHelpers";
+import { CriteriaTest, isNullOrEmpty, isNullValue, isObject } from "./objectHelpers";
 
 import validate from "validate.js";
 import { IKeyValueMap, KeyValueMap } from "./collections/map";
@@ -65,13 +65,11 @@ class ObjectHelpersFluent {
 
   isIgnorable(shouldOgnore: boolean = true) {
     if (!shouldOgnore) {
-      this.summary.testResult = true;
-      this.summary.ignored = true;
-      console.log("ignored");
+      console.log("not ignored");
     } else {
+      console.log("ignored");
       this.summary.testResult = true;
       this.summary.ignored = true;
-      console.log("ignored");
     }
 
     return this;
@@ -117,13 +115,25 @@ class ObjectHelpersFluent {
    * @param callBackBeforeSelection
    * @param callBackAfterSelection
    */
-  selector(object: any, selector: string, callBackBeforeSelection?: (...args: any) => any, callBackAfterSelection?: (...args: any) => any) {
+  selector(
+    object: any,
+    selector: string,
+    callBackBeforeSelection?: (...args: any) => any,
+    callBackAfterSelection?: (...args: any) => any,
+
+    callbackOnDataExtracted?: (...args: any) => any
+  ) {
     this.selectorPath = selector;
     if (callBackBeforeSelection) {
       callBackBeforeSelection();
     }
 
     this.value = JSONPath({ path: selector, json: object })[0];
+
+    if (callbackOnDataExtracted) {
+      this.value = callbackOnDataExtracted(this.value);
+    }
+
     this.summary.selector = selector;
     this.summary.data = object;
     this.summary.value = this.value;
@@ -151,6 +161,16 @@ class ObjectHelpersFluent {
   }
 
   isPresent() {
+    const isNull = isNullValue(this.summary.value);
+    if (isNull) {
+      this.summary.testResult = isNull;
+      this.summary.expected = true;
+      this.summary.testResult ? (this.summary.testResult = false) : (this.summary.testResult = true);
+      this.addToCheckRuns("IS_PRESENT", this.summary.testResult);
+      this.setFlag(this.summary.testResult);
+      ObjectHelpersFluent.addToFinalTestResultsFromChecksRun(this.summary);
+      return this;
+    }
     this.summary.testResult = validate.isEmpty(this.summary.value);
     this.summary.expected = true;
     this.summary.testResult ? (this.summary.testResult = false) : (this.summary.testResult = true);
