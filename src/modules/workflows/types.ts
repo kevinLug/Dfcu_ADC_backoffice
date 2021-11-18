@@ -25,10 +25,13 @@ export interface IWorkflowFilter {
     include?: IWorkflowInclude;
 
     applicantName?: string
+    applicantAccountNumber?: string
     beneficiaryName?: string;
+    beneficiaryAccountNumber?: string;
     branchName?: string;
     branchCode?: string;
 
+    isDuplicateSearch?: boolean;
 }
 
 export interface IWorkflowFilterResult {
