@@ -185,13 +185,13 @@ const ScanQrCode = () => {
 
 
     useEffect(() => {
-        
+
         if (displayPotentialDuplicates) {
             setDisplayPotentialDuplicates(true)
             setDuplicateData(duplicateData)
         }
         if (duplicateData.length > 0) {
-        
+
         }
 
     }, [duplicateData, displayPotentialDuplicates, stopTransaction, requestCounter])
@@ -223,7 +223,7 @@ const ScanQrCode = () => {
             }
 
             const pairKeyValueFromDecodedRawResult = decodedRes.split(",");
-            
+
             // cleanup raw data
             pairKeyValueFromDecodedRawResult.map((pair) => {
                 const valueTrimmed = pair.trim();
@@ -249,7 +249,7 @@ const ScanQrCode = () => {
                 setOpenSnackBarCustomMessage(true)
                 return;
             }
-            
+
             // make sure the scanned PDF has a transfer type within in the predefined ones
             const isTransferTypePartOfRequired = requestTypesAsArray().includes(aCase.workflowType)
 
@@ -263,9 +263,15 @@ const ScanQrCode = () => {
             const duplicationsGot = await dup.performDuplicationCheck(setLoadingDuplicationChecks, setLoadingDuplicationMessage, aCase, setDuplicationData)
             setDisplayPotentialDuplicates(duplicationsGot[0].length > 0)
             setDuplicateData(duplicationsGot[0])
-            if (duplicationsGot[0].length <= 0 && counter == 1) {
-                handleTransactionInitiation()
+            
+            if (counter === 1) {
+                setRequestCounter(1);
+                if (duplicationsGot[0].length === 0) {
+                    setRequestCounter(1)
+                    await handleTransactionInitiation(false)
+                }
             }
+
 
             // the counter is to allow sending the a Post request only once
 
@@ -278,79 +284,82 @@ const ScanQrCode = () => {
 
     }
 
-    async function handleTransactionInitiation() {
+    async function handleTransactionInitiation(noPotentialDuplicatesExist: boolean = true) {
         const branchCodeUser = DataAccessConfigs.getBranchCode();
         const branchNameUser = DataAccessConfigs.getBranchName();
         const branchCodePdf = aCase.caseData.transferDetails.branchCode;
+
+
         
-        if (requestCounter >= 1 && aCase.workflowType !== "") {
 
-            const userObj = {
-                "id": user.sub,
-                "name": user.name,
-                "phone": "",
-                "agentCode": "",
-                "branchName": branchNameUser,
-                "region": "",
-                "branchCode": branchCodeUser
-            } // TODO ... get branch name from the branch_store in the indexedDb
+        // if (requestCounter >= 1 && aCase.workflowType !== "") {
+        
+        const userObj = {
+            "id": user.sub,
+            "name": user.name,
+            "phone": "",
+            "agentCode": "",
+            "branchName": branchNameUser,
+            "region": "",
+            "branchCode": branchCodeUser
+        } // TODO ... get branch name from the branch_store in the indexedDb
 
-            aCase.applicationDate = new Date()
-            aCase.referenceNumber = randomInt(100000, 500000).toString() // todo...this will have to be picked from the PDF to avoid redundancy
-            aCase.externalReference = uuid()
-            aCase.caseData.user = userObj;
-            aCase.caseData.doc = imageSrc
+        aCase.applicationDate = new Date()
+        aCase.referenceNumber = randomInt(100000, 500000).toString() // todo...this will have to be picked from the PDF to avoid redundancy
+        aCase.externalReference = uuid()
+        aCase.caseData.user = userObj;
+        aCase.caseData.doc = imageSrc
 
-            const newDate = aCase.applicationDate
-            aCase.caseData.timestampRun = {
-                csoInitiationDateTime: newDate,
-                csoSubmissionDateTime: newDate,
-                bmoApprovalDateTime: newDate,
-                cmoClearanceDateTime: newDate
-            };
+        const newDate = aCase.applicationDate
+        aCase.caseData.timestampRun = {
+            csoInitiationDateTime: newDate,
+            csoSubmissionDateTime: newDate,
+            bmoApprovalDateTime: newDate,
+            cmoClearanceDateTime: newDate
+        };
 
-            dispatch(actionICaseState(aCase));
+        dispatch(actionICaseState(aCase));
 
-            const validationResult = await validateData(aCase);
+        const validationResult = await validateData(aCase);
 
-            if (!validationResult) {
-                const messages = SuccessCriteria.getFailedTestResults(aCase.workflowType).toArray().map((msg) => {
-                    return msg.userFailureMessage
-                })
-                // @ts-ignore
-                setInfoMessages(messages)
+        if (!validationResult) {
+            const messages = SuccessCriteria.getFailedTestResults(aCase.workflowType).toArray().map((msg) => {
+                return msg.userFailureMessage
+            })
+            // @ts-ignore
+            setInfoMessages(messages)
 
-                setOpenSnackBar(true)
-                Toast.warn("Did not initiate transfer request")
-            } else {
+            setOpenSnackBar(true)
+            Toast.warn("Did not initiate transfer request")
+        } else {
 
-                post(remoteRoutes.workflows, aCase, (resp: any) => {
+            post(remoteRoutes.workflows, aCase, (resp: any) => {
 
-                    dispatch(actionIWorkflowResponseMessage(resp))
+                dispatch(actionIWorkflowResponseMessage(resp))
 
-                    const postResp = fluentValidationInstance()
-                    postResp.selector(resp, '$.caseId')
-                        .isPresent()
-                        .logDetailed()
-                        .successCallBack(() => {
-                            Toast.success("Initiated successfully")
-                            dispatch(startWorkflowFetch())
-                            dispatch(fetchWorkflowAsync(postResp.getSummary().value))
-                            // refresh to show details of new case initiated
-                            window.location.href = `${localRoutes.applications}/${resp.caseId}`
-                        })
-                        .failureCallBack(() => {
-                            Toast.warn("Something is wrong")
-                        })
+                const postResp = fluentValidationInstance()
+                postResp.selector(resp, '$.caseId')
+                    .isPresent()
+                    .logDetailed()
+                    .successCallBack(() => {
+                        Toast.success("Initiated successfully")
+                        dispatch(startWorkflowFetch())
+                        dispatch(fetchWorkflowAsync(postResp.getSummary().value))
+                        // refresh to show details of new case initiated
+                        window.location.href = `${localRoutes.applications}/${resp.caseId}`
+                    })
+                    .failureCallBack(() => {
+                        Toast.warn("Something is wrong")
+                    })
 
-                }, undefined,
-                    () => {
+            }, undefined,
+                () => {
 
-                    }
-                )
+                }
+            )
 
 
-            }
+            // }
 
         }
 
@@ -424,7 +433,7 @@ const ScanQrCode = () => {
     function openPotentialDuplicatesWindow() {
         return displayPotentialDuplicates ? <PotentialDuplicatesDialog messages={infoMessages} title="Missing requirements (Initiation failed)"
             continueTransactionProcess={() => {
-                handleTransactionInitiation().then(r => {})
+                handleTransactionInitiation().then(r => { })
             }} data={duplicateData} shouldOpen={displayPotentialDuplicates} /> : ""
     }
 
