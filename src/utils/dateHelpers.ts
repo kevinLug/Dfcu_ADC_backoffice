@@ -101,4 +101,18 @@ export const strToDate = (str: string): Date | null => {
     } catch (e) {
         return null
     }
+
+    
+
+}
+
+export const  backDateFromCurrentDate = (numberOfDaysBack: number) =>  {
+    const todaysDate = new Date();
+    const backDate = todaysDate.setDate(todaysDate.getDate() - numberOfDaysBack)
+    return new Date(backDate) // this will still have time as part of it
+}
+
+export const getDateWithoutTimeAttached = (d: Date) => {
+    const noTime = d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate();
+    return new Date(noTime)
 }

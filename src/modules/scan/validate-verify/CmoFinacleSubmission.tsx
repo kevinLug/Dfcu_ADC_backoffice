@@ -19,7 +19,7 @@ import { post } from "../../../utils/ajax";
 import { ISelectKeyValueState } from "../../../data/redux/selects/reducer";
 import { Dispatch } from "redux";
 import { RequestType } from "../../workflows/config";
-import { addDynamicPropertyToObject, isNullOrEmpty, isNullOrUndefined } from "../../../utils/objectHelpers";
+import { addDynamicPropertyToObject, isNullOrEmpty, isNullOrUndefined, isNullValue } from "../../../utils/objectHelpers";
 import Toast from "../../../utils/Toast";
 
 import Loading from "../../../components/Loading";
@@ -273,7 +273,11 @@ const CmoFinacleSubmission = ({ workflowResponseMessage, user, workflow }: IProp
             beneficiaryDetails.accountNumber = transferDetails.iban
         }
 
-        if (!transferDetails.exchangeRate) {
+        if (!transferDetails.exchangeRate || isNullValue(transferDetails.exchangeRate)
+
+            || isNullOrEmpty(transferDetails.exchangeRate)
+
+        ) {
             transferDetails.exchangeRate = "1"
         }
 

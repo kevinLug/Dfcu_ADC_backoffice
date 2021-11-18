@@ -37,6 +37,10 @@ import DataAccessConfigs from "../../data/dataAccessConfigs";
 import ScanAttempt from "./ScanAttempts";
 import ImageUtils from "../../utils/imageUtils";
 import ScanQrCodeHelper from "./scanQrCodeHelper";
+import DuplicationCheckHandler from "./duplicationCheckHandler";
+import Loading from "../../components/Loading";
+import PotentialDuplicatesDialog from "./PotentialDuplicatesDialog";
+import PotentialDuplicates from "./PotentialDuplicates";
 
 export const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -142,6 +146,10 @@ const ScanQrCode = () => {
     const classes = useStyles();
     const runMappingRules = new RunMappingRules();
 
+    const [loadingMessage, setLoadingMessage] = useState('Loading')
+    const [loading, setLoading] = useState(false);
+
+
     const [imageSrc, setImageSrc] = useState<string>("")
     const [qrCodeCroppedArea, setQrCodeCroppedArea] = useState("");
     const [iScanSuccessful, setScanSuccessful] = useState(false)
@@ -157,6 +165,7 @@ const ScanQrCode = () => {
 
     const [crop, setCrop] = useState({ x: -261, y: 454 })
     const [rotation, setRotation] = useState(0)
+    const [requestCounter, setRequestCounter] = useState(0)
     const [zoom, setZoom] = useState<any>(3)
     const [croppedImage, setCroppedImage] = useState<any>(null)
     const [result, setResult] = useState(``)
@@ -165,11 +174,27 @@ const ScanQrCode = () => {
     const dispatch: Dispatch<any> = useDispatch();
     const { user }: ICoreState = useSelector((state: any) => state.core)
 
+    const [duplicateData, setDuplicateData] = useState<any[]>([])
+    const [displayPotentialDuplicates, setDisplayPotentialDuplicates] = useState(false)
+    const [stopTransaction, setStopTransaction] = useState(false)
 
 
     useEffect(() => {
 
     }, [aCase, snackBarMessage, openSnackBar, snackBarColor, openSnackBarCustomMessage, snackBarCustomMessage])
+
+
+    useEffect(() => {
+        
+        if (displayPotentialDuplicates) {
+            setDisplayPotentialDuplicates(true)
+            setDuplicateData(duplicateData)
+        }
+        if (duplicateData.length > 0) {
+        
+        }
+
+    }, [duplicateData, displayPotentialDuplicates, stopTransaction, requestCounter])
 
     let counter = 0
 
@@ -179,19 +204,10 @@ const ScanQrCode = () => {
 
             const croppedImageTuple = await getCroppedImg(imageSrc, croppedAreaPixels, 0)
 
-            // // try using multi format
-            // const multi = ScanAttempt.decodeWithMultiFormatReader(ImageUtils.base64ToArrayBuffer(imageSrc), croppedAreaPixels.width, croppedAreaPixels.height)
-            // console.log('more', { multi })
-            // console.log('imageBitMap', { imageBitMap })
-            // await ScanAttempt.decodeWithQrScanner(imageBitMap)
-
             let decodedRes = ScanQrCodeHelper.getScanResultTextJsQrCodeResult(croppedImageTuple)
             if (!decodedRes) {
                 decodedRes = await ScanQrCodeHelper.getScanResultTextBrowserMultiFormatReader(croppedImageTuple, codeReader);
             }
-
-            // const decodedRawResult = await codeReader.decodeFromImage(undefined, croppedImage.toString())
-            console.log("decodes:-->", decodedRes)
 
             const resultOfScan = await runMappingRules.getScanResult(decodedRes);
 
@@ -203,10 +219,11 @@ const ScanQrCode = () => {
                 Toast.success("scan successful");
                 setScanSuccessful(true)
                 counter = counter + 1
+                setRequestCounter(counter)
             }
 
             const pairKeyValueFromDecodedRawResult = decodedRes.split(",");
-            console.log("the raw scan:", pairKeyValueFromDecodedRawResult)
+            
             // cleanup raw data
             pairKeyValueFromDecodedRawResult.map((pair) => {
                 const valueTrimmed = pair.trim();
@@ -232,9 +249,7 @@ const ScanQrCode = () => {
                 setOpenSnackBarCustomMessage(true)
                 return;
             }
-            console.log('aCase-->', aCase)
-            //const {access_token} = await login()
-
+            
             // make sure the scanned PDF has a transfer type within in the predefined ones
             const isTransferTypePartOfRequired = requestTypesAsArray().includes(aCase.workflowType)
 
@@ -244,80 +259,15 @@ const ScanQrCode = () => {
                 setOpenSnackBarCustomMessage(true)
                 return;
             }
+            const dup = new DuplicationCheckHandler()
+            const duplicationsGot = await dup.performDuplicationCheck(setLoadingDuplicationChecks, setLoadingDuplicationMessage, aCase, setDuplicationData)
+            setDisplayPotentialDuplicates(duplicationsGot[0].length > 0)
+            setDuplicateData(duplicationsGot[0])
+            if (duplicationsGot[0].length <= 0 && counter == 1) {
+                handleTransactionInitiation()
+            }
 
             // the counter is to allow sending the a Post request only once
-            if (counter === 1 && aCase.workflowType !== "") {
-
-                const userObj = {
-                    "id": user.sub,
-                    "name": user.name,
-                    "phone": "",
-                    "agentCode": "",
-                    "branchName": branchNameUser,
-                    "region": "",
-                    "branchCode": branchCodeUser
-                } // TODO ... get branch name from the branch_store in the indexedDb
-
-                aCase.applicationDate = new Date()
-                aCase.referenceNumber = randomInt(100000, 500000).toString() // todo...this will have to be picked from the PDF to avoid redundancy
-                aCase.externalReference = uuid()
-                aCase.caseData.user = userObj;
-                aCase.caseData.doc = imageSrc
-
-                const newDate = aCase.applicationDate
-                aCase.caseData.timestampRun = {
-                    csoInitiationDateTime: newDate,
-                    csoSubmissionDateTime: newDate,
-                    bmoApprovalDateTime: newDate,
-                    cmoClearanceDateTime: newDate
-                };
-
-                dispatch(actionICaseState(aCase));
-
-                const validationResult = await validateData(aCase);
-
-                if (!validationResult) {
-                    const messages = SuccessCriteria.getFailedTestResults(aCase.workflowType).toArray().map((msg) => {
-                        return msg.userFailureMessage
-                    })
-                    // @ts-ignore
-                    setInfoMessages(messages)
-
-                    setOpenSnackBar(true)
-                    Toast.warn("Did not initiate transfer request")
-                } else {
-
-                    console.log('the new case:', aCase)
-
-                    post(remoteRoutes.workflows, aCase, (resp: any) => {
-
-                        dispatch(actionIWorkflowResponseMessage(resp))
-
-                        const postResp = fluentValidationInstance()
-                        postResp.selector(resp, '$.caseId')
-                            .isPresent()
-                            .logDetailed()
-                            .successCallBack(() => {
-                                Toast.success("Initiated successfully")
-                                dispatch(startWorkflowFetch())
-                                dispatch(fetchWorkflowAsync(postResp.getSummary().value))
-                                // refresh to show details of new case initiated
-                                window.location.href = `${localRoutes.applications}/${resp.caseId}`
-                            })
-                            .failureCallBack(() => {
-                                Toast.warn("Something is wrong")
-                            })
-
-                    }, undefined,
-                        () => {
-
-                        }
-                    )
-
-
-                }
-
-            }
 
             setResult(decodedRes)
 
@@ -328,9 +278,104 @@ const ScanQrCode = () => {
 
     }
 
+    async function handleTransactionInitiation() {
+        const branchCodeUser = DataAccessConfigs.getBranchCode();
+        const branchNameUser = DataAccessConfigs.getBranchName();
+        const branchCodePdf = aCase.caseData.transferDetails.branchCode;
+        
+        if (requestCounter >= 1 && aCase.workflowType !== "") {
+
+            const userObj = {
+                "id": user.sub,
+                "name": user.name,
+                "phone": "",
+                "agentCode": "",
+                "branchName": branchNameUser,
+                "region": "",
+                "branchCode": branchCodeUser
+            } // TODO ... get branch name from the branch_store in the indexedDb
+
+            aCase.applicationDate = new Date()
+            aCase.referenceNumber = randomInt(100000, 500000).toString() // todo...this will have to be picked from the PDF to avoid redundancy
+            aCase.externalReference = uuid()
+            aCase.caseData.user = userObj;
+            aCase.caseData.doc = imageSrc
+
+            const newDate = aCase.applicationDate
+            aCase.caseData.timestampRun = {
+                csoInitiationDateTime: newDate,
+                csoSubmissionDateTime: newDate,
+                bmoApprovalDateTime: newDate,
+                cmoClearanceDateTime: newDate
+            };
+
+            dispatch(actionICaseState(aCase));
+
+            const validationResult = await validateData(aCase);
+
+            if (!validationResult) {
+                const messages = SuccessCriteria.getFailedTestResults(aCase.workflowType).toArray().map((msg) => {
+                    return msg.userFailureMessage
+                })
+                // @ts-ignore
+                setInfoMessages(messages)
+
+                setOpenSnackBar(true)
+                Toast.warn("Did not initiate transfer request")
+            } else {
+
+                post(remoteRoutes.workflows, aCase, (resp: any) => {
+
+                    dispatch(actionIWorkflowResponseMessage(resp))
+
+                    const postResp = fluentValidationInstance()
+                    postResp.selector(resp, '$.caseId')
+                        .isPresent()
+                        .logDetailed()
+                        .successCallBack(() => {
+                            Toast.success("Initiated successfully")
+                            dispatch(startWorkflowFetch())
+                            dispatch(fetchWorkflowAsync(postResp.getSummary().value))
+                            // refresh to show details of new case initiated
+                            window.location.href = `${localRoutes.applications}/${resp.caseId}`
+                        })
+                        .failureCallBack(() => {
+                            Toast.warn("Something is wrong")
+                        })
+
+                }, undefined,
+                    () => {
+
+                    }
+                )
+
+
+            }
+
+        }
+
+    }
+
+
+    function setLoadingDuplicationChecks(flag: boolean) {
+        setLoading(flag);
+    }
+
+    function setLoadingDuplicationMessage(msg: string) {
+        setLoadingMessage(msg)
+    }
+
+    function setDuplicationData(data: []) {
+        setDuplicateData(data)
+    }
+
+
+
     const onClose = useCallback(() => {
         setCroppedImage(null)
     }, [])
+
+
 
     const handleDrop = async (files: any) => {
 
@@ -375,6 +420,16 @@ const ScanQrCode = () => {
     function showSnackBarMessage() {
         return openSnackBar ? <AlertDialogForMessages messages={infoMessages} title="Missing requirements (Initiation failed)" shouldOpen={openSnackBar} /> : ""
     }
+
+    function openPotentialDuplicatesWindow() {
+        return displayPotentialDuplicates ? <PotentialDuplicatesDialog messages={infoMessages} title="Missing requirements (Initiation failed)"
+            continueTransactionProcess={() => {
+                handleTransactionInitiation().then(r => {})
+            }} data={duplicateData} shouldOpen={displayPotentialDuplicates} /> : ""
+    }
+
+    if (loading)
+        return <Loading message={loadingMessage} />
 
     return <Grid item sm={7} container alignContent={"center"} justify="center"
         className={isNullOrEmpty(result) ? classes.dragAndDropArea : classes.dragAndDropAreaAfterScan}>
@@ -459,6 +514,10 @@ const ScanQrCode = () => {
         }
         {
             showSnackBarMessageCustom(snackBarCustomMessage)
+        }
+
+        {
+            openPotentialDuplicatesWindow()
         }
 
     </Grid>
