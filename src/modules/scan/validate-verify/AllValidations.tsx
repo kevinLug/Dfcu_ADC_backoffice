@@ -33,6 +33,8 @@ import { IPropsChecks } from "./Check";
 import { isNullOrUndefined } from "../../../utils/objectHelpers";
 import HandleFinacleResponse from "./HandleFinacleResponse";
 import DataAccessConfigs from "../../../data/dataAccessConfigs";
+import { Button, Dialog, DialogActions, DialogContent } from "@material-ui/core";
+import { DialogTitlePreview } from "./ForexDialog";
 
 interface IProps {
     workflow: IWorkflow;
@@ -49,6 +51,7 @@ const AllValidations = ({ workflow }: IProps) => {
     const { workflowResponseMessage }: IWorkflowResponseMessageState = useSelector((state: any) => state.workflowResponse)
     const [forexDetailsFound, setForexDetailsFound] = useState<IForex>(IForexDefault)
     const [isForexRequired, setForexRequired] = useState<boolean>(false)
+    const [showPreview, setShowPreview] = useState(false)
     useEffect(() => {
 
         const aCase: ICase = {
@@ -208,6 +211,44 @@ const AllValidations = ({ workflow }: IProps) => {
         }
     }
 
+    function viewForexDetails() {
+
+        return <Dialog onClose={() => {
+            setShowPreview(false)
+        }} aria-labelledby="customized-dialog-title" open={showPreview} disableBackdropClick={true}>
+            <DialogTitlePreview id="customized-dialog-title" onClose={() => setShowPreview(false)}>
+                Forex details file preview
+            </DialogTitlePreview>
+            <DialogContent dividers>
+
+                {
+                    <img src={forexDetailsFound.doc} alt="scanned-result" />
+                }
+
+            </DialogContent>
+            <DialogActions>
+                <Button autoFocus onClick={() => setShowPreview(false)} color="primary">
+                    OK
+                </Button>
+            </DialogActions>
+        </Dialog>
+    }
+
+    function setShowPreviewTrue() {
+        setShowPreview(true)
+    }
+
+    function handleForexDetailsPreview() {
+        return forexDetailsFound.doc ?
+
+            <Grid className={classes.expansion}>
+                <Button color="primary" variant="contained" onClick={setShowPreviewTrue}>
+                    Preview Rate Confirmation
+                </Button>
+            </Grid>
+            : ""
+    }
+
     return (
 
         <Grid container item xs={12} className={classes.root}>
@@ -225,6 +266,14 @@ const AllValidations = ({ workflow }: IProps) => {
                 <Grid className={classes.expansion}>
                     <ExpansionCard title="Transfer Request" children={<TransferDetails isForexRequired={isForexRequired} forexDetailsReceived={forexDetailsFound} />} />
                 </Grid>
+
+                {
+                    viewForexDetails()
+                }
+
+                {
+                    handleForexDetailsPreview()
+                }
 
                 {
                     displayVerificationsByCSO()

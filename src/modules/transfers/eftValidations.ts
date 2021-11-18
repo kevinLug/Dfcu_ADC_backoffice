@@ -54,7 +54,7 @@ const validateEft = async (data: ICase): Promise<boolean> => {
 
     // GeneralValidations.checkBeneficiaryBankSwiftCodePresence(data, tests, false);
 
-    GeneralValidations.checkChargeModePresence(data, tests, false);
+    // GeneralValidations.checkChargeModePresence(data, tests, false);
 
     resolve(SuccessCriteria.testRuns(tests, ConstantLabelsAndValues.CASE_VALIDATION_EFT));
   });
