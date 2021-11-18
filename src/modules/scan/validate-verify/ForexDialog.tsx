@@ -123,7 +123,7 @@ const styles = (theme: Theme) =>
         },
     });
 
-const DialogTitlePreview = withStyles(styles)((props: DialogTitleProps) => {
+export const DialogTitlePreview = withStyles(styles)((props: DialogTitleProps) => {
     const {children, classes, onClose, ...other} = props;
     return (
         <MuiDialogTitle disableTypography className={classes.root} {...other}>
