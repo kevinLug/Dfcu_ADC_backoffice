@@ -17,8 +17,8 @@ const useStyles = makeStyles(theme => ({
     submissionBox: {
         display: 'flex',
         justifyContent: 'space-between',
-        marginTop: 20,
-        marginBottom: 10
+        // marginTop: 10,
+        // marginBottom: 10
     },
     rejectButton: {
         backgroundColor: '#b32121',
@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
     paper: {
         position: "absolute",
         width: '80%',
-        height: 'auto',
+        height: '80%',
         backgroundColor: theme.palette.background.paper,
         boxShadow: theme.shadows[5],
         padding: theme.spacing(4),
@@ -38,8 +38,8 @@ const useStyles = makeStyles(theme => ({
 function getModalStyle() {
 
     return {
-        top: `20%`,
-        bottom: `20%`,
+        top: `10%`,
+        bottom: `5%`,
         left: `$10%`,
         right: `10%`,
         height: '70%'
