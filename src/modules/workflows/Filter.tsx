@@ -284,16 +284,19 @@ const Filter = ({ onFilter, loading, filterResult }: IProps) => {
 
         if (name === 'branchName') {
             const branchCodeValue = handleBranchNameChange(value);
-
+            
             if (DataAccessConfigs.isBranchOfUserSelected(user) && branchCodeValue) {
                 DataAccessConfigs.setBranchOfUser(value, branchCodeValue)
             }
 
             // check if no previous branch name was in use already
-            if (!DataAccessConfigs.isBranchOfUserSelected(user) && branchCodeValue) {
+            if (!DataAccessConfigs.isBranchOfUserSelected(user) && branchCodeValue && !DataAccessConfigs.roleIsCmo(user)) {
                 DataAccessConfigs.setBranchOfUser(value, branchCodeValue)
-                window.location.reload()
-            } else {
+                // reload if role is not CMO
+                window.location.reload();
+            }
+
+            else {
 
                 const newDataValue = { ...data, ['branchCode']: branchCodeValue };
 
