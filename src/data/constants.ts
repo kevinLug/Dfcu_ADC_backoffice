@@ -46,7 +46,9 @@ export const hasAnyRole = (user: any, roles: string[] = []): boolean => {
     const userRole = user.role ? user.role.toLocaleLowerCase() : "NA";
     return rolesList.indexOf(userRole) >= 0;
   } else {
-    const roles = user.role ? user.role.map((it: any) => it.toLocaleLowerCase()) : [];
+    const roles = user.role
+      ? user.role.map((it: any) => it.toLocaleLowerCase())
+      : [];
     return roles.some((r: any) => rolesList.indexOf(r) >= 0);
   }
 };
@@ -87,9 +89,9 @@ const servers: any = {
     Notification: "https://dfcu-notification-api-test.test001.laboremus.no",
   },
   test: {
-    Auth: "https://dfcu-autodatacapture-auth-api-test.test001.laboremus.no",
-    Case: "https://dfcu-autodatacapture-casehandling-test.test001.laboremus.no",
-    Notification: "https://dfcu-notification-api-test.test001.laboremus.no",
+    Auth: "https://dfcu-autodatacapture-auth-api-test.laboremus.ug",
+    Case: "https://dfcu-autodatacapture-casehandling-test.laboremus.ug",
+    Notification: "https://dfcu-notification-api-test.laboremus.ug",
   },
   visolit: {
     Auth: "https://dfcu-autodatacapture-auth-api-test.test001.laboremus.no",
@@ -137,7 +139,8 @@ export const remoteRoutes = {
 
   workflowsCombo: caseHandlingURL + "/api/queries/combo",
   workflowsReports: caseHandlingURL + "/api/report/download",
-  workflowsReportsDownloadWithParams: caseHandlingURL + "/api/report/downloadWithParams",
+  workflowsReportsDownloadWithParams:
+    caseHandlingURL + "/api/report/downloadWithParams",
   documentsDownload: caseHandlingURL + "/api/documents/download",
   workflowsManual: caseHandlingURL + "/api/manual",
   samplePdf: caseHandlingURL + "/sample.pdf",
@@ -206,36 +209,119 @@ export class ConstantLabelsAndValues {
 
   public static csoCheckList() {
     const theCheckList = new List<IPropsChecks>();
-    theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate_Bm"));
-    theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex_Bm"));
-    theCheckList.add(addCheck("Sender's account number is correct", "isSenderAccountNumberCorrect_Bm"));
-    theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds_Bm"));
-    theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete_Bm"));
-    theCheckList.add(addCheck("Recipient's physical address is complete", "isRecipientPhysicalAddressComplete_Bm"));
+    theCheckList.add(
+      addCheck(
+        "Transfer request is signed as per account mandate",
+        "isTransferSignedAsPerAccountMandate_Bm"
+      )
+    );
+    theCheckList.add(
+      addCheck("Transfer requires forex", "transferRequiresForex_Bm")
+    );
+    theCheckList.add(
+      addCheck(
+        "Sender's account number is correct",
+        "isSenderAccountNumberCorrect_Bm"
+      )
+    );
+    theCheckList.add(
+      addCheck("Sender has sufficient funds", "senderHasSufficientFunds_Bm")
+    );
+    theCheckList.add(
+      addCheck(
+        "Recipient's bank details are complete",
+        "isRecipientBankDetailsComplete_Bm"
+      )
+    );
+    theCheckList.add(
+      addCheck(
+        "Recipient's physical address is complete",
+        "isRecipientPhysicalAddressComplete_Bm"
+      )
+    );
     return theCheckList;
   }
 
   public static csoValidationCheckList(): IList<IPropsChecks> {
     const theCheckList = new List<IPropsChecks>();
-    theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate"));
-    theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex"));
-    theCheckList.add(addCheck("Sender's account number is correct", "isSenderAccountNumberCorrect"));
-    theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds"));
-    theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete"));
-    theCheckList.add(addCheck("Recipient's physical address is complete", "isRecipientPhysicalAddressComplete"));
+    theCheckList.add(
+      addCheck(
+        "Transfer request is signed as per account mandate",
+        "isTransferSignedAsPerAccountMandate"
+      )
+    );
+    theCheckList.add(
+      addCheck("Transfer requires forex", "transferRequiresForex")
+    );
+    theCheckList.add(
+      addCheck(
+        "Sender's account number is correct",
+        "isSenderAccountNumberCorrect"
+      )
+    );
+    theCheckList.add(
+      addCheck("Sender has sufficient funds", "senderHasSufficientFunds")
+    );
+    theCheckList.add(
+      addCheck(
+        "Recipient's bank details are complete",
+        "isRecipientBankDetailsComplete"
+      )
+    );
+    theCheckList.add(
+      addCheck(
+        "Recipient's physical address is complete",
+        "isRecipientPhysicalAddressComplete"
+      )
+    );
     // theCheckList.add(addCheck("There are no discrepancies in the amounts", "isDiscrepanciesInAmounts"))
     return theCheckList;
   }
 
   public static bomChecksReviewConfirmation() {
     const theCheckList = new List<IPropsChecks>();
-    theCheckList.add(addCheck("Transfer request is signed as per account mandate", "isTransferSignedAsPerAccountMandate_Bm_Confirmation"));
-    theCheckList.add(addCheck("Transfer requires forex", "transferRequiresForex_Bm_Confirmation"));
-    theCheckList.add(addCheck("Sender's account number is correct", "isSenderAccountNumberCorrect_Bm_Confirmation"));
-    theCheckList.add(addCheck("Sender has sufficient funds", "senderHasSufficientFunds_Bm_Confirmation"));
-    theCheckList.add(addCheck("Recipient's bank details are complete", "isRecipientBankDetailsComplete_Bm_Confirmation"));
-    theCheckList.add(addCheck("Recipient's physical address is complete", "isRecipientPhysicalAddressComplete_Bm_Confirmation"));
-    theCheckList.add(addCheck("Confirm that callbacks are done", "isCallbacksDone_Bm_Confirmation")); // todo...must include this
+    theCheckList.add(
+      addCheck(
+        "Transfer request is signed as per account mandate",
+        "isTransferSignedAsPerAccountMandate_Bm_Confirmation"
+      )
+    );
+    theCheckList.add(
+      addCheck(
+        "Transfer requires forex",
+        "transferRequiresForex_Bm_Confirmation"
+      )
+    );
+    theCheckList.add(
+      addCheck(
+        "Sender's account number is correct",
+        "isSenderAccountNumberCorrect_Bm_Confirmation"
+      )
+    );
+    theCheckList.add(
+      addCheck(
+        "Sender has sufficient funds",
+        "senderHasSufficientFunds_Bm_Confirmation"
+      )
+    );
+    theCheckList.add(
+      addCheck(
+        "Recipient's bank details are complete",
+        "isRecipientBankDetailsComplete_Bm_Confirmation"
+      )
+    );
+    theCheckList.add(
+      addCheck(
+        "Recipient's physical address is complete",
+        "isRecipientPhysicalAddressComplete_Bm_Confirmation"
+      )
+    );
+    theCheckList.add(
+      addCheck(
+        "Confirm that callbacks are done",
+        "isCallbacksDone_Bm_Confirmation"
+      )
+    ); // todo...must include this
     return theCheckList;
   }
 
@@ -278,7 +364,10 @@ export class ConstantLabelsAndValues {
   /**
    * key of BRANCH CODE & value of label (BRANCH NAME)
    */
-  public static mapOfDFCUBranchCodeToBranchLabel(): IKeyValueMap<string, string> {
+  public static mapOfDFCUBranchCodeToBranchLabel(): IKeyValueMap<
+    string,
+    string
+  > {
     const map = new KeyValueMap<string, string>();
     branches.map((aBranch) => map.put(aBranch.value, aBranch.label));
     return map;
@@ -287,21 +376,34 @@ export class ConstantLabelsAndValues {
   /**
    * key of branch name / branch label to value of branch code
    */
-  public static mapOfDFCUBranchLabelToBranchCode(): IKeyValueMap<string, string> {
+  public static mapOfDFCUBranchLabelToBranchCode(): IKeyValueMap<
+    string,
+    string
+  > {
     const map = new KeyValueMap<string, string>();
     branches.map((aBranch) => map.put(aBranch.label, aBranch.value));
     return map;
   }
 
-  public static mapOfRecipientBankCodeToValueOfBank(): IKeyValueMap<string, IRecipientBank> {
+  public static mapOfRecipientBankCodeToValueOfBank(): IKeyValueMap<
+    string,
+    IRecipientBank
+  > {
     const map = new KeyValueMap<string, IRecipientBank>();
-    bankCodes.Banks.map((aBank: IRecipientBank) => map.put(aBank.bankCode, aBank));
+    bankCodes.Banks.map((aBank: IRecipientBank) =>
+      map.put(aBank.bankCode, aBank)
+    );
     return map;
   }
 
-  public static mapOfRecipientNameToValueOfBank(): IKeyValueMap<string, IRecipientBank> {
+  public static mapOfRecipientNameToValueOfBank(): IKeyValueMap<
+    string,
+    IRecipientBank
+  > {
     const map = new KeyValueMap<string, IRecipientBank>();
-    bankCodes.Banks.map((aBank: IRecipientBank) => map.put(aBank.bankCode, aBank));
+    bankCodes.Banks.map((aBank: IRecipientBank) =>
+      map.put(aBank.bankCode, aBank)
+    );
     return map;
   }
 
@@ -337,7 +439,11 @@ export class ConstantLabelsAndValues {
     return currentTimestampManual;
   }
 
-  public static forexDetailsIgnored(aCheck: IPropsChecks, checks: IList<IPropsChecks>, index: number) {
+  public static forexDetailsIgnored(
+    aCheck: IPropsChecks,
+    checks: IList<IPropsChecks>,
+    index: number
+  ) {
     return aCheck.label === checks.get(index).label && !aCheck.value;
   }
 }
