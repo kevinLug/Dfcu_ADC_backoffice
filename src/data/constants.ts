@@ -105,7 +105,7 @@ const servers: any = {
   },
   uat: {
     Auth: "https://adc-auth-api-uat.dfcugroup.com",
-    Case: "https://adc-casehandling-api-test.dfcugroup.com",
+    Case: "https://adc-casehandling-api-uat.dfcugroup.com",
     Notification: "https://adc-notification-api-uat.dfcugroup.com",
   },
   production: {
