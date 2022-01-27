@@ -99,9 +99,9 @@ const servers: any = {
     Notification: "https://dfcu-notification-api-test.test001.laboremus.no",
   },
   sit: {
-    Auth: "https://auth-api-test.autodatacapture.dfcugroup.com",
-    Case: "https://casehandling-api-test.autodatacapture.dfcugroup.com",
-    Notification: "https://notification-api-test.autodatacapture.dfcugroup.com",
+    Auth: "https://adc-auth-api-test.dfcugroup.com",
+    Case: "https://adc-casehandling-api-test.dfcugroup.com",
+    Notification: "https://adc-notification-api-test.dfcugroup.com",
   },
   uat: {
     Auth: "https://adc-auth-api-uat.dfcugroup.com",
