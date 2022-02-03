@@ -342,6 +342,8 @@ const VerificationByBmo = ({workflow}: IPropsBMO) => {
                         <Button variant="contained" className={classes.rejectButton} onClick={showCommentDialog}>Reject</Button>
 
                     </Box>
+                    <br />
+                    <br /><br /><br /><br />
                 </Grid>
                 :
                 ""

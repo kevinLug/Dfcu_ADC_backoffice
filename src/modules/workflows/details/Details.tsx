@@ -1,29 +1,31 @@
-import React, {useEffect, useState} from 'react';
-import {RouteComponentProps, withRouter} from "react-router";
+import React, { useEffect, useState } from 'react';
+import { RouteComponentProps, withRouter } from "react-router";
 import Navigation from "../../../components/Layout";
-import {getRouteParam} from "../../../utils/routHelpers";
+import { getRouteParam } from "../../../utils/routHelpers";
 import Loading from "../../../components/Loading";
 import Error from "../../../components/Error";
-import {createStyles, Grid, makeStyles, Theme} from "@material-ui/core";
+import { createStyles, Grid, makeStyles, Theme } from "@material-ui/core";
 
-import {determineWorkflowStatus, IWorkflow, trimCaseId, WorkflowStatus, WorkflowSubStatus} from "../types";
+import { determineWorkflowStatus, IWorkflow, trimCaseId, WorkflowStatus, WorkflowSubStatus } from "../types";
 import Typography from "@material-ui/core/Typography";
-import {Flex} from "../../../components/widgets";
+import { Flex } from "../../../components/widgets";
 
 import LoaderDialog from "../../../components/LoaderDialog";
-import {Dispatch} from "redux";
-import {useDispatch, useSelector} from "react-redux";
-import {fetchWorkflowAsync, IWorkflowState, startWorkflowFetch} from "../../../data/redux/workflows/reducer";
+import { Dispatch } from "redux";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchWorkflowAsync, IWorkflowState, startWorkflowFetch } from "../../../data/redux/workflows/reducer";
 
-import {renderStatus} from "../widgets";
+import { renderStatus } from "../widgets";
 
 import AllValidations from "../../scan/validate-verify/AllValidations";
 
-import {printDateTime} from "../../../utils/dateHelpers";
-import {ConstantLabelsAndValues} from "../../../data/constants";
+import { printDateTime } from "../../../utils/dateHelpers";
+import { ConstantLabelsAndValues } from "../../../data/constants";
 
-import {isNullOrEmpty, isNullOrUndefined} from "../../../utils/objectHelpers";
-import {IForexValueState} from "../../../data/redux/forex/reducer";
+import { isNullOrEmpty, isNullOrUndefined } from "../../../utils/objectHelpers";
+import { IForexValueState } from "../../../data/redux/forex/reducer";
+import Toast from '../../../utils/Toast';
+import { isNull } from 'lodash';
 
 interface IProps extends RouteComponentProps {
 
@@ -51,8 +53,8 @@ const Details = (props: IProps) => {
     const caseId = getRouteParam(props, 'caseId')
     const classes = useStyles()
     const [blocker, setBlocker] = useState<boolean>(false)
-    const {loading, workflow}: IWorkflowState = useSelector((state: any) => state.workflows)
-    const {forexValue}: IForexValueState = useSelector((state: any) => state.forexDetails)
+    const { loading, workflow }: IWorkflowState = useSelector((state: any) => state.workflows)
+    const { forexValue }: IForexValueState = useSelector((state: any) => state.forexDetails)
 
     const dispatch: Dispatch<any> = useDispatch();
     useEffect(() => {
@@ -62,13 +64,13 @@ const Details = (props: IProps) => {
 
     if (loading)
         return <Navigation>
-            <Loading/>
+            <Loading />
         </Navigation>
 
     const hasError = !loading && !workflow
     if (hasError) {
         return <Navigation>
-            <Error text='Failed load case data'/>
+            <Error text='Failed load case data' />
         </Navigation>
     }
 
@@ -104,7 +106,7 @@ const Details = (props: IProps) => {
                 returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
                     <span style={styleUserName}>{submittedByCSO}</span>{" - "}
                     <span style={styleUserName}>{printDateTime(actionRunDate)}</span>
-                    <br/>&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
+                    <br />&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
                     <span style={styleUserName}>{rejectionComment}</span>
                 </div>
 
@@ -152,7 +154,7 @@ const Details = (props: IProps) => {
                 returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
                     <span style={styleUserName}>{approvedByBM}</span>{" - "}
                     <span style={styleUserName}>{printDateTime(actionRunDate)}</span>
-                    <br/>&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
+                    <br />&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
                     <span style={styleUserName}>{rejectionComment}</span>
                 </div>
 
@@ -174,13 +176,36 @@ const Details = (props: IProps) => {
 
     function submittedOrRejectedByCMO() {
 
-        let returned: any
+        let returned: any;
+        // @ts-ignore
+        let isOutPutNull = isNull(workflow.tasks[3].actions[1].outputData)
 
         let rejectionComment = ''
-        // @ts-ignore
-        if (workflow.subStatus === WorkflowSubStatus.FailedCMOApproval) {
+
+        if (isOutPutNull) {
             // @ts-ignore
             const inputDataCMO = workflow.tasks[3].actions[0].outputData
+
+            const clearedByCMO = JSON.parse(inputDataCMO)["session"]["username"]
+
+            // @ts-ignore
+            const status = workflow.subStatus;
+
+            Toast.error("No response from finacle");
+            returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
+                <span style={styleUserName}>{clearedByCMO}</span>{" - "}
+                <span style={styleUserName}>No response from finacle</span>
+                <br />&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
+
+                <span style={styleUserName}>{status}</span>
+            </div>;
+        }
+
+
+        // @ts-ignore
+        else if (workflow.subStatus === WorkflowSubStatus.FailedCMOApproval) {
+            // @ts-ignore
+            const inputDataCMO = workflow.tasks[3].actions[1].outputData
 
             rejectionComment = JSON.parse(inputDataCMO)['rejectionComment']
             const clearedByCMO = JSON.parse(inputDataCMO)["session"]["username"]
@@ -192,7 +217,7 @@ const Details = (props: IProps) => {
             returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
                 <span style={styleUserName}>{clearedByCMO}</span>{" - "}
                 <span style={styleUserName}>{runDateCMO}</span>
-                <br/>&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
+                <br />&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
                 <span style={styleUserName}>{rejectionComment}</span>
             </div>
 
@@ -218,7 +243,7 @@ const Details = (props: IProps) => {
             returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
                 <span style={styleUserName}>Finacle</span>{" - "}
                 <span style={styleUserName}>{runDateCMO}</span>
-                <br/>&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
+                <br />&nbsp;&nbsp;{ConstantLabelsAndValues.REASON_FOR_REJECTION}
                 <span style={styleUserName}>{finacleResponseMessage}</span>
             </div>
         }
@@ -238,7 +263,7 @@ const Details = (props: IProps) => {
         } else
             returned = ""
 
-      return returned;
+        return returned;
     }
 
     const styleUserAndDate = {
@@ -279,7 +304,7 @@ const Details = (props: IProps) => {
     return (
         <Navigation>
             <div className={classes.root}>
-                <LoaderDialog open={blocker} onClose={() => setBlocker(false)}/>
+                <LoaderDialog open={blocker} onClose={() => setBlocker(false)} />
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <Flex>
@@ -288,7 +313,7 @@ const Details = (props: IProps) => {
                             </Typography>
                             <div
 
-                                style={{marginTop: 4}}>&nbsp;&nbsp;{displayWorkflowStatus()}</div>
+                                style={{ marginTop: 4 }}>&nbsp;&nbsp;{displayWorkflowStatus()}</div>
 
                         </Flex>
 
@@ -305,7 +330,7 @@ const Details = (props: IProps) => {
                         }
 
                     </Grid>
-                    <AllValidations workflow={caseData}/>
+                    <AllValidations workflow={caseData} />
                 </Grid>
             </div>
         </Navigation>

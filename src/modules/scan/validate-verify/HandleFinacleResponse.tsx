@@ -8,6 +8,7 @@ import DataLabel from "../../../components/DataLabel";
 import DataValue from "../../../components/DataValue";
 import ExpansionCard from "../../../components/ExpansionCard";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
+import { isNull } from "lodash";
 
 export const useStylesHandleFinacleResponseTransfer = makeStyles((theme: Theme) =>
     createStyles({
@@ -37,7 +38,7 @@ const HandleFinacleResponse = () => {
     const {workflow}: IWorkflowState = useSelector((state: any) => state.workflows)
 
     useEffect(() => {
-        // console.log(`applicantDetails:`, applicantDetails)
+        
     }, [workflow])
 
     function displayResponse(){
@@ -46,16 +47,15 @@ const HandleFinacleResponse = () => {
         }
         // @ts-ignore
         const data = workflow.tasks[3].actions[1].outputData
-        const dataParsed = JSON.parse(data)
-        console.log('data;;;;', data)
-        console.log('data;;;;', dataParsed, dataParsed["Message"])
+        const isDataPresent = !isNull(data) && data;
+              
         // return dataParsed["Message"]
 
-        console.log('transferOrderId',dataParsed["transferOrderId"])
-
-        if (!data){
-            return ''
+        if (!isDataPresent){
+            return 'no response from finacle'
         }
+
+        const dataParsed = JSON.parse(data)
 
         if (!dataParsed["transferOrderId"]){
             return  <Grid container item spacing={4} sm={12}>
