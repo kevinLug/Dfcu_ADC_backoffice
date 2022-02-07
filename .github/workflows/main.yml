@@ -1,7 +1,6 @@
 name: deploy to lugTc[192.168.140.2]
 on:
-  push:
-    branches: [develop]
+  workflow_dispatch:
     
 jobs:
   deploy:
