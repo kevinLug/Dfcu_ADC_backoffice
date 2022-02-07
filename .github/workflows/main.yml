@@ -1,0 +1,16 @@
+name: deploy to lugTc[192.168.140.2]
+on:
+  push:
+    branches: [develop]
+    
+jobs:
+  deploy:
+    uses: LaboremusUg/Reusable_Work_Flows/.github/workflows/node_root_automatic.yml@main
+    with:
+      ENVIRONMENT: "test"
+      SITE_NAME: "Dfcu_AutoDataCapture_Backoffice_Test"
+      COMPUTER_NAME: "https://154.0.128.234:18172/msdeploy.axd"
+      APP_NAME: "autodatacapture-backoffice"
+    secrets:
+      WEBDEPLOY_USER: ${{ secrets.WEBDEPLOY_USERE}}
+      WEBDEPLOY_PASSWORD: ${{secrets.WEBDEPLOY_PASSWORD}}
