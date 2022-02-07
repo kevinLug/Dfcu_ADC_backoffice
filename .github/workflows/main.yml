@@ -7,9 +7,9 @@ jobs:
     uses: LaboremusUg/Reusable_Work_Flows/.github/workflows/node_root_automatic.yml@main
     with:
       ENVIRONMENT: "test"
-      SITE_NAME: "Dfcu_AutoDataCapture_Backoffice_Test"
+      SITE_NAME: "Bou_NationalIdVerification_Auth_Ui_React"
       COMPUTER_NAME: "https://154.0.128.234:18172/msdeploy.axd"
       APP_NAME: "autodatacapture-backoffice"
-      WEBDEPLOY_USER: ${{ secrets.WEBDEPLOY_USER}}
-    secrets:
-      WEBDEPLOY_PASSWORD: ${{secrets.WEBDEPLOY_PASSWORD}}
+      WEBDEPLOY_USER: 'kevin'
+      DIST_FOLDER: "build"
+      WEBDEPLOY_PASSWORD: "8nJYcxLp4MLhkPQic"
