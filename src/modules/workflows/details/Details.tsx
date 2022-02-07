@@ -178,14 +178,15 @@ const Details = (props: IProps) => {
 
         let returned: any;
         // @ts-ignore
-        let isOutPutNull = isNull(workflow.tasks[3].actions[1].outputData)
+        let isOutPutNull = isNull(workflow.tasks[3].actions[1].outputData) || isNullOrEmpty(workflow.tasks[3].actions[1].outputData);
 
         let rejectionComment = ''
-
-        if (isOutPutNull) {
+        
+        // finacle output/response is not null
+        if (!isOutPutNull) {
             // @ts-ignore
             const inputDataCMO = workflow.tasks[3].actions[0].outputData
-
+            
             const clearedByCMO = JSON.parse(inputDataCMO)["session"]["username"]
 
             // @ts-ignore
@@ -231,13 +232,13 @@ const Details = (props: IProps) => {
             const runDateCMO = printDateTime(runDate)
             const outputDataCMOResponseParsed = JSON.parse(outputDataCMOResponse)
 
-
-            let finacleResponseMessage: string;
-
-            if (!outputDataCMOResponseParsed['Message']) {
-                finacleResponseMessage = outputDataCMOResponseParsed['message']
+            let finacleResponseMessage = "No response message from finacle";
+            if (outputDataCMOResponseParsed) {
+                if (!outputDataCMOResponseParsed['Message']) {
+                    finacleResponseMessage = outputDataCMOResponseParsed['message']
+                }
             } else {
-                finacleResponseMessage = outputDataCMOResponseParsed['Message']
+                finacleResponseMessage = "No response message from finacle";
             }
 
             returned = <div style={styleUserAndDate}>&nbsp;&nbsp;{ConstantLabelsAndValues.REJECTED_BY}
