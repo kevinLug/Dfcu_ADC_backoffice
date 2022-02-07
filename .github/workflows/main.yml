@@ -11,6 +11,6 @@ jobs:
       SITE_NAME: "Dfcu_AutoDataCapture_Backoffice_Test"
       COMPUTER_NAME: "https://154.0.128.234:18172/msdeploy.axd"
       APP_NAME: "autodatacapture-backoffice"
+      WEBDEPLOY_USER: ${{ secrets.WEBDEPLOY_USER}}
     secrets:
-      WEBDEPLOY_USER: ${{ secrets.WEBDEPLOY_USERE}}
       WEBDEPLOY_PASSWORD: ${{secrets.WEBDEPLOY_PASSWORD}}
