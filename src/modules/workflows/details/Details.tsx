@@ -181,13 +181,12 @@ const Details = (props: IProps) => {
         let isOutPutNull = isNull(workflow.tasks[3].actions[1].outputData) || isNullOrEmpty(workflow.tasks[3].actions[1].outputData);
 
         let rejectionComment = ''
-        // @ts-ignore
-        console.log('workflow.subStatus:', workflow.subStatus)
+        
         // finacle output/response is not null
         if (!isOutPutNull) {
             // @ts-ignore
             const inputDataCMO = workflow.tasks[3].actions[0].outputData
-            console.log('out:', inputDataCMO)
+            
             const clearedByCMO = JSON.parse(inputDataCMO)["session"]["username"]
 
             // @ts-ignore
@@ -232,7 +231,6 @@ const Details = (props: IProps) => {
             const runDate = workflow.tasks[3].actions[1].runDate
             const runDateCMO = printDateTime(runDate)
             const outputDataCMOResponseParsed = JSON.parse(outputDataCMOResponse)
-            console.log('outputDataCMOResponseParsed:', outputDataCMOResponseParsed)
 
             let finacleResponseMessage = "No response message from finacle";
             if (outputDataCMOResponseParsed) {
