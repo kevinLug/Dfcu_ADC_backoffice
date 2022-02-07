@@ -96,7 +96,7 @@
     "build-production": "set REACT_APP_ENV=production && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "msdeploy --verb sync --allowUntrusted true --source contentPath=%npm_package_config_sourcePath% --dest contentPath=%npm_package_config_destPath%,ComputerName=%npm_package_config_ComputerName%,UserName=%npm_package_config_UserName%,Password=%npm_package_config_Password%,includeAcls=False",
+    "deploy": "msdeploy --verb sync --allowUntrusted true --source contentPath=%npm_package_config_sourcePath% --dest contentPath=%npm_package_config_destPath%,ComputerName=%npm_package_config_ComputerName%,UserName=%npm_package_config_UserName%,Password=%npm_package_config_Password%,includeAcls=False,AuthType=Basic",
     "deploy-test": "msdeploy --verb sync --allowUntrusted true --source contentPath=%npm_package_config_sourcePath% --dest contentPath=%npm_package_config_destPath%,wmsvc=%npm_package_config_ComputerName%,UserName=%npm_package_config_UserName%,Password=%npm_package_config_Password%,includeAcls=False",
     "package": "msdeploy --verb sync --source contentPath=%npm_package_config_sourcePath% --dest package=%npm_package_config_packagePath% --declareParam name='%npm_package_config_paramName%',defaultValue=%npm_package_config_paramValue%,kind=%npm_package_config_paramKind%,scope=%npm_package_config_paramScope%",
     "storybook": "start-storybook -p 9009 -s public",
@@ -137,7 +137,7 @@
     "@storybook/react": "^6.0.0-alpha.6",
     "adm-zip": "^0.4.14",
     "json-loader": "^0.5.7",
-    "msdeploy": "1.1.0",
+    "msdeploy": "1.2.1",
     "tus-js-client": "^1.8.0"
   }
 }
